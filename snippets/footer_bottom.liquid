@@ -1,0 +1,102 @@
+{%- if section.settings.show_ft_top -%}
+<div class="footer-bottom {% if section.settings.position_fb %} position_fb {% endif %}" id="section-{{ section.id }}" style="border-top: 1px solid {{ section.settings.border_color }};">
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+   
+    <div class="row align-items-center">
+      {%- for block in section.blocks -%}{%- case block.type -%}
+      {%- when 'social' -%}
+      <div class="col-lg-{{ block.settings.widget_col }} col-md-{{ block.settings.widget_col_md }} col-12">
+        <div class="footer-social pb-20 text-{% if block.settings.text == 'left' %}left{% elsif block.settings.text == 'right' %}right{% else %}center{% endif %}">
+          {% if block.settings.social1 != '' %}
+          <a href="{{ block.settings.social1_url }}">{%- if block.settings.show_icon -%} <i class="sli sli-social-{{ block.settings.social1 }}"></i> {% endif %} {%- if block.settings.show_name -%} {{ block.settings.social1 }} {% endif %}</a>
+          {% endif %}
+
+          {% if block.settings.social2 != '' %}
+          <a href="{{ block.settings.social2_url }}">{%- if block.settings.show_icon -%} <i class="sli sli-social-{{ block.settings.social2 }}"></i> {% endif %} {%- if block.settings.show_name -%} {{ block.settings.social2 }} {% endif %}</a>
+          {% endif %}
+
+          {% if block.settings.social3 != '' %}
+          <a href="{{ block.settings.social3_url }}">{%- if block.settings.show_icon -%} <i class="sli sli-social-{{ block.settings.social3 }}"></i> {% endif %} {%- if block.settings.show_name -%} {{ block.settings.social3 }} {% endif %}</a>
+          {% endif %}
+
+          {% if block.settings.social4 != '' %}
+          <a href="{{ block.settings.social4_url }}">{%- if block.settings.show_icon -%} <i class="sli sli-social-{{ block.settings.social4 }}"></i> {% endif %} {%- if block.settings.show_name -%} {{ block.settings.social4 }} {% endif %}</a>
+          {% endif %}
+
+          {% if block.settings.social5 != '' %}
+          <a href="{{ block.settings.social5_url }}">{%- if block.settings.show_icon -%} <i class="sli sli-social-{{ block.settings.social5 }}"></i> {% endif %} {%- if block.settings.show_name -%} {{ block.settings.social5 }} {% endif %}</a>
+          {% endif %}
+        </div>
+      </div>
+
+      {%- when 'copyright' -%}
+      <div class="col-lg-{{ block.settings.widget_col }} col-md-{{ block.settings.widget_col_md }} col-12">
+        <div class="copyright text-{% if block.settings.text == 'left' %}left{% elsif block.settings.text == 'right' %}right{% else %}center{% endif %} pb-20">
+          <p>{{ block.settings.copy }}</p>
+        </div>
+      </div>
+
+      {%- when 'payment' -%}
+      <div class="col-lg-{{ block.settings.widget_col }} col-md-{{ block.settings.widget_col_md }} col-12">
+        <div class="payment-mathod pb-20 text-{% if block.settings.text == 'left' %}left{% elsif block.settings.text == 'right' %}right{% else %}center{% endif %}">
+          
+
+          {%- if block.settings.img -%}
+          <a href="{{ block.settings.img_url }}">
+            <img loading="lazy"  src="{{ block.settings.img | img_url: 'large' }}" alt="{{ image.alt }}">
+          </a>
+
+          {%- else -%}
+          <img loading="lazy"  src="https://via.placeholder.com/500x40" alt="{{ image.alt }}">
+          {%- endif -%}
+          
+        </div>
+      </div>
+
+      {%- endcase -%}{%- endfor -%}
+    </div>
+  </div>
+</div>
+
+
+{%- if section.settings.custom_footer_style -%}
+
+<style>
+  .footer-bottom .footer-social a, 
+  .footer-bottom .copyright p,
+  .footer-bottom .copyright a  {
+    color: {{ section.settings.ft_content_color }};
+  }  
+  .footer-bottom .footer-social a:hover,
+  .footer-bottom .copyright a:hover{
+    color: {{ section.settings.ft_content_color_hover }};
+  }
+  
+  
+  {%- assign footer_bottom_font = section.settings.footer_bottom_font -%}
+
+  {{ footer_bottom_font | font_face }}
+
+
+  .footer-bottom .footer-social a, 
+  .footer-bottom .copyright p{
+    font-family: {{ footer_bottom_font.family }}, {{ footer_bottom_font.fallback_families }};
+    font-style: {{ footer_bottom_font.style }};
+    font-weight: {{ footer_bottom_font.weight }};
+    font-size:{{ section.settings.footer_bottom_font_size }}px;
+  }
+
+  .footer-bottom.position_fb {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+  
+</style>
+
+{%- endif -%}
+
+{%- render 'section-style' -%}
+
+{%- endif -%}

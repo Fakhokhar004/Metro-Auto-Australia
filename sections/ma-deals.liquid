@@ -1,0 +1,169 @@
+{%- comment -%}
+  Today's deals banner with a countdown. Sits above sections/ma-collection (banner off) in templates/collection.deals.json,
+  so the deals list keeps the same filters, cards and layout as every category page.
+  Timer: "daily" counts down to midnight in the chosen time zone; "end" counts down to a set date and time.
+  Once the banner timer scrolls away, a small timer docks to the side (bottom on phones). Shoppers can fold it away.
+{%- endcomment -%}
+{{ 'ma-listing.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign d_title = section.settings.title | default: collection.title
+  assign d_text = section.settings.text
+  if d_text == blank
+    assign d_text = collection.description | strip_html | strip
+  endif
+-%}
+
+<div class="ma-deals" data-ma-deals data-mode="{{ section.settings.mode }}" data-end="{{ section.settings.end | escape }}" data-tz="{{ section.settings.tz | default: 'Australia/Melbourne' | escape }}">
+  <section class="ma-banner ma-deals__banner">
+    <div class="ma-wrap ma-banner__in ma-deals__in">
+      <div class="ma-deals__copy">
+        <nav class="ma-banner__crumb" aria-label="Breadcrumb">
+          <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span><span aria-current="page">{{ d_title | escape }}</span>
+        </nav>
+        <p class="ma-deals__kicker">{%- render 'ma-icon', name: 'tag', size: 15, stroke: '#FFFFFF', width: 2.2 -%} {{ section.settings.kicker | escape }}</p>
+        <h1 class="ma-banner__title">{{ d_title | escape }}</h1>
+        {%- if d_text != blank -%}<p class="ma-banner__text">{{ d_text | escape }}</p>{%- endif -%}
+      </div>
+
+      <div class="ma-deals__timer" data-ma-deals-main>
+        <p class="ma-deals__label" data-ma-deals-label>{{ section.settings.timer_label | escape }}</p>
+        <div class="ma-deals__clock" role="timer" aria-live="off" data-ma-deals-clock>
+          <span class="ma-deals__unit"><b data-u="h">--</b><small>Hours</small></span>
+          <span class="ma-deals__sep" aria-hidden="true">:</span>
+          <span class="ma-deals__unit"><b data-u="m">--</b><small>Mins</small></span>
+          <span class="ma-deals__sep" aria-hidden="true">:</span>
+          <span class="ma-deals__unit"><b data-u="s">--</b><small>Secs</small></span>
+        </div>
+        <p class="ma-deals__over" data-ma-deals-over hidden>{{ section.settings.ended_text | escape }}</p>
+      </div>
+    </div>
+  </section>
+
+  {%- if section.settings.dock -%}
+    <aside class="ma-dealdock" data-ma-dealdock hidden aria-label="Deal countdown">
+      <div class="ma-dealdock__card">
+        <span class="ma-dealdock__icon" aria-hidden="true">{%- render 'ma-icon', name: 'clock', size: 18, stroke: '#FFFFFF', width: 2.2 -%}</span>
+        <span class="ma-dealdock__text">
+          <span class="ma-dealdock__label" data-ma-dock-label>{{ section.settings.dock_label | escape }}</span>
+          <strong class="ma-dealdock__time" data-ma-dock-time>--:--:--</strong>
+        </span>
+        <button type="button" class="ma-dealdock__fold" data-ma-dock-fold aria-expanded="true" aria-label="Hide the timer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+        </button>
+      </div>
+      <button type="button" class="ma-dealdock__tab" data-ma-dock-open aria-label="Show the deal timer">
+        {%- render 'ma-icon', name: 'clock', size: 16, stroke: '#FFFFFF', width: 2.2 -%}<span data-ma-dock-mini>--:--</span>
+      </button>
+    </aside>
+  {%- endif -%}
+</div>
+
+<script>
+  (function () {
+    var root = document.querySelector('[data-ma-deals]');
+    if (!root || root._ma) return;
+    root._ma = true;
+    var mode = root.getAttribute('data-mode'), tz = root.getAttribute('data-tz');
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+
+    /* wall-clock parts in the store's time zone */
+    function parts(date) {
+      try {
+        var f = new Intl.DateTimeFormat('en-AU', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        var o = {}; f.formatToParts(date).forEach(function (p) { o[p.type] = +p.value; });
+        return o;
+      } catch (e) {
+        return { year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate(), hour: date.getHours(), minute: date.getMinutes(), second: date.getSeconds() };
+      }
+    }
+    /* the end time in ms: midnight tonight (daily) or the set date and time (end), both in the store's time zone */
+    function endAt() {
+      var now = new Date(), p = parts(now);
+      var offset = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second) - Math.floor(now.getTime() / 1000) * 1000;
+      if (mode === 'end') {
+        var m = (root.getAttribute('data-end') || '').match(/(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?/);
+        if (m) return Date.UTC(+m[1], +m[2] - 1, +m[3], +(m[4] || 23), +(m[5] || 59), m[4] ? 0 : 59) - offset;
+      }
+      return Date.UTC(p.year, p.month - 1, p.day + 1, 0, 0, 0) - offset;
+    }
+    var end = endAt();
+
+    var clock = root.querySelector('[data-ma-deals-clock]');
+    var over = root.querySelector('[data-ma-deals-over]');
+    var label = root.querySelector('[data-ma-deals-label]');
+    var dock = root.querySelector('[data-ma-dealdock]');
+    var dockTime = dock && dock.querySelector('[data-ma-dock-time]');
+    var dockMini = dock && dock.querySelector('[data-ma-dock-mini]');
+
+    function tick() {
+      var left = Math.max(0, Math.round((end - Date.now()) / 1000));
+      if (left === 0 && mode !== 'end') { end = endAt(); left = Math.max(0, Math.round((end - Date.now()) / 1000)); }
+      var h = Math.floor(left / 3600), m = Math.floor(left % 3600 / 60), s = left % 60;
+      clock.querySelector('[data-u="h"]').textContent = pad(h);
+      clock.querySelector('[data-u="m"]').textContent = pad(m);
+      clock.querySelector('[data-u="s"]').textContent = pad(s);
+      clock.setAttribute('aria-label', h + ' hours ' + m + ' minutes left');
+      var done = left === 0 && mode === 'end';
+      clock.hidden = done; if (label) label.hidden = done; over.hidden = !done;
+      if (dockTime) dockTime.textContent = done ? 'Ended' : pad(h) + ':' + pad(m) + ':' + pad(s);
+      if (dockMini) dockMini.textContent = done ? 'Ended' : (h ? h + 'h ' + pad(m) + 'm' : pad(m) + ':' + pad(s));
+      if (done) { clearInterval(timer); }
+    }
+    var timer = setInterval(tick, 1000);
+    tick();
+
+    /* docked timer: shown once the banner timer has scrolled out of view */
+    if (dock) {
+      var KEY = 'ma_dealdock_folded';
+      var folded = false;
+      try { folded = sessionStorage.getItem(KEY) === '1'; } catch (e) {}
+      var setFold = function (on) {
+        folded = on;
+        dock.classList.toggle('is-folded', on);
+        dock.querySelector('[data-ma-dock-fold]').setAttribute('aria-expanded', on ? 'false' : 'true');
+        try { sessionStorage.setItem(KEY, on ? '1' : '0'); } catch (e) {}
+      };
+      setFold(folded);
+      dock.querySelector('[data-ma-dock-fold]').addEventListener('click', function () { setFold(true); });
+      dock.querySelector('[data-ma-dock-open]').addEventListener('click', function () { setFold(false); });
+      var main = root.querySelector('[data-ma-deals-main]');
+      var show = function (on) {
+        if (on) { dock.hidden = false; requestAnimationFrame(function () { dock.classList.add('is-in'); }); }
+        else { dock.classList.remove('is-in'); }
+      };
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) { show(!e.isIntersecting && e.boundingClientRect.top < 0); });
+        }, { threshold: 0 }).observe(main);
+      } else {
+        dock.hidden = false; dock.classList.add('is-in');
+      }
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Metro deals timer",
+  "tag": "section",
+  "class": "ma-body",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Heading", "info": "Empty uses the collection title." },
+    { "type": "textarea", "id": "text", "label": "Text", "info": "Empty uses the collection description." },
+    { "type": "text", "id": "kicker", "label": "Small label above the heading", "default": "Limited-time prices" },
+    { "type": "header", "content": "Countdown" },
+    { "type": "select", "id": "mode", "label": "Timer counts down to", "default": "daily", "options": [
+      { "value": "daily", "label": "Midnight every day" },
+      { "value": "end", "label": "A set end date" }
+    ] },
+    { "type": "text", "id": "end", "label": "End date and time", "info": "For \"A set end date\". Format: 2026-10-31 23:59", "placeholder": "2026-10-31 23:59" },
+    { "type": "text", "id": "tz", "label": "Time zone", "default": "Australia/Melbourne" },
+    { "type": "text", "id": "timer_label", "label": "Timer label", "default": "Deals end in" },
+    { "type": "text", "id": "ended_text", "label": "Text when the deals have ended", "default": "These deals have ended. New deals are on their way." },
+    { "type": "header", "content": "Docked timer" },
+    { "type": "checkbox", "id": "dock", "label": "Dock the timer to the side when scrolling", "info": "On phones it docks to the bottom. Shoppers can fold it away.", "default": true },
+    { "type": "text", "id": "dock_label", "label": "Docked timer label", "default": "Deals end in" }
+  ],
+  "presets": [{ "name": "Metro deals timer" }]
+}
+{% endschema %}

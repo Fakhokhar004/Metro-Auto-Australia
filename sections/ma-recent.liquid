@@ -1,0 +1,45 @@
+{%- comment -%}
+  "Recently viewed" product cards (assets/ma-theme.js, MA.recent). Products the shopper opened, newest first,
+  leaving out what is already in the cart. With nothing viewed yet it shows the fallback collection instead.
+{%- endcomment -%}
+{%- liquid
+  # cart handles as ",a,b," so "contains ',handle,'" only matches whole handles
+  assign exclude = ','
+  for item in cart.items
+    assign exclude = exclude | append: item.product.handle | append: ','
+  endfor
+  assign fb = section.settings.fallback
+-%}
+<section class="ma-wrap ma-recent" data-ma-recent data-limit="{{ section.settings.limit }}" data-exclude="{{ exclude }}"
+  {% if product %}data-current="{{ product.handle }}"{% endif %}
+  data-fallback-title="{{ section.settings.fallback_title | escape }}">
+  <h2 class="ma-recent__title" data-ma-recent-title>{{ section.settings.title | escape }}</h2>
+  <div class="ma-pgrid ma-recent__grid" data-ma-recent-grid></div>
+  {%- if fb != blank -%}
+    <template data-ma-recent-fallback>
+      {%- assign shown = 0 -%}
+      {%- for p in fb.products limit: 24 -%}
+        {%- assign key = ',' | append: p.handle | append: ',' -%}
+        {%- if exclude contains key -%}{%- continue -%}{%- endif -%}
+        {%- render 'ma-product-card', product: p -%}
+        {%- assign shown = shown | plus: 1 -%}
+        {%- if shown >= section.settings.limit -%}{%- break -%}{%- endif -%}
+      {%- endfor -%}
+    </template>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Metro recently viewed",
+  "tag": "div",
+  "class": "ma-body ma-recent-sec",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Heading", "default": "Recently viewed" },
+    { "type": "range", "id": "limit", "label": "Products shown", "min": 2, "max": 12, "step": 1, "default": 4 },
+    { "type": "collection", "id": "fallback", "label": "Show this collection when nothing has been viewed yet" },
+    { "type": "text", "id": "fallback_title", "label": "Heading for that collection", "default": "Popular parts" }
+  ],
+  "presets": [{ "name": "Metro recently viewed" }]
+}
+{% endschema %}

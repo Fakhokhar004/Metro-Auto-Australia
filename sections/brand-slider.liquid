@@ -1,0 +1,356 @@
+<!-- ====================  brand logo slider area ==================== -->
+<div class="brand-logo-slider-area mb-40 common_slick_slider {% if settings.section__animation__enable %}scroll-zoom {% endif %}" id="section-{{ section.id }} " data-section="BrandSlider">
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+    {%- capture data_slick_activation -%}
+    data-slick='{
+    "slidesToShow": {{section.settings.brand_item_show}},
+    "arrows": false,
+    "slidesToScroll": 1,
+      {% if settings.rtl_enable %}
+    "rtl": true,
+    {% endif %}
+    "responsive":[
+    	{"breakpoint":1800, "settings": {"slidesToShow": {{section.settings.brand_item_show}} }},
+    	{"breakpoint":1200, "settings": {"slidesToShow": 4 }},        
+    	{"breakpoint":991, "settings": {"slidesToShow": 3 }},
+    	{"breakpoint":767, "settings": {"slidesToShow": 2 }},        
+    	{"breakpoint":319, "settings": {"slidesToShow": 1 }}
+    ] 
+
+    }'
+    {%- endcapture -%}
+
+    <div class="row align-items-center">
+      <div class="col-lg-12">
+        <!-- =======  brand logo slider wrapper  ======= -->
+
+        <div class="brand-logo-slider-wrapper brand-logo-slider-wrapper--double-border">
+          <div class="brand_slider_active" {{ data_slick_activation }}>
+            <!-- =======  single brand logo  ======= -->
+
+            
+            {%- liquid
+            assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+            assign fetch_priority = 'auto'
+            if section.index == 1
+            assign fetch_priority = 'high'
+            endif
+            assign image_class = 'lazyload-main-image animated responsive-image__image'
+            assign lazy_load = 'lazy'
+            -%}
+
+            
+            {% for block in section.blocks %}
+              {%- case block.type -%}
+                {%- when 'single_brand' -%}
+                  <div class="single-brand-logo">
+
+                	<a href="{{ block.settings.brand_url }}" class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.brand_img.aspect_ratio | times: 100}}%;">
+                      {% if block.settings.brand_img %}
+                        {% assign image_height = block.settings.brand_img.width | divided_by: block.settings.brand_img.aspect_ratio %}
+                        {{ block.settings.brand_img | image_url: width: 3840 | image_tag: width: block.settings.brand_img.width, height: image_height, 
+                        widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt}}
+                      {% else %}
+                        <img src="https://via.placeholder.com/164x38" alt="">
+                      {% endif %}
+                    </a>
+
+
+                    
+                  </div>
+              {%- endcase -%}
+            {% endfor %}
+
+            <!-- =======  End of single brand logo  ======= -->
+          </div>
+        </div>
+
+        <!-- =======  End of brand logo slider wrapper  ======= -->
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ====================  End of brand logo slider area  ==================== -->
+
+{%- render 'section-style' -%}
+
+{% schema %}
+ {
+   "name": "Brand Slider",
+   "settings": [
+             {
+               "type": "select",
+               "id": "section_width",
+               "label": "Section Width",
+               "options":[
+                     {
+                         "label": "Full Width",
+                         "value": "full_width"
+                     },
+                     {
+                         "label": "Box Width",
+                         "value": "box_width"
+                     },
+                     {
+                         "label": "Default Width",
+                         "value": "default"
+                     }
+                 ],
+                 "default": "default"
+             },
+	   {
+             "type": "select",
+             "id": "brand_item_show",
+             "label": "Brand Item Show",
+             "options": [
+               {
+                "label": "3 Column",
+                "value": "3"
+               },
+               {
+                "label": "4 Column",
+                "value": "4"
+               },
+               {
+                 "label": "5 Column",
+                  "value": "5"
+               },
+			{
+                "label": "6 Column",
+                "value": "6"
+               },                {
+                "label": "7 Column",
+                "value": "7"
+               }
+               ],
+                "default": "5"
+             }
+],
+"blocks":[
+   {
+         "type": "section_margin",
+         "name": "Section Margin",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "header",
+		  "content": "Large/Desktop Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "header",
+		  "content": "Tablet Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "header",
+		  "content": "Mobile Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		}
+         ]
+      },
+   {
+         "type": "section_padding",
+         "name": "Section Padding",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "header",
+		  "content": "Large/Desktop Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 35
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 70
+		},
+		{
+		  "type": "header",
+		  "content": "Tablet Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 35
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 70
+		},
+		{
+		  "type": "header",
+		  "content": "Mobile Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 20
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 40
+		}
+         ]
+      },
+   {
+         "type": "section_background",
+         "name": "Section Background",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "image_picker",
+		  "id": "section_bg_image",
+		  "label": "BG Image"
+		},
+		{
+		  "type": "color",
+		  "id": "section_bg_color",
+		  "label": "BG Color",
+		  "default": "#ffffff"
+		}
+         ]
+      },
+
+     {
+         "type": "single_brand",
+         "name": "Single Brand",
+         "settings": [
+             {
+                 "type": "image_picker",
+                 "id": "brand_img",
+                 "label": "Brand Image",
+                 "info": "Recommended Size: 164 x 38"
+             },
+             {
+                 "type": "url",
+                 "id": "brand_url",
+                 "label": "Banner URL"
+             }
+
+
+         ]
+     }
+
+
+],
+"presets": [
+	{
+	  "name": "Brand Slider",
+		"category": "1. Slider",
+	  "blocks":[
+			{
+				"type": "single_brand"
+			},
+			{
+				"type": "single_brand"
+			},
+			{
+				"type": "single_brand"
+			},
+			{
+				"type": "single_brand"
+			},
+			{
+				"type": "single_brand"
+			},
+			{
+				"type": "single_brand"
+			}
+		]
+	}
+]
+ }
+{% endschema %}

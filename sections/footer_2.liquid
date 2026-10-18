@@ -1,0 +1,599 @@
+{%- if section.settings.show_ft_top -%}
+<div class="theme_footer_top" id="section-{{ section.id }}" data-section="FooterSection">
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+   
+    <div class="footer-top-2 pb-20 footer_style_2">
+      <div class="row">
+        {%- for block in section.blocks -%}{%- case block.type -%}
+        {%- when 'newsletter' -%}
+        <div class="col-lg-{{ block.settings.widget_col }} col-md-{{ block.settings.widget_col }} col-sm-12 col-12 custom_class_2">
+          <div class="footer-widget mb-40">
+            {%- if block.settings.logo -%}
+            <a href="/">
+              <img loading="lazy"  src="{{ block.settings.logo | img_url: 'medium' }}" alt="{{ image.alt }}">
+            </a>
+            {%- endif -%}
+
+            <div class="subscribe-style mt-45">
+              {%- if block.settings.content != '' -%}
+              <p>{{ block.settings.content }}</p>
+              {%- endif -%}
+               {%- if block.settings.newsletter_form_show -%}
+              <div id="mc_embed_signup" class="subscribe-form mt-20">
+                {%- render 'newsletter-form' -%}
+              </div>
+              {%- endif -%}              
+            </div>
+          </div>
+          
+          {%- if block.settings.newsletter_social_show -%}
+          <div class="footer-social top_bar_social text-center">
+            {% if block.settings.social1 != '' %}
+            <a href="{{ block.settings.social1_url }}"><i class="sli sli-social-{{ block.settings.social1 }}"></i></a>
+            {% endif %}
+
+            {% if block.settings.social2 != '' %}
+            <a href="{{ block.settings.social2_url }}"><i class="sli sli-social-{{ block.settings.social2 }}"></i></a>
+            {% endif %}
+
+            {% if block.settings.social3 != '' %}
+            <a href="{{ block.settings.social3_url }}"><i class="sli sli-social-{{ block.settings.social3 }}"></i></a>
+            {% endif %}
+
+            {% if block.settings.social4 != '' %}
+            <a href="{{ block.settings.social4_url }}"><i class="sli sli-social-{{ block.settings.social4 }}"></i></a>
+            {% endif %}
+
+            {% if block.settings.social5 != '' %}
+            <a href="{{ block.settings.social5_url }}"><i class="sli sli-social-{{ block.settings.social5 }}"></i></a>
+            {% endif %}
+          </div>
+          {%- endif -%} 
+          
+        </div>
+
+        {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+    
+    
+  </div>
+</div>
+
+
+{%- if section.settings.custom_footer_style -%}
+<style>
+  .footer-widget .footer-title h3 {
+    color: {{ section.settings.ft_title_color }};
+  }
+  .subscribe-style p, .footer-widget .footer-list ul li a, .footer-top ul li a, .footer-widget .footer-list ul li {
+    color: {{ section.settings.ft_content_color }};
+  }  
+  .theme_footer_top .footer-widget .subscribe-style p {
+    color: {{ section.settings.ft_content_color }};
+  }
+  .subscribe-style .subscribe-form .mc-form .clear:hover {
+    background-color: {{ settings.color_primary }};
+  }  
+  .footer-top ul li a:hover {
+    color: {{ settings.color_primary }};
+  }
+  
+  .subscribe-style .subscribe-form .mc-form input::-moz-placeholder {
+    color: {{ section.settings.ft_content_color }} !important;
+        opacity:.5;
+  }
+  .subscribe-style .subscribe-form .mc-form input::-webkit-input-placeholder {
+    color: {{ section.settings.ft_content_color }} !important;
+  }
+  .subscribe-style .subscribe-form .mc-form input {
+    border-color: {{ section.settings.ft_content_color }}
+  }
+  
+  .theme_footer_top .top_bar_social a {
+    color: {{ section.settings.ft_content_color }};
+  }
+  .theme_footer_top .top_bar_social a:hover {
+    color: {{ settings.color_primary }};
+  }
+  
+  
+  {%- for block in section.blocks -%}{%- case block.type -%}
+    {%- when 'newsletter' -%}
+    .subscribe-style .subscribe-form .mc-form .sbs_btn {
+      background-color: {{ block.settings.subscribe_btnhover_bg_Color }};
+    }
+  
+  .footer_style_2 .footer-widget .subscribe-style p {
+    margin-bottom: {{ block.settings.news_content_margin_bottom }}px;
+  }
+  
+    {%- endcase -%}
+  {%- endfor -%}
+  
+  
+  
+  
+  {%- assign footer_font_drop_mega = section.settings.footer_font_drop_mega -%}
+
+  {{ footer_font_drop_mega | font_face }}
+
+  
+  .theme_footer_top .footer-widget .subscribe-style p,
+  .theme_footer_top .subscribe-style .subscribe-form .mc-form input{
+    font-family: {{ footer_font_drop_mega.family }}, {{ footer_font_drop_mega.fallback_families }};
+    font-style: {{ footer_font_drop_mega.style }};
+    font-weight: {{ footer_font_drop_mega.weight }};
+    font-size:{{ section.settings.footer_font_drop_mega_size }}px;
+    line-height:{{ section.settings.footer_content_line_height }}px;
+    
+  }
+  
+  .theme_footer_top .top_bar_social a {
+    font-size:{{ section.settings.footer_heading_font_size }}px;
+  }
+  
+
+  /* Small and large mobile :320px. */
+@media (max-width: 767px) {  
+.widget-collapse .footer-title:after {
+      color:{{ section.settings.ft_content_color }}
+  }
+}
+  
+  
+</style>
+
+{%- endif -%}
+
+{%- render 'section-style' -%}
+{%- endif -%}
+
+
+
+{% schema %}
+  {
+    "name": "Footer Top",
+    "settings": [
+		{
+			"type": "checkbox",
+			"id": "show_ft_top",
+			"label": "Show Footer Top",
+			"default": true
+		},
+              {
+                "type": "select",
+                "id": "section_width",
+                "label": "Section Width",
+                "options":[
+                      {
+                          "label": "Full Width",
+                          "value": "full_width"
+                      },
+                      {
+                          "label": "Box Width",
+                          "value": "box_width"
+                      },
+                      {
+                          "label": "Default Width",
+                          "value": "default"
+                      }
+                  ],
+                  "default": "default"
+              },
+	    {
+          "type": "checkbox",
+          "id": "custom_footer_style",
+          "label": "Custom Footer Color",
+          "default": true
+        },
+		{
+			"type": "color",
+			"id": "ft_title_color",
+			"label": "Title Color",
+			"default": "#444444"
+		},
+
+		{
+			"type": "color",
+			"id": "ft_content_color",
+			"label": "Content Color",
+			"default": "#5e5e5e"
+		},
+
+        {
+          "type": "font_picker",
+          "id": "footer_font_drop_mega",
+          "label": "Font Family: Footer Content Font",
+          "default": "roboto_n5"
+        },
+        {
+          "type": "text",
+          "id": "footer_font_drop_mega_size",
+          "label": "Font Size: Font Size",
+          "default": "16",
+          "info": "Footer Content Font Size"
+        },
+
+
+          {
+            "type": "range",
+            "id": "footer_content_line_height",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "label": "Footer Content Line Height",
+            "unit": "px",
+            "default": 28
+          },
+
+
+        {
+          "type": "text",
+          "id": "footer_heading_font_size",
+          "label": "Font Size: Footer Social Icon",
+          "default": "25",
+          "info": "Footer Social Font Size"
+        }
+
+	],
+    "blocks": [
+		{
+			"type": "newsletter",
+			"name": "Newsletter Subscribe",
+			"settings": [
+                {
+                    "type": "select",
+                    "id": "widget_col",
+                    "label": "Select Column",
+                    "options": [
+                        {
+                            "label": "2",
+                            "value": "2"
+                        },
+                        {
+                            "label": "3",
+                            "value": "3"
+                        },
+                        {
+                            "label": "4",
+                            "value": "4"
+                        },
+                        {
+                            "label": "5",
+                            "value": "5"
+                        },
+                        {
+                            "label": "6",
+                            "value": "6"
+                        },
+                        {
+                            "label": "7",
+                            "value": "7"
+                        },
+                        {
+                            "label": "8",
+                            "value": "8"
+                        },
+                        {
+                            "label": "9",
+                            "value": "9"
+                        },
+                        {
+                            "label": "10",
+                            "value": "10"
+                        },
+                        {
+                            "label": "11",
+                            "value": "11"
+                        },
+                        {
+                            "label": "12",
+                            "value": "12"
+                        }
+                    ],
+                    "default": "8"
+                },
+				{
+					"type": "image_picker",
+					"id": "logo",
+					"label": "Image"
+				},
+				{
+					"type": "textarea",
+					"id": "content",
+					"label": "Content",
+					"default": "Subscribe to our newsleter, Enter your emil address"
+				},
+                {
+                  "type": "range",
+                  "id": "news_content_margin_bottom",
+                  "min": 0,
+                  "max": 100,
+                  "step": 1,
+                  "label": "Content Margin Bottom",
+                  "unit": "px",
+                  "default": 20
+                },
+
+                {
+                    "type": "checkbox",
+                    "id": "newsletter_form_show",
+                    "label": "Newsletter Form Show",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "newsletter_social_show",
+                    "label": "Newsletter Social Show",
+                    "default": true
+                },
+				{
+					"type": "color",
+					"id": "subscribe_btnhover_bg_Color",
+					"label": "Button BG Color",
+					"default": "#ff3535"
+				},
+				{
+					"type": "header",
+					"content": "Social 1"
+				},
+				{
+					"type": "text",
+					"id": "social1",
+					"label": "Title",
+					"default": "facebook"
+				},
+				{
+					"type": "url",
+					"id": "social1_url",
+					"label": "URL"
+				},
+				{
+					"type": "header",
+					"content": "Social 2"
+				},
+				{
+					"type": "text",
+					"id": "social2",
+					"label": "Title",
+					"default": "twitter"
+				},
+				{
+					"type": "url",
+					"id": "social2_url",
+					"label": "URL"
+				},
+				{
+					"type": "header",
+					"content": "Social 3"
+				},
+				{
+					"type": "text",
+					"id": "social3",
+					"label": "Title",
+					"default": "instagram"
+				},
+				{
+					"type": "url",
+					"id": "social3_url",
+					"label": "URL"
+				},
+				{
+					"type": "header",
+					"content": "Social 4"
+				},
+				{
+					"type": "text",
+					"id": "social4",
+					"label": "Title",
+					"default": "youtube"
+				},
+				{
+					"type": "url",
+					"id": "social4_url",
+					"label": "URL"
+				},
+				{
+					"type": "header",
+					"content": "Social 5"
+				},
+				{
+					"type": "text",
+					"id": "social5",
+					"label": "Title",
+					"default": "pinterest"
+				},
+				{
+					"type": "url",
+					"id": "social5_url",
+					"label": "URL"
+				}
+			]		
+		},
+	   {
+          "type": "section_padding",
+          "name": "Section Padding",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 100
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 80
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 60
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 0
+			}
+          ]
+       },
+	   {
+          "type": "section_margin",
+          "name": "Section Margin",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			}
+          ]
+       },
+	   {
+          "type": "section_background",
+          "name": "Section Background",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "image_picker",
+			  "id": "section_bg_image",
+			  "label": "BG Image"
+			},
+			{
+			  "type": "color",
+			  "id": "section_bg_color",
+			  "label": "BG Color",
+			  "default": "#ffffff"
+			}
+          ]
+       }
+	]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

@@ -1,0 +1,14 @@
+          {%- liquid
+            assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+            assign fetch_priority = 'auto'
+          if section.index == 1
+            assign fetch_priority = 'high'
+          endif
+            assign image_class = 'lazyload-main-image popup_cart_image'
+            assign lazy_load = 'lazy'
+          -%}
+      
+        <a href="{{ product.url | within: collection }}" class="theme-product-image lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: product.featured_image.aspect_ratio | times: 100}}%;">
+          {% assign image_height = product.featured_image.width | divided_by: product.featured_image.aspect_ratio %} {{ product.featured_image | image_url: width: 3840 | image_tag: width: product.featured_image.width, 
+          height: image_height,widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load }}
+        </a>

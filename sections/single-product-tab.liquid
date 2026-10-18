@@ -1,0 +1,955 @@
+<section class="single-product {% if settings.section__animation__enable %}scroll-zoom {% endif %}" id="section-{{ section.id }}">
+  <div class="container{% if settings.section_full_width %}-fluid section-padding-1{% endif %}">
+
+
+    <div class="description-review-area">
+
+      <div class="row">      
+        <div class="{% if section.settings.show_banner %}col-lg-8 col-md-8{% else %}col-lg-12 col-md-12{% endif %}">
+          <div class="description-review-wrapper">
+            <div class="description-review-topbar nav">
+              {%- if section.settings.des_tab_enable -%}
+              <a class="{% if section.settings.tab_active_handle == 'info_tab' %} active{% endif %}" href="#section-{{ section.id }}-description" data-toggle="tab">{{ section.settings.des_tab_title }}</a>
+              {%- endif -%}
+
+              {%- if section.settings.comment_tab_enable -%}
+              <a class="{% if section.settings.tab_active_handle == 'comment_tab' %} active{% endif %}" href="#section-{{ section.id }}-comment" data-toggle="tab">{{ section.settings.comment_tab_title }}</a>
+              {%- endif -%}
+
+              {%- if section.settings.review_tab_enable -%}
+              <a class="{% if section.settings.tab_active_handle == 'review_tab' %} active{% endif %}" href="#section-{{ section.id }}-review" data-toggle="tab">{{ section.settings.review_tab_title }}</a>
+              {%- endif -%}
+
+              {%- if product.description contains '[product_video]' and section.settings.video_tab_enable -%}
+              <a href="#video" data-toggle="tab">{{ section.settings.video_tab_title }}</a>
+              {%- endif -%}
+
+              {%- if section.settings.compatible_vehicles_tab_enable and product.metafields.custom.compatible_vehicles != blank -%}
+              <a href="#section-{{ section.id }}-compatible-vehicles" data-toggle="tab">{{ section.settings.compatible_vehicles_tab_title }}</a>
+              {%- endif -%}
+
+              {%- assign i = 0  -%}
+              {%- for block in section.blocks -%}{%- case block.type -%}       
+              {%- when 'custom_tab' -%}
+              <a href="#custom_tab_{{ i }}" data-toggle="tab">{{ block.settings.custom_tab_title }}</a>
+
+              {%- when 'editable_tab' -%}
+              <a href="#tab-{{ block.id }}" data-toggle="tab">{{ block.settings.tab_title }}</a>
+
+              {%- when 'unique_tab_1' -%}        
+              {%- if product.description contains '[info_1]' -%}
+              <a href="#information_{{ i }}" data-toggle="tab">{{ block.settings.info_tab_title }}</a>
+              {%- endif -%}
+
+              {%- when 'unique_tab_2' -%}        
+              {%- if product.description contains '[info_2]' -%}
+              <a href="#information_{{ i }}" data-toggle="tab">{{ block.settings.info_tab_title }}</a>
+              {%- endif -%}
+
+              {%- when 'unique_tab_3' -%}        
+              {%- if product.description contains '[info_3]' -%}
+              <a href="#information_{{ i }}" data-toggle="tab">{{ block.settings.info_tab_title }}</a>
+              {%- endif -%}
+
+              {%- when 'unique_tab_4' -%}        
+              {%- if product.description contains '[info_4]' -%}
+              <a href="#information_{{ i }}" data-toggle="tab">{{ block.settings.info_tab_title }}</a>
+              {%- endif -%}
+
+              {%- when 'unique_tab_5' -%}        
+              {%- if product.description contains '[info_5]' -%}
+              <a href="#information_{{ i }}" data-toggle="tab">{{ block.settings.info_tab_title }}</a>
+              {%- endif -%}
+
+              {%- when 'unique_tab_6' -%}        
+              {%- if product.description contains '[info_6]' -%}
+              <a href="#information_{{ i }}" data-toggle="tab">{{ block.settings.info_tab_title }}</a>
+              {%- endif -%}
+
+              {%- when 'unique_tab_7' -%}        
+              {%- if product.description contains '[info_7]' -%}
+              <a href="#information_{{ i }}" data-toggle="tab">{{ block.settings.info_tab_title }}</a>
+              {%- endif -%}
+
+              {%- when 'unique_tab_8' -%}        
+              {%- if product.description contains '[info_8]' -%}
+              <a href="#information_{{ i }}" data-toggle="tab">{{ block.settings.info_tab_title }}</a>
+              {%- endif -%}
+
+              {%- when 'unique_tab_9' -%}        
+              {%- if product.description contains '[info_9]' -%}
+              <a href="#information_{{ i }}" data-toggle="tab">{{ block.settings.info_tab_title }}</a>
+              {%- endif -%}
+
+              {%- when 'unique_tab_10' -%}        
+              {%- if product.description contains '[info_10]' -%}
+              <a href="#information_{{ i }}" data-toggle="tab">{{ block.settings.info_tab_title }}</a>
+              {%- endif -%}
+              {%- endcase -%}
+              {%- assign i = i | plus: 1 -%}
+              {%- endfor -%}
+            </div>
+
+            <div class="tab-content description-review-bottom">
+              {%- if section.settings.des_tab_enable -%}
+              <div id="section-{{ section.id }}-description" class="tab-pane {% if section.settings.tab_active_handle == 'info_tab' %} show active {% endif %}">
+                <div class="product-description-wrapper">
+                  {%- if product.description contains '[product_description]' -%}            
+                  {%- assign product_description_first = product.description | split:'[/product_description]' | first -%}
+                  {%- assign product_description_final = product_description_first | split:'[product_description]' | last -%} 
+                  {{ product_description_final }}          
+                  {%- else -%}
+                  {{ product.description | split: '[info_1]' | first | split: '[info_2]' | first | split: '[info_3]' | first | split: '[info_4]' | first | split: '[info_5]' | first | split: '[info_6]' | first | split: '[info_7]' | first | split: '[info_8]' | first | split: '[info_9]' | first | split: '[info_10]' | first | split: '[countdown]' | first | split: '[affiliate_link]' | first | split: '[product_video]' | first | split: '[short_description]' | first | split: '[product_description]' | first | split: '[more_info]' | first }}
+                  {%- endif -%}
+                </div>
+              </div>
+              {%- endif -%}      
+
+              {%- if section.settings.comment_tab_enable -%}
+              <div id="section-{{ section.id }}-comment" class="tab-pane fade {% if section.settings.tab_active_handle == 'comment_tab' %} show active{% endif %}">
+                {%- if section.settings.product_page_comments_box =='disqus_comment' -%}
+                {% include 'disqus-comment' %}
+                {%- else -%}
+                {% include 'facebook-comment' %}
+                {%- endif -%}
+              </div>
+              {%- endif -%}            
+
+
+            {% if section.settings.review_tab_enable %}
+              <div class="tab-pane fade{% if section.settings.tab_active_handle == 'review_tab' %} show active{% endif %}" id="section-{{ section.id }}-review" role="tabpanel">
+              {%- for block in section.blocks -%}
+                  {%- case block.type -%}
+                    {%- when '@app' -%}
+                    {%- render block -%}
+                  {% endcase %}
+                {% endfor %}
+              </div>
+            {% endif %}  
+
+              {%- if product.description contains '[product_video]' and section.settings.video_tab_enable -%}
+              <div id="video" class="tab-pane fade">
+                {% assign product_video_first = product.description | split:'[/product_video]' | first %}
+                {% assign product_video_final = product_video_first | split:'[product_video]' | last %} 
+                <iframe width="860" height="615" src="https://www.youtube.com/embed/{{ product_video_final }}" frameborder="0" allowfullscreen></iframe>
+              </div>
+              {%- endif -%}
+
+              {%- if section.settings.compatible_vehicles_tab_enable and product.metafields.custom.compatible_vehicles != blank -%}
+              <div id="section-{{ section.id }}-compatible-vehicles" class="tab-pane fade">
+                <div class="compatible-vehicles-wrapper" style="padding: 20px 0;">
+
+                  <h3 style="margin-bottom: 16px; font-size: 18px; font-weight: 600;">
+                    {{ section.settings.compatible_vehicles_tab_title }}
+                  </h3>
+
+                  <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                      <tr style="background: #f5f5f5;">
+                        <th style="padding: 10px 14px; text-align: left; border: 1px solid #ddd;">Vehicle</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {%- assign vehicles = product.metafields.custom.compatible_vehicles.value -%}
+                      {%- assign vehicle_list = vehicles | newline_to_br | split: '<br />' -%}
+                      {%- for vehicle in vehicle_list -%}
+                        {%- unless vehicle == blank -%}
+                          <tr>
+                            <td style="padding: 10px 14px; border: 1px solid #ddd;">
+                              {{ vehicle | strip }}
+                            </td>
+                          </tr>
+                        {%- endunless -%}
+                      {%- endfor -%}
+                    </tbody>
+                  </table>
+
+                </div>
+              </div>
+              {%- endif -%}
+
+              {%- assign i = 0  -%}
+              {%- for block in section.blocks -%}{%- case block.type -%}       
+              {%- when 'custom_tab' -%}
+              <div class="tab-pane fade" id="custom_tab_{{ i }}" role="tabpanel">
+                {{ pages[block.settings.custom_page_handle].content }}
+              </div>
+
+              {%- when 'editable_tab' -%}
+              <div class="tab-pane fade" id="tab-{{ block.id }}" role="tabpanel">
+                <div class="product-anotherinfo-wrapper">
+                  {{ block.settings.tab_content }}
+                </div>
+              </div>
+
+              {%- when 'unique_tab_1' -%}        
+              {%- if product.description contains '[info_1]' -%}        
+              <div id="information_{{ i }}" class="tab-pane fade">
+                <div class="product-anotherinfo-wrapper">            
+                  {%- assign more_info_first = product.description | split:'[/info_1]' | first -%}
+                  {%- assign more_info_final = more_info_first | split:'[info_1]' | last -%} 
+                  {{ more_info_final }}          
+                </div>
+              </div>
+              {%- endif -%}
+
+              {%- when 'unique_tab_2' -%}        
+              {%- if product.description contains '[info_2]' -%}        
+              <div id="information_{{ i }}" class="tab-pane fade">
+                <div class="product-anotherinfo-wrapper">            
+                  {%- assign more_info_first = product.description | split:'[/info_2]' | first -%}
+                  {%- assign more_info_final = more_info_first | split:'[info_2]' | last -%} 
+                  {{ more_info_final }}          
+                </div>
+              </div>
+              {%- endif -%}
+
+              {%- when 'unique_tab_3' -%}        
+              {%- if product.description contains '[info_3]' -%}        
+              <div id="information_{{ i }}" class="tab-pane fade">
+                <div class="product-anotherinfo-wrapper">            
+                  {%- assign more_info_first = product.description | split:'[/info_3]' | first -%}
+                  {%- assign more_info_final = more_info_first | split:'[info_3]' | last -%} 
+                  {{ more_info_final }}          
+                </div>
+              </div>
+              {%- endif -%}
+
+              {%- when 'unique_tab_4' -%}        
+              {%- if product.description contains '[info_4]' -%}        
+              <div id="information_{{ i }}" class="tab-pane fade">
+                <div class="product-anotherinfo-wrapper">            
+                  {%- assign more_info_first = product.description | split:'[/info_4]' | first -%}
+                  {%- assign more_info_final = more_info_first | split:'[info_4]' | last -%} 
+                  {{ more_info_final }}          
+                </div>
+              </div>
+              {%- endif -%}
+
+              {%- when 'unique_tab_5' -%}        
+              {%- if product.description contains '[info_5]' -%}        
+              <div id="information_{{ i }}" class="tab-pane fade">
+                <div class="product-anotherinfo-wrapper">            
+                  {%- assign more_info_first = product.description | split:'[/info_5]' | first -%}
+                  {%- assign more_info_final = more_info_first | split:'[info_5]' | last -%} 
+                  {{ more_info_final }}          
+                </div>
+              </div>
+              {%- endif -%}
+
+              {%- when 'unique_tab_6' -%}        
+              {%- if product.description contains '[info_6]' -%}        
+              <div id="information_{{ i }}" class="tab-pane fade">
+                <div class="product-anotherinfo-wrapper">            
+                  {%- assign more_info_first = product.description | split:'[/info_6]' | first -%}
+                  {%- assign more_info_final = more_info_first | split:'[info_6]' | last -%} 
+                  {{ more_info_final }}          
+                </div>
+              </div>
+              {%- endif -%}
+
+              {%- when 'unique_tab_7' -%}        
+              {%- if product.description contains '[info_7]' -%}        
+              <div id="information_{{ i }}" class="tab-pane fade">
+                <div class="product-anotherinfo-wrapper">            
+                  {%- assign more_info_first = product.description | split:'[/info_7]' | first -%}
+                  {%- assign more_info_final = more_info_first | split:'[info_7]' | last -%} 
+                  {{ more_info_final }}          
+                </div>
+              </div>
+              {%- endif -%}
+
+              {%- when 'unique_tab_8' -%}        
+              {%- if product.description contains '[info_8]' -%}        
+              <div id="information_{{ i }}" class="tab-pane fade">
+                <div class="product-anotherinfo-wrapper">            
+                  {%- assign more_info_first = product.description | split:'[/info_8]' | first -%}
+                  {%- assign more_info_final = more_info_first | split:'[info_8]' | last -%} 
+                  {{ more_info_final }}          
+                </div>
+              </div>
+              {%- endif -%}
+
+              {%- when 'unique_tab_9' -%}        
+              {%- if product.description contains '[info_9]' -%}        
+              <div id="information_{{ i }}" class="tab-pane fade">
+                <div class="product-anotherinfo-wrapper">            
+                  {%- assign more_info_first = product.description | split:'[/info_9]' | first -%}
+                  {%- assign more_info_final = more_info_first | split:'[info_9]' | last -%} 
+                  {{ more_info_final }}          
+                </div>
+              </div>
+              {%- endif -%}
+
+              {%- when 'unique_tab_10' -%}        
+              {%- if product.description contains '[info_10]' -%}        
+              <div id="information_{{ i }}" class="tab-pane fade">
+                <div class="product-anotherinfo-wrapper">            
+                  {%- assign more_info_first = product.description | split:'[/info_10]' | first -%}
+                  {%- assign more_info_final = more_info_first | split:'[info_10]' | last -%} 
+                  {{ more_info_final }}          
+                </div>
+              </div>
+              {%- endif -%}
+
+              {%- endcase -%}
+              {%- assign i = i | plus: 1 -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        </div>
+
+        {%- if section.settings.show_banner -%}
+
+        {%- liquid
+          assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+          assign fetch_priority = 'auto'
+          if section.index == 1
+            assign fetch_priority = 'high'
+          endif
+          assign image_class = 'lazyload-main-image animated responsive-image__image'
+          assign lazy_load = 'lazy'
+        -%}
+          
+        <div class="col-lg-4 col-md-4">
+          <div class="pro-dec-banner lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: section.settings.banner_img.aspect_ratio | times: 100}}%;">
+            <a href="{{ section.settings.banner_img_url }}">
+              {%- if section.settings.banner_img -%}
+                
+                  {% assign image_height = section.settings.banner_img.width | divided_by: section.settings.banner_img.aspect_ratio %}
+                  {{ section.settings.banner_img | image_url: width: 3840 | image_tag: width: section.settings.banner_img.width, height: image_height, 
+                  widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt}}
+                
+              {%- else -%}
+              <img src="https://via.placeholder.com/370x380" alt="">
+              {%- endif -%}
+            </a>
+          </div>
+        </div>
+        {%- endif -%}      
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .description-review-area{
+    overflow:hidden
+  }
+  .compatible-vehicles-wrapper table tr:hover {
+    background-color: #fafafa;
+  }
+  .compatible-vehicles-wrapper table td {
+    font-size: 14px;
+    color: #333;
+  }
+</style>
+
+{%- render 'section-style' -%}
+
+{% schema %}
+  {
+    "name": "Single Product Tab",
+    "settings": [
+       {
+            "type": "radio",
+            "id": "tab_active_handle",
+            "label": "Active Tab",
+            "options": [
+              {
+                "value": "info_tab",
+                "label": "Description Tab"
+              },
+              {
+                "value": "review_tab",
+                "label": "Review Tab"
+              },
+			  {
+                "value": "comment_tab",
+                "label": "Comment Tab"
+              }
+            ],
+            "default": "info_tab"
+        },
+		{
+            "type": "header",
+            "content": "Tab 1 (Description)"
+        },
+		{
+            "type": "checkbox",
+            "id": "des_tab_enable",
+            "label": "Show Description Tab",
+            "default": true,
+			"info": "Product Description comes from short code - Full Description: [product_description] Your content or text here [/product_description]"
+        },
+        {
+            "type": "text",
+            "id": "des_tab_title",
+            "label": "Description Tab Title",
+            "default": "Description"
+        },
+		{
+            "type": "header",
+            "content": "Tab 2 (Comment Box)"
+        },
+		{
+            "type": "checkbox",
+            "id": "comment_tab_enable",
+            "label": "Show Comment Tab",
+            "default": true
+        },
+        {
+            "type": "text",
+            "id": "comment_tab_title",
+            "label": "Comment Tab Title",
+            "default": "Comments"
+        },
+        {
+            "type": "radio",
+            "id": "product_page_comments_box",
+            "label": "Select comments box",
+            "options": [
+              {
+                "label": "Disqus comments",
+                "value": "disqus_comment"
+              },
+              {
+                "label": "Facebook comments",
+                "value": "facebook_comment"
+              }
+            ],
+            "default": "disqus_comment"
+        },
+        {
+            "type": "text",
+            "id": "facebook_comments_post_limit",
+            "label": "Facebook Comment Limit",
+            "default": "10"
+        },
+        {
+            "type": "text",
+            "id": "disqus_shortname",
+            "label": "Your Store Name",
+            "default": "demo-store",
+            "info": "Disqus Shortname (Get your shortname)[disqus.com](http:\/\/disqus.com)"
+        },
+		{
+            "type": "header",
+            "content": "Tab 3 (Review)"
+        },
+		{
+          "type": "paragraph",
+          "content": "To enable product review, go to 'Theme settings > Product Settings'"
+      	},
+		{
+            "type": "checkbox",
+            "id": "review_tab_enable",
+            "label": "Show Review Tab",
+            "default": true,
+            "info": "Install Free Apps for Product Review [Click Here](https:/\/\apps.shopify.com/\product-reviews)"
+        },
+        {
+            "type": "text",
+            "id": "review_tab_title",
+            "label": "Review Tab Title",
+            "default": "Reviews"
+        },
+		{
+            "type": "header",
+            "content": "Tab 4 (Video)"
+        },
+		{
+            "type": "checkbox",
+            "id": "video_tab_enable",
+            "label": "Show Video Tab",
+            "default": true
+        },
+		{
+            "type": "paragraph",
+            "content": "Use Shortcode in your product description to show Video tab- [product_video]Video ID[/product_video]"
+        },
+		{
+            "type": "paragraph",
+            "content": "[How to Get Video ID](https:\/\/image.prntscr.com/image/P7-HVQuzSlyPO2vOpHX5LQ.png)"
+        },
+        {
+            "type": "text",
+            "id": "video_tab_title",
+            "label": "Video Tab Title",
+            "default": "Video"
+        },
+		{
+            "type": "header",
+            "content": "Tab 5 (Compatible Vehicles)"
+        },
+		{
+            "type": "checkbox",
+            "id": "compatible_vehicles_tab_enable",
+            "label": "Show Compatible Vehicles Tab",
+            "default": true,
+            "info": "Tab only shows when the product's 'custom.compatible_vehicles' metafield has data. Add vehicles one per line in the metafield."
+        },
+        {
+            "type": "text",
+            "id": "compatible_vehicles_tab_title",
+            "label": "Compatible Vehicles Tab Title",
+            "default": "Compatible Vehicles"
+        },
+		{
+            "type": "header",
+            "content": "Banner"
+        },
+		{
+            "type": "checkbox",
+            "id": "show_banner",
+            "label": "Show Banner",
+            "default": true
+        },
+		{
+            "type": "image_picker",
+            "id": "banner_img",
+            "label": "Banner Image"
+        },
+		{
+            "type": "url",
+            "id": "banner_img_url",
+            "label": "URL",
+            "default": "\/collections\/all"
+        }
+	],
+    "blocks": [
+        {
+          "type": "@app"
+        },
+		{
+			"name": "Custom Tab",
+			"type": "custom_tab",
+			"settings": [
+                {
+                    "type": "text",
+                    "id": "custom_tab_title",
+                    "label": "Custom Tab Title",
+                    "default": "Custom Tab"
+                },
+                {
+                    "type": "page",
+                    "id": "custom_page_handle",
+                    "label": "Select Page",
+                    "info": "[Create a page](\/admin\/pages\/new)"
+                }
+			]
+		},
+		{
+			"name": "Editable Tab",
+			"type": "editable_tab",
+			"settings": [
+                {
+                    "type": "text",
+                    "id": "tab_title",
+                    "label": "Tab Title",
+                    "default": "New Tab"
+                },
+                {
+                    "type": "richtext",
+                    "id": "tab_content",
+                    "label": "Tab Content",
+                    "default": "<p>Add your content here.</p>"
+                }
+			]
+		},
+		{
+			"name": "Unique Tab 1",
+			"type": "unique_tab_1",
+			"settings": [
+                {
+                    "type": "text",
+                    "id": "info_tab_title",
+                    "label": "Tab Title",
+                    "default": "Info 1"
+                },
+                {
+                    "type": "header",
+                    "content": "Important:"
+                },
+                {
+                    "type": "paragraph",
+                    "content": "Use shortcode at the bottom of product description- [info_1]First info about your product...[/info_1]"
+                }
+			]
+		},
+		{
+			"name": "Unique Tab 2",
+			"type": "unique_tab_2",
+			"settings": [
+                {
+                    "type": "text",
+                    "id": "info_tab_title",
+                    "label": "Tab Title",
+                    "default": "Info 2"
+                },
+                {
+                    "type": "header",
+                    "content": "Important:"
+                },
+                {
+                    "type": "paragraph",
+                    "content": "Use shortcode at the bottom of product description- [info_2]Second info about your product...[/info_2]"
+                }
+			]
+		},
+		{
+			"name": "Unique Tab 3",
+			"type": "unique_tab_3",
+			"settings": [
+                {
+                    "type": "text",
+                    "id": "info_tab_title",
+                    "label": "Tab Title",
+                    "default": "Info 3"
+                },
+                {
+                    "type": "header",
+                    "content": "Important:"
+                },
+                {
+                    "type": "paragraph",
+                    "content": "Use shortcode at the bottom of product description- [info_3]Third info about your product...[/info_3]"
+                }
+			]
+		},
+		{
+			"name": "Unique Tab 4",
+			"type": "unique_tab_4",
+			"settings": [
+                {
+                    "type": "text",
+                    "id": "info_tab_title",
+                    "label": "Tab Title",
+                    "default": "Info 4"
+                },
+                {
+                    "type": "header",
+                    "content": "Important:"
+                },
+                {
+                    "type": "paragraph",
+                    "content": "Use shortcode at the bottom of product description- [info_4]Fourth info about your product...[/info_4]"
+                }
+			]
+		},
+		{
+			"name": "Unique Tab 5",
+			"type": "unique_tab_5",
+			"settings": [
+                {
+                    "type": "text",
+                    "id": "info_tab_title",
+                    "label": "Tab Title",
+                    "default": "Info 5"
+                },
+                {
+                    "type": "header",
+                    "content": "Important:"
+                },
+                {
+                    "type": "paragraph",
+                    "content": "Use shortcode at the bottom of product description- [info_5]Fifth info about your product...[/info_5]"
+                }
+			]
+		},
+		{
+			"name": "Unique Tab 6",
+			"type": "unique_tab_6",
+			"settings": [
+                {
+                    "type": "text",
+                    "id": "info_tab_title",
+                    "label": "Tab Title",
+                    "default": "Info 6"
+                },
+                {
+                    "type": "header",
+                    "content": "Important:"
+                },
+                {
+                    "type": "paragraph",
+                    "content": "Use shortcode at the bottom of product description- [info_6]Sixth info about your product...[/info_6]"
+                }
+			]
+		},
+		{
+			"name": "Unique Tab 7",
+			"type": "unique_tab_7",
+			"settings": [
+                {
+                    "type": "text",
+                    "id": "info_tab_title",
+                    "label": "Tab Title",
+                    "default": "Info 7"
+                },
+                {
+                    "type": "header",
+                    "content": "Important:"
+                },
+                {
+                    "type": "paragraph",
+                    "content": "Use shortcode at the bottom of product description- [info_7]Seventh info about your product...[/info_7]"
+                }
+			]
+		},
+		{
+			"name": "Unique Tab 8",
+			"type": "unique_tab_8",
+			"settings": [
+                {
+                    "type": "text",
+                    "id": "info_tab_title",
+                    "label": "Tab Title",
+                    "default": "Info 8"
+                },
+                {
+                    "type": "header",
+                    "content": "Important:"
+                },
+                {
+                    "type": "paragraph",
+                    "content": "Use shortcode at the bottom of product description- [info_8]Eighth info about your product...[/info_8]"
+                }
+			]
+		},
+		{
+			"name": "Unique Tab 9",
+			"type": "unique_tab_9",
+			"settings": [
+                {
+                    "type": "text",
+                    "id": "info_tab_title",
+                    "label": "Tab Title",
+                    "default": "Info 9"
+                },
+                {
+                    "type": "header",
+                    "content": "Important:"
+                },
+                {
+                    "type": "paragraph",
+                    "content": "Use shortcode at the bottom of product description- [info_9]Ninth info about your product...[/info_9]"
+                }
+			]
+		},
+		{
+			"name": "Unique Tab 10",
+			"type": "unique_tab_10",
+			"settings": [
+                {
+                    "type": "text",
+                    "id": "info_tab_title",
+                    "label": "Tab Title",
+                    "default": "Info 10"
+                },
+                {
+                    "type": "header",
+                    "content": "Important:"
+                },
+                {
+                    "type": "paragraph",
+                    "content": "Use shortcode at the bottom of product description- [info_10]Tenth info about your product...[/info_10]"
+                }
+			]
+		},
+	   {
+          "type": "section_padding",
+          "name": "Section Padding",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 100
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 80
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 60
+			}
+          ]
+       },
+	   {
+          "type": "section_margin",
+          "name": "Section Margin",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			}
+          ]
+       },
+	   {
+          "type": "section_background",
+          "name": "Section Background",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "image_picker",
+			  "id": "section_bg_image",
+			  "label": "BG Image"
+			},
+			{
+			  "type": "color",
+			  "id": "section_bg_color",
+			  "label": "BG Color",
+			  "default": "#ffffff"
+			}
+          ]
+       }
+	],
+	"presets": [
+		{
+		  "name": "Single Product Tab",
+		  "blocks":[
+				{
+					"type": "section_padding"
+				}
+
+			]
+		}
+	]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

@@ -1,0 +1,1717 @@
+{%- comment -%}
+  ============================================================================
+  Section: product-template-new.liquid  (ALL-IN-ONE)
+  A fully modular product page in ONE section:
+    TOP  = image column (left) + info column (right)
+    BELOW = tabbed content (Description | Specifications | Compatible Vehicles | ...)
+    BOTTOM = "Pair it with" suggestions (complementary products), toggleable
+
+  Every element is a BLOCK (reorder / hide / style independently):
+    product_images | title | price | meta | tags | categories |
+    quantity | add_to_cart | wishlist | parts_checker | tab | complementary
+
+  NOTE: the old "Inline description" block has been REMOVED on purpose.
+        The product description now lives in a TAB only.
+        A tab shows the real Shopify description when its
+        "Content comes from" = "Product description (from Shopify)".
+        As a safety net, any tab whose label contains the word
+        "description" falls back to product.description when its rich
+        text is empty, so an old tab keeps working without re-configuring.
+
+  - Info-column blocks render on the right; `product_images` renders on the
+    left; every `tab` block renders in the full-width tab panel underneath;
+    the `complementary` block renders full width BELOW the tabs.
+  - Empty tabs are allowed: leave the rich text blank and the tab stays empty
+    on the live store (a hint only shows inside the theme editor), ready for
+    you to fill in later.
+  - Add to cart uses the theme cart API Shopify.addItem(variantId, qty)
+    (assets/api.jquery.js) with a fetch() fallback.
+  - Wishlist uses native markup [button-wishlist] + data-product-handle, so the
+    hardened wishlist.js picks it up (writes to 'shopify-wishlist').
+  - Suggestions come from Shopify's Product Recommendations API
+    (/recommendations/products.json?intent=complementary), i.e. the same
+    "Pair it with" list you set in the Search & Discovery app. Turn the whole
+    thing on/off with the block's "Show suggestions" checkbox, and control the
+    card size with columns / image height / padding.
+
+  PRODUCT IMAGES (block type `product_images`)
+  - The main image sits in a FIXED-HEIGHT stage (a setting, desktop and mobile
+    separately) and is scaled to fit inside it, so a tall photo can no longer
+    stretch the whole column. "Fit whole image" letterboxes on the background
+    colour; "Fill / crop" crops to the stage.
+  - Thumbnails run underneath; clicking one swaps the main image and marks
+    itself active. Thumbnail size and how many to show are settings.
+
+  PARTS CHECKER (block type `parts_checker`)
+  - A bar that sits wherever you drag it (designed for directly under Add to
+    cart): grey by default, turns red on hover — both colours are settings.
+  - Clicking it opens a fitment enquiry pop-up that posts through Shopify's
+    NATIVE contact form, so the email lands at
+    Settings -> Notifications -> Contact form / Sender email. Nothing to
+    configure in code; change that address and the form follows it.
+  - Required by default: First name, Email, Registration, State. Surname and
+    the vehicle description are OPTIONAL, each with its own toggle in the
+    theme editor if you want them back.
+  - The minimum character count on the vehicle description is only enforced
+    while that field is set to required.
+  - The pop-up is moved onto <body> on load so it can never be trapped by a
+    parent with overflow / transform, and so it stays a legal top-level form
+    even if this section is ever placed inside another form.
+  - IMPORTANT — why the form posts natively instead of over AJAX:
+    Shopify's bot protection injects the CAPTCHA token during the REAL submit
+    event. A fetch() post never gets one, so the store answers with
+    "Invalid CAPTCHA token". The form therefore submits normally; Shopify
+    returns to this product page with ?contact_posted=true and the pop-up
+    reopens on its confirmation screen.
+  ============================================================================
+{%- endcomment -%}
+
+{%- assign p = product -%}
+{%- assign st = section.settings -%}
+{%- assign current_variant = p.selected_or_first_available_variant -%}
+
+{%- comment -%} is the currently-selected variant already sitting in the cart? {%- endcomment -%}
+{%- assign in_cart = false -%}
+{%- for line in cart.items -%}
+  {%- if line.variant_id == current_variant.id -%}{%- assign in_cart = true -%}{%- break -%}{%- endif -%}
+{%- endfor -%}
+
+{%- comment -%} count tab blocks so we only render the tab area when present {%- endcomment -%}
+{%- assign tab_count = 0 -%}
+{%- for block in section.blocks -%}{%- if block.type == 'tab' -%}{%- assign tab_count = tab_count | plus: 1 -%}{%- endif -%}{%- endfor -%}
+
+<div
+  id="MetroProduct-{{ section.id }}"
+  class="ma-product"
+  style="max-width:{{ st.max_width }}px; margin:0 auto; padding:{{ st.section_padding_top }}px 15px {{ st.section_padding_bottom }}px;"
+>
+  <div class="ma-product-grid" style="display:grid; grid-template-columns:{{ st.media_col_width }}fr {{ 12 | minus: st.media_col_width }}fr; gap:{{ st.column_gap }}px; align-items:start;">
+
+    {%- comment -%} ---------- MEDIA COLUMN ---------- {%- endcomment -%}
+    <div class="ma-col ma-col-media" style="{% if st.media_position == 'right' %}order:2;{% endif %}">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'product_images' -%}
+          {%- assign ims = block.settings -%}
+          <div id="ma-block-{{ block.id }}" class="ma-images" {{ block.shopify_attributes }}>
+            <div class="ma-image-main">
+              {%- if p.featured_image -%}
+                <img id="ma-main-img-{{ section.id }}" class="ma-main-img"
+                     src="{{ p.featured_image | image_url: width: 1200 }}"
+                     alt="{{ p.featured_image.alt | default: p.title | escape }}" loading="eager">
+              {%- else -%}
+                {{ 'product-1' | placeholder_svg_tag: 'ma-placeholder' }}
+              {%- endif -%}
+            </div>
+
+            {%- if ims.show_thumbnails and p.images.size > 1 -%}
+              <div class="ma-thumbs">
+                {%- for image in p.images limit: ims.thumb_limit -%}
+                  <button type="button" class="ma-thumb{% if forloop.first %} is-active{% endif %}"
+                          data-full="{{ image | image_url: width: 1200 }}"
+                          aria-label="View image {{ forloop.index }}">
+                    <img src="{{ image | image_url: width: 200 }}" alt="{{ image.alt | default: p.title | escape }}" loading="lazy">
+                  </button>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} ---------- INFO COLUMN (everything except images + tabs) ---------- {%- endcomment -%}
+    <div class="ma-col ma-col-info">
+      {%- for block in section.blocks -%}
+        {%- assign bid = block.id -%}
+        {%- case block.type -%}
+
+          {%- when 'title' -%}
+            <h1 id="ma-block-{{ bid }}" class="ma-title" {{ block.shopify_attributes }}>{{ p.title }}</h1>
+
+          {%- when 'price' -%}
+            <div id="ma-block-{{ bid }}" class="ma-price" {{ block.shopify_attributes }}>
+              {%- if current_variant.compare_at_price > current_variant.price -%}
+                <span class="ma-price-old">{{ current_variant.compare_at_price | money }}</span>
+              {%- endif -%}
+              <span class="ma-price-now">{{ current_variant.price | money }}</span>
+            </div>
+
+          {%- when 'meta' -%}
+            <div id="ma-block-{{ bid }}" class="ma-meta" {{ block.shopify_attributes }}>
+              {%- if block.settings.show_sku and current_variant.sku != blank -%}<div class="ma-meta-row"><span class="ma-meta-label">{{ block.settings.sku_label }}</span> <span class="ma-meta-value">{{ current_variant.sku }}</span></div>{%- endif -%}
+              {%- if block.settings.show_vendor and p.vendor != blank -%}<div class="ma-meta-row"><span class="ma-meta-label">{{ block.settings.vendor_label }}</span> <span class="ma-meta-value">{{ p.vendor }}</span></div>{%- endif -%}
+              {%- if block.settings.show_type and p.type != blank -%}<div class="ma-meta-row"><span class="ma-meta-label">{{ block.settings.type_label }}</span> <span class="ma-meta-value">{{ p.type }}</span></div>{%- endif -%}
+              {%- if block.settings.show_availability -%}<div class="ma-meta-row">{% if p.available %}<span class="ma-stock ma-in">{{ block.settings.in_stock_text }}</span>{% else %}<span class="ma-stock ma-out">{{ block.settings.out_stock_text }}</span>{% endif %}</div>{%- endif -%}
+            </div>
+
+          {%- when 'tags' -%}
+            {%- if p.tags.size > 0 -%}
+              <div id="ma-block-{{ bid }}" class="ma-tags" {{ block.shopify_attributes }}>
+                {%- if block.settings.heading != blank -%}<span class="ma-tags-heading">{{ block.settings.heading }}</span>{%- endif -%}
+                {%- for tag in p.tags -%}<a href="{{ routes.all_products_collection_url }}/{{ tag | handle }}" class="ma-tag">{{ tag }}</a>{%- endfor -%}
+              </div>
+            {%- endif -%}
+
+          {%- when 'categories' -%}
+            <div class="easysearch-custom-ft"></div>
+
+            {%- if p.collections.size > 0 -%}
+              <div id="ma-block-{{ bid }}" class="ma-cats" {{ block.shopify_attributes }}>
+                {%- if block.settings.heading != blank -%}<span class="ma-cats-heading">{{ block.settings.heading }}</span>{%- endif -%}
+                {%- for col in p.collections limit: 10 -%}<a href="{{ col.url }}" class="ma-cat">{{ col.title }}</a>{%- unless forloop.last -%}<span class="ma-cat-sep">,</span>{%- endunless -%}{%- endfor -%}
+              </div>
+            {%- endif -%}
+
+          {%- when 'quantity' -%}
+            <div id="ma-block-{{ bid }}" class="ma-qty-block" {{ block.shopify_attributes }}>
+              {%- if block.settings.label != blank -%}<label class="ma-qty-label">{{ block.settings.label }}</label>{%- endif -%}
+              <div class="ma-qty" data-qty>
+                <button type="button" class="ma-qty-btn ma-qty-minus" aria-label="Decrease quantity">&minus;</button>
+                <input type="number" class="ma-qty-input" value="1" min="1" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="ma-qty-btn ma-qty-plus" aria-label="Increase quantity">+</button>
+              </div>
+            </div>
+
+          {%- when 'add_to_cart' -%}
+            <div id="ma-block-{{ bid }}" class="ma-atc-block" {{ block.shopify_attributes }}>
+              {%- if p.variants.size > 1 -%}
+                <select class="ma-variant-select" aria-label="Select option">
+                  {%- for v in p.variants -%}<option value="{{ v.id }}" {% unless v.available %}disabled{% endunless %} {% if v.id == current_variant.id %}selected{% endif %}>{{ v.title }}{% unless v.available %} — {{ block.settings.soldout_text }}{% endunless %}</option>{%- endfor -%}
+                </select>
+              {%- endif -%}
+              <button type="button"
+                      class="ma-add-to-cart{% if in_cart %} ma-added{% endif %}{% unless p.available %} ma-disabled{% endunless %}"
+                      data-single-variant="{{ current_variant.id }}"
+                      data-added-text="{{ block.settings.added_text | escape }}"
+                      data-default-text="{{ block.settings.button_text | escape }}"
+                      data-soldout-text="{{ block.settings.soldout_text | escape }}"
+                      {% if in_cart %}disabled{% endif %}{% unless p.available %} disabled{% endunless %}>
+                <span class="ma-atc-text">{% if in_cart and p.available %}{{ block.settings.added_text }}{% elsif p.available %}{{ block.settings.button_text }}{% else %}{{ block.settings.soldout_text }}{% endif %}</span>
+              </button>
+            </div>
+
+          {%- when 'wishlist' -%}
+            <div id="ma-block-{{ bid }}" class="ma-wishlist-block" {{ block.shopify_attributes }}>
+              {%- if p.handle != blank -%}
+                <a class="action-wishlist wishlist-btn wishlist ma-wishlist" href="javascript:void(0)" button-wishlist data-product-handle="{{ p.handle }}" aria-label="{{ block.settings.label | default: 'Add to wishlist' }}">
+                  <span class="ma-wishlist-icon add-wishlist"><i class="sli sli-heart"></i></span>
+                  <span class="ma-wishlist-icon loading-wishlist"><i class="sli sli-heart"></i></span>
+                  <span class="ma-wishlist-icon remove-wishlist"><i class="sli sli-heart"></i></span>
+                  {%- if block.settings.label != blank -%}<span class="ma-wishlist-label">{{ block.settings.label }}</span>{%- endif -%}
+                </a>
+              {%- endif -%}
+            </div>
+
+          {%- comment -%} ========== PARTS CHECKER (bar + fitment enquiry pop-up) ========== {%- endcomment -%}
+          {%- when 'parts_checker' -%}
+            {%- assign pcs = block.settings -%}
+            {%- if pcs.enabled -%}
+              {%- assign pc_states = pcs.state_options | default: 'VIC, NSW, QLD, SA, WA, TAS, NT, ACT' | split: ',' -%}
+              {%- assign pc_min = pcs.comment_min | default: 10 -%}
+              {%- assign pc_max = pcs.comment_max | default: 500 -%}
+
+              <div id="ma-block-{{ bid }}"
+                   class="ma-pc mapc-{{ bid }}"
+                   data-pc
+                   data-pc-min="{{ pc_min }}"
+                   data-pc-comment-required="{% if pcs.require_comment %}true{% else %}false{% endif %}"
+                   data-pc-sending="{{ pcs.sending_text | default: 'Sending…' | escape }}"
+                   data-pc-remember="{% if pcs.remember_details %}true{% else %}false{% endif %}"
+                   {{ block.shopify_attributes }}>
+
+                <button type="button" class="ma-pc-bar" data-pc-open
+                        aria-haspopup="dialog" aria-controls="ma-pc-modal-{{ bid }}">
+                  {%- if pcs.show_icon -%}
+                    <span class="ma-pc-bar-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" focusable="false"><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.6a.5.5 0 0 0 .1-.6l-1.9-3.3a.5.5 0 0 0-.6-.2l-2.4 1a7.4 7.4 0 0 0-1.7-1l-.4-2.5a.5.5 0 0 0-.5-.4h-3.8a.5.5 0 0 0-.5.4l-.4 2.5a7.4 7.4 0 0 0-1.7 1l-2.4-1a.5.5 0 0 0-.6.2L2.5 8.8a.5.5 0 0 0 .1.6L4.6 11a7.6 7.6 0 0 0 0 2l-2 1.6a.5.5 0 0 0-.1.6l1.9 3.3a.5.5 0 0 0 .6.2l2.4-1a7.4 7.4 0 0 0 1.7 1l.4 2.5a.5.5 0 0 0 .5.4h3.8a.5.5 0 0 0 .5-.4l.4-2.5a7.4 7.4 0 0 0 1.7-1l2.4 1a.5.5 0 0 0 .6-.2l1.9-3.3a.5.5 0 0 0-.1-.6zM12 15.5A3.5 3.5 0 1 1 15.5 12 3.5 3.5 0 0 1 12 15.5z"/></svg>
+                    </span>
+                  {%- endif -%}
+                  <span class="ma-pc-bar-text">{{ pcs.bar_text }}</span>
+                  <span class="ma-pc-bar-cta">{{ pcs.btn_text }}</span>
+                </button>
+
+                {%- if pcs.show_help_text and pcs.help_text != blank -%}
+                  <p class="ma-pc-help">{{ pcs.help_text }}</p>
+                {%- endif -%}
+
+                {%- comment -%} moved onto <body> by the script below {%- endcomment -%}
+                <div class="ma-pc-modal mapc-{{ bid }}" id="ma-pc-modal-{{ bid }}" data-pc-modal hidden
+                     role="dialog" aria-modal="true" aria-labelledby="ma-pc-title-{{ bid }}">
+                  <div class="ma-pc-overlay" data-pc-close></div>
+
+                  <div class="ma-pc-panel" role="document">
+                    <button type="button" class="ma-pc-x" data-pc-close aria-label="Close">
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    </button>
+
+                    <div class="ma-pc-scroll">
+                      <header class="ma-pc-head" data-pc-head>
+                        <h2 class="ma-pc-title" id="ma-pc-title-{{ bid }}">{{ pcs.modal_title }}</h2>
+                        {%- if pcs.modal_sub != blank -%}<p class="ma-pc-sub">{{ pcs.modal_sub }}</p>{%- endif -%}
+                      </header>
+
+                      {%- if pcs.show_product_card -%}
+                        <div class="ma-pc-prod" data-pc-prod>
+                          {%- if p.featured_image -%}
+                            <img class="ma-pc-prod-img" src="{{ p.featured_image | image_url: width: 160 }}" alt="{{ p.title | escape }}" loading="lazy">
+                          {%- endif -%}
+                          <div class="ma-pc-prod-info">
+                            <span class="ma-pc-prod-eyebrow">{{ pcs.prod_eyebrow }}</span>
+                            <span class="ma-pc-prod-title">{{ p.title }}</span>
+                            <span class="ma-pc-prod-sku" data-pc-sku-label>{% if current_variant.sku != blank %}{{ pcs.sku_label_text }} {{ current_variant.sku }}{% endif %}</span>
+                          </div>
+                        </div>
+                      {%- endif -%}
+
+                      {%- form 'contact', class: 'ma-pc-form' -%}
+                        {%- comment -%} marker the script reads after Shopify redirects back {%- endcomment -%}
+                        {%- if form.posted_successfully? -%}<span data-pc-posted hidden></span>{%- endif -%}
+
+                        {%- if form.errors -%}
+                          <div class="ma-pc-alert" role="alert">{{ form.errors | default_errors }}</div>
+                        {%- endif -%}
+
+                        <div class="ma-pc-grid">
+                          <div class="ma-pc-field">
+                            <label for="ma-pc-fn-{{ bid }}">First name <span class="ma-pc-req">required</span></label>
+                            <input type="text" id="ma-pc-fn-{{ bid }}" name="contact[First name]" autocomplete="given-name" required value="{{ customer.first_name }}" data-pc-remember-key="fn">
+                            <span class="ma-pc-err" data-pc-err></span>
+                          </div>
+
+                          <div class="ma-pc-field">
+                            <label for="ma-pc-ln-{{ bid }}">Surname {% if pcs.require_surname %}<span class="ma-pc-req">required</span>{% else %}<span class="ma-pc-opt">optional</span>{% endif %}</label>
+                            <input type="text" id="ma-pc-ln-{{ bid }}" name="contact[Surname]" autocomplete="family-name" {% if pcs.require_surname %}required{% endif %} value="{{ customer.last_name }}" data-pc-remember-key="ln">
+                            <span class="ma-pc-err" data-pc-err></span>
+                          </div>
+
+                          <div class="ma-pc-field ma-pc-wide">
+                            <label for="ma-pc-em-{{ bid }}">Email <span class="ma-pc-req">required</span></label>
+                            <input type="email" id="ma-pc-em-{{ bid }}" name="contact[email]" autocomplete="email" inputmode="email" required value="{{ customer.email }}" data-pc-remember-key="em">
+                            <span class="ma-pc-err" data-pc-err></span>
+                          </div>
+
+                          <div class="ma-pc-field">
+                            <label for="ma-pc-ph-{{ bid }}">Mobile {% if pcs.require_phone %}<span class="ma-pc-req">required</span>{% else %}<span class="ma-pc-opt">optional</span>{% endif %}</label>
+                            <input type="tel" id="ma-pc-ph-{{ bid }}" name="contact[phone]" autocomplete="tel" inputmode="tel" placeholder="04XX XXX XXX" {% if pcs.require_phone %}required{% endif %} data-pc-remember-key="ph">
+                            <span class="ma-pc-err" data-pc-err></span>
+                          </div>
+
+                          <div class="ma-pc-field">
+                            <label for="ma-pc-st-{{ bid }}">State {% if pcs.require_state %}<span class="ma-pc-req">required</span>{% else %}<span class="ma-pc-opt">optional</span>{% endif %}</label>
+                            <select id="ma-pc-st-{{ bid }}" name="contact[State]" {% if pcs.require_state %}required{% endif %} data-pc-remember-key="st">
+                              <option value="">Select your state</option>
+                              {%- for stt in pc_states -%}
+                                <option value="{{ stt | strip }}">{{ stt | strip }}</option>
+                              {%- endfor -%}
+                            </select>
+                            <span class="ma-pc-err" data-pc-err></span>
+                          </div>
+
+                          <div class="ma-pc-field{% unless pcs.show_vin %} ma-pc-wide{% endunless %}">
+                            <label for="ma-pc-rg-{{ bid }}">Registration {% if pcs.require_rego %}<span class="ma-pc-req">required</span>{% else %}<span class="ma-pc-opt">optional</span>{% endif %}</label>
+                            <input type="text" id="ma-pc-rg-{{ bid }}" name="contact[Rego]" autocapitalize="characters" placeholder="e.g. 1AB 2CD" {% if pcs.require_rego %}required{% endif %} data-pc-remember-key="rg">
+                            {%- if pcs.rego_hint != blank -%}<span class="ma-pc-hint">{{ pcs.rego_hint }}</span>{%- endif -%}
+                            <span class="ma-pc-err" data-pc-err></span>
+                          </div>
+
+                          {%- if pcs.show_vin -%}
+                            <div class="ma-pc-field">
+                              <label for="ma-pc-vin-{{ bid }}">VIN <span class="ma-pc-opt">optional</span></label>
+                              <input type="text" id="ma-pc-vin-{{ bid }}" name="contact[VIN]" maxlength="17" autocapitalize="characters" placeholder="17 characters" data-pc-remember-key="vin">
+                              {%- if pcs.vin_hint != blank -%}<span class="ma-pc-hint">{{ pcs.vin_hint }}</span>{%- endif -%}
+                              <span class="ma-pc-err" data-pc-err></span>
+                            </div>
+                          {%- endif -%}
+
+                          <div class="ma-pc-field ma-pc-wide">
+                            <label for="ma-pc-msg-{{ bid }}">{{ pcs.comment_label }} {% if pcs.require_comment %}<span class="ma-pc-req">required</span>{% else %}<span class="ma-pc-opt">optional</span>{% endif %}</label>
+                            <textarea id="ma-pc-msg-{{ bid }}" name="contact[body]" rows="4"
+                                      {% if pcs.require_comment %}required minlength="{{ pc_min }}"{% endif %}
+                                      maxlength="{{ pc_max }}"
+                                      placeholder="{{ pcs.comment_placeholder | escape }}"
+                                      aria-describedby="ma-pc-count-{{ bid }}" data-pc-comment></textarea>
+                            <div class="ma-pc-count" id="ma-pc-count-{{ bid }}" data-pc-count aria-live="polite">
+                              <span data-pc-count-num>0</span>/{{ pc_max }}{% if pcs.require_comment %} · at least {{ pc_min }} characters{% endif %}
+                            </div>
+                            <span class="ma-pc-err" data-pc-err></span>
+                          </div>
+                        </div>
+
+                        {%- comment -%} product context, attached to every enquiry {%- endcomment -%}
+                        <input type="hidden" name="contact[Product]" value="{{ p.title | escape }}">
+                        <input type="hidden" name="contact[Part number]" value="{{ current_variant.sku | escape }}" data-pc-sku>
+                        <input type="hidden" name="contact[Variant]" value="{{ current_variant.title | escape }}" data-pc-variant>
+                        <input type="hidden" name="contact[Variant ID]" value="{{ current_variant.id }}" data-pc-vid>
+                        <input type="hidden" name="contact[Product URL]" value="{{ shop.url }}{{ p.url }}">
+                        <input type="hidden" name="contact[Enquiry type]" value="Parts fitment check">
+
+                        {%- comment -%} spam trap — no contact[] prefix, so Shopify ignores it {%- endcomment -%}
+                        <div class="ma-pc-hp" aria-hidden="true">
+                          <label for="ma-pc-hp-{{ bid }}">Leave this field empty</label>
+                          <input type="text" id="ma-pc-hp-{{ bid }}" name="ma_pc_hp" tabindex="-1" autocomplete="off">
+                        </div>
+
+                        {%- if pcs.show_consent -%}
+                          <label class="ma-pc-consent">
+                            <input type="checkbox" name="contact[Marketing consent]" value="Yes" {% if pcs.consent_checked %}checked{% endif %}>
+                            <span>{{ pcs.consent_text }}</span>
+                          </label>
+                        {%- endif -%}
+
+                        <div class="ma-pc-foot">
+                          <button type="submit" class="ma-pc-submit" data-pc-submit>
+                            <span data-pc-submit-text>{{ pcs.submit_text }}</span>
+                          </button>
+                          {%- if pcs.privacy_text != blank -%}<p class="ma-pc-privacy">{{ pcs.privacy_text }}</p>{%- endif -%}
+                        </div>
+                      {%- endform -%}
+
+                      <div class="ma-pc-done" data-pc-done hidden tabindex="-1">
+                        <span class="ma-pc-tick" aria-hidden="true">
+                          <svg viewBox="0 0 24 24" focusable="false"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                        <h3>{{ pcs.success_title }}</h3>
+                        <p>{{ pcs.success_text }}</p>
+                        <button type="button" class="ma-pc-done-btn" data-pc-close>{{ pcs.success_btn }}</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {%- if pcs.show_help_text and pcs.faq_schema and pcs.help_text != blank -%}
+                {%- comment -%} AEO: only emitted while the same answer is visible on the page {%- endcomment -%}
+                <script type="application/ld+json">
+                {
+                  "@context": "https://schema.org",
+                  "@type": "FAQPage",
+                  "mainEntity": [{
+                    "@type": "Question",
+                    "name": {{ pcs.faq_question | default: 'Will this part fit my car?' | strip_html | json }},
+                    "acceptedAnswer": { "@type": "Answer", "text": {{ pcs.help_text | strip_html | json }} }
+                  }]
+                }
+                </script>
+              {%- endif -%}
+            {%- endif -%}
+
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+
+  {%- comment -%} ========== FULL-WIDTH TABS (from every `tab` block) ========== {%- endcomment -%}
+  {%- if tab_count > 0 -%}
+    <div class="ma-tabs" style="margin-top:{{ st.tabs_margin_top }}px;">
+      <div class="ma-tabs-nav" role="tablist" style="text-align:{{ st.tab_align }};">
+        {%- assign first_tab = true -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'tab' -%}
+            <button type="button" class="ma-tab-btn{% if first_tab %} is-active{% endif %}" data-tab="{{ block.id }}" role="tab" aria-selected="{% if first_tab %}true{% else %}false{% endif %}">{{ block.settings.tab_label }}</button>
+            {%- assign first_tab = false -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {%- assign first_tab = true -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'tab' -%}
+          {%- assign s = block.settings -%}
+
+          {%- assign body_html = '' -%}
+          {%- assign mo_field = null -%}
+          {%- assign mo_single = null -%}
+          {%- assign mo_items = null -%}
+          {%- assign tab_label_dc = s.tab_label | downcase -%}
+
+          {%- if s.source == 'description' -%}
+            {%- assign body_html = p.description -%}
+
+          {%- elsif s.source == 'metafield' and s.metafield_key != blank -%}
+            {%- assign parts = s.metafield_key | split: '.' -%}
+            {%- if parts.size == 2 -%}{%- assign body_html = p.metafields[parts[0]][parts[1]] -%}{%- endif -%}
+
+          {%- elsif s.source == 'metaobject' and s.metaobject_key != blank -%}
+            {%- assign parts = s.metaobject_key | split: '.' -%}
+            {%- if parts.size == 2 -%}
+              {%- assign mo_field = p.metafields[parts[0]][parts[1]] -%}
+              {%- if mo_field.type contains 'list' -%}{%- assign mo_items = mo_field.value -%}{%- elsif mo_field.value -%}{%- assign mo_single = mo_field.value -%}{%- endif -%}
+            {%- endif -%}
+
+          {%- else -%}
+            {%- comment -%} rich text — treat leftover placeholder / empty markup as blank {%- endcomment -%}
+            {%- assign body_html = s.body -%}
+            {%- assign body_trim = body_html | strip -%}
+            {%- if body_trim == '<p>Add your content here.</p>' or body_trim == '<p></p>' or body_trim == '<p><br></p>' or body_trim == '<p><br/></p>' -%}
+              {%- assign body_html = '' -%}
+            {%- endif -%}
+            {%- if body_html == blank -%}
+              {%- if s.fallback_to_description or tab_label_dc contains 'description' -%}
+                {%- assign body_html = p.description -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+
+          <div id="ma-panel-{{ block.id }}" class="ma-tab-panel{% if first_tab %} is-active{% endif %}" role="tabpanel" {{ block.shopify_attributes }}>
+            {%- if s.content_heading != blank -%}<h3 class="ma-tab-heading">{{ s.content_heading }}</h3>{%- endif -%}
+            <div class="ma-tab-body">
+              {%- if s.source == 'metaobject' -%}
+                {%- assign field_keys = s.metaobject_fields | split: ',' -%}
+                {%- if mo_items and mo_items.size > 0 and field_keys.size > 0 -%}
+                  <div class="ma-table-wrap">
+                    <table class="ma-fit-table">
+                      <thead><tr>{%- for fkey in field_keys -%}<th>{{ fkey | strip | replace: '_', ' ' | capitalize }}</th>{%- endfor -%}</tr></thead>
+                      <tbody>
+                        {%- for mo in mo_items -%}<tr>{%- for fkey in field_keys -%}{%- assign fk = fkey | strip -%}<td data-label="{{ fk | replace: '_', ' ' | capitalize }}">{{ mo[fk] }}</td>{%- endfor -%}</tr>{%- endfor -%}
+                      </tbody>
+                    </table>
+                  </div>
+                {%- elsif mo_single and field_keys.size > 0 -%}
+                  <table class="ma-spec-table">{%- for fkey in field_keys -%}{%- assign fk = fkey | strip -%}<tr><td class="ma-spec-key">{{ fk | replace: '_', ' ' | capitalize }}</td><td class="ma-spec-val">{{ mo_single[fk] }}</td></tr>{%- endfor -%}</table>
+                {%- elsif request.design_mode -%}
+                  <p class="ma-tab-empty">No metaobject data connected yet for this tab.</p>
+                {%- endif -%}
+              {%- else -%}
+                {%- if body_html != blank -%}
+                  {{ body_html }}
+                {%- elsif request.design_mode -%}
+                  <p class="ma-tab-empty">This tab is empty. Add rich text, connect a metafield, or pick a content source. Empty tabs stay blank on the live store.</p>
+                {%- endif -%}
+              {%- endif -%}
+            </div>
+          </div>
+          {%- assign first_tab = false -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ========== SUGGESTIONS / "PAIR IT WITH" (below the tabs) ========== {%- endcomment -%}
+  {%- for block in section.blocks -%}
+    {%- if block.type == 'complementary' and block.settings.show_suggestions -%}
+      {%- assign cs = block.settings -%}
+      <div id="ma-block-{{ block.id }}"
+           class="ma-suggest"
+           data-suggest
+           data-product-id="{{ p.id }}"
+           data-intent="{{ cs.intent }}"
+           data-limit="{{ cs.limit }}"
+           data-show-price="{% if cs.show_price %}true{% else %}false{% endif %}"
+           data-show-atc="{% if cs.show_atc %}true{% else %}false{% endif %}"
+           data-show-wishlist="{% if cs.show_wishlist %}true{% else %}false{% endif %}"
+           data-atc-text="{{ cs.button_text | escape }}"
+           data-added-text="{{ cs.added_text | escape }}"
+           data-soldout-text="{{ cs.soldout_text | escape }}"
+           hidden
+           {{ block.shopify_attributes }}>
+        {%- if cs.heading != blank -%}<h2 class="ma-suggest-heading">{{ cs.heading }}</h2>{%- endif -%}
+        <div class="ma-suggest-grid" data-suggest-grid></div>
+        {%- if request.design_mode -%}
+          <p class="ma-suggest-empty" data-suggest-empty hidden>No complementary products are set for this product yet. Add them in the Search &amp; Discovery app, then reload.</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
+</div>
+
+<style>
+  #MetroProduct-{{ section.id }} .ma-col-info > * { margin-bottom:16px; }
+  /* Add-to-cart + wishlist on the same row */
+  #MetroProduct-{{ section.id }} .ma-atc-block { display:inline-block; width:calc(100% - {{ st.atc_wishlist_gap | default: 12 }}px - 58px); vertical-align:top; margin-right:{{ st.atc_wishlist_gap | default: 12 }}px; }
+  #MetroProduct-{{ section.id }} .ma-wishlist-block { display:inline-block; vertical-align:top; }
+  @media (max-width:480px) {
+    #MetroProduct-{{ section.id }} .ma-atc-block { width:calc(100% - {{ st.atc_wishlist_gap | default: 12 }}px - 52px); }
+  }
+  #MetroProduct-{{ section.id }} .ma-meta-row { margin:2px 0; font-size:14px; }
+  #MetroProduct-{{ section.id }} .ma-price-old { text-decoration:line-through; opacity:.6; margin-right:8px; }
+  #MetroProduct-{{ section.id }} .ma-qty { display:inline-flex; align-items:center; }
+  #MetroProduct-{{ section.id }} .ma-qty-input { width:52px; text-align:center; border:none; outline:none; background:transparent; -moz-appearance:textfield; }
+  #MetroProduct-{{ section.id }} .ma-qty-input::-webkit-outer-spin-button,
+  #MetroProduct-{{ section.id }} .ma-qty-input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+  #MetroProduct-{{ section.id }} .ma-tags, #MetroProduct-{{ section.id }} .ma-cats { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+  #MetroProduct-{{ section.id }} .ma-tag { display:inline-block; padding:4px 12px; border-radius:20px; font-size:13px; text-decoration:none; }
+  #MetroProduct-{{ section.id }} .ma-add-to-cart.ma-disabled { opacity:.5; cursor:not-allowed; }
+  #MetroProduct-{{ section.id }} .ma-placeholder { width:100%; height:100%; display:block; }
+
+  /* ---------- Parts Checker: shared shell (block-scoped colours below) ---------- */
+  .ma-pc-modal[hidden] { display:none; }
+  .ma-pc-modal { position:fixed; inset:0; z-index:100000; display:flex; align-items:center; justify-content:center; padding:24px; }
+  .ma-pc-overlay { position:absolute; inset:0; background:rgba(17,24,39,.6); }
+  .ma-pc-panel { position:relative; background:#fff; width:100%; max-height:min(88vh,880px); border-radius:16px; box-shadow:0 24px 60px rgba(0,0,0,.28); display:flex; flex-direction:column; overflow:hidden; animation:maPcIn .22s ease-out; }
+  @keyframes maPcIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+  .ma-pc-scroll { overflow-y:auto; padding:28px 28px 24px; -webkit-overflow-scrolling:touch; }
+  .ma-pc-x { position:absolute; top:12px; right:12px; z-index:2; width:38px; height:38px; border:none; border-radius:50%; background:#f4f5f7; color:#1f2226; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .ma-pc-x:hover { background:#e9ebee; }
+  .ma-pc-x svg { width:18px; height:18px; }
+  .ma-pc-head { padding-right:44px; margin-bottom:18px; }
+  .ma-pc-title { margin:0; font-size:22px; line-height:1.25; font-weight:700; }
+  .ma-pc-sub { margin:6px 0 0; font-size:15px; line-height:1.55; color:#5a5a5a; }
+  .ma-pc-hp { position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+  body.ma-pc-locked { overflow:hidden; }
+  @media (prefers-reduced-motion:reduce) { .ma-pc-panel { animation:none; } }
+
+  /* ---------- Tabs ---------- */
+  #MetroProduct-{{ section.id }} .ma-tabs-nav { display:flex; gap:4px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; border-bottom:1px solid {{ st.nav_border_color }}; margin-bottom:20px; scrollbar-width:none; -ms-overflow-style:none; }
+  #MetroProduct-{{ section.id }} .ma-tabs-nav::-webkit-scrollbar { display:none; height:0; width:0; }
+  #MetroProduct-{{ section.id }} .ma-tab-btn { background:none; border:none; border-bottom:2px solid transparent; border-radius:0; padding:10px 16px; margin-bottom:-1px; cursor:pointer; white-space:nowrap; flex:0 0 auto; font-size:{{ st.tab_font_size }}px; font-weight:{% if st.tab_bold %}700{% else %}400{% endif %}; color:{{ st.tab_color }}; transition:.2s ease; }
+  #MetroProduct-{{ section.id }} .ma-tab-btn:hover { color:{{ st.tab_hover_color }}; }
+  #MetroProduct-{{ section.id }} .ma-tab-btn.is-active { color:{{ st.tab_active_color }}; border-bottom-color:{{ st.accent_color }}; }
+  #MetroProduct-{{ section.id }} .ma-tab-panel { display:none; }
+  #MetroProduct-{{ section.id }} .ma-tabs,
+  #MetroProduct-{{ section.id }} .ma-tab-panel,
+  #MetroProduct-{{ section.id }} .ma-tab-body { max-height:none !important; overflow-y:visible !important; }
+  #MetroProduct-{{ section.id }} .ma-tab-panel.is-active { display:block; }
+  #MetroProduct-{{ section.id }} .ma-tab-body p:first-child { margin-top:0; }
+  #MetroProduct-{{ section.id }} .ma-tab-body img { max-width:100%; height:auto; }
+  #MetroProduct-{{ section.id }} .ma-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; border:0.5px solid {{ st.nav_border_color }}; border-radius:8px; }
+  #MetroProduct-{{ section.id }} .ma-fit-table { width:100%; border-collapse:collapse; font-size:14px; }
+  #MetroProduct-{{ section.id }} .ma-fit-table th { text-align:left; padding:10px 12px; background:{{ st.table_head_bg }}; color:{{ st.table_head_color }}; font-weight:500; white-space:nowrap; }
+  #MetroProduct-{{ section.id }} .ma-fit-table td { padding:10px 12px; border-top:0.5px solid {{ st.nav_border_color }}; }
+  #MetroProduct-{{ section.id }} .ma-fit-table tbody tr:nth-child(even) { background:{{ st.table_zebra_bg }}; }
+  #MetroProduct-{{ section.id }} .ma-spec-table { width:100%; border-collapse:collapse; font-size:14px; }
+  #MetroProduct-{{ section.id }} .ma-spec-table td { padding:9px 12px; border-bottom:0.5px solid {{ st.nav_border_color }}; vertical-align:top; }
+  #MetroProduct-{{ section.id }} .ma-spec-key { width:38%; font-weight:500; }
+  #MetroProduct-{{ section.id }} .ma-tab-empty { color:#b0b0b0; font-style:italic; }
+
+  /* ---------- Mobile (same design, tuned to fit small screens) ---------- */
+  @media (max-width:767px) {
+    #MetroProduct-{{ section.id }} { padding-left:16px !important; padding-right:16px !important; }
+    #MetroProduct-{{ section.id }} .ma-product-grid { grid-template-columns:1fr !important; gap:24px !important; }
+    #MetroProduct-{{ section.id }} .ma-col-media { order:0 !important; }
+    #MetroProduct-{{ section.id }} .ma-col-info > * { margin-bottom:14px; }
+    #MetroProduct-{{ section.id }} .ma-tabs { margin-top:{{ st.tabs_margin_top | times: 0.6 | round }}px !important; }
+    #MetroProduct-{{ section.id }} .ma-tabs-nav { gap:0; margin-bottom:16px; }
+    #MetroProduct-{{ section.id }} .ma-tab-btn { padding:10px 12px; font-size:{{ st.tab_font_size | minus: 2 }}px; }
+    #MetroProduct-{{ section.id }} .ma-fit-table,
+    #MetroProduct-{{ section.id }} .ma-spec-table { font-size:13px; }
+    #MetroProduct-{{ section.id }} .ma-fit-table th,
+    #MetroProduct-{{ section.id }} .ma-fit-table td { padding:8px 10px; }
+    #MetroProduct-{{ section.id }} .ma-fit-table { min-width:520px; }
+    #MetroProduct-{{ section.id }} .ma-spec-key { width:45%; }
+    #MetroProduct-{{ section.id }} .ma-variant-select { max-width:100%; }
+
+    /* pop-up becomes a bottom sheet */
+    .ma-pc-modal { padding:0; align-items:flex-end; }
+    .ma-pc-panel { max-width:none !important; max-height:94vh; border-radius:18px 18px 0 0; animation:maPcUp .24s ease-out; }
+    @keyframes maPcUp { from { transform:translateY(100%); } to { transform:none; } }
+    .ma-pc-scroll { padding:22px 18px 20px; }
+    .ma-pc-title { font-size:19px; }
+  }
+
+  {%- for block in section.blocks -%}
+    {%- assign s = block.settings -%}
+    {%- assign scope = '#MetroProduct-' | append: section.id | append: ' #ma-block-' | append: block.id -%}
+    {%- assign pscope = '#MetroProduct-' | append: section.id | append: ' #ma-panel-' | append: block.id -%}
+    {%- assign pcsc = '.mapc-' | append: block.id -%}
+    {%- case block.type -%}
+      {%- when 'title' -%}
+        {{ scope }} { color:{{ s.text_color }}; font-size:{{ s.font_size }}px; line-height:{{ s.line_height }}px; font-weight:{% if s.bold %}700{% else %}400{% endif %}; text-align:{{ s.align }}; margin:0; }
+        @media (max-width:767px) { {{ scope }} { font-size:{{ s.font_size | times: 0.82 | round }}px; line-height:{{ s.line_height | times: 0.85 | round }}px; } }
+      {%- when 'price' -%}
+        {{ scope }} { text-align:{{ s.align }}; }
+        {{ scope }} .ma-price-now { color:{{ s.color }}; font-size:{{ s.font_size }}px; font-weight:{% if s.bold %}700{% else %}500{% endif %}; }
+        {{ scope }} .ma-price-old { color:{{ s.compare_color }}; }
+        @media (max-width:767px) { {{ scope }} .ma-price-now { font-size:{{ s.font_size | times: 0.88 | round }}px; } }
+      {%- when 'meta' -%}
+        {{ scope }} .ma-meta-label { color:{{ s.label_color }}; font-weight:{% if s.bold_label %}700{% else %}500{% endif %}; }
+        {{ scope }} .ma-meta-value { color:{{ s.value_color }}; }
+        {{ scope }} .ma-stock.ma-in { color:{{ s.in_stock_color }}; font-weight:500; }
+        {{ scope }} .ma-stock.ma-out { color:{{ s.out_stock_color }}; font-weight:500; }
+      {%- when 'tags' -%}
+        {{ scope }} .ma-tags-heading { color:{{ s.heading_color }}; font-weight:500; margin-right:4px; }
+        {{ scope }} .ma-tag { color:{{ s.text_color }}; background:{{ s.bg_color }}; font-weight:{% if s.bold %}700{% else %}400{% endif %}; transition:.2s; }
+        {{ scope }} .ma-tag:hover { color:{{ s.hover_text_color }}; background:{{ s.hover_bg_color }}; }
+      {%- when 'categories' -%}
+        {{ scope }} .ma-cats-heading { color:{{ s.heading_color }}; font-weight:500; margin-right:4px; }
+        {{ scope }} .ma-cat { color:{{ s.text_color }}; text-decoration:none; font-weight:{% if s.bold %}700{% else %}400{% endif %}; transition:.2s; }
+        {{ scope }} .ma-cat:hover { color:{{ s.hover_color }}; }
+        {{ scope }} .ma-cat-sep { color:{{ s.text_color }}; margin:0 2px 0 -2px; }
+      {%- when 'quantity' -%}
+        {{ scope }} .ma-qty-label { display:block; color:{{ s.label_color }}; font-weight:{% if s.bold_label %}700{% else %}500{% endif %}; margin-bottom:6px; }
+        {{ scope }} .ma-qty { border:1px solid {{ s.border_color }}; border-radius:{{ s.radius }}px; background:{{ s.bg_color }}; }
+        {{ scope }} .ma-qty-input { color:{{ s.text_color }}; height:{{ s.height }}px; }
+        {{ scope }} .ma-qty-btn { width:{{ s.height }}px; height:{{ s.height }}px; border:none; background:transparent; color:{{ s.text_color }}; font-size:18px; cursor:pointer; transition:.2s; line-height:1; }
+        {{ scope }} .ma-qty-btn:hover { background:{{ s.hover_bg_color }}; color:{{ s.hover_text_color }}; }
+      {%- when 'add_to_cart' -%}
+        {{ scope }} .ma-variant-select { margin-bottom:10px; display:block; width:100%; padding:8px 10px; border:1px solid {{ s.border_color }}; border-radius:{{ s.radius }}px; }
+        {{ scope }} .ma-add-to-cart { display:inline-flex; align-items:center; justify-content:center; {% if s.full_width %}width:100%;{% endif %} background:{{ s.bg_color }}; color:{{ s.text_color }}; font-size:{{ s.font_size }}px; font-weight:{% if s.bold %}700{% else %}500{% endif %}; padding:{{ s.padding_y }}px {{ s.padding_x }}px; border:1px solid {{ s.border_color }}; border-radius:{{ s.radius }}px; cursor:pointer; transition:.2s ease; }
+        {{ scope }} .ma-add-to-cart:hover { background:{{ s.hover_bg_color }}; color:{{ s.hover_text_color }}; border-color:{{ s.hover_border_color }}; }
+        {{ scope }} .ma-add-to-cart.ma-added { background:{{ s.added_bg_color }} !important; color:{{ s.added_text_color }} !important; border-color:{{ s.added_bg_color }} !important; cursor:not-allowed; opacity:1; }
+        @media (max-width:480px) { {{ scope }} .ma-add-to-cart { padding-left:{{ s.padding_x | times: 0.5 | round }}px; padding-right:{{ s.padding_x | times: 0.5 | round }}px; } }
+      {%- when 'wishlist' -%}
+        {{ scope }} .ma-wishlist { display:inline-flex; align-items:center; gap:8px; width:{% if s.label != blank %}auto{% else %}{{ s.size }}px{% endif %}; height:{{ s.size }}px; {% if s.label == blank %}justify-content:center;{% else %}padding:0 16px;{% endif %} background:{{ s.bg_color }}; color:{{ s.idle_color }}; border:1px solid {{ s.border_color }}; border-radius:{{ s.radius }}px; text-decoration:none; font-weight:{% if s.bold %}700{% else %}500{% endif %}; transition:.2s ease; }
+        {{ scope }} .ma-wishlist:hover { background:{{ s.hover_bg_color }}; color:{{ s.hover_color }}; border-color:{{ s.hover_color }}; }
+        {{ scope }} .ma-wishlist .ma-wishlist-label { color:inherit; }
+        {{ scope }} .ma-wishlist .ma-wishlist-icon i { font-size:{{ s.icon_size }}px; }
+        {{ scope }} .ma-wishlist .loading-wishlist, {{ scope }} .ma-wishlist .remove-wishlist { display:none; }
+        {{ scope }} .ma-wishlist.active { color:{{ s.saved_color }}; border-color:{{ s.saved_color }}; }
+        {{ scope }} .ma-wishlist.active .add-wishlist { display:none; }
+        {{ scope }} .ma-wishlist.active .remove-wishlist { display:inline-flex; }
+
+      {%- when 'product_images' -%}
+        /* fixed-height stage: the photo scales to fit, it never sets the height */
+        {{ scope }} .ma-image-main { display:flex; align-items:center; justify-content:center; height:{{ s.image_height }}px; padding:{{ s.image_padding }}px; background:{{ s.image_bg }}; border:1px solid {{ s.border_color }}; border-radius:{{ s.radius }}px; overflow:hidden; }
+        {%- if s.image_fit == 'cover' -%}
+          {{ scope }} .ma-main-img { width:100%; height:100%; object-fit:cover; display:block; }
+        {%- else -%}
+          {{ scope }} .ma-main-img { max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; display:block; }
+        {%- endif -%}
+        {{ scope }} .ma-thumbs { display:flex; flex-wrap:wrap; gap:{{ s.thumb_gap }}px; margin-top:{{ s.thumb_gap }}px; }
+        {{ scope }} .ma-thumb { width:{{ s.thumb_size }}px; height:{{ s.thumb_size }}px; flex:0 0 auto; padding:3px; background:{{ s.image_bg }}; border:1px solid {{ s.border_color }}; border-radius:8px; overflow:hidden; cursor:pointer; transition:border-color .15s, transform .15s; }
+        {{ scope }} .ma-thumb:hover { transform:translateY(-1px); border-color:{{ s.active_thumb_color }}; }
+        {{ scope }} .ma-thumb img { width:100%; height:100%; object-fit:contain; display:block; }
+        {{ scope }} .ma-thumb.is-active { border-color:{{ s.active_thumb_color }} !important; box-shadow:0 0 0 1px {{ s.active_thumb_color }}; }
+        @media (max-width:767px) {
+          {{ scope }} .ma-image-main { height:{{ s.image_height_mobile }}px; }
+          {{ scope }} .ma-thumb { width:{{ s.thumb_size | times: 0.85 | round }}px; height:{{ s.thumb_size | times: 0.85 | round }}px; }
+        }
+
+      {%- when 'parts_checker' -%}
+        /* trigger bar */
+        {{ scope }} .ma-pc-bar { display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:{{ s.bar_bg }}; color:{{ s.bar_fg }}; border:none; border-radius:{{ s.bar_radius }}px; padding:{{ s.bar_padding }}px; font-size:{{ s.bar_font_size }}px; font-weight:600; cursor:pointer; transition:background-color .18s ease; }
+        {{ scope }} .ma-pc-bar:hover, {{ scope }} .ma-pc-bar:focus-visible { background:{{ s.bar_bg_hover }}; }
+        {{ scope }} .ma-pc-bar:focus-visible { outline:3px solid {{ s.accent }}; outline-offset:2px; }
+        {{ scope }} .ma-pc-bar-icon { flex:0 0 auto; width:24px; height:24px; display:flex; }
+        {{ scope }} .ma-pc-bar-icon svg { width:100%; height:100%; fill:currentColor; }
+        {{ scope }} .ma-pc-bar-text { flex:1 1 auto; line-height:1.35; }
+        {{ scope }} .ma-pc-bar-cta { flex:0 0 auto; background:{{ s.cta_bg }}; color:{{ s.cta_fg }}; border-radius:{{ s.bar_radius | minus: 3 }}px; padding:10px 16px; font-size:{{ s.cta_font_size }}px; font-weight:700; white-space:nowrap; }
+        {{ scope }} .ma-pc-help { margin:8px 2px 0; font-size:13px; line-height:1.5; color:{{ s.help_color }}; }
+        @media (max-width:640px) {
+          {{ scope }} .ma-pc-bar { flex-wrap:wrap; gap:10px; font-size:{{ s.bar_font_size_mobile }}px; }
+          {{ scope }} .ma-pc-bar-cta { width:100%; text-align:center; }
+        }
+
+        /* pop-up (lives on <body>, so it is scoped by class) */
+        {{ pcsc }}.ma-pc-modal .ma-pc-panel { max-width:{{ s.modal_width }}px; }
+        {{ pcsc }} .ma-pc-prod { display:flex; gap:14px; align-items:center; background:#f9fafb; border:1px solid #e6e6e6; border-radius:12px; padding:12px; margin-bottom:20px; }
+        {{ pcsc }} .ma-pc-prod-img { width:64px; height:64px; object-fit:contain; background:#fff; border-radius:8px; flex:0 0 auto; }
+        {{ pcsc }} .ma-pc-prod-info { display:flex; flex-direction:column; gap:3px; min-width:0; }
+        {{ pcsc }} .ma-pc-prod-eyebrow { font-size:12px; color:#6b7280; }
+        {{ pcsc }} .ma-pc-prod-title { font-size:15px; font-weight:700; line-height:1.3; color:#1f2226; }
+        {{ pcsc }} .ma-pc-prod-sku { font-size:13px; color:#6b7280; }
+        {{ pcsc }} .ma-pc-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+        {{ pcsc }} .ma-pc-field { display:flex; flex-direction:column; gap:6px; min-width:0; }
+        {{ pcsc }} .ma-pc-wide { grid-column:1 / -1; }
+        {{ pcsc }} .ma-pc-field label { font-size:14px; font-weight:700; color:#1f2226; display:flex; align-items:baseline; gap:8px; }
+        {{ pcsc }} .ma-pc-req { font-size:11px; font-weight:600; color:{{ s.accent }}; }
+        {{ pcsc }} .ma-pc-opt { font-size:11px; font-weight:600; color:#9a9a9a; }
+        {{ pcsc }} .ma-pc-field input, {{ pcsc }} .ma-pc-field select, {{ pcsc }} .ma-pc-field textarea { width:100%; background:#f9fafb; border:1.5px solid #e6e6e6; border-radius:10px; padding:12px 14px; font-size:16px; line-height:1.5; color:#1f2226; font-family:inherit; min-height:48px; transition:border-color .15s, background-color .15s; }
+        {{ pcsc }} .ma-pc-field textarea { resize:vertical; }
+        {{ pcsc }} .ma-pc-field input:focus, {{ pcsc }} .ma-pc-field select:focus, {{ pcsc }} .ma-pc-field textarea:focus { outline:none; background:#fff; border-color:{{ s.accent }}; }
+        {{ pcsc }} .ma-pc-field.is-invalid input, {{ pcsc }} .ma-pc-field.is-invalid select, {{ pcsc }} .ma-pc-field.is-invalid textarea { border-color:#dc2626; background:#fef2f2; }
+        {{ pcsc }} .ma-pc-hint { font-size:12px; line-height:1.45; color:#6b7280; }
+        {{ pcsc }} .ma-pc-err { display:none; font-size:12.5px; font-weight:600; color:#dc2626; }
+        {{ pcsc }} .ma-pc-field.is-invalid .ma-pc-err { display:block; }
+        {{ pcsc }} .ma-pc-count { font-size:12px; color:#6b7280; }
+        {{ pcsc }} .ma-pc-count.is-short { color:#b45309; }
+        {{ pcsc }} .ma-pc-count.is-ok { color:#15803d; }
+        {{ pcsc }} .ma-pc-consent { display:flex; gap:10px; align-items:flex-start; margin-top:16px; font-size:13.5px; line-height:1.5; color:#5a5a5a; cursor:pointer; }
+        {{ pcsc }} .ma-pc-consent input { width:20px; height:20px; flex:0 0 20px; margin-top:1px; accent-color:{{ s.accent }}; }
+        {{ pcsc }} .ma-pc-foot { margin-top:22px; }
+        {{ pcsc }} .ma-pc-submit { width:100%; min-height:52px; background:{{ s.accent }}; color:#fff; border:none; border-radius:12px; font-size:16px; font-weight:700; cursor:pointer; transition:background-color .15s; }
+        {{ pcsc }} .ma-pc-submit:hover { background:{{ s.accent_hover }}; }
+        {{ pcsc }} .ma-pc-submit.is-busy { opacity:.75; cursor:progress; }
+        {{ pcsc }} .ma-pc-privacy { margin:10px 0 0; font-size:12.5px; line-height:1.5; color:#6b7280; text-align:center; }
+        {{ pcsc }} .ma-pc-alert { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; border-radius:10px; padding:12px 14px; font-size:14px; margin-bottom:16px; }
+        {{ pcsc }} .ma-pc-alert ul { margin:0; padding-left:18px; }
+        {{ pcsc }} .ma-pc-done { text-align:center; padding:24px 8px 12px; }
+        {{ pcsc }} .ma-pc-tick { display:inline-flex; align-items:center; justify-content:center; width:56px; height:56px; border-radius:50%; background:#dcfce7; color:#15803d; margin-bottom:14px; }
+        {{ pcsc }} .ma-pc-tick svg { width:28px; height:28px; }
+        {{ pcsc }} .ma-pc-done h3 { margin:0 0 8px; font-size:20px; font-weight:700; color:#1f2226; }
+        {{ pcsc }} .ma-pc-done p { margin:0 auto 20px; max-width:44ch; font-size:15px; line-height:1.6; color:#5a5a5a; }
+        {{ pcsc }} .ma-pc-done-btn { background:{{ s.accent }}; color:#fff; border:none; border-radius:10px; padding:13px 24px; font-size:15px; font-weight:700; cursor:pointer; }
+        {{ pcsc }} .ma-pc-done-btn:hover { background:{{ s.accent_hover }}; }
+        @media (max-width:640px) {
+          {{ pcsc }} .ma-pc-grid { grid-template-columns:1fr; gap:14px; }
+        }
+
+      {%- when 'tab' -%}
+        {{ pscope }} .ma-tab-heading { color:{{ s.heading_color }}; font-size:{{ s.heading_size }}px; font-weight:{% if s.bold_heading %}700{% else %}500{% endif %}; margin:0 0 10px; }
+        {{ pscope }} .ma-tab-body, {{ pscope }} .ma-tab-body p, {{ pscope }} .ma-tab-body li, {{ pscope }} .ma-fit-table td, {{ pscope }} .ma-spec-val { color:{{ s.text_color }}; font-size:{{ s.font_size }}px; line-height:{{ s.line_height }}; }
+        {{ pscope }} .ma-spec-key { color:{{ s.heading_color }}; }
+        {{ pscope }} .ma-tab-body a { color:{{ s.link_color }}; }
+        {{ pscope }} .ma-tab-body a:hover { color:{{ s.link_hover_color }}; }
+        @media (max-width:767px) {
+          {{ pscope }} .ma-tab-heading { font-size:{{ s.heading_size | times: 0.9 | round }}px; }
+          {{ pscope }} .ma-tab-body, {{ pscope }} .ma-tab-body p, {{ pscope }} .ma-tab-body li { font-size:{{ s.font_size | times: 0.94 | round }}px; }
+        }
+      {%- when 'complementary' -%}
+        {{ scope }} { margin-top:{{ s.margin_top }}px; }
+        {{ scope }}[hidden] { display:none; }
+        {{ scope }} .ma-suggest-heading { color:{{ s.heading_color }}; font-size:{{ s.heading_size }}px; font-weight:{% if s.bold_heading %}700{% else %}500{% endif %}; margin:0 0 16px; }
+        {{ scope }} .ma-suggest-grid { display:grid; grid-template-columns:repeat({{ s.columns }}, minmax(0,1fr)); gap:{{ s.gap }}px; }
+        {{ scope }} .ma-suggest-card { position:relative; display:flex; flex-direction:column; background:{{ s.card_bg }}; border:1px solid {{ s.border_color }}; border-radius:{{ s.radius }}px; padding:{{ s.card_padding }}px; transition:.2s ease; }
+        {{ scope }} .ma-suggest-card:hover { border-color:{{ s.hover_border_color }}; box-shadow:0 6px 18px rgba(0,0,0,.06); }
+        {{ scope }} .ma-suggest-media { display:flex; align-items:center; justify-content:center; height:{{ s.image_height }}px; overflow:hidden; background:{{ s.image_bg }}; border-radius:{{ s.radius }}px; }
+        {{ scope }} .ma-suggest-media img { max-width:100%; max-height:100%; {% if s.image_fit == 'cover' %}width:100%; height:100%;{% else %}width:auto; height:auto;{% endif %} object-fit:{{ s.image_fit }}; display:block; }
+        {{ scope }} .ma-suggest-info { display:flex; flex-direction:column; gap:6px; margin-top:10px; }
+        {{ scope }} .ma-suggest-title { color:{{ s.title_color }}; font-size:{{ s.title_size }}px; line-height:1.4; font-weight:{% if s.bold_title %}600{% else %}400{% endif %}; text-decoration:none; display:-webkit-box; -webkit-line-clamp:{{ s.title_lines }}; -webkit-box-orient:vertical; overflow:hidden; }
+        {{ scope }} .ma-suggest-title:hover { color:{{ s.title_hover_color }}; }
+        {{ scope }} .ma-suggest-price { color:{{ s.price_color }}; font-size:{{ s.price_size }}px; font-weight:600; }
+        {{ scope }} .ma-suggest-price .ma-suggest-price-old { color:{{ s.compare_color }}; text-decoration:line-through; font-weight:400; margin-right:6px; }
+        {{ scope }} .ma-suggest-atc { margin-top:2px; width:100%; background:{{ s.btn_bg }}; color:{{ s.btn_text }}; border:1px solid {{ s.btn_bg }}; border-radius:{{ s.btn_radius }}px; padding:{{ s.btn_padding_y }}px 10px; font-size:{{ s.btn_font_size }}px; font-weight:600; line-height:1.3; cursor:pointer; transition:.2s ease; }
+        {{ scope }} .ma-suggest-atc:hover { background:{{ s.btn_hover_bg }}; color:{{ s.btn_hover_text }}; border-color:{{ s.btn_hover_bg }}; }
+        {{ scope }} .ma-suggest-atc.ma-added { background:{{ s.added_bg_color }} !important; color:{{ s.added_text_color }} !important; border-color:{{ s.added_bg_color }} !important; cursor:not-allowed; }
+        {{ scope }} .ma-suggest-atc.ma-disabled { opacity:.5; cursor:not-allowed; }
+        {{ scope }} .ma-suggest-wish { position:absolute; top:{{ s.card_padding | plus: 4 }}px; right:{{ s.card_padding | plus: 4 }}px; z-index:2; display:inline-flex; align-items:center; justify-content:center; width:{{ s.wishlist_size }}px; height:{{ s.wishlist_size }}px; background:{{ s.wishlist_bg }}; color:{{ s.wishlist_idle_color }}; border:1px solid {{ s.border_color }}; border-radius:50%; text-decoration:none; transition:.2s ease; }
+        {{ scope }} .ma-suggest-wish i { font-size:{{ s.wishlist_icon_size }}px; line-height:1; }
+        {{ scope }} .ma-suggest-wish .loading-wishlist, {{ scope }} .ma-suggest-wish .remove-wishlist { display:none; }
+        {{ scope }} .ma-suggest-wish.active { color:{{ s.wishlist_saved_color }}; border-color:{{ s.wishlist_saved_color }}; }
+        {{ scope }} .ma-suggest-wish.active .add-wishlist { display:none; }
+        {{ scope }} .ma-suggest-wish.active .remove-wishlist { display:inline-flex; }
+        {{ scope }} .ma-suggest-empty { color:#b0b0b0; font-style:italic; }
+        @media (max-width:767px) {
+          {{ scope }} { margin-top:{{ s.margin_top | times: 0.6 | round }}px; }
+          {{ scope }} .ma-suggest-heading { font-size:{{ s.heading_size | times: 0.9 | round }}px; margin-bottom:12px; }
+          {{ scope }} .ma-suggest-grid { grid-template-columns:repeat({{ s.columns_mobile }}, minmax(0,1fr)); gap:{{ s.gap | times: 0.75 | round }}px; }
+          {{ scope }} .ma-suggest-media { height:{{ s.image_height | times: 0.8 | round }}px; }
+          {{ scope }} .ma-suggest-title { font-size:{{ s.title_size | times: 0.94 | round }}px; }
+        }
+    {%- endcase -%}
+  {%- endfor -%}
+</style>
+
+<script>
+(function () {
+  var root = document.getElementById('MetroProduct-{{ section.id }}');
+  if (!root) return;
+
+  var mainImg = document.getElementById('ma-main-img-{{ section.id }}');
+  var thumbs = root.querySelectorAll('.ma-thumb');
+  thumbs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      if (mainImg && t.dataset.full) mainImg.src = t.dataset.full;
+      thumbs.forEach(function (x) { x.classList.remove('is-active'); });
+      t.classList.add('is-active');
+    });
+  });
+
+  root.querySelectorAll('[data-qty]').forEach(function (wrap) {
+    var input = wrap.querySelector('.ma-qty-input');
+    if (!input) return;
+    var minus = wrap.querySelector('.ma-qty-minus');
+    var plus = wrap.querySelector('.ma-qty-plus');
+    if (minus) minus.addEventListener('click', function () { var v = parseInt(input.value, 10) || 1; if (v > 1) input.value = v - 1; });
+    if (plus) plus.addEventListener('click', function () { var v = parseInt(input.value, 10) || 1; input.value = v + 1; });
+    input.addEventListener('change', function () { var v = parseInt(input.value, 10); if (!v || v < 1) input.value = 1; });
+  });
+
+  function currentVariantId(btn) {
+    var sel = root.querySelector('.ma-variant-select');
+    if (sel && sel.value) return sel.value;
+    return btn ? btn.getAttribute('data-single-variant') : null;
+  }
+  function currentQty() {
+    var input = root.querySelector('.ma-qty-input');
+    var v = input ? parseInt(input.value, 10) : 1;
+    return (v && v > 0) ? v : 1;
+  }
+
+  /* ---------- Live cart sync (shared by the main button + suggestion cards) ----------
+     Re-reads /cart.js whenever the cart is written to anywhere on the page
+     (mini-cart remove, cart page, another script), when the tab regains focus,
+     and on back/forward — so buttons flip back to "Add to cart" after a removal. */
+  var cartSubscribers = [];
+  var cartRefreshTimer = null;
+
+  function refreshCartState() {
+    fetch('/cart.js', { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (c) {
+        if (!c || !c.items) return;
+        var ids = {};
+        c.items.forEach(function (i) { ids[String(i.variant_id)] = true; });
+        cartSubscribers.forEach(function (fn) { try { fn(ids); } catch (err) {} });
+      })
+      .catch(function () {});
+  }
+  function refreshCartSoon(delay) {
+    clearTimeout(cartRefreshTimer);
+    cartRefreshTimer = setTimeout(refreshCartState, delay || 350);
+  }
+
+  // patch fetch + XHR ONCE per page so every cart write fires 'ma:cart-changed'
+  (function watchCartWrites() {
+    if (window.__maCartWatch) return;
+    window.__maCartWatch = true;
+    function fire() {
+      try { document.dispatchEvent(new CustomEvent('ma:cart-changed')); }
+      catch (err) {
+        var ev = document.createEvent('Event');
+        ev.initEvent('ma:cart-changed', true, true);
+        document.dispatchEvent(ev);
+      }
+    }
+    function isCartWrite(url) {
+      url = String(url || '');
+      return url.indexOf('/cart/add') > -1 || url.indexOf('/cart/change') > -1 ||
+             url.indexOf('/cart/update') > -1 || url.indexOf('/cart/clear') > -1;
+    }
+    if (window.fetch) {
+      var _fetch = window.fetch;
+      window.fetch = function (input, init) {
+        var url = (typeof input === 'string') ? input : (input && input.url);
+        var out = _fetch.apply(this, arguments);
+        if (isCartWrite(url) && out && out.then) { out.then(function () { fire(); }, function () {}); }
+        return out;
+      };
+    }
+    var _open = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function (method, url) {
+      this.__maCartUrl = url;
+      return _open.apply(this, arguments);
+    };
+    var _send = XMLHttpRequest.prototype.send;
+    XMLHttpRequest.prototype.send = function () {
+      if (isCartWrite(this.__maCartUrl)) { this.addEventListener('loadend', function () { fire(); }); }
+      return _send.apply(this, arguments);
+    };
+  })();
+
+  document.addEventListener('ma:cart-changed', function () { refreshCartSoon(); });
+  window.addEventListener('focus', function () { refreshCartSoon(150); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) refreshCartSoon(150); });
+  window.addEventListener('pageshow', function (e) { if (e.persisted) refreshCartState(); });
+
+  /* ---------- Add to cart: button reflects what's ALREADY in the cart ---------- */
+  var atcBtn = root.querySelector('.ma-add-to-cart');
+  var variantSel = root.querySelector('.ma-variant-select');
+  var cartIds = {};
+  (function (ids) { for (var i = 0; i < ids.length; i++) { cartIds[String(ids[i])] = true; } })({{ cart.items | map: 'variant_id' | json }});
+  var variantAvailable = { {%- for vv in p.variants -%}"{{ vv.id }}":{{ vv.available }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%} };
+  var variantInfo = { {%- for vv in p.variants -%}"{{ vv.id }}":{"sku":{{ vv.sku | default: '' | json }},"title":{{ vv.title | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%} };
+
+  if (atcBtn) {
+    var textEl = atcBtn.querySelector('.ma-atc-text');
+    var addedText = atcBtn.getAttribute('data-added-text') || 'Product added to cart';
+    var defaultText = atcBtn.getAttribute('data-default-text') || 'Add to cart';
+    var soldoutText = atcBtn.getAttribute('data-soldout-text') || 'Sold out';
+
+    function applyCartState() {
+      var id = String(currentVariantId(atcBtn) || '');
+      if (variantAvailable[id] === false) {
+        if (textEl) textEl.textContent = soldoutText;
+        atcBtn.classList.remove('ma-added');
+        atcBtn.classList.add('ma-disabled');
+        atcBtn.disabled = true;
+        return;
+      }
+      atcBtn.classList.remove('ma-disabled');
+      if (cartIds[id]) {
+        if (textEl) textEl.textContent = addedText;
+        atcBtn.classList.add('ma-added');
+        atcBtn.disabled = true;
+      } else {
+        if (textEl) textEl.textContent = defaultText;
+        atcBtn.classList.remove('ma-added');
+        atcBtn.disabled = false;
+      }
+    }
+
+    function markAdded(line_item) {
+      cartIds[String(currentVariantId(atcBtn) || '')] = true;
+      applyCartState();
+      // keep the mini-cart count / drawer in sync (the callback path skips it)
+      if (window.Shopify && typeof window.Shopify.onItemAdded === 'function' && line_item) {
+        try { window.Shopify.onItemAdded(line_item); } catch (err) {}
+      }
+    }
+
+    atcBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (atcBtn.disabled || atcBtn.classList.contains('ma-added')) return;
+      var id = currentVariantId(atcBtn);
+      if (!id) return;
+      var qty = currentQty();
+      if (window.Shopify && typeof window.Shopify.addItem === 'function') {
+        window.Shopify.addItem(id, qty, markAdded);   // callback fires only on success
+      } else {
+        fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: id, quantity: qty }), credentials: 'same-origin' })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (li) { if (li) markAdded(li); });
+      }
+    });
+
+    // switching variant re-checks that variant against the cart
+    if (variantSel) variantSel.addEventListener('change', applyCartState);
+
+    // the shared watcher re-reads the live cart: covers cached pages, items
+    // removed from the cart or mini-cart, and adds made in another tab
+    cartSubscribers.push(function (ids) { cartIds = ids; applyCartState(); });
+
+    applyCartState();
+    refreshCartState();
+  }
+
+  /* ---------- Wishlist: heart reflects what's ALREADY saved ---------- */
+  var WKEY = 'shopify-wishlist';
+  function wRead() {
+    var raw = '';
+    try { raw = localStorage.getItem(WKEY) || ''; } catch (e) {}
+    return raw.split(',').filter(function (h) { return h && h.trim() !== ''; });
+  }
+  function wWrite(list) { try { localStorage.setItem(WKEY, list.join(',')); } catch (e) {} }
+  function wSync() {
+    var list = wRead();
+    root.querySelectorAll('[button-wishlist]').forEach(function (btn) {
+      btn.classList.toggle('active', list.indexOf(btn.getAttribute('data-product-handle')) > -1);
+    });
+  }
+  // the hardened wishlist snippet handles clicks by delegation — only toggle
+  // ourselves if that script isn't on the page, otherwise just re-sync after it writes
+  root.querySelectorAll('[button-wishlist]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (window.ThemeWishlist || typeof window.updateWishlist === 'function') {
+        setTimeout(wSync, 60);
+        return;
+      }
+      var h = btn.getAttribute('data-product-handle');
+      if (!h) return;
+      var list = wRead();
+      var i = list.indexOf(h);
+      if (i > -1) { list.splice(i, 1); } else { list.push(h); }
+      wWrite(list);
+      wSync();
+    });
+  });
+  wSync();
+  window.addEventListener('storage', function (e) { if (e.key === WKEY) wSync(); });
+  window.addEventListener('pageshow', function (e) { if (e.persisted) wSync(); });
+
+  var nav = root.querySelector('.ma-tabs-nav');
+  if (nav) {
+    var btns = root.querySelectorAll('.ma-tab-btn');
+    var panels = root.querySelectorAll('.ma-tab-panel');
+    nav.addEventListener('click', function (e) {
+      var btn = e.target.closest('.ma-tab-btn');
+      if (!btn) return;
+      var id = btn.getAttribute('data-tab');
+      btns.forEach(function (b) { var on = b === btn; b.classList.toggle('is-active', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
+      panels.forEach(function (pnl) { pnl.classList.toggle('is-active', pnl.id === 'ma-panel-' + id); });
+      // keep the tapped tab in view on mobile
+      if (btn.scrollIntoView) { try { btn.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' }); } catch (err) {} }
+    });
+  }
+
+  /* ---------- Parts Checker: fitment enquiry pop-up ---------- */
+  root.querySelectorAll('[data-pc]').forEach(function (pc) {
+    var modal = pc.querySelector('[data-pc-modal]');
+    var openBtn = pc.querySelector('[data-pc-open]');
+    if (!modal || !openBtn) return;
+
+    // out of any overflow / transform parent, and always a top-level <form>
+    document.body.appendChild(modal);
+
+    var form      = modal.querySelector('form');
+    var doneBox   = modal.querySelector('[data-pc-done]');
+    var head      = modal.querySelector('[data-pc-head]');
+    var strip     = modal.querySelector('[data-pc-prod]');
+    var submitBtn = modal.querySelector('[data-pc-submit]');
+    var submitTxt = modal.querySelector('[data-pc-submit-text]');
+    var comment   = modal.querySelector('[data-pc-comment]');
+    var countBox  = modal.querySelector('[data-pc-count]');
+    var countNum  = modal.querySelector('[data-pc-count-num]');
+    if (!form) return;
+
+    var MIN       = parseInt(pc.getAttribute('data-pc-min'), 10) || 0;
+    var MIN_ON    = pc.getAttribute('data-pc-comment-required') === 'true';
+    var REMEMBER  = pc.getAttribute('data-pc-remember') === 'true';
+    var SENDING   = pc.getAttribute('data-pc-sending') || 'Sending…';
+    var lastFocus = null, openedAt = 0;
+
+    // our own inline errors instead of the browser's grey bubbles
+    form.setAttribute('novalidate', 'novalidate');
+
+    function focusables() {
+      return Array.prototype.slice.call(modal.querySelectorAll(
+        'a[href],button:not([disabled]),input:not([type="hidden"]):not([tabindex="-1"]),select,textarea'
+      )).filter(function (el) { return el.offsetParent !== null; });
+    }
+    function openModal() {
+      syncVariant();
+      lastFocus = document.activeElement;
+      modal.hidden = false;
+      document.body.classList.add('ma-pc-locked');
+      openedAt = Date.now();
+      // land on the first EMPTY field so prefilled details are not retyped
+      var list = focusables().filter(function (el) {
+        return (el.tagName === 'INPUT' || el.tagName === 'SELECT' || el.tagName === 'TEXTAREA') && !el.value;
+      });
+      var target = list[0] || modal.querySelector('input:not([type="hidden"]), select, textarea');
+      if (target) setTimeout(function () { try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); } }, 60);
+    }
+    function closeModal() {
+      modal.hidden = true;
+      document.body.classList.remove('ma-pc-locked');
+      if (lastFocus) { try { lastFocus.focus(); } catch (e) {} }
+    }
+    openBtn.addEventListener('click', openModal);
+    modal.querySelectorAll('[data-pc-close]').forEach(function (el) { el.addEventListener('click', closeModal); });
+    document.addEventListener('keydown', function (e) {
+      if (modal.hidden) return;
+      if (e.key === 'Escape') { e.preventDefault(); closeModal(); return; }
+      if (e.key !== 'Tab') return;
+      var list = focusables();
+      if (!list.length) return;
+      var first = list[0], last = list[list.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+
+    // the enquiry always carries the variant the shopper is actually looking at
+    function syncVariant() {
+      var id = String(currentVariantId(atcBtn) || '');
+      if (!id || !variantInfo[id]) return;
+      var set = function (sel, val) { var el = modal.querySelector(sel); if (el) el.value = val; };
+      set('[data-pc-sku]', variantInfo[id].sku || '');
+      set('[data-pc-variant]', variantInfo[id].title || '');
+      set('[data-pc-vid]', id);
+      var label = modal.querySelector('[data-pc-sku-label]');
+      if (label && variantInfo[id].sku) {
+        label.textContent = label.textContent.replace(/[^\s]+$/, '').trim() + ' ' + variantInfo[id].sku;
+      }
+    }
+    if (variantSel) variantSel.addEventListener('change', syncVariant);
+
+    function updateCount() {
+      if (!comment || !countNum) return;
+      var n = comment.value.trim().length;
+      countNum.textContent = n;
+      countBox.classList.toggle('is-short', MIN_ON && n > 0 && n < MIN);
+      countBox.classList.toggle('is-ok', MIN_ON && n >= MIN);
+    }
+    if (comment) { comment.addEventListener('input', updateCount); updateCount(); }
+
+    function message(el) {
+      if (el.validity.valueMissing) return el.tagName === 'SELECT' ? 'Choose your state.' : 'We need this to check the fit.';
+      if (el.type === 'email' && el.validity.typeMismatch) return 'Check the email address — it looks incomplete.';
+      if (el.validity.tooShort || el === comment) return 'Add a little more: ' + MIN + ' characters minimum.';
+      return 'Check this field.';
+    }
+    function validate(el) {
+      var field = el.closest('.ma-pc-field');
+      if (!field) return true;
+      var err = field.querySelector('[data-pc-err]');
+      var ok = el.checkValidity();
+      // the minimum length only applies while the description is required
+      if (el === comment && ok && MIN_ON && el.value.trim().length < MIN) ok = false;
+      field.classList.toggle('is-invalid', !ok);
+      if (err) err.textContent = ok ? '' : message(el);
+      return ok;
+    }
+    form.querySelectorAll('input, select, textarea').forEach(function (el) {
+      if (el.type === 'hidden') return;
+      el.addEventListener('blur', function () { validate(el); });
+      el.addEventListener('input', function () {
+        var f = el.closest('.ma-pc-field');
+        if (f && f.classList.contains('is-invalid')) validate(el);
+      });
+    });
+
+    var RKEY = 'ma-pc-details';
+    if (REMEMBER) {
+      try {
+        var saved = JSON.parse(localStorage.getItem(RKEY) || '{}');
+        modal.querySelectorAll('[data-pc-remember-key]').forEach(function (el) {
+          var k = el.getAttribute('data-pc-remember-key');
+          if (!el.value && saved[k]) el.value = saved[k];
+        });
+      } catch (e) {}
+    }
+    function remember() {
+      if (!REMEMBER) return;
+      var out = {};
+      modal.querySelectorAll('[data-pc-remember-key]').forEach(function (el) {
+        out[el.getAttribute('data-pc-remember-key')] = el.value;
+      });
+      try { localStorage.setItem(RKEY, JSON.stringify(out)); } catch (e) {}
+    }
+
+    function showDone() {
+      form.hidden = true;
+      if (strip) strip.hidden = true;
+      if (head) head.hidden = true;
+      doneBox.hidden = false;
+      try { doneBox.focus(); } catch (e) {}
+      var sc = modal.querySelector('.ma-pc-scroll');
+      if (sc) sc.scrollTop = 0;
+    }
+
+    /* Shopify's bot protection injects the CAPTCHA token during the REAL submit
+       event, so this form must post natively — an AJAX post is rejected with
+       "Invalid CAPTCHA token". Shopify returns to this page with
+       ?contact_posted=true and the block below reopens the confirmation. */
+    form.addEventListener('submit', function (e) {
+      var bad = null;
+      form.querySelectorAll('input:not([type="hidden"]), select, textarea').forEach(function (el) {
+        if (el.name === 'ma_pc_hp' || el.type === 'checkbox') return;
+        if (!validate(el) && !bad) bad = el;
+      });
+      if (bad) {
+        e.preventDefault();
+        e.stopImmediatePropagation();   // stops the captcha handler re-submitting
+        bad.focus();
+        try { bad.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (err) {}
+        return;
+      }
+
+      // bot filters: honeypot filled, or submitted impossibly fast
+      var hp = form.querySelector('[name="ma_pc_hp"]');
+      if ((hp && hp.value) || (Date.now() - openedAt) < 2500) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        showDone();
+        return;
+      }
+
+      // Shopify's own name field, built from whichever name fields were filled
+      var fn = form.querySelector('[name="contact[First name]"]');
+      var ln = form.querySelector('[name="contact[Surname]"]');
+      if (fn && !form.querySelector('[name="contact[name]"]')) {
+        var nameEl = document.createElement('input');
+        nameEl.type = 'hidden';
+        nameEl.name = 'contact[name]';
+        nameEl.value = (fn.value + ' ' + (ln ? ln.value : '')).trim();
+        form.appendChild(nameEl);
+      }
+
+      // Shopify needs a message body; fall back when the description is left blank
+      if (comment && !comment.value.trim()) {
+        var prodEl = form.querySelector('[name="contact[Product]"]');
+        comment.value = 'Fitment check requested' + (prodEl ? ' for ' + prodEl.value : '') + '.';
+      }
+
+      remember();
+      try { sessionStorage.setItem('ma-pc-posted', pc.id); } catch (err) {}
+
+      submitBtn.classList.add('is-busy');
+      if (submitTxt) submitTxt.textContent = SENDING;
+      // no preventDefault — Shopify handles the captcha and the post from here
+    });
+
+    // back from a successful send: reopen on the confirmation screen
+    var flag = null;
+    try { flag = sessionStorage.getItem('ma-pc-posted'); } catch (e) {}
+    if (flag === pc.id &&
+        (modal.querySelector('[data-pc-posted]') || window.location.search.indexOf('contact_posted=true') > -1)) {
+      try { sessionStorage.removeItem('ma-pc-posted'); } catch (e) {}
+      openModal();
+      showDone();
+    }
+  });
+
+  /* ---------- Suggestions ("Pair it with") — complementary products ---------- */
+  var sug = root.querySelector('[data-suggest]');
+  if (sug) {
+    var sugGrid = sug.querySelector('[data-suggest-grid]');
+    var sugEmpty = sug.querySelector('[data-suggest-empty]');
+    var moneyFormat = {{ shop.money_format | json }};
+    var sShowPrice = sug.getAttribute('data-show-price') === 'true';
+    var sShowAtc = sug.getAttribute('data-show-atc') === 'true';
+    var sShowWish = sug.getAttribute('data-show-wishlist') === 'true';
+    var sAtcText = sug.getAttribute('data-atc-text') || 'Add to cart';
+    var sAddedText = sug.getAttribute('data-added-text') || 'Added';
+    var sSoldText = sug.getAttribute('data-soldout-text') || 'Sold out';
+
+    function esc(v) {
+      return String(v == null ? '' : v)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function sepNum(num, dec, thousands, decimal) {
+      var parts = num.toFixed(dec).split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousands);
+      return parts.length > 1 ? parts[0] + decimal + parts[1] : parts[0];
+    }
+    function toCents(val) {
+      if (typeof val === 'number') return Math.round(val);
+      var s = String(val == null ? '' : val);
+      if (!s) return 0;
+      return s.indexOf('.') > -1 ? Math.round(parseFloat(s) * 100) : (parseInt(s, 10) || 0);
+    }
+    function money(cents) {
+      var v = (parseInt(cents, 10) || 0) / 100;
+      return String(moneyFormat).replace(/\{\{\s*(\w+)\s*\}\}/g, function (m, key) {
+        if (key === 'amount_no_decimals') return sepNum(v, 0, ',', '.');
+        if (key === 'amount_with_comma_separator') return sepNum(v, 2, '.', ',');
+        if (key === 'amount_no_decimals_with_comma_separator') return sepNum(v, 0, '.', ',');
+        if (key === 'amount_with_apostrophe_separator') return sepNum(v, 2, "'", '.');
+        return sepNum(v, 2, ',', '.');
+      });
+    }
+    function sizedImage(url) {
+      if (!url) return '';
+      if (url.indexOf('//') === 0) url = 'https:' + url;
+      return url + (url.indexOf('?') > -1 ? '&' : '?') + 'width=400';
+    }
+
+    function buildCard(prod) {
+      var v = null;
+      if (prod.variants && prod.variants.length) {
+        for (var i = 0; i < prod.variants.length; i++) {
+          if (prod.variants[i].available) { v = prod.variants[i]; break; }
+        }
+      }
+      var available = !!v;
+      var url = prod.url || (prod.handle ? '/products/' + prod.handle : '#');
+      var img = sizedImage(prod.featured_image || (prod.images && prod.images[0]) || '');
+      var price = toCents(prod.price != null ? prod.price : (v ? v.price : 0));
+      var compare = toCents(prod.compare_at_price != null ? prod.compare_at_price : (v ? v.compare_at_price : 0));
+
+      var card = document.createElement('div');
+      card.className = 'ma-suggest-card';
+
+      var html = '';
+      if (sShowWish && prod.handle) {
+        html += '<a class="ma-suggest-wish action-wishlist wishlist-btn" href="javascript:void(0)" button-wishlist data-product-handle="' + esc(prod.handle) + '" aria-label="Add to wishlist">'
+              + '<span class="ma-wishlist-icon add-wishlist"><i class="sli sli-heart"></i></span>'
+              + '<span class="ma-wishlist-icon loading-wishlist"><i class="sli sli-heart"></i></span>'
+              + '<span class="ma-wishlist-icon remove-wishlist"><i class="sli sli-heart"></i></span>'
+              + '</a>';
+      }
+      html += '<a class="ma-suggest-media" href="' + esc(url) + '">'
+            + (img ? '<img src="' + esc(img) + '" alt="' + esc(prod.title) + '" loading="lazy">' : '')
+            + '</a>'
+            + '<div class="ma-suggest-info">'
+            + '<a class="ma-suggest-title" href="' + esc(url) + '">' + esc(prod.title) + '</a>';
+      if (sShowPrice) {
+        html += '<div class="ma-suggest-price">'
+              + (compare > price ? '<span class="ma-suggest-price-old">' + money(compare) + '</span>' : '')
+              + money(price) + '</div>';
+      }
+      if (sShowAtc) {
+        html += '<button type="button" class="ma-suggest-atc' + (available ? '' : ' ma-disabled') + '"'
+              + ' data-variant="' + (v ? v.id : '') + '"'
+              + ' data-available="' + (available ? 'true' : 'false') + '"'
+              + (available ? '' : ' disabled') + '>'
+              + esc(available ? sAtcText : sSoldText) + '</button>';
+      }
+      html += '</div>';
+
+      card.innerHTML = html;
+      return card;
+    }
+
+    // sold-out cards stay sold out; everything else follows the live cart both ways
+    function setSugState(btn, inCart) {
+      if (btn.getAttribute('data-available') !== 'true') return;
+      if (inCart) {
+        btn.classList.add('ma-added');
+        btn.disabled = true;
+        btn.textContent = sAddedText;
+      } else {
+        btn.classList.remove('ma-added');
+        btn.disabled = false;
+        btn.textContent = sAtcText;
+      }
+    }
+    function markSugAdded(btn) { setSugState(btn, true); }
+
+    cartSubscribers.push(function (ids) {
+      sugGrid.querySelectorAll('.ma-suggest-atc').forEach(function (b) {
+        setSugState(b, !!ids[String(b.getAttribute('data-variant'))]);
+      });
+    });
+
+    sugGrid.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('.ma-suggest-atc') : null;
+      if (btn) {
+        e.preventDefault();
+        if (btn.disabled || btn.classList.contains('ma-added')) return;
+        var id = btn.getAttribute('data-variant');
+        if (!id) return;
+        var done = function (li) {
+          markSugAdded(btn);
+          if (window.Shopify && typeof window.Shopify.onItemAdded === 'function' && li) {
+            try { window.Shopify.onItemAdded(li); } catch (err) {}
+          }
+        };
+        if (window.Shopify && typeof window.Shopify.addItem === 'function') {
+          window.Shopify.addItem(id, 1, done);
+        } else {
+          fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: id, quantity: 1 }), credentials: 'same-origin' })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (li) { if (li) done(li); });
+        }
+        return;
+      }
+      var wb = e.target.closest ? e.target.closest('[button-wishlist]') : null;
+      if (wb) {
+        if (window.ThemeWishlist || typeof window.updateWishlist === 'function') { setTimeout(wSync, 60); return; }
+        var h = wb.getAttribute('data-product-handle');
+        if (!h) return;
+        var list = wRead();
+        var i = list.indexOf(h);
+        if (i > -1) { list.splice(i, 1); } else { list.push(h); }
+        wWrite(list);
+        wSync();
+      }
+    });
+
+    (function loadSuggestions() {
+      var url = '/recommendations/products.json?product_id=' + encodeURIComponent(sug.getAttribute('data-product-id'))
+              + '&limit=' + encodeURIComponent(sug.getAttribute('data-limit') || 4)
+              + '&intent=' + encodeURIComponent(sug.getAttribute('data-intent') || 'complementary');
+      fetch(url, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          var items = (data && data.products) ? data.products : [];
+          if (!items.length) {
+            if (sugEmpty) { sug.hidden = false; sugEmpty.hidden = false; }
+            return;
+          }
+          items.forEach(function (prod) { sugGrid.appendChild(buildCard(prod)); });
+          sug.hidden = false;
+          wSync();
+          refreshCartState();
+        })
+        .catch(function () {});
+    })();
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Product Template New",
+  "tag": "section",
+  "class": "ma-product-section",
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "max_width", "min": 900, "max": 1600, "step": 20, "unit": "px", "label": "Max width", "default": 1200 },
+    { "type": "select", "id": "media_position", "label": "Image position", "options": [ { "value": "left", "label": "Left" }, { "value": "right", "label": "Right" } ], "default": "left" },
+    { "type": "range", "id": "media_col_width", "min": 4, "max": 8, "step": 1, "unit": "/12", "label": "Image column width", "default": 6 },
+    { "type": "range", "id": "column_gap", "min": 16, "max": 80, "step": 4, "unit": "px", "label": "Gap between columns", "default": 40 },
+    { "type": "range", "id": "atc_wishlist_gap", "min": 4, "max": 30, "step": 1, "unit": "px", "label": "Gap between add to cart and wishlist", "default": 12 },
+    { "type": "range", "id": "section_padding_top", "min": 0, "max": 120, "step": 5, "unit": "px", "label": "Padding top", "default": 40 },
+    { "type": "range", "id": "section_padding_bottom", "min": 0, "max": 120, "step": 5, "unit": "px", "label": "Padding bottom", "default": 40 },
+
+    { "type": "header", "content": "Tabs bar" },
+    { "type": "range", "id": "tabs_margin_top", "min": 0, "max": 120, "step": 5, "unit": "px", "label": "Space above tabs", "default": 50 },
+    { "type": "select", "id": "tab_align", "label": "Tab alignment", "options": [ {"value":"left","label":"Left"}, {"value":"center","label":"Center"} ], "default": "left" },
+    { "type": "range", "id": "tab_font_size", "min": 13, "max": 24, "step": 1, "unit": "px", "label": "Tab label size", "default": 16 },
+    { "type": "checkbox", "id": "tab_bold", "label": "Bold tab labels", "default": true },
+    { "type": "color", "id": "accent_color", "label": "Active underline color", "default": "#43a047" },
+    { "type": "color", "id": "tab_color", "label": "Tab label color", "default": "#5a5a5a" },
+    { "type": "color", "id": "tab_active_color", "label": "Active tab label color", "default": "#1f2226" },
+    { "type": "color", "id": "tab_hover_color", "label": "Tab hover color", "default": "#1f2226" },
+    { "type": "color", "id": "nav_border_color", "label": "Divider / table border color", "default": "#e6e6e6" },
+    { "type": "color", "id": "table_head_bg", "label": "Table header background", "default": "#f7f7f7" },
+    { "type": "color", "id": "table_head_color", "label": "Table header text", "default": "#5a5a5a" },
+    { "type": "color", "id": "table_zebra_bg", "label": "Alternate row background", "default": "#fafafa" }
+  ],
+  "blocks": [
+    {
+      "type": "product_images", "name": "Product images", "limit": 1,
+      "settings": [
+        { "type": "header", "content": "Main image" },
+        { "type": "range", "id": "image_height", "min": 240, "max": 800, "step": 10, "unit": "px", "label": "Image area height — desktop", "default": 460, "info": "The photo scales to fit this box, so a tall image can't stretch the column." },
+        { "type": "range", "id": "image_height_mobile", "min": 180, "max": 600, "step": 10, "unit": "px", "label": "Image area height — mobile", "default": 320 },
+        { "type": "select", "id": "image_fit", "label": "How the image fills the box", "default": "contain", "options": [ { "value": "contain", "label": "Fit whole image (no crop)" }, { "value": "cover", "label": "Fill the box (crop edges)" } ] },
+        { "type": "range", "id": "image_padding", "min": 0, "max": 40, "step": 2, "unit": "px", "label": "Padding inside the box", "default": 12 },
+        { "type": "color", "id": "image_bg", "label": "Box background", "default": "#ffffff" },
+        { "type": "color", "id": "border_color", "label": "Border color", "default": "#eeeeee" },
+        { "type": "range", "id": "radius", "min": 0, "max": 30, "step": 1, "unit": "px", "label": "Corner radius", "default": 12 },
+
+        { "type": "header", "content": "Thumbnails" },
+        { "type": "checkbox", "id": "show_thumbnails", "label": "Show thumbnails", "default": true },
+        { "type": "range", "id": "thumb_limit", "min": 2, "max": 12, "step": 1, "label": "How many thumbnails", "default": 6 },
+        { "type": "range", "id": "thumb_size", "min": 48, "max": 120, "step": 4, "unit": "px", "label": "Thumbnail size", "default": 72 },
+        { "type": "range", "id": "thumb_gap", "min": 4, "max": 20, "step": 1, "unit": "px", "label": "Gap between thumbnails", "default": 10 },
+        { "type": "color", "id": "active_thumb_color", "label": "Selected thumbnail border", "default": "#d80c0c" }
+      ]
+    },
+    {
+      "type": "title", "name": "Title", "limit": 1,
+      "settings": [
+        { "type": "color", "id": "text_color", "label": "Text color", "default": "#1f2226" },
+        { "type": "range", "id": "font_size", "min": 16, "max": 40, "step": 1, "unit": "px", "label": "Font size", "default": 26 },
+        { "type": "range", "id": "line_height", "min": 20, "max": 60, "step": 1, "unit": "px", "label": "Line height", "default": 34 },
+        { "type": "checkbox", "id": "bold", "label": "Bold", "default": true },
+        { "type": "select", "id": "align", "label": "Alignment", "options": [ {"value":"left","label":"Left"}, {"value":"center","label":"Center"}, {"value":"right","label":"Right"} ], "default": "left" }
+      ]
+    },
+    {
+      "type": "price", "name": "Price", "limit": 1,
+      "settings": [
+        { "type": "color", "id": "color", "label": "Price color", "default": "#43a047" },
+        { "type": "color", "id": "compare_color", "label": "Compare-at color", "default": "#9a9a9a" },
+        { "type": "range", "id": "font_size", "min": 14, "max": 40, "step": 1, "unit": "px", "label": "Font size", "default": 24 },
+        { "type": "checkbox", "id": "bold", "label": "Bold", "default": true },
+        { "type": "select", "id": "align", "label": "Alignment", "options": [ {"value":"left","label":"Left"}, {"value":"center","label":"Center"}, {"value":"right","label":"Right"} ], "default": "left" }
+      ]
+    },
+    {
+      "type": "meta", "name": "SKU / Vendor / Type", "limit": 1,
+      "settings": [
+        { "type": "checkbox", "id": "show_sku", "label": "Show SKU", "default": true },
+        { "type": "text", "id": "sku_label", "label": "SKU label", "default": "SKU:" },
+        { "type": "checkbox", "id": "show_vendor", "label": "Show vendor", "default": true },
+        { "type": "text", "id": "vendor_label", "label": "Vendor label", "default": "Vendor:" },
+        { "type": "checkbox", "id": "show_type", "label": "Show type", "default": true },
+        { "type": "text", "id": "type_label", "label": "Type label", "default": "Type:" },
+        { "type": "checkbox", "id": "show_availability", "label": "Show availability", "default": true },
+        { "type": "text", "id": "in_stock_text", "label": "In-stock text", "default": "In stock" },
+        { "type": "text", "id": "out_stock_text", "label": "Out-of-stock text", "default": "Sold out" },
+        { "type": "color", "id": "label_color", "label": "Label color", "default": "#1f2226" },
+        { "type": "checkbox", "id": "bold_label", "label": "Bold labels", "default": true },
+        { "type": "color", "id": "value_color", "label": "Value color", "default": "#5a5a5a" },
+        { "type": "color", "id": "in_stock_color", "label": "In-stock color", "default": "#1d9e75" },
+        { "type": "color", "id": "out_stock_color", "label": "Out-of-stock color", "default": "#d80c0c" }
+      ]
+    },
+    {
+      "type": "tags", "name": "Tags", "limit": 1,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Tags:" },
+        { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#1f2226" },
+        { "type": "color", "id": "text_color", "label": "Tag text", "default": "#444" },
+        { "type": "color", "id": "bg_color", "label": "Tag background", "default": "#f2f2f2" },
+        { "type": "color", "id": "hover_text_color", "label": "Tag text (hover)", "default": "#ffffff" },
+        { "type": "color", "id": "hover_bg_color", "label": "Tag background (hover)", "default": "#43a047" },
+        { "type": "checkbox", "id": "bold", "label": "Bold", "default": false }
+      ]
+    },
+    {
+      "type": "categories", "name": "Categories", "limit": 1,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Categories:" },
+        { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#1f2226" },
+        { "type": "color", "id": "text_color", "label": "Link color", "default": "#43a047" },
+        { "type": "color", "id": "hover_color", "label": "Link color (hover)", "default": "#1f2226" },
+        { "type": "checkbox", "id": "bold", "label": "Bold", "default": false }
+      ]
+    },
+    {
+      "type": "quantity", "name": "Quantity", "limit": 1,
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Quantity" },
+        { "type": "color", "id": "label_color", "label": "Label color", "default": "#1f2226" },
+        { "type": "checkbox", "id": "bold_label", "label": "Bold label", "default": true },
+        { "type": "range", "id": "height", "min": 32, "max": 60, "step": 2, "unit": "px", "label": "Height", "default": 44 },
+        { "type": "range", "id": "radius", "min": 0, "max": 30, "step": 1, "unit": "px", "label": "Corner radius", "default": 8 },
+        { "type": "color", "id": "bg_color", "label": "Background", "default": "#ffffff" },
+        { "type": "color", "id": "border_color", "label": "Border", "default": "#e0e0e0" },
+        { "type": "color", "id": "text_color", "label": "Text / icons", "default": "#1f2226" },
+        { "type": "color", "id": "hover_bg_color", "label": "Button hover background", "default": "#f2f2f2" },
+        { "type": "color", "id": "hover_text_color", "label": "Button hover text", "default": "#43a047" }
+      ]
+    },
+    {
+      "type": "add_to_cart", "name": "Add to cart", "limit": 1,
+      "settings": [
+        { "type": "text", "id": "button_text", "label": "Button text", "default": "Add to cart" },
+        { "type": "text", "id": "soldout_text", "label": "Sold-out text", "default": "Sold out" },
+        { "type": "checkbox", "id": "full_width", "label": "Full width", "default": true },
+        { "type": "range", "id": "font_size", "min": 12, "max": 24, "step": 1, "unit": "px", "label": "Font size", "default": 15 },
+        { "type": "checkbox", "id": "bold", "label": "Bold", "default": true },
+        { "type": "range", "id": "padding_y", "min": 8, "max": 30, "step": 1, "unit": "px", "label": "Padding (top/bottom)", "default": 14 },
+        { "type": "range", "id": "padding_x", "min": 12, "max": 60, "step": 1, "unit": "px", "label": "Padding (left/right)", "default": 28 },
+        { "type": "range", "id": "radius", "min": 0, "max": 40, "step": 1, "unit": "px", "label": "Corner radius", "default": 8 },
+        { "type": "header", "content": "Default colors" },
+        { "type": "color", "id": "bg_color", "label": "Background", "default": "#0aa0c0" },
+        { "type": "color", "id": "text_color", "label": "Text", "default": "#ffffff" },
+        { "type": "color", "id": "border_color", "label": "Border", "default": "#0aa0c0" },
+        { "type": "header", "content": "Added state" },
+        { "type": "text", "id": "added_text", "label": "Added text", "default": "Product added to cart" },
+        { "type": "color", "id": "added_bg_color", "label": "Added background (grey)", "default": "#9e9e9e" },
+        { "type": "color", "id": "added_text_color", "label": "Added text color", "default": "#ffffff" },
+        { "type": "header", "content": "Hover colors" },
+        { "type": "color", "id": "hover_bg_color", "label": "Background (hover)", "default": "#1f2226" },
+        { "type": "color", "id": "hover_text_color", "label": "Text (hover)", "default": "#ffffff" },
+        { "type": "color", "id": "hover_border_color", "label": "Border (hover)", "default": "#1f2226" }
+      ]
+    },
+    {
+      "type": "wishlist", "name": "Wishlist", "limit": 1,
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label (leave blank for icon only)", "info": "Leave empty for an icon-only heart." },
+        { "type": "range", "id": "size", "min": 36, "max": 60, "step": 2, "unit": "px", "label": "Button size", "default": 44 },
+        { "type": "range", "id": "icon_size", "min": 14, "max": 28, "step": 1, "unit": "px", "label": "Icon size", "default": 18 },
+        { "type": "range", "id": "radius", "min": 0, "max": 40, "step": 1, "unit": "px", "label": "Corner radius", "default": 8 },
+        { "type": "checkbox", "id": "bold", "label": "Bold label", "default": false },
+        { "type": "header", "content": "Colors" },
+        { "type": "color", "id": "bg_color", "label": "Background", "default": "#ffffff" },
+        { "type": "color", "id": "border_color", "label": "Border", "default": "#e0e0e0" },
+        { "type": "color", "id": "idle_color", "label": "Icon color (not saved)", "default": "#1f2226" },
+        { "type": "color", "id": "saved_color", "label": "Icon color (saved)", "default": "#d80c0c" },
+        { "type": "color", "id": "hover_color", "label": "Color (hover)", "default": "#d80c0c" },
+        { "type": "color", "id": "hover_bg_color", "label": "Background (hover)", "default": "#fbeaea" }
+      ]
+    },
+    {
+      "type": "parts_checker", "name": "Parts Checker", "limit": 1,
+      "settings": [
+        { "type": "checkbox", "id": "enabled", "label": "Show the Parts Checker", "default": true, "info": "Drag this block directly under Add to cart. Enquiries arrive at Settings → Notifications → Contact form / Sender email." },
+
+        { "type": "header", "content": "Trigger bar" },
+        { "type": "text", "id": "bar_text", "label": "Bar text", "default": "Not sure if it fits? Check it against your car" },
+        { "type": "text", "id": "btn_text", "label": "Button label", "default": "Parts Checker" },
+        { "type": "checkbox", "id": "show_icon", "label": "Show the gear icon", "default": true },
+        { "type": "color", "id": "bar_bg", "label": "Bar background", "default": "#6b6b6b" },
+        { "type": "color", "id": "bar_bg_hover", "label": "Bar background (hover)", "default": "#b91c1c" },
+        { "type": "color", "id": "bar_fg", "label": "Bar text color", "default": "#ffffff" },
+        { "type": "color", "id": "cta_bg", "label": "Button background", "default": "#ffffff" },
+        { "type": "color", "id": "cta_fg", "label": "Button text color", "default": "#1f2226" },
+        { "type": "range", "id": "bar_radius", "min": 3, "max": 24, "step": 1, "unit": "px", "label": "Bar corner radius", "default": 10 },
+        { "type": "range", "id": "bar_padding", "min": 8, "max": 24, "step": 1, "unit": "px", "label": "Bar padding", "default": 12 },
+        { "type": "range", "id": "bar_font_size", "min": 12, "max": 20, "step": 1, "unit": "px", "label": "Bar text size (desktop)", "default": 15 },
+        { "type": "range", "id": "bar_font_size_mobile", "min": 11, "max": 18, "step": 1, "unit": "px", "label": "Bar text size (mobile)", "default": 14 },
+        { "type": "range", "id": "cta_font_size", "min": 11, "max": 18, "step": 1, "unit": "px", "label": "Button text size", "default": 14 },
+
+        { "type": "header", "content": "Helper text & search visibility" },
+        { "type": "checkbox", "id": "show_help_text", "label": "Show a line of help under the bar", "default": true, "info": "Crawlable text — this is what Google and AI answer engines quote." },
+        { "type": "textarea", "id": "help_text", "label": "Help text", "default": "Send us your rego and we will confirm this part fits your exact build before you buy. Our Melbourne parts team replies by email, usually within one business day." },
+        { "type": "color", "id": "help_color", "label": "Help text color", "default": "#6b7280" },
+        { "type": "checkbox", "id": "faq_schema", "label": "Add FAQ structured data", "default": true, "info": "Only added while the help text above is visible, which is what Google requires." },
+        { "type": "text", "id": "faq_question", "label": "FAQ question", "default": "Will this part fit my car?" },
+
+        { "type": "header", "content": "Pop-up" },
+        { "type": "text", "id": "modal_title", "label": "Title", "default": "Check this part fits your car" },
+        { "type": "textarea", "id": "modal_sub", "label": "Intro line", "default": "Give us your rego and a quick description of your car. We check it against the manufacturer data and email you back." },
+        { "type": "range", "id": "modal_width", "min": 480, "max": 860, "step": 20, "unit": "px", "label": "Pop-up width", "default": 680 },
+        { "type": "checkbox", "id": "show_product_card", "label": "Show the product being asked about", "default": true },
+        { "type": "text", "id": "prod_eyebrow", "label": "Product strip label", "default": "You're asking about" },
+        { "type": "text", "id": "sku_label_text", "label": "Part number label", "default": "Part number" },
+        { "type": "color", "id": "accent", "label": "Accent / submit button", "default": "#b91c1c" },
+        { "type": "color", "id": "accent_hover", "label": "Accent (hover)", "default": "#991b1b" },
+
+        { "type": "header", "content": "Which fields are required" },
+        { "type": "checkbox", "id": "require_surname", "label": "Surname is required", "default": false },
+        { "type": "checkbox", "id": "require_comment", "label": "Vehicle description is required", "default": false, "info": "The minimum character count below only applies while this is on." },
+        { "type": "checkbox", "id": "require_rego", "label": "Registration is required", "default": true },
+        { "type": "checkbox", "id": "require_state", "label": "State is required", "default": true },
+        { "type": "checkbox", "id": "require_phone", "label": "Mobile is required", "default": false },
+        { "type": "paragraph", "content": "First name and email are always required." },
+
+        { "type": "header", "content": "Field content" },
+        { "type": "checkbox", "id": "show_vin", "label": "Show the VIN field (always optional for the customer)", "default": true },
+        { "type": "text", "id": "vin_hint", "label": "VIN hint", "default": "On the compliance plate or your rego papers. Skip it if you do not have it handy." },
+        { "type": "text", "id": "rego_hint", "label": "Registration hint", "default": "We use your plate to match the exact build of your car." },
+        { "type": "text", "id": "state_options", "label": "States", "default": "VIC, NSW, QLD, SA, WA, TAS, NT, ACT", "info": "Comma separated." },
+        { "type": "text", "id": "comment_label", "label": "Vehicle description label", "default": "Tell us about your car" },
+        { "type": "textarea", "id": "comment_placeholder", "label": "Vehicle description placeholder", "default": "Year, make, model, engine and body type — e.g. 2014 Toyota Hilux 3.0L diesel dual cab." },
+        { "type": "range", "id": "comment_min", "min": 0, "max": 100, "step": 5, "label": "Minimum characters", "default": 10 },
+        { "type": "range", "id": "comment_max", "min": 100, "max": 1000, "step": 50, "label": "Maximum characters", "default": 500 },
+        { "type": "checkbox", "id": "remember_details", "label": "Remember the customer's details on this device", "default": true },
+
+        { "type": "header", "content": "Consent & buttons" },
+        { "type": "checkbox", "id": "show_consent", "label": "Show the marketing consent tick box", "default": true },
+        { "type": "checkbox", "id": "consent_checked", "label": "Ticked by default", "default": false, "info": "Leave off to stay on the right side of the Spam Act." },
+        { "type": "text", "id": "consent_text", "label": "Consent wording", "default": "Email me Metro Auto offers and fitment updates." },
+        { "type": "text", "id": "submit_text", "label": "Submit button", "default": "Check my fitment" },
+        { "type": "text", "id": "sending_text", "label": "Sending label", "default": "Sending…" },
+        { "type": "text", "id": "privacy_text", "label": "Line under the button", "default": "We only use these details to confirm fitment and reply to you." },
+
+        { "type": "header", "content": "After sending" },
+        { "type": "text", "id": "success_title", "label": "Success heading", "default": "Enquiry sent" },
+        { "type": "textarea", "id": "success_text", "label": "Success message", "default": "Our parts team checks fitment against your rego and replies by email, usually within one business day." },
+        { "type": "text", "id": "success_btn", "label": "Success button", "default": "Back to the part" }
+      ]
+    },
+    {
+      "type": "tab", "name": "Tab",
+      "settings": [
+        { "type": "text", "id": "tab_label", "label": "Tab label", "default": "Description" },
+        { "type": "header", "content": "Content source" },
+        { "type": "select", "id": "source", "label": "Content comes from", "options": [ { "value": "description", "label": "Product description (from Shopify)" }, { "value": "richtext", "label": "Rich text (typed / dynamic source)" }, { "value": "metafield", "label": "Product metafield" }, { "value": "metaobject", "label": "Metaobject reference" } ], "default": "description", "info": "Pick 'Product description' to pull the real Shopify description. Leave a rich-text tab empty to keep it blank for later." },
+        { "type": "text", "id": "content_heading", "label": "Content heading (optional)", "info": "Bold heading shown above the content, inside the tab." },
+        { "type": "richtext", "id": "body", "label": "Rich text content", "info": "Leave empty for a blank placeholder tab." },
+        { "type": "checkbox", "id": "fallback_to_description", "label": "Fall back to product description if empty", "default": false },
+        { "type": "text", "id": "metafield_key", "label": "Product metafield key", "info": "Format: namespace.key (e.g. custom.specs)." },
+        { "type": "text", "id": "metaobject_key", "label": "Metaobject metafield key", "info": "A product metafield referencing a metaobject or list. Format: namespace.key (e.g. custom.fitment)." },
+        { "type": "text", "id": "metaobject_fields", "label": "Metaobject fields (table columns)", "info": "Comma-separated field keys, e.g. make, model, engine, body, years." },
+        { "type": "header", "content": "Content style" },
+        { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#1f2226" },
+        { "type": "range", "id": "heading_size", "min": 14, "max": 30, "step": 1, "unit": "px", "label": "Heading size", "default": 16 },
+        { "type": "checkbox", "id": "bold_heading", "label": "Bold heading", "default": true },
+        { "type": "color", "id": "text_color", "label": "Text color", "default": "#3d3d3d" },
+        { "type": "range", "id": "font_size", "min": 12, "max": 20, "step": 1, "unit": "px", "label": "Text size", "default": 15 },
+        { "type": "range", "id": "line_height", "min": 1.2, "max": 2.2, "step": 0.1, "label": "Line height", "default": 1.7 },
+        { "type": "color", "id": "link_color", "label": "Link color", "default": "#43a047" },
+        { "type": "color", "id": "link_hover_color", "label": "Link hover color", "default": "#1f2226" }
+      ]
+    },
+    {
+      "type": "complementary", "name": "Suggestions", "limit": 1,
+      "settings": [
+        { "type": "checkbox", "id": "show_suggestions", "label": "Show suggestions", "default": true, "info": "Turns the whole suggestions area on/off. It shows below the tabs." },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Pair it with" },
+        { "type": "select", "id": "intent", "label": "Products come from", "options": [ { "value": "complementary", "label": "Complementary (Search & Discovery \"Pair it with\")" }, { "value": "related", "label": "Related products (automatic)" } ], "default": "complementary" },
+        { "type": "range", "id": "limit", "min": 2, "max": 10, "step": 1, "label": "Maximum products", "default": 4 },
+        { "type": "range", "id": "margin_top", "min": 0, "max": 120, "step": 5, "unit": "px", "label": "Space above suggestions", "default": 50 },
+
+        { "type": "header", "content": "Card size" },
+        { "type": "range", "id": "columns", "min": 2, "max": 6, "step": 1, "label": "Cards per row (desktop)", "default": 4 },
+        { "type": "range", "id": "columns_mobile", "min": 1, "max": 3, "step": 1, "label": "Cards per row (mobile)", "default": 2 },
+        { "type": "range", "id": "gap", "min": 8, "max": 40, "step": 2, "unit": "px", "label": "Gap between cards", "default": 16 },
+        { "type": "range", "id": "image_height", "min": 80, "max": 320, "step": 10, "unit": "px", "label": "Image height", "default": 140 },
+        { "type": "select", "id": "image_fit", "label": "Image fit", "options": [ { "value": "contain", "label": "Fit whole image" }, { "value": "cover", "label": "Fill / crop" } ], "default": "contain" },
+        { "type": "range", "id": "card_padding", "min": 0, "max": 30, "step": 1, "unit": "px", "label": "Card padding", "default": 12 },
+        { "type": "range", "id": "radius", "min": 0, "max": 24, "step": 1, "unit": "px", "label": "Corner radius", "default": 10 },
+        { "type": "range", "id": "title_lines", "min": 1, "max": 4, "step": 1, "label": "Title lines before trimming", "default": 2 },
+
+        { "type": "header", "content": "What to show on the card" },
+        { "type": "checkbox", "id": "show_price", "label": "Show price", "default": true },
+        { "type": "checkbox", "id": "show_atc", "label": "Show add to cart", "default": true },
+        { "type": "checkbox", "id": "show_wishlist", "label": "Show wishlist heart", "default": true },
+        { "type": "text", "id": "button_text", "label": "Button text", "default": "Add to cart" },
+        { "type": "text", "id": "added_text", "label": "Added text", "default": "Added" },
+        { "type": "text", "id": "soldout_text", "label": "Sold-out text", "default": "Sold out" },
+
+        { "type": "header", "content": "Colors & type" },
+        { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#1f2226" },
+        { "type": "range", "id": "heading_size", "min": 14, "max": 32, "step": 1, "unit": "px", "label": "Heading size", "default": 20 },
+        { "type": "checkbox", "id": "bold_heading", "label": "Bold heading", "default": true },
+        { "type": "color", "id": "card_bg", "label": "Card background", "default": "#ffffff" },
+        { "type": "color", "id": "image_bg", "label": "Image background", "default": "#ffffff" },
+        { "type": "color", "id": "border_color", "label": "Card border", "default": "#e6e6e6" },
+        { "type": "color", "id": "hover_border_color", "label": "Card border (hover)", "default": "#0aa0c0" },
+        { "type": "color", "id": "title_color", "label": "Title color", "default": "#1f2226" },
+        { "type": "color", "id": "title_hover_color", "label": "Title color (hover)", "default": "#0aa0c0" },
+        { "type": "range", "id": "title_size", "min": 11, "max": 20, "step": 1, "unit": "px", "label": "Title size", "default": 14 },
+        { "type": "checkbox", "id": "bold_title", "label": "Bold title", "default": false },
+        { "type": "color", "id": "price_color", "label": "Price color", "default": "#43a047" },
+        { "type": "color", "id": "compare_color", "label": "Compare-at color", "default": "#9a9a9a" },
+        { "type": "range", "id": "price_size", "min": 11, "max": 22, "step": 1, "unit": "px", "label": "Price size", "default": 15 },
+        { "type": "color", "id": "btn_bg", "label": "Button background", "default": "#0aa0c0" },
+        { "type": "color", "id": "btn_text", "label": "Button text", "default": "#ffffff" },
+        { "type": "color", "id": "btn_hover_bg", "label": "Button background (hover)", "default": "#1f2226" },
+        { "type": "color", "id": "btn_hover_text", "label": "Button text (hover)", "default": "#ffffff" },
+        { "type": "color", "id": "added_bg_color", "label": "Added background (grey)", "default": "#9e9e9e" },
+        { "type": "color", "id": "added_text_color", "label": "Added text color", "default": "#ffffff" },
+        { "type": "range", "id": "btn_font_size", "min": 11, "max": 18, "step": 1, "unit": "px", "label": "Button font size", "default": 13 },
+        { "type": "range", "id": "btn_padding_y", "min": 4, "max": 20, "step": 1, "unit": "px", "label": "Button height padding", "default": 9 },
+        { "type": "range", "id": "btn_radius", "min": 0, "max": 30, "step": 1, "unit": "px", "label": "Button corner radius", "default": 6 },
+        { "type": "color", "id": "wishlist_bg", "label": "Heart background", "default": "#ffffff" },
+        { "type": "color", "id": "wishlist_idle_color", "label": "Heart color (not saved)", "default": "#1f2226" },
+        { "type": "color", "id": "wishlist_saved_color", "label": "Heart color (saved)", "default": "#d80c0c" },
+        { "type": "range", "id": "wishlist_size", "min": 24, "max": 48, "step": 2, "unit": "px", "label": "Heart button size", "default": 30 },
+        { "type": "range", "id": "wishlist_icon_size", "min": 10, "max": 22, "step": 1, "unit": "px", "label": "Heart icon size", "default": 14 }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Template New",
+      "blocks": [
+        { "type": "product_images" },
+        { "type": "title" },
+        { "type": "price" },
+        { "type": "meta" },
+        { "type": "quantity" },
+        { "type": "add_to_cart" },
+        { "type": "wishlist" },
+        { "type": "parts_checker" },
+        { "type": "tab", "settings": { "tab_label": "Description", "source": "description", "content_heading": "Description" } },
+        { "type": "tab", "settings": { "tab_label": "Specifications", "source": "metaobject", "metaobject_key": "custom.specifications", "metaobject_fields": "brand, part_number, position, material" } },
+        { "type": "tab", "settings": { "tab_label": "Compatible Vehicles", "source": "metaobject", "metaobject_key": "custom.fitment", "metaobject_fields": "make, model, engine, body, years" } },
+        { "type": "tab", "settings": { "tab_label": "Shipping & Returns", "source": "richtext", "content_heading": "Shipping & Returns" } },
+        { "type": "tab", "settings": { "tab_label": "Warranty", "source": "richtext", "content_heading": "Warranty" } },
+        { "type": "tab", "settings": { "tab_label": "More Information", "source": "richtext", "content_heading": "More Information" } },
+        { "type": "complementary" }
+      ]
+    }
+  ]
+}
+{% endschema %}

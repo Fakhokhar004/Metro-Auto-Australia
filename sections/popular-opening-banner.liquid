@@ -1,0 +1,963 @@
+<div class="product-area pb-150 popular__opening__banner" id="section-{{ section.id }}">
+	<div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+    {% if section.settings.section_title != '' or section.settings.section_sub_title != '' %}
+    <div class="section-title {{ section.settings.title_align }} pb-40">
+      {% if section.settings.section_title != '' %}
+      <h2>{{ section.settings.section_title }}</h2>
+      {% endif %}
+
+      {% if section.settings.section_sub_title != '' %}
+      <p>{{ section.settings.section_sub_title }}</p>
+      {% endif %}
+    </div>
+    {% endif %}
+    
+    <div class="product-menu-banner-wrapper row">
+      
+      
+      {% if section.settings.popular__item__enable %}
+      <div class="col-lg-{{ section.settings.popular_column_handle }} col-md-{{ section.settings.popular_column_handle_md }} col-sm-{{ section.settings.popular_column_handle_sm }} col-12 {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+
+        <div class="row">
+
+
+          {%- for block in section.blocks -%}
+          {%- case block.type -%}
+          {%- when 'popular-item' -%}
+
+
+          {%- liquid
+            assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+            assign fetch_priority = 'auto'
+            if section.index == 1
+              assign fetch_priority = 'high'
+            endif
+            assign image_class = 'lazyload-main-image animated responsive-image__image'
+            assign lazy_load = 'lazy'
+          -%}
+            
+            
+          <div class="col-xl-{{ block.settings.popular__inner__column__handle }} col-lg-{{ block.settings.popular__inner__column__handle__lg }} col-md-{{ block.settings.popular__inner__column__handle__md }} col-12">
+            <div class="popular__menu__list class-{{block.id}}">
+
+              <div class="popular__thumb">
+                  <a href="{{ block.settings.popular__thumb__url }}" class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.popular__thumb.aspect_ratio | times: 100}}%;">
+                  {%- if block.settings.popular__thumb -%}
+                    
+                    {% assign image_height = block.settings.popular__thumb.width | divided_by: block.settings.popular__thumb.aspect_ratio %}
+                    {{ block.settings.popular__thumb | image_url: width: 3840 | image_tag: width: block.settings.popular__thumb.width, height: image_height, 
+                    widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt}}  
+                    
+                  {%- else -%}
+                  <img loading="lazy"  class="animated" src="https://via.placeholder.com/100x100" alt="{{ image.alt }}">
+                  {%- endif -%}
+                </a>
+              </div>
+
+              <div class="popular__content">
+
+                <div class="popular__content__wrap">
+
+                  {% if block.settings.popular__title !='' %}
+                  <h3 class="popular__title">
+                    <a href="{{block.settings.popular__thumb__url}}">{{block.settings.popular__title}}</a>
+                  </h3>
+                  {%- endif -%}
+
+                  {% if block.settings.popular__description !='' %}
+                  <p>{{ block.settings.popular__description }}</p>
+                  {%- endif -%}
+
+                </div>
+
+                {% if block.settings.popular__price !='' %}
+                <div class="popular__price">
+
+                  {{ block.settings.popular__price }} 
+
+                  {% if block.settings.popular__discount__price !='' %}
+                  <del>{{ block.settings.popular__discount__price }}</del>
+                  {%- endif -%}
+
+                </div>
+                {%- endif -%}
+
+              </div>
+
+            </div>
+          </div>
+
+
+          {% if block.settings.popular__content__custom__color %}
+          <style>
+
+            #section-{{ section.id }} .popular__menu__list.class-{{block.id}} .popular__content .popular__title a,
+            #section-{{ section.id }} .popular__menu__list.class-{{block.id}} .popular__content .popular__price del,
+            #section-{{ section.id }} .popular__menu__list.class-{{block.id}} .popular__content .popular__content__wrap p{
+              color:{{block.settings.popular__content__color}};
+            }
+
+            #section-{{ section.id }} .popular__menu__list.class-{{block.id}} {
+              border: 1px solid {{block.settings.popular__content__border__color}};
+            }
+
+            #section-{{ section.id }} .popular__menu__list.class-{{block.id}} .popular__content .popular__price:before {
+              background: {{block.settings.popular__content__border__color}};
+            }
+
+            #section-{{ section.id }} .popular__menu__list.class-{{block.id}} .popular__content .popular__title a:hover,
+            #section-{{ section.id }} .popular__menu__list.class-{{block.id}} .popular__content .popular__price{
+              color:{{block.settings.popular__menu__hover}};
+            }
+
+          </style>
+          {% endif %}
+
+
+          {%- endcase -%}
+          {%- endfor -%}
+
+
+        </div>
+
+      </div>
+      {% endif %}
+      
+
+      {% if section.settings.popular__menu__enable %}
+      <div class="col-lg-{{section.settings.menu_column_handle}} col-md-{{section.settings.menu_column_handle_md}} col-sm-{{section.settings.menu_column_handle_sm}} col-12">
+
+        <div class="featured-category-sub-menu">
+
+          {% if section.settings.menu_title !='' %}
+          <h4>{{ section.settings.menu_title }}</h4>
+          {% endif %}
+
+          <ul>
+            {% assign menu = section.settings.menu_handle %}
+            {% for link in linklists[menu].links %}
+            {% assign childlink_handle = link.title | handle %}
+            <li class="ctg__menus{% if link.active %}active{% endif %}"><a href="{{ link.url }}">{{ link.title }}</a></li>            
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endif %}
+
+      
+      {% if section.settings.popular__banner__enable %}
+
+
+        {%- liquid
+          assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+          assign fetch_priority = 'auto'
+          if section.index == 1
+            assign fetch_priority = 'high'
+          endif
+          assign image_class = 'lazyload-main-image animated responsive-image__image'
+          assign lazy_load = 'lazy'
+        -%}
+        
+      <div class="col-lg-{{section.settings.banner_column_handle}} col-md-{{section.settings.banner_column_handle_md}} col-sm-{{section.settings.banner_column_handle_sm}} col-12">
+        <div class="single-banner featured_banner">
+          <a href="{{ section.settings.featured_banner_url }}" class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: section.settings.featured_banner.aspect_ratio | times: 100}}%;">
+            {%- if section.settings.featured_banner -%}
+
+              {% assign image_height = section.settings.featured_banner.width | divided_by: section.settings.featured_banner.aspect_ratio %}
+              {{ section.settings.featured_banner | image_url: width: 3840 | image_tag: width: section.settings.featured_banner.width, height: image_height, 
+              widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt}}
+              
+            {%- else -%}
+            <img loading="lazy"  class="animated" src="https://via.placeholder.com/270x450" alt="{{ image.alt }}">
+            {%- endif -%}
+          </a>
+        </div>
+      </div>
+      {% endif %}
+      
+      
+    </div>
+  </div>
+</div>
+
+{%- render 'section-style' -%}
+
+
+
+
+{% if section.settings.section_title_custom_color %}
+<style>
+  
+  {%- assign section_title_font = section.settings.section_title_font -%}
+  {%- assign section_sub_title_font = section.settings.section_sub_title_font -%}
+  {{ section_title_font | font_face }}
+  {{ section_sub_title_font | font_face }}
+  
+  
+  #section-{{ section.id }} .section-title h2{
+    font-family: {{ section_title_font.family }}, {{ section_title_font.fallback_families }};
+    font-style: {{ section_title_font.style }};
+    font-weight: {{ section_title_font.weight }};
+    color: {{ section.settings.section_title_color }};
+    font-size:{{ section.settings.section_title_font_size }}px;
+    line-height: {{section.settings.section_title_line_height}}px;
+    margin-bottom: {{section.settings.section_title_margin_bottom}}px;
+  }
+  
+  #section-{{ section.id }} .section-title p{
+    font-family: {{ section_sub_title_font.family }}, {{ section_sub_title_font.fallback_families }};
+    font-style: {{ section_sub_title_font.style }};
+    font-weight: {{ section_sub_title_font.weight }};
+    color: {{ section.settings.section_subtitle_color }};
+    font-size:{{ section.settings.section_des_font_size }}px;
+    line-height: {{section.settings.section_sub_title_line_height}}px;
+    margin-bottom: {{section.settings.section_sub_title_margin_bottom}}px;
+  }
+  
+  
+  @media (min-width: 768px) and (max-width: 1200px) {
+
+    #section-{{ section.id }} .section-title h2{
+      font-size:{{ section.settings.section_title_font_size_md }}px;
+      line-height: {{section.settings.section_title_line_height_md}}px;
+    }
+    #section-{{ section.id }} .section-title p{
+      font-size:{{ section.settings.section_des_font_size_md }}px;
+      line-height: {{section.settings.section_sub_title_line_height_md}}px;
+    }
+  }
+
+  @media (min-width: 300px) and (max-width: 767px) {    
+    
+    #section-{{ section.id }} .section-title h2{
+      font-size:{{ section.settings.section_title_font_size_sm }}px;
+      line-height: {{section.settings.section_title_line_height_sm}}px;
+    }
+    #section-{{ section.id }} .section-title p{
+      font-size:{{ section.settings.section_des_font_size_sm }}px;
+      line-height: {{section.settings.section_sub_title_line_height_sm}}px;
+    }
+  }
+
+</style>
+{% endif %}
+
+
+
+{% schema %}
+  {
+    "name": "Popular opening banner",
+    "settings": [
+              {
+                "type": "select",
+                "id": "section_width",
+                "label": "Section Width",
+                "options":[
+                      {
+                          "label": "Full Width",
+                          "value": "full_width"
+                      },
+                      {
+                          "label": "Box Width",
+                          "value": "box_width"
+                      },
+                      {
+                          "label": "Default Width",
+                          "value": "default"
+                      }
+                  ],
+                  "default": "default"
+              },
+
+
+		{
+			"type": "header",
+            "content": "Section Title"
+        },
+
+        {
+          "type": "checkbox",
+          "id": "section_title_custom_color",
+          "label": "Section Title Custom Style Enable",
+          "default": false
+        },
+
+		{
+            "type": "text",
+            "id": "section_title",
+            "label": "Title",
+            "default": "New Arrivals"
+        },
+
+        {
+          "type": "color",
+          "id": "section_title_color",
+          "label": "Title Color",
+          "default": "#1f2226"
+        },
+          {
+            "type": "font_picker",
+            "id": "section_title_font",
+            "label": "Font Family: Section Title Font",
+            "default": "poppins_n6"
+          },
+          {
+              "type": "header",
+              "content": "Main Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_title_font_size",
+            "label": "Font Size: Font Size",
+            "default": "30",
+            "info": "Section Title Font Size"
+          }, 
+          {
+            "type":      "range",
+            "id":        "section_title_line_height",
+            "min":       20,
+            "max":        150,
+            "step":       5,
+            "unit":       "px",
+            "label":     "Section Title Line Height",
+            "default":   40
+          },
+          {
+              "type": "header",
+              "content": "Medium Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_title_font_size_md",
+            "label": "Font Size: Font Size (MD)",
+            "default": "24",
+            "info": "Section Title Font Size"
+          }, 
+          {
+            "type":      "range",
+            "id":        "section_title_line_height_md",
+            "min":       20,
+            "max":        150,
+            "step":       5,
+            "unit":       "px",
+            "label":     "Section Title Line Height (MD)",
+            "default":   35
+          },
+          {
+              "type": "header",
+              "content": "Small Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_title_font_size_sm",
+            "label": "Font Size: Font Size (SM)",
+            "default": "20",
+            "info": "Section Title Font Size"
+          }, 
+          {
+            "type":      "range",
+            "id":        "section_title_line_height_sm",
+            "min":       20,
+            "max":        150,
+            "step":       5,
+            "unit":       "px",
+            "label":     "Section Title Line Height (SM)",
+            "default":   30
+          },
+          {
+            "type":      "range",
+            "id":        "section_title_margin_bottom",
+            "min":       0,
+            "max":        50,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Title margin Bottom",
+            "default":   10
+          },
+
+
+		{
+            "type": "textarea",
+            "id": "section_sub_title",
+            "label": "Subtitle",
+            "default": "Contrary to popular belief, Lorem Ipsum is not simply random text."
+        },
+
+        {
+          "type": "color",
+          "id": "section_subtitle_color",
+          "label": "Subtitle Color",
+          "default": "#5a5a5a"
+        },	
+          {
+            "type": "font_picker",
+            "id": "section_sub_title_font",
+            "label": "Font Family: Section Sub Title Font",
+            "default": "poppins_n6"
+          },
+          {
+              "type": "header",
+              "content": "Main Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_des_font_size",
+            "label": "Font Size: Font Size",
+            "default": "14",
+            "info": "Section Description Font Size"
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_line_height",
+            "min":       20,
+            "max":        100,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title Line Height",
+            "default":   24
+          },
+          {
+              "type": "header",
+              "content": "Medium Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_des_font_size_md",
+            "label": "Font Size: Font Size (MD)",
+            "default": "14",
+            "info": "Section Description Font Size (MD)"
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_line_height_md",
+            "min":       20,
+            "max":        100,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title Line Height (MD)",
+            "default":   24
+          },
+
+          {
+              "type": "header",
+              "content": "Small Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_des_font_size_sm",
+            "label": "Font Size: Font Size (SM)",
+            "default": "14",
+            "info": "Section Description Font Size (SM)"
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_line_height_sm",
+            "min":       20,
+            "max":        100,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title Line Height (SM)",
+            "default":   24
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_margin_bottom",
+            "min":       0,
+            "max":        50,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title margin Bottom",
+            "default":   10
+          },
+
+		{
+                "type": "select",
+                "id": "title_align",
+                "label": "Title Align",
+                "options":[
+                      {
+                          "label": "Text Left",
+                          "value": "text-left"
+                      },
+                      {
+                          "label": "Text Center",
+                          "value": "text-center"
+                      },
+                      {
+                          "label": "Text Right",
+                          "value": "text-right"
+                      }
+                  ],
+                  "default": "text-center"
+              },
+
+
+
+            {
+                "type": "header",
+                "content": "Popular Item"
+            },
+            {
+              "type": "checkbox",
+              "id": "popular__item__enable",
+              "label": "Popular Item Enable",
+              "default": true
+            },
+            {
+			"type": "range",
+              "id": "popular_column_handle",
+              "label": "Popular Item Main Column",
+                "min": 2,
+                "max": 12,
+                "step": 1,
+                "default": 9,
+				"unit": "/12"
+            },
+            {
+			"type": "range",
+              "id": "popular_column_handle_md",
+              "label": "Popular Item Medium Column",
+                "min": 2,
+                "max": 12,
+                "step": 1,
+                "default": 9,
+				"unit": "/12"
+            },
+            {
+			"type": "range",
+              "id": "popular_column_handle_sm",
+              "label": "Popular Item Small Column",
+                "min": 2,
+                "max": 12,
+                "step": 1,
+                "default": 9,
+				"unit": "/12"
+            },
+
+            {
+              "type": "checkbox",
+              "id": "popular__menu__enable",
+              "label": "Opening Time Enable",
+              "default": true
+            },
+            {
+                "type": "header",
+                "content": "Sub Menu"
+            },
+            {
+			"type": "range",
+              "id": "menu_column_handle",
+              "label": "Menu Column",
+                "min": 2,
+                "max": 12,
+                "step": 1,
+                "default": 3,
+				"unit": "/12"
+            },
+            {
+			"type": "range",
+              "id": "menu_column_handle_md",
+              "label": "Menu Medium Column",
+                "min": 2,
+                "max": 12,
+                "step": 1,
+                "default": 3,
+				"unit": "/12"
+            },
+            {
+			"type": "range",
+              "id": "menu_column_handle_sm",
+              "label": "Menu Small Column",
+                "min": 2,
+                "max": 12,
+                "step": 1,
+                "default": 3,
+				"unit": "/12"
+            },
+            {
+              "type": "header",
+              "content": "Custom Menu Area"
+            },
+            {
+                "type": "text",
+                "id": "menu_title",
+                "label": "Menu Title",
+                "default": "Categories Menu"
+            },
+            {
+              "type": "link_list",
+              "id": "menu_handle",
+              "label": "Menu",
+              "info": "Select Custom Menu"
+            }, 
+
+
+            {
+              "type": "checkbox",
+              "id": "popular__banner__enable",
+              "label": "Popular Banner Enable",
+              "default": true
+            },
+            {
+              "type": "header",
+              "content": "Banner Area"
+            },
+            {
+			"type": "range",
+              "id": "banner_column_handle",
+              "label": "Banner Column",
+                "min": 2,
+                "max": 12,
+                "step": 1,
+                "default": 3,
+				"unit": "/12"
+            },
+            {
+			"type": "range",
+              "id": "banner_column_handle_md",
+              "label": "Banner Medium Column",
+                "min": 2,
+                "max": 12,
+                "step": 1,
+                "default": 3,
+				"unit": "/12"
+            },
+            {
+			"type": "range",
+              "id": "banner_column_handle_sm",
+              "label": "Banner Small Column",
+                "min": 2,
+                "max": 12,
+                "step": 1,
+                "default": 3,
+				"unit": "/12"
+            },
+            {
+              "type": "image_picker",
+              "id": "featured_banner",
+              "label": "Banner Image"
+            },
+            {
+              "type": "url",
+              "id": "featured_banner_url",
+              "label": "URL",
+              "default": "\/collections\/all"
+            }
+
+		
+    ],
+	"blocks":[
+
+	   {
+          "type": "popular-item",
+          "name": "Popular Item",
+          "settings": [
+
+            {
+                "type": "header",
+                "content": "Popular Item Inner Column"
+            },
+			{
+			"type": "range",
+              "id": "popular__inner__column__handle",
+              "label": "Popular Inner Column Main",
+                "min": 4,
+                "max": 12,
+                "step": 1,
+                "default": 12,
+				"unit": "/12"
+            },
+			{
+			"type": "range",
+              "id": "popular__inner__column__handle__lg",
+              "label": "Popular Inner Column large",
+                "min": 4,
+                "max": 12,
+                "step": 1,
+                "default": 12,
+				"unit": "/12"
+            },
+			{
+			"type": "range",
+              "id": "popular__inner__column__handle__md",
+              "label": "Popular Inner Column Medium",
+                "min": 4,
+                "max": 12,
+                "step": 1,
+                "default": 12,
+				"unit": "/12"
+            },
+
+
+            {
+                "type": "header",
+                "content": "Popular Item"
+            },
+            {
+              "type": "image_picker",
+              "id": "popular__thumb",
+              "label": "Item Image"
+            },
+            {
+              "type": "url",
+              "id": "popular__thumb__url",
+              "label": "URL",
+              "default": "\/collections\/all"
+            },
+
+            {
+                "type": "text",
+                "id": "popular__title",
+                "label": "Popular Item Title",
+                "default": "Americano Rosted Coffee"
+            },
+            {
+                "type": "textarea",
+                "id": "popular__description",
+                "label": "Popular Item Description ",
+                "default": "It is a long established fact that a reader will be distracted by the readable."
+            },
+            {
+                "type": "text",
+                "id": "popular__price",
+                "label": "Popular Item Price",
+                "default": "$19.99"
+            },
+            {
+                "type": "text",
+                "id": "popular__discount__price",
+                "label": "Popular Item Discount Price"
+            },
+
+            {
+              "type": "checkbox",
+              "id": "popular__content__custom__color",
+              "label": "Popular Content Custom Color Enable",
+              "default": false
+            },
+
+			{
+			  "type": "color",
+			  "id": "popular__content__color",
+			  "label": "Popular Content Color",
+			  "default": "#333"
+			},
+			{
+			  "type": "color",
+			  "id": "popular__content__border__color",
+			  "label": "Popular Content Border Color",
+			  "default": "#eee"
+			},
+			{
+			  "type": "color",
+			  "id": "popular__menu__hover",
+			  "label": "Popular Title Hover Color",
+			  "default": "#c7a17a"
+			}
+
+
+          ]
+       },
+	   {
+          "type": "section_padding",
+          "name": "Section Padding",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 100
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 80
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 60
+			}
+          ]
+       },
+	   {
+          "type": "section_margin",
+          "name": "Section Margin",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			}
+          ]
+       },
+	   {
+          "type": "section_background",
+          "name": "Section Background",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "image_picker",
+			  "id": "section_bg_image",
+			  "label": "BG Image"
+			},
+			{
+			  "type": "color",
+			  "id": "section_bg_color",
+			  "label": "BG Color",
+			  "default": "#ffffff"
+			}
+          ]
+       }
+	],
+	"presets": [
+		{
+		  "name": "Popular opening banner",
+		  "category": "3. collections",
+		  "blocks":[
+				{
+					"type": "section_padding"
+				},
+				{
+					"type": "popular-item"
+				},
+				{
+					"type": "popular-item"
+				},
+				{
+					"type": "popular-item"
+				},
+				{
+					"type": "popular-item"
+				}
+
+			]
+		}
+	]
+  }
+{% endschema %}

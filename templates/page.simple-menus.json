@@ -1,0 +1,495 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "page-template",
+      "disabled": true,
+      "settings": {}
+    },
+    "16376502943f67e7d2": {
+      "type": "popular-opening-banner",
+      "blocks": {
+        "1637650294275fcd29-0": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 100,
+            "section_padding_bottom": 80,
+            "section_padding_top_md": 80,
+            "section_padding_bottom_md": 60,
+            "section_padding_top_xs": 60,
+            "section_padding_bottom_xs": 40
+          }
+        },
+        "1637650294275fcd29-1": {
+          "type": "popular-item",
+          "settings": {
+            "popular__inner__column__handle": 12,
+            "popular__inner__column__handle__lg": 12,
+            "popular__inner__column__handle__md": 12,
+            "popular__thumb": "shopify://shop_images/5_2d14f3d3-06a2-4f45-b2f3-980c40604ec5.png",
+            "popular__thumb__url": "shopify://collections/all",
+            "popular__title": "Americano Rosted Coffee",
+            "popular__description": "It is a long established fact that a reader will be distracted by the readable.",
+            "popular__price": "$19.99",
+            "popular__discount__price": "$26.99",
+            "popular__content__custom__color": false,
+            "popular__content__color": "#ffffff",
+            "popular__content__border__color": "#eeeeee",
+            "popular__menu__hover": "#c7a17a"
+          }
+        },
+        "1637650294275fcd29-2": {
+          "type": "popular-item",
+          "settings": {
+            "popular__inner__column__handle": 12,
+            "popular__inner__column__handle__lg": 12,
+            "popular__inner__column__handle__md": 12,
+            "popular__thumb": "shopify://shop_images/4_a409c7a4-bfc7-4cc6-b828-8aec4f7fee9c.png",
+            "popular__thumb__url": "shopify://collections/all",
+            "popular__title": "Maxicans Rested Coffee",
+            "popular__description": "It is a long established fact that a reader will be distracted by the readable.",
+            "popular__price": "$19.99",
+            "popular__discount__price": "",
+            "popular__content__custom__color": false,
+            "popular__content__color": "#333333",
+            "popular__content__border__color": "#eeeeee",
+            "popular__menu__hover": "#c7a17a"
+          }
+        },
+        "1637650294275fcd29-3": {
+          "type": "popular-item",
+          "settings": {
+            "popular__inner__column__handle": 12,
+            "popular__inner__column__handle__lg": 12,
+            "popular__inner__column__handle__md": 12,
+            "popular__thumb": "shopify://shop_images/3_43f90d59-c2f8-4471-a25b-5f055eb3c089.png",
+            "popular__thumb__url": "shopify://collections/all",
+            "popular__title": "Unidsedvs  Rosted Coffee",
+            "popular__description": "It is a long established fact that a reader will be distracted by the readable.",
+            "popular__price": "$19.99",
+            "popular__discount__price": "",
+            "popular__content__custom__color": false,
+            "popular__content__color": "#333333",
+            "popular__content__border__color": "#eeeeee",
+            "popular__menu__hover": "#c7a17a"
+          }
+        }
+      },
+      "block_order": [
+        "1637650294275fcd29-0",
+        "1637650294275fcd29-1",
+        "1637650294275fcd29-2",
+        "1637650294275fcd29-3"
+      ],
+      "settings": {
+        "section_width": "default",
+        "section_title_custom_color": true,
+        "section_title": "Simple Menu",
+        "section_title_color": "#c7a17a",
+        "section_title_font": "open_sans_n4",
+        "section_title_font_size": "18",
+        "section_title_line_height": 30,
+        "section_title_font_size_md": "18",
+        "section_title_line_height_md": 30,
+        "section_title_font_size_sm": "18",
+        "section_title_line_height_sm": 30,
+        "section_title_margin_bottom": 10,
+        "section_sub_title": "OUR POPULAR MENU",
+        "section_subtitle_color": "#333333",
+        "section_sub_title_font": "oswald_n5",
+        "section_des_font_size": "40",
+        "section_sub_title_line_height": 50,
+        "section_des_font_size_md": "35",
+        "section_sub_title_line_height_md": 40,
+        "section_des_font_size_sm": "25",
+        "section_sub_title_line_height_sm": 30,
+        "section_sub_title_margin_bottom": 10,
+        "title_align": "text-center",
+        "popular__item__enable": true,
+        "popular_column_handle": 8,
+        "popular_column_handle_md": 7,
+        "popular_column_handle_sm": 12,
+        "popular__menu__enable": true,
+        "menu_column_handle": 4,
+        "menu_column_handle_md": 5,
+        "menu_column_handle_sm": 12,
+        "menu_title": "Categories Menu",
+        "menu_handle": "opening-time",
+        "popular__banner__enable": false,
+        "banner_column_handle": 4,
+        "banner_column_handle_md": 4,
+        "banner_column_handle_sm": 12,
+        "featured_banner_url": "shopify://collections/all"
+      }
+    },
+    "16376505396b081489": {
+      "type": "popular-opening-banner",
+      "blocks": {
+        "1637650539d7c39750-0": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 100,
+            "section_padding_bottom": 80,
+            "section_padding_top_md": 80,
+            "section_padding_bottom_md": 60,
+            "section_padding_top_xs": 80,
+            "section_padding_bottom_xs": 40
+          }
+        },
+        "1637650539d7c39750-1": {
+          "type": "popular-item",
+          "settings": {
+            "popular__inner__column__handle": 12,
+            "popular__inner__column__handle__lg": 12,
+            "popular__inner__column__handle__md": 12,
+            "popular__thumb": "shopify://shop_images/5_2d14f3d3-06a2-4f45-b2f3-980c40604ec5.png",
+            "popular__thumb__url": "shopify://collections/all",
+            "popular__title": "Bmericano Rosted Coffee",
+            "popular__description": "It is a long established fact that a reader will be distracted by the readable.",
+            "popular__price": "$19.99",
+            "popular__discount__price": "$30.00",
+            "popular__content__custom__color": true,
+            "popular__content__color": "#ffffff",
+            "popular__content__border__color": "#eeeeee",
+            "popular__menu__hover": "#c7a17a"
+          }
+        },
+        "1637650539d7c39750-2": {
+          "type": "popular-item",
+          "settings": {
+            "popular__inner__column__handle": 12,
+            "popular__inner__column__handle__lg": 12,
+            "popular__inner__column__handle__md": 12,
+            "popular__thumb": "shopify://shop_images/4_a409c7a4-bfc7-4cc6-b828-8aec4f7fee9c.png",
+            "popular__thumb__url": "shopify://collections/all",
+            "popular__title": "Americano Rosted Coffee",
+            "popular__description": "It is a long established fact that a reader will be distracted by the readable.",
+            "popular__price": "$19.99",
+            "popular__discount__price": "",
+            "popular__content__custom__color": true,
+            "popular__content__color": "#ffffff",
+            "popular__content__border__color": "#eeeeee",
+            "popular__menu__hover": "#c7a17a"
+          }
+        },
+        "1637650539d7c39750-3": {
+          "type": "popular-item",
+          "settings": {
+            "popular__inner__column__handle": 12,
+            "popular__inner__column__handle__lg": 12,
+            "popular__inner__column__handle__md": 12,
+            "popular__thumb": "shopify://shop_images/6.png",
+            "popular__thumb__url": "shopify://collections/all",
+            "popular__title": "Maxican Rosted Coffee",
+            "popular__description": "It is a long established fact that a reader will be distracted by the readable.",
+            "popular__price": "$19.99",
+            "popular__discount__price": "",
+            "popular__content__custom__color": true,
+            "popular__content__color": "#ffffff",
+            "popular__content__border__color": "#eeeeee",
+            "popular__menu__hover": "#c7a17a"
+          }
+        },
+        "1637650539d7c39750-4": {
+          "type": "popular-item",
+          "settings": {
+            "popular__inner__column__handle": 12,
+            "popular__inner__column__handle__lg": 12,
+            "popular__inner__column__handle__md": 12,
+            "popular__thumb": "shopify://shop_images/cup-20.png",
+            "popular__thumb__url": "shopify://collections/all",
+            "popular__title": "Xmericano Tosted Coffee",
+            "popular__description": "It is a long established fact that a reader will be distracted by the readable.",
+            "popular__price": "$15.99",
+            "popular__discount__price": "",
+            "popular__content__custom__color": true,
+            "popular__content__color": "#ffffff",
+            "popular__content__border__color": "#eeeeee",
+            "popular__menu__hover": "#c7a17a"
+          }
+        },
+        "d282c7fb-ae83-48e2-af52-73848243b387": {
+          "type": "section_background",
+          "settings": {
+            "section_bg_image": "shopify://shop_images/slider_black_3_a8663d9a-b6de-4a88-8ce7-ee1d564b07f4.jpg",
+            "section_bg_color": "#ffffff"
+          }
+        }
+      },
+      "block_order": [
+        "1637650539d7c39750-0",
+        "1637650539d7c39750-1",
+        "1637650539d7c39750-2",
+        "1637650539d7c39750-3",
+        "1637650539d7c39750-4",
+        "d282c7fb-ae83-48e2-af52-73848243b387"
+      ],
+      "settings": {
+        "section_width": "default",
+        "section_title_custom_color": true,
+        "section_title": "What Happens Here",
+        "section_title_color": "#c7a17a",
+        "section_title_font": "open_sans_n4",
+        "section_title_font_size": "18",
+        "section_title_line_height": 30,
+        "section_title_font_size_md": "18",
+        "section_title_line_height_md": 30,
+        "section_title_font_size_sm": "18",
+        "section_title_line_height_sm": 30,
+        "section_title_margin_bottom": 10,
+        "section_sub_title": "EXPLORE OUR MENU.",
+        "section_subtitle_color": "#ffffff",
+        "section_sub_title_font": "oswald_n5",
+        "section_des_font_size": "40",
+        "section_sub_title_line_height": 50,
+        "section_des_font_size_md": "35",
+        "section_sub_title_line_height_md": 40,
+        "section_des_font_size_sm": "25",
+        "section_sub_title_line_height_sm": 30,
+        "section_sub_title_margin_bottom": 10,
+        "title_align": "text-center",
+        "popular__item__enable": true,
+        "popular_column_handle": 9,
+        "popular_column_handle_md": 9,
+        "popular_column_handle_sm": 12,
+        "popular__menu__enable": false,
+        "menu_column_handle": 3,
+        "menu_column_handle_md": 3,
+        "menu_column_handle_sm": 3,
+        "menu_title": "Categories Menu",
+        "menu_handle": "",
+        "popular__banner__enable": true,
+        "banner_column_handle": 3,
+        "banner_column_handle_md": 3,
+        "banner_column_handle_sm": 3,
+        "featured_banner": "shopify://shop_images/4139909.png",
+        "featured_banner_url": "shopify://collections/all"
+      }
+    },
+    "163764908160fb47d4": {
+      "type": "popular-opening-banner",
+      "blocks": {
+        "16376490817e3e143c-0": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 100,
+            "section_padding_bottom": 80,
+            "section_padding_top_md": 0,
+            "section_padding_bottom_md": 60,
+            "section_padding_top_xs": 0,
+            "section_padding_bottom_xs": 40
+          }
+        },
+        "16376490817e3e143c-1": {
+          "type": "popular-item",
+          "settings": {
+            "popular__inner__column__handle": 6,
+            "popular__inner__column__handle__lg": 6,
+            "popular__inner__column__handle__md": 12,
+            "popular__thumb": "shopify://shop_images/6.png",
+            "popular__thumb__url": "shopify://collections/all",
+            "popular__title": "Americano Rosted Coffee",
+            "popular__description": "It is a long established fact that a reader will be distracted by the readable.",
+            "popular__price": "$19.99",
+            "popular__discount__price": "$25.00",
+            "popular__content__custom__color": false,
+            "popular__content__color": "#333333",
+            "popular__content__border__color": "#eeeeee",
+            "popular__menu__hover": "#c7a17a"
+          }
+        },
+        "16376490817e3e143c-2": {
+          "type": "popular-item",
+          "settings": {
+            "popular__inner__column__handle": 6,
+            "popular__inner__column__handle__lg": 6,
+            "popular__inner__column__handle__md": 12,
+            "popular__thumb": "shopify://shop_images/5_2d14f3d3-06a2-4f45-b2f3-980c40604ec5.png",
+            "popular__thumb__url": "shopify://collections/all",
+            "popular__title": "Cmericano Rosted Coffee",
+            "popular__description": "It is a long established fact that a reader will be distracted by the readable.",
+            "popular__price": "$19.99",
+            "popular__discount__price": "",
+            "popular__content__custom__color": false,
+            "popular__content__color": "#333333",
+            "popular__content__border__color": "#eeeeee",
+            "popular__menu__hover": "#c7a17a"
+          }
+        },
+        "16376490817e3e143c-3": {
+          "type": "popular-item",
+          "settings": {
+            "popular__inner__column__handle": 6,
+            "popular__inner__column__handle__lg": 6,
+            "popular__inner__column__handle__md": 12,
+            "popular__thumb": "shopify://shop_images/4_a409c7a4-bfc7-4cc6-b828-8aec4f7fee9c.png",
+            "popular__thumb__url": "shopify://collections/all",
+            "popular__title": "Xmericano Rosted Coffee",
+            "popular__description": "It is a long established fact that a reader will be distracted by the readable.",
+            "popular__price": "$19.99",
+            "popular__discount__price": "",
+            "popular__content__custom__color": false,
+            "popular__content__color": "#333333",
+            "popular__content__border__color": "#eeeeee",
+            "popular__menu__hover": "#c7a17a"
+          }
+        },
+        "16376490817e3e143c-4": {
+          "type": "popular-item",
+          "settings": {
+            "popular__inner__column__handle": 6,
+            "popular__inner__column__handle__lg": 6,
+            "popular__inner__column__handle__md": 12,
+            "popular__thumb": "shopify://shop_images/3_43f90d59-c2f8-4471-a25b-5f055eb3c089.png",
+            "popular__thumb__url": "shopify://collections/all",
+            "popular__title": "Americano Rosted Coffee",
+            "popular__description": "It is a long established fact that a reader will be distracted by the readable.",
+            "popular__price": "$28.99",
+            "popular__discount__price": "",
+            "popular__content__custom__color": false,
+            "popular__content__color": "#333333",
+            "popular__content__border__color": "#eeeeee",
+            "popular__menu__hover": "#c7a17a"
+          }
+        },
+        "512b5d52-b965-4fda-a502-b415b795a4e0": {
+          "type": "popular-item",
+          "settings": {
+            "popular__inner__column__handle": 6,
+            "popular__inner__column__handle__lg": 6,
+            "popular__inner__column__handle__md": 12,
+            "popular__thumb": "shopify://shop_images/cup-20.png",
+            "popular__thumb__url": "shopify://collections/all",
+            "popular__title": "Mndided Rosted Coffee",
+            "popular__description": "It is a long established fact that a reader will be distracted by the readable.",
+            "popular__price": "$19.99",
+            "popular__discount__price": "",
+            "popular__content__custom__color": false,
+            "popular__content__color": "#333333",
+            "popular__content__border__color": "#eeeeee",
+            "popular__menu__hover": "#c7a17a"
+          }
+        },
+        "8d3be235-f1da-40c2-b9c0-a69dbc128436": {
+          "type": "popular-item",
+          "settings": {
+            "popular__inner__column__handle": 6,
+            "popular__inner__column__handle__lg": 6,
+            "popular__inner__column__handle__md": 12,
+            "popular__thumb": "shopify://shop_images/6.png",
+            "popular__thumb__url": "shopify://collections/all",
+            "popular__title": "Emericano Rosted Coffee",
+            "popular__description": "It is a long established fact that a reader will be distracted by the readable.",
+            "popular__price": "$19.99",
+            "popular__discount__price": "",
+            "popular__content__custom__color": false,
+            "popular__content__color": "#333333",
+            "popular__content__border__color": "#eeeeee",
+            "popular__menu__hover": "#c7a17a"
+          }
+        },
+        "1fdaac41-7380-486c-9df1-a75d1350a5da": {
+          "type": "popular-item",
+          "settings": {
+            "popular__inner__column__handle": 6,
+            "popular__inner__column__handle__lg": 6,
+            "popular__inner__column__handle__md": 12,
+            "popular__thumb": "shopify://shop_images/3_43f90d59-c2f8-4471-a25b-5f055eb3c089.png",
+            "popular__thumb__url": "shopify://collections/all",
+            "popular__title": "Brazilian Rosted Coffee",
+            "popular__description": "It is a long established fact that a reader will be distracted by the readable.",
+            "popular__price": "$39.99",
+            "popular__discount__price": "",
+            "popular__content__custom__color": false,
+            "popular__content__color": "#333333",
+            "popular__content__border__color": "#eeeeee",
+            "popular__menu__hover": "#c7a17a"
+          }
+        },
+        "1449e65c-2365-4b3c-b8c2-105f717d8d91": {
+          "type": "popular-item",
+          "settings": {
+            "popular__inner__column__handle": 6,
+            "popular__inner__column__handle__lg": 6,
+            "popular__inner__column__handle__md": 12,
+            "popular__thumb": "shopify://shop_images/5_2d14f3d3-06a2-4f45-b2f3-980c40604ec5.png",
+            "popular__thumb__url": "shopify://collections/all",
+            "popular__title": "Indian Midneid Coffee",
+            "popular__description": "It is a long established fact that a reader will be distracted by the readable.",
+            "popular__price": "$18.99",
+            "popular__discount__price": "$25.50",
+            "popular__content__custom__color": false,
+            "popular__content__color": "#333333",
+            "popular__content__border__color": "#eeeeee",
+            "popular__menu__hover": "#c7a17a"
+          }
+        }
+      },
+      "block_order": [
+        "16376490817e3e143c-0",
+        "16376490817e3e143c-1",
+        "16376490817e3e143c-2",
+        "16376490817e3e143c-3",
+        "16376490817e3e143c-4",
+        "512b5d52-b965-4fda-a502-b415b795a4e0",
+        "8d3be235-f1da-40c2-b9c0-a69dbc128436",
+        "1fdaac41-7380-486c-9df1-a75d1350a5da",
+        "1449e65c-2365-4b3c-b8c2-105f717d8d91"
+      ],
+      "settings": {
+        "section_width": "default",
+        "section_title_custom_color": true,
+        "section_title": "Set Menu",
+        "section_title_color": "#c7a17a",
+        "section_title_font": "open_sans_n4",
+        "section_title_font_size": "18",
+        "section_title_line_height": 30,
+        "section_title_font_size_md": "18",
+        "section_title_line_height_md": 30,
+        "section_title_font_size_sm": "18",
+        "section_title_line_height_sm": 30,
+        "section_title_margin_bottom": 10,
+        "section_sub_title": "OUR POPULAR MENU",
+        "section_subtitle_color": "#333333",
+        "section_sub_title_font": "oswald_n5",
+        "section_des_font_size": "40",
+        "section_sub_title_line_height": 50,
+        "section_des_font_size_md": "35",
+        "section_sub_title_line_height_md": 40,
+        "section_des_font_size_sm": "25",
+        "section_sub_title_line_height_sm": 30,
+        "section_sub_title_margin_bottom": 10,
+        "title_align": "text-center",
+        "popular__item__enable": true,
+        "popular_column_handle": 12,
+        "popular_column_handle_md": 12,
+        "popular_column_handle_sm": 12,
+        "popular__menu__enable": false,
+        "menu_column_handle": 3,
+        "menu_column_handle_md": 3,
+        "menu_column_handle_sm": 3,
+        "menu_title": "Categories Menu",
+        "menu_handle": "",
+        "popular__banner__enable": false,
+        "banner_column_handle": 3,
+        "banner_column_handle_md": 3,
+        "banner_column_handle_sm": 3,
+        "featured_banner_url": "shopify://collections/all"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "16376502943f67e7d2",
+    "16376505396b081489",
+    "163764908160fb47d4"
+  ]
+}

@@ -1,0 +1,68 @@
+{%- comment -%}
+  Compatible vehicles built from make-model-year product tags (toyota-corolla-2019), grouped by make and model.
+  Used by sections/ma-product.liquid. Params: fit_tag_list (array), tag_key_list (array of make-model keys)
+{%- endcomment -%}
+{%- assign two_word_makes = 'land-rover,alfa-romeo,aston-martin,great-wall,mercedes-benz,rolls-royce,mini-cooper' | split: ',' -%}
+{%- capture tag_rows -%}
+  {%- for key in tag_key_list -%}
+    {%- liquid
+      assign make_slug = key | split: '-' | first
+      for m in two_word_makes
+        assign mp = m | append: '-'
+        assign kp = key | slice: 0, mp.size
+        if kp == mp
+          assign make_slug = m
+          break
+        endif
+      endfor
+      assign model_start = make_slug.size | plus: 1
+      assign model_len = key.size | minus: model_start
+      assign model_slug = key | slice: model_start, model_len
+      assign make_words = make_slug | split: '-'
+      assign model_words = model_slug | split: '-'
+      assign make_name = ''
+      for w in make_words
+        assign cw = w | capitalize
+        assign make_name = make_name | append: ' ' | append: cw
+      endfor
+      assign model_name = ''
+      for w in model_words
+        assign cw = w | upcase
+        if w.size > 3
+          assign cw = w | capitalize
+        endif
+        assign model_name = model_name | append: ' ' | append: cw
+      endfor
+      assign yrs = ''
+      assign kdash = key | append: '-'
+      for t in fit_tag_list
+        assign tp = t | slice: 0, kdash.size
+        if tp == kdash
+          assign yy = t | split: '-' | last
+          assign yrs = yrs | append: yy | append: ','
+        endif
+      endfor
+      assign yr_list = yrs | split: ',' | sort
+      assign yr_text = yr_list.first
+      if yr_list.first != yr_list.last
+        assign yr_text = yr_list.first | append: ' to ' | append: yr_list.last
+      endif
+    -%}
+    {{ make_name | strip }}|{{ model_name | strip }}|{{ yr_text }};;
+  {%- endfor -%}
+{%- endcapture -%}
+{%- assign tag_rows = tag_rows | strip | split: ';;' -%}
+<div class="ma-pdp__fit-table-wrap">
+  <table class="ma-pdp__fit-table">
+    <thead><tr><th scope="col">Make</th><th scope="col">Model</th><th scope="col">Years</th></tr></thead>
+    <tbody>
+      {%- for r in tag_rows -%}{%- assign c = r | split: '|' -%}<tr><td>{{ c[0] }}</td><td>{{ c[1] }}</td><td>{{ c[2] }}</td></tr>{%- endfor -%}
+    </tbody>
+  </table>
+</div>
+<ul class="ma-pdp__fit-cards">
+  {%- for r in tag_rows -%}
+    {%- assign c = r | split: '|' -%}
+    <li><span><strong>{{ c[0] }} {{ c[1] }}</strong><span>Years {{ c[2] }}</span></span>{%- render 'ma-icon', name: 'check', size: 18, stroke: '#15803D', width: 2.6 -%}</li>
+  {%- endfor -%}
+</ul>

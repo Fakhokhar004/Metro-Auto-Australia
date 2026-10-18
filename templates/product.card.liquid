@@ -1,0 +1,9 @@
+{% comment %}
+  Card view for the wishlist page: assets/wishlist.js fetches /products/HANDLE?view=card
+  and puts the result in the [grid-wishlist] row. Uses the Metro product card.
+  The .grid__item wrapper is what wishlist.js removes when a heart is un-ticked on that page.
+{% endcomment %}
+{%- layout none -%}
+<div class="col-lg-3 col-md-4 col-sm-6 col-6 grid__item" style="margin-bottom: 16px;">
+  {%- render 'ma-product-card', product: product -%}
+</div>

@@ -1,0 +1,82 @@
+{%- assign on_sale = false -%}{%- if product.variants.first.compare_at_price > product.variants.first.price -%}{%- assign on_sale = true -%}{%- endif -%}
+{%- assign sold_out = true -%}{%- if product.available -%}{%- assign sold_out = false -%}{%- endif -%}
+{%- assign variant = product.selected_or_first_available_variant -%}
+{%- if product.available -%}{%- assign func = "Shopify.addItem(" | append: variant.id | append: ", 1)" -%}{%- endif -%}
+
+<div class="{{ variant.id }} shop-list-wrap shop-list-mrg2 shop-list-mrg-none mb-30 theme-product-countdown-fill product-wrapper-class">
+  <div class="row">
+    <div class="col-lg-4 col-md-4">
+      <div class="product-list-img product-color">
+
+
+      {%- liquid
+        assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+        assign fetch_priority = 'auto'
+      if section.index == 1
+        assign fetch_priority = 'high'
+      endif
+        assign image_class = 'lazyload-main-image popup_cart_image'
+        assign lazy_load = 'lazy'
+      -%}
+      
+      <a href="{{ product.url | within: collection }}" class="theme-product-image lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: product.featured_image.aspect_ratio | times: 100}}%;">
+        {% assign image_height = product.featured_image.width | divided_by: product.featured_image.aspect_ratio %}
+        {{ product.featured_image | image_url: width: 3840 | image_tag: width: product.featured_image.width, height: image_height,
+        widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load }}
+      </a>
+
+        
+      	{%- render 'product-countdown', product: product -%}
+        {%- if settings.product_quickview_enalbe -%}
+        <div class="product-quickview">          
+          <a href="javascript:void(0);" 
+             onclick="quiqview('{{ product.handle | handleize }}')"
+             data-toggle="modal" 
+             data-target="#exampleModal">
+            <i class="sli sli-magnifier-add"></i>
+          </a>
+        </div>
+        {%- endif -%}
+        {%- if settings.show_product_badge -%}
+      	{%- render 'product-badge', product: product, on_sale: on_sale, sold_out: sold_out -%}
+        {%- endif -%}
+        
+        {%- render 'grid-color-img-swatch', product: product, variant:variant -%}
+        
+      </div>
+    </div>
+    <div class="col-lg-8 col-md-8 align-self-center">
+      <div class="shop-list-content">
+        <h3 class="popup_cart_title"><a href="{{ product.url | within: collection }}">{{ product.title }}</a></h3>
+        {%- if product.description contains '[short_description]' -%}            
+        {%- assign short_description_first = product.description | split:'[/short_description]' | first -%}
+        {%- assign short_description_final = short_description_first | split:'[short_description]' | last -%}
+        {{ short_description_final }}
+        {%- else -%}
+        <p>
+          {{ product.description | truncatewords: 40 | split: '[info_1]' | first | split: '[info_2]' | first | split: '[info_3]' | first | split: '[info_4]' | first | split: '[info_5]' | first | split: '[info_6]' | first | split: '[info_7]' | first | split: '[info_8]' | first | split: '[info_9]' | first | split: '[info_10]' | first | split: '[countdown]' | first | split: '[affiliate_link]' | first | split: '[product_video]' | first | split: '[short_description]' | first | split: '[product_description]' | first | split: '[more_info]' | first }}
+        </p>
+        {%- endif -%}
+        {%- if settings.show_product_type -%}
+        <span>{{ product.type }}</span>
+        {%- endif -%}
+        <div class="shop-list-price-action-wrap">
+          <div class="shop-list-price-ratting">
+            <div class="theme-product-list-price">
+              <span class="new">{{ product.variants.first.price | money }}</span>
+              {%- if product.variants.first.compare_at_price > product.variants.first.price -%}
+              <span class="old">{{ product.variants.first.compare_at_price | money }}</span>
+              {%- endif -%}
+            </div>
+            {%- if settings.show_product_review -%}
+            <div class="theme-product-list-ratting spr-badge-caption-none">
+              <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+            </div>
+            {%- endif -%}
+          </div>
+            {%- render 'product-list-action', product: product, func: func -%}  
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

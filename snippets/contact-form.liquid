@@ -1,0 +1,50 @@
+{% form 'contact' %}
+
+{% if form.posted_successfully? %}
+<p class="note form-success">{{ 'contact.form.post_success' | t }}</p>
+{% endif %}
+
+{{ form.errors | default_errors }}
+<div class="single-contact-form">
+  <div class="contact-box name">
+    <input type="text" placeholder="{{ section.settings.name_placeholder }}" class="{% if form.errors contains 'name' %}error{% endif %}" name="contact[name]" id="ContactFormName" value="{% if form.name %}{{ form.name }}{% elsif customer.name %}{{ customer.name }}{% endif %}">
+    <input type="email" placeholder="{{ section.settings.email_placeholder }}" class="{% if form.errors contains 'email' %}error{% endif %}" name="contact[email]" id="ContactFormEmail" value="{% if form.email %}{{ form.email }}{% elsif customer.email %}{{ customer.email }}{% endif %}">
+  </div>
+</div>
+<div class="single-contact-form">
+  <div class="contact-box subject">
+    <input type="text" id="ContactFormSubject" name="contact[subject]" placeholder="{{ section.settings.subject_placeholder }}" value="{{ form.subject }}">
+  </div>
+</div>
+<div class="single-contact-form">
+  <div class="contact-box message">
+    <textarea placeholder="{{ section.settings.message_placeholder }}" class="custom-textarea" name="contact[body]" id="ContactFormMessage">{% if form.body %}{{ form.body }}{% endif %}</textarea>
+  </div>
+</div>
+
+<div id="re-captcha"></div>
+
+<div class="contact-btn">
+  <input type="submit" id="contactFormSubmit" value="{{ section.settings.form_button_name }}" class="fv-btn" disabled />
+</div>
+{% endform %}
+
+
+<script>
+  var actCallback = function (response) {
+    $('#contactFormSubmit').prop("disabled", false);
+    $('#re-captcha').remove();
+  };
+  var expCallback = function() {
+    $('#contactFormSubmit').prop("disabled", true);
+  };
+ 
+  var onloadCallback = function () {
+    var widget = grecaptcha.render(document.getElementById("re-captcha"), {
+      'sitekey' : "123456789", // Sitekey, Retrieving from reCaptcha
+      'theme': "light",
+      'callback' : actCallback,
+      'expired-callback': expCallback,
+    });
+  }
+</script>

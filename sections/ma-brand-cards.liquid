@@ -1,0 +1,115 @@
+{%- comment -%}
+  "Our trusted brands" cards. Design reference: Main.dc.html (BRANDS).
+  With no blocks, cards are built from the store's product vendors, so new brands appear automatically.
+  Cards use Theme settings → Metro brands card colour, or each brand's own colour when that is on.
+{%- endcomment -%}
+{%- liquid
+  assign known = 'crc|#1F4FA3|#FFFFFF|Lubricants, cleaners and brake care;hiq|#E1251B|#FFFFFF|Brake pads;goss|#F2B705|#121316|Workshop trays, clips and fasteners;penrite|#0F6B3A|#FFFFFF|Oils and fluids;nulon|#5B2A86|#FFFFFF|Oils and fluids;hi-tec|#0E6F78|#FFFFFF|Oils and fluids;caltex|#121316|#FFFFFF|Oils and fluids' | split: ';'
+-%}
+<section class="ma-brands-sec ma-sec--56">
+  <div class="ma-wrap">
+    {%- assign all_url = section.settings.link_url | default: '/pages/shop-by-brands' -%}
+    <div class="ma-section-head">
+      <h2 class="ma-h2">{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.link_label != blank and section.settings.one_row == false -%}
+        <a class="ma-section-head__link" href="{{ all_url }}">{{ section.settings.link_label | escape }}</a>
+      {%- endif -%}
+    </div>
+    <div class="ma-brands{% if section.settings.one_row %} ma-brands--row{% endif %}">
+      {%- if section.blocks.size > 0 -%}
+        {%- for block in section.blocks -%}
+          {%- comment -%} Skip brands with no products in the store yet (their vendor page would be empty), unless a link is set. {%- endcomment -%}
+          {%- assign has_vendor = false -%}
+          {%- if shop.vendors contains block.settings.name -%}{%- assign has_vendor = true -%}{%- endif -%}
+          {%- if block.settings.url == blank and has_vendor == false -%}{%- continue -%}{%- endif -%}
+          {%- assign url = block.settings.url | default: '' -%}
+          {%- if url == blank -%}{%- capture url -%}{%- render 'ma-brand-url', name: block.settings.name -%}{%- endcapture -%}{%- endif -%}
+          <a class="ma-brand" href="{{ url }}" aria-label="{{ block.settings.name | escape }} products" style="{% if settings.ma_brand_own %}background: {{ block.settings.bg }}; color: {{ block.settings.fg }};{% else %}background: {{ settings.ma_brand_bg }}; color: {{ settings.ma_brand_fg }};{% endif %}" {{ block.shopify_attributes }}>
+            <span class="ma-brand__name">{{ block.settings.name | escape }}</span>
+            <span class="ma-brand__foot">
+              <span class="ma-brand__covers">{{ block.settings.covers | escape }}</span>
+              <span class="ma-brand__cta">View range</span>
+            </span>
+          </a>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for vendor in shop.vendors limit: section.settings.auto_limit -%}
+          {%- liquid
+            assign key = vendor | handleize
+            assign bg = '#121316'
+            assign fg = '#FFFFFF'
+            assign covers = ''
+            for row in known
+              assign cols = row | split: '|'
+              if cols[0] == key
+                assign bg = cols[1]
+                assign fg = cols[2]
+                assign covers = cols[3]
+                break
+              endif
+            endfor
+          -%}
+          <a class="ma-brand" href="{% render 'ma-brand-url', name: vendor %}" aria-label="{{ vendor | escape }} products" style="{% if settings.ma_brand_own %}background: {{ bg }}; color: {{ fg }};{% else %}background: {{ settings.ma_brand_bg }}; color: {{ settings.ma_brand_fg }};{% endif %}">
+            <span class="ma-brand__name">{{ vendor | escape }}</span>
+            <span class="ma-brand__foot">
+              <span class="ma-brand__covers">{{ covers }}</span>
+              <span class="ma-brand__cta">View range</span>
+            </span>
+          </a>
+        {%- endfor -%}
+      {%- endif -%}
+      {%- if section.settings.one_row -%}
+        {%- comment -%} Always the last card in the row; CSS hides the brands that don't fit beside it. {%- endcomment -%}
+        <a class="ma-brand ma-brand--all" href="{{ all_url }}">
+          <span class="ma-brand__name">{{ section.settings.link_label | default: 'See all brands' | escape }}</span>
+          <span class="ma-brand__foot">
+            <span class="ma-brand__covers">{{ section.settings.all_text | escape }}</span>
+            <span class="ma-brand__arrow" aria-hidden="true">{%- render 'ma-icon', name: 'chevron', size: 22, width: 2.4 -%}</span>
+          </span>
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Metro brand cards",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Our trusted brands" },
+    { "type": "checkbox", "id": "one_row", "label": "Show one row, ending with a \"See all brands\" card", "default": true },
+    { "type": "text", "id": "link_label", "label": "See all label", "default": "See all brands" },
+    { "type": "text", "id": "all_text", "label": "See all card text", "default": "Browse every brand we stock" },
+    { "type": "url", "id": "link_url", "label": "Brands page", "info": "Defaults to /pages/shop-by-brands" },
+    { "type": "range", "id": "auto_limit", "label": "Brands shown when no cards are added", "min": 4, "max": 24, "step": 1, "default": 12 }
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "Brand",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Brand (vendor name)", "default": "CRC" },
+        { "type": "text", "id": "covers", "label": "What it covers", "default": "Lubricants, cleaners and brake care" },
+        { "type": "color", "id": "bg", "label": "Card colour", "default": "#1F4FA3" },
+        { "type": "color", "id": "fg", "label": "Text colour", "default": "#FFFFFF" },
+        { "type": "url", "id": "url", "label": "Link", "info": "Defaults to the vendor page, /collections/vendors?q=<brand>." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Metro brand cards",
+      "blocks": [
+        { "type": "brand", "settings": { "name": "CRC", "covers": "Lubricants, cleaners and brake care", "bg": "#1F4FA3", "fg": "#FFFFFF" } },
+        { "type": "brand", "settings": { "name": "HiQ", "covers": "Brake pads", "bg": "#E1251B", "fg": "#FFFFFF" } },
+        { "type": "brand", "settings": { "name": "Goss", "covers": "Workshop trays, clips and fasteners", "bg": "#F2B705", "fg": "#121316" } },
+        { "type": "brand", "settings": { "name": "Penrite", "covers": "Oils and fluids", "bg": "#0F6B3A", "fg": "#FFFFFF" } },
+        { "type": "brand", "settings": { "name": "Nulon", "covers": "Oils and fluids", "bg": "#5B2A86", "fg": "#FFFFFF" } },
+        { "type": "brand", "settings": { "name": "Hi-Tec", "covers": "Oils and fluids", "bg": "#0E6F78", "fg": "#FFFFFF" } },
+        { "type": "brand", "settings": { "name": "Caltex", "covers": "Oils and fluids", "bg": "#121316", "fg": "#FFFFFF" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

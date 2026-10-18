@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<title>Metro Auto category</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FFFFFF}
+a{color:#E1251B}a:hover{color:#B71C14}
+:focus-visible{outline:3px solid #2F6FD6;outline-offset:2px}
+.mx-wrap{max-width:1320px;margin:0 auto;padding:0 24px;box-sizing:border-box}
+.mx-layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:24px;align-items:start}
+.mx-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.mx-filter-btn{display:none !important}
+@media (max-width:1100px){.mx-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:900px){
+ .mx-layout{grid-template-columns:1fr}
+ .mx-filter-btn{display:inline-flex !important}
+ .mx-side-closed{display:none !important}
+}
+@media (max-width:640px){
+ .mx-wrap{padding:0 16px}
+ .mx-grid{gap:10px}
+ .mx-title{font-size:40px !important}
+}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #121316; background: #FFFFFF; min-height: 100vh">
+<dc-import name="Header" current="collection" hint-size="100%,210px"></dc-import>
+
+<section style="background: radial-gradient(circle at 85% 30%, rgba(225,37,27,0.3), rgba(225,37,27,0) 50%), #121316; color: #FFFFFF">
+ <div class="mx-wrap" style="padding-top: 32px; padding-bottom: 28px; display: flex; flex-direction: column; gap: 10px">
+  <nav aria-label="Breadcrumb" style="font-size: 13px; color: #B9BCC3; display: flex; gap: 8px; flex-wrap: wrap">
+   <a href="Main.dc.html" style="color: #B9BCC3">Home</a><span aria-hidden="true">/</span>
+   <a href="Collections.dc.html" style="color: #B9BCC3">All categories</a>
+   <sc-if value="{{hasParent}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true">/</span><a href="Collection.dc.html" onClick="{{goParent}}" style="color: #B9BCC3">{{parent}}</a></sc-if>
+   <span aria-hidden="true">/</span><span style="color: #FFFFFF">{{col}}</span>
+  </nav>
+  <h1 class="mx-title" style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 56px; line-height: 0.95; text-transform: uppercase">{{col}}</h1>
+  <p style="margin: 0; font-size: 16px; line-height: 1.55; color: #D4D6DB; max-width: 680px">{{intro}}</p>
+  <div style="display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-top: 6px">
+   <sc-for list="{{siblings}}" as="s" hint-placeholder-count="5">
+    <button onClick="{{s.go}}" aria-pressed="{{s.on}}" style="flex: none; min-height: 38px; padding: 0 14px; border-radius: 99px; border: 1px solid {{s.border}}; background: {{s.bg}}; color: #FFFFFF; font-family: inherit; font-weight: 500; font-size: 14px; cursor: pointer">{{s.label}}</button>
+   </sc-for>
+  </div>
+ </div>
+</section>
+
+<div class="mx-wrap" style="padding-top: 24px; padding-bottom: 64px">
+ <div class="mx-layout">
+  <!-- Search & Discovery style filters (fed by Shopify filters on the live site) -->
+  <aside class="{{sideClass}}" aria-label="Filters" style="border: 1px solid #E4E4E7; border-radius: 8px; overflow: hidden; background: #FFFFFF">
+   <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #121316; color: #FFFFFF">
+    <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; text-transform: uppercase; letter-spacing: 0.03em">Filters</h2>
+    <button onClick="{{clearFilters}}" style="border: 0; background: transparent; color: #FF8A82; font-family: inherit; font-weight: 600; font-size: 13px; cursor: pointer; min-height: 32px">Clear all</button>
+   </div>
+   <sc-for list="{{facets}}" as="f" hint-placeholder-count="4">
+    <div style="border-bottom: 1px solid #F0F0F2">
+     <button onClick="{{f.toggle}}" aria-expanded="{{f.expanded}}" style="width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 48px; padding: 0 16px; border: 0; background: transparent; font-family: inherit; font-weight: 600; font-size: 15px; color: #121316; cursor: pointer; text-align: left">
+      <span style="display: inline-flex; align-items: center; gap: 8px">{{f.name}}<sc-if value="{{f.hasSel}}" hint-placeholder-val="{{ false }}"><span style="min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 99px; background: #E1251B; color: #FFFFFF; font-size: 12px; display: inline-grid; place-items: center">{{f.selCount}}</span></sc-if></span>
+      <span aria-hidden="true" style="font-size: 20px; color: #62666D; line-height: 1">{{f.sign}}</span>
+     </button>
+     <sc-if value="{{f.open}}" hint-placeholder-val="{{ true }}">
+      <div style="padding: 0 16px 14px; display: flex; flex-direction: column">
+       <sc-if value="{{f.isList}}" hint-placeholder-val="{{ true }}">
+        <sc-for list="{{f.opts}}" as="o" hint-placeholder-count="3">
+         <label style="display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 14px; cursor: pointer; color: {{o.color}}">
+          <input type="checkbox" checked="{{o.on}}" onChange="{{o.toggle}}" disabled="{{o.disabled}}" style="width: 17px; height: 17px; accent-color: #E1251B; margin: 0">
+          <span style="flex: 1">{{o.label}}</span><span style="font-size: 13px; color: #62666D">({{o.count}})</span>
+         </label>
+        </sc-for>
+       </sc-if>
+       <sc-if value="{{f.isPrice}}" hint-placeholder-val="{{ false }}">
+        <p style="margin: 0 0 10px; font-size: 13px; color: #62666D">The highest price is {{f.max}}</p>
+        <div style="display: flex; gap: 8px; align-items: center">
+         <label style="flex: 1; display: flex; align-items: center; gap: 4px; border: 1px solid #C9CBD0; border-radius: 6px; padding: 0 8px; min-height: 40px; font-size: 14px; color: #62666D">$<input inputmode="decimal" value="{{f.from}}" onChange="{{f.onFrom}}" aria-label="Price from" placeholder="From" style="border: 0; outline: none; width: 100%; min-width: 0; font-family: inherit; font-size: 14px; color: #121316"></label>
+         <span aria-hidden="true" style="color: #62666D">to</span>
+         <label style="flex: 1; display: flex; align-items: center; gap: 4px; border: 1px solid #C9CBD0; border-radius: 6px; padding: 0 8px; min-height: 40px; font-size: 14px; color: #62666D">$<input inputmode="decimal" value="{{f.to}}" onChange="{{f.onTo}}" aria-label="Price to" placeholder="To" style="border: 0; outline: none; width: 100%; min-width: 0; font-family: inherit; font-size: 14px; color: #121316"></label>
+        </div>
+       </sc-if>
+      </div>
+     </sc-if>
+    </div>
+   </sc-for>
+   <div style="padding: 14px 16px">
+    <button onClick="{{toggleSide}}" style="width: 100%; min-height: 44px; border-radius: 6px; border: 0; background: #E1251B; color: #FFFFFF; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer">Show {{count}} results</button>
+   </div>
+  </aside>
+
+  <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0">
+   <sc-if value="{{hasVehicle}}" hint-placeholder-val="{{ true }}">
+    <div style="background: {{fitBg}}; border: 1px solid {{fitBorder}}; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 10px 16px; flex-wrap: wrap">
+     <span style="flex: 1 1 280px; font-size: 14px">{{fitText}}</span>
+     <button role="switch" aria-checked="{{fitAria}}" onClick="{{toggleFit}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 42px; padding: 0 12px; border-radius: 6px; border: 1px solid #121316; background: #FFFFFF; color: #121316; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer">
+      <span style="width: 38px; height: 22px; border-radius: 99px; background: {{switchBg}}; position: relative; flex: none"><span style="position: absolute; top: 3px; left: {{knob}}; width: 16px; height: 16px; border-radius: 99px; background: #FFFFFF"></span></span>
+      Only parts that fit my {{model}}
+     </button>
+    </div>
+   </sc-if>
+   <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; border: 1px solid #E4E4E7; border-radius: 8px; padding: 10px 12px">
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+     <button class="mx-filter-btn" onClick="{{toggleSide}}" style="align-items: center; min-height: 42px; padding: 0 14px; border-radius: 6px; border: 1px solid #121316; background: #FFFFFF; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer; color: #121316">{{sideLabel}}</button>
+     <span style="font-size: 14px; color: #3F4249">{{count}} {{countWord}}</span>
+     <sc-for list="{{chips}}" as="c" hint-placeholder-count="1">
+      <button onClick="{{c.remove}}" aria-label="Remove {{c.label}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px; border-radius: 99px; border: 1px solid #F5B4AF; background: #FFF6F5; font-family: inherit; font-size: 13px; cursor: pointer; color: #121316">{{c.label}} <span aria-hidden="true">×</span></button>
+     </sc-for>
+    </div>
+    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #62666D">Sort by
+     <select value="{{sort}}" onChange="{{onSort}}" style="min-height: 42px; border: 1px solid #C9CBD0; border-radius: 6px; padding: 0 10px; font-family: inherit; font-size: 14px; color: #121316; background: #FFFFFF">
+      <option value="best">Featured</option><option value="low">Price, low to high</option><option value="high">Price, high to low</option><option value="az">Alphabetically, A to Z</option>
+     </select>
+    </label>
+   </div>
+   <sc-if value="{{hasItems}}" hint-placeholder-val="{{ true }}">
+    <div class="mx-grid">
+     <sc-for list="{{items}}" as="p" hint-placeholder-count="6">
+      <dc-import name="ProductCard" item="{{p}}" hint-size="100%,520px"></dc-import>
+     </sc-for>
+    </div>
+   </sc-if>
+   <sc-if value="{{noItems}}" hint-placeholder-val="{{ false }}">
+    <div style="border: 1px solid #E4E4E7; border-radius: 10px; padding: 32px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; background: #F4F4F5">
+     <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 28px; text-transform: uppercase">{{emptyTitle}}</h2>
+     <p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3F4249; max-width: 600px">{{emptyText}}</p>
+     <div style="display: flex; gap: 10px; flex-wrap: wrap">
+      <a href="Collections.dc.html" style="min-height: 44px; padding: 0 18px; border-radius: 6px; background: #121316; color: #FFFFFF; display: inline-flex; align-items: center; text-decoration: none; font-weight: 600; font-size: 14px">Browse other categories</a>
+      <a href="Contact.dc.html" style="min-height: 44px; padding: 0 18px; border-radius: 6px; background: #E1251B; color: #FFFFFF; display: inline-flex; align-items: center; text-decoration: none; font-weight: 600; font-size: 14px">Ask us for a part</a>
+     </div>
+    </div>
+   </sc-if>
+  </div>
+ </div>
+</div>
+
+<dc-import name="Footer" hint-size="100%,500px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2600}}'>
+var MS={get:function(k,d){try{var v=window.localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set:function(k,v){try{window.localStorage.setItem(k,JSON.stringify(v));}catch(e){}MS.fire(k);},fire:function(k){try{window.dispatchEvent(new Event(k));}catch(e){}}};
+var MA_DV={make:"Toyota",model:"Corolla",year:"2019"};
+function vKey(v){return v?v.year+" "+v.make+" "+v.model:"";}
+function vTag(v){return v?(v.make+"-"+v.model+"-"+v.year).toLowerCase().replace(/[^a-z0-9]+/g,"-"):"";}
+function gLoad(){var g=MS.get("ma-garage",null);return (g&&g.garage)?g:{vehicle:MA_DV,garage:[MA_DV,{make:"Mazda",model:"CX-5",year:"2017"}]};}
+var MA_STOCK={1:18,2:4,3:32,4:120,5:46,6:14,7:27,8:15,9:3,10:22,11:0,12:2,13:1,14:5,15:9,16:0,17:40,18:6,19:7}; /* units on hand; from Shopify inventory on the live site */
+var MA_P=[
+[1,"HiQ Front Brake Pads Set SP2174","HiQ","SP2174",65,0,"pad","#3B4654","brakes","Brake pads",["Front","Brake pads"],["toyota-corolla-2017","toyota-corolla-2018","toyota-corolla-2019","toyota-corolla-2020"],0],
+[2,"HiQ Front Brake Pads Set SP1253","HiQ","SP1253",52.92,0,"pad","#3B4654","brakes","Brake pads",["Front","Brake pads"],["mazda-cx-5-2016","mazda-cx-5-2017","mazda-cx-5-2018","ford-ranger-2018"],0],
+[3,"CRC 5080 De-Squeak 300g","CRC","5080",31.46,0,"can","#E1251B","brakes","Brake care",["Aerosol","Brake noise"],[],1],
+[4,"CRC 5.56 Multi-Purpose Lubricant Aerosol Spray 400g","CRC","5005",7.70,12.68,"can","#2F6FD6","care","Lubricants and aerosols",["Aerosol","Lubricant"],[],1],
+[5,"CRC 2016 Co Contact Cleaner 350g Precision Electronic Cleaning Solvent","CRC","2016",18.32,28.71,"can","#0E7C86","care","Cleaners",["Aerosol","Electrical","Cleaner"],[],1],
+[6,"CRC 3055 808 Silicone Spray 330g Aerosol","CRC","3055",13.83,19.94,"can","#5B2A86","care","Lubricants and aerosols",["Aerosol","Silicone"],[],1],
+[7,"CRC 5021 Gasket Stripper 300g","CRC","5021",14.69,23.80,"can","#B45309","care","Cleaners",["Aerosol","Gasket removal"],[],1],
+[8,"CRC 3071 So Easy Glass Cleaner 500ml Fast Acting","CRC","3071",13.66,0,"bottle","#0E7C86","care","Cleaners",["Glass","Cleaner"],[],1],
+[9,"CRC 3081 Belt Grip Aerosol Spray 400g","CRC","3081",26.51,0,"can","#3F4249","care","Lubricants and aerosols",["Aerosol","Belts"],[],1],
+[10,"CRC 1754520 TAC-2 Non-Flammable 400g Adhesive Lubricant","CRC","1754520",37.04,0,"can","#B45309","care","Lubricants and aerosols",["Aerosol","Adhesive lubricant"],[],1],
+[11,"CRC 5-56 Marine 300g","CRC","6006",15.59,0,"can","#1E3A5F","care","Lubricants and aerosols",["Aerosol","Marine"],[],1],
+[12,"Wheel Stud Tech Tray 030-612","Goss","030-612",390.99,0,"tray","#2F6FD6","workshop","Wheel nuts and studs",["Workshop tray","Assortment"],[],0],
+[13,"Wheel Nut Tech Tray 030-613","Goss","030-613",606.99,0,"tray","#2F6FD6","workshop","Wheel nuts and studs",["Workshop tray","Assortment"],[],0],
+[14,"Door Lock Rod Clip Tech Tray 030-209","Goss","030-209",242.99,0,"tray","#2F6FD6","body","Body clips and fasteners",["Workshop tray","Clips"],[],0],
+[15,"Body Retainer Tech Tray 030-720","Goss","030-720",137.99,0,"tray","#2F6FD6","body","Body clips and fasteners",["Workshop tray","Retainers"],[],0],
+[16,"Stone Tray / Mud Guard 030-212","Goss","030-212",165.99,0,"tray","#2F6FD6","body","Body and exterior parts",["Workshop tray","Mud guard"],[],0],
+[17,"Cable Lock Assortment 3336","Goss","3336",27.99,0,"clip","#3F4249","body","Body clips and fasteners",["Assortment","Cable locks"],[],0],
+[18,"Vacuum Tees and Connectors 030-496","Goss","030-496",162.99,0,"tray","#2F6FD6","engine","Vacuum and breather hose",["Workshop tray","Connectors"],[],0],
+[19,"Wiper Linkage Bushing Tech Tray 030-203","Goss","030-203",139.99,0,"tray","#2F6FD6","body","Wiper arms and parts",["Workshop tray","Wipers"],[],0]
+].map(function(a){return {id:a[0],title:a[1],vendor:a[2],sku:a[3],price:a[4],compare:a[5],kind:a[6],tint:a[7],dept:a[8],col:a[9],tags:a[10],fit:a[11],uni:!!a[12],onHand:MA_STOCK[a[0]],stock:MA_STOCK[a[0]]>0};});
+function deco(p,v){var ok=!!(v&&p.fit.indexOf(vTag(v))>-1);return Object.assign({},p,{fitLabel:ok?"Fits your "+v.model:(p.uni?"Suits any vehicle":""),fitOk:ok});}
+function money(n){return "$"+Number(n).toFixed(2);}
+var CL_GROUPS={
+ "Brakes and suspension":{key:"brakes", items:["Brake pads","Brake care","Braking system","Suspension","Steering","Brake fluids"]},
+ "Service and electrical":{key:"care", items:["Lubricants and aerosols","Cleaners","Filters and maintenance","Ignition system","Electrical and charging","Care and fluids"]},
+ "Performance and engine":{key:"engine", items:["Vacuum and breather hose","Engine components","Cooling system","Drivetrain","Fuel system","Timing belts and kits","Water pumps"]},
+ "Body and accessories":{key:"body", items:["Body clips and fasteners","Body and exterior parts","Wiper arms and parts","Exterior accessories","Interior accessories","Struts, bonnet and body"]},
+ "Workshop essentials":{key:"workshop", items:["Wheel nuts and studs","Kits and service packs","Workshop trays and assortments"]}
+};
+var CL_ALIAS={"Braking system":["Brake pads","Brake care"],"Care and fluids":["Lubricants and aerosols","Cleaners"]};
+function parentOf(c){for(var g in CL_GROUPS){if(CL_GROUPS[g].items.indexOf(c)>-1)return g;}return "";}
+function inCol(p,c){
+ if(c==="Deals")return p.compare>p.price;
+ if(CL_GROUPS[c])return p.dept===CL_GROUPS[c].key;
+ if(CL_ALIAS[c])return CL_ALIAS[c].indexOf(p.col)>-1;
+ if(c==="Workshop trays and assortments")return p.tags.indexOf("Workshop tray")>-1||p.tags.indexOf("Assortment")>-1;
+ return p.col===c;
+}
+var EMPTY_SEL={stock:[],vendor:[],col:[]};
+class Component extends DCLogic {
+ constructor(props){ super(props); this.state = {col: MS.get("ma-col","Brake pads") || "Brake pads", vehicle:gLoad().vehicle, fitOnly:false, sel:{stock:[],vendor:[],col:[]}, from:"", to:"", open:{stock:true,price:true,vendor:true,col:true}, sort:"best", sideOpen:false}; }
+ componentDidMount(){
+  this.onG = () => this.setState({vehicle:gLoad().vehicle});
+  this.onC = () => this.setState({col: MS.get("ma-col","Brake pads"), sel:{stock:[],vendor:[],col:[]}, from:"", to:""});
+  window.addEventListener("ma-garage", this.onG);
+  window.addEventListener("ma-col", this.onC);
+ }
+ componentWillUnmount(){ window.removeEventListener("ma-garage", this.onG); window.removeEventListener("ma-col", this.onC); }
+ toggleOpt(key, val){
+  var sel = Object.assign({}, this.state.sel), a = sel[key].slice(), i = a.indexOf(val);
+  if (i > -1) a.splice(i, 1); else a.push(val);
+  sel[key] = a; this.setState({sel:sel});
+ }
+ renderVals(){
+  var st = this.state, v = st.vehicle, c = st.col;
+  var isGroup = !!CL_GROUPS[c], parent = isGroup ? "" : parentOf(c);
+  var sibs = isGroup ? CL_GROUPS[c].items : (parent ? CL_GROUPS[parent].items : []);
+  var base = MA_P.filter(p => inCol(p, c)).filter(p => !st.fitOnly || !v || p.uni || p.fit.indexOf(vTag(v)) > -1);
+  var from = parseFloat(st.from), to = parseFloat(st.to);
+  var keyVal = {stock: p => p.stock ? "In stock" : "Out of stock", vendor: p => p.vendor, col: p => p.col};
+  var items = base.filter(p => Object.keys(st.sel).every(k => st.sel[k].length === 0 || st.sel[k].indexOf(keyVal[k](p)) > -1) && (isNaN(from) || p.price >= from) && (isNaN(to) || p.price <= to));
+  if (st.sort==="low") items = items.slice().sort((a,b) => a.price-b.price);
+  if (st.sort==="high") items = items.slice().sort((a,b) => b.price-a.price);
+  if (st.sort==="az") items = items.slice().sort((a,b) => a.title.localeCompare(b.title));
+  var listFacet = (id, name, values) => {
+   var counts = {}; base.forEach(p => { var k = keyVal[id](p); counts[k] = (counts[k]||0) + 1; });
+   var vals = values || Object.keys(counts).sort();
+   return {name:name, isList:true, isPrice:false, open: !!st.open[id], sign: st.open[id] ? "−" : "+", expanded: st.open[id] ? "true" : "false",
+    toggle: () => { var o = Object.assign({}, st.open); o[id] = !o[id]; this.setState({open:o}); },
+    hasSel: st.sel[id].length > 0, selCount: st.sel[id].length,
+    opts: vals.map(val => { var n = counts[val] || 0; return {label:val, count:n, on: st.sel[id].indexOf(val) > -1, disabled: n===0 && st.sel[id].indexOf(val) < 0, color: n===0 ? "#9A9EA6" : "#121316", toggle:() => this.toggleOpt(id, val)}; })};
+  };
+  var maxP = base.reduce((m,p) => Math.max(m, p.price), 0);
+  var priceSel = (!isNaN(from) ? 1 : 0) + (!isNaN(to) ? 1 : 0);
+  var vendors = Object.keys(MA_P.filter(p => inCol(p, c)).reduce((m,p) => { m[p.vendor]=1; return m; }, {}));
+  var goCol = name => () => MS.set("ma-col", name);
+  var chips = [];
+  Object.keys(st.sel).forEach(k => st.sel[k].forEach(val => chips.push({label:val, remove:() => this.toggleOpt(k, val)})));
+  if (priceSel) chips.push({label:"Price " + (isNaN(from) ? "$0" : money(from)) + " to " + (isNaN(to) ? "any" : money(to)), remove:() => this.setState({from:"", to:""})});
+  var all = isGroup ? [{label:"All " + c.toLowerCase(), name:c}] : (parent ? [{label:"All " + parent.toLowerCase(), name:parent}] : []);
+  var totalInCol = MA_P.filter(p => inCol(p, c)).length;
+  return {
+   col: c, hasParent: !!parent, parent: parent, goParent: goCol(parent),
+   intro: c==="Deals" ? "Sale prices on parts and workshop products this week." : (totalInCol ? "Shop " + c.toLowerCase() + " from " + vendors.join(", ") + ", in stock in Melbourne." : "Browse " + c.toLowerCase() + " for your vehicle."),
+   siblings: all.concat(sibs.map(s => ({label:s, name:s}))).map(s => { var on = s.name===c; return {label:s.label, go:goCol(s.name), on: on ? "true" : "false", border: on ? "#E1251B" : "#3A3D44", bg: on ? "#E1251B" : "#1F2125"}; }),
+   facets: [
+    listFacet("stock", "Availability", ["In stock","Out of stock"]),
+    {name:"Price", isList:false, isPrice:true, open: !!st.open.price, sign: st.open.price ? "−" : "+", expanded: st.open.price ? "true" : "false",
+     toggle: () => { var o = Object.assign({}, st.open); o.price = !o.price; this.setState({open:o}); },
+     hasSel: priceSel > 0, selCount: priceSel, max: money(maxP), from: st.from, to: st.to,
+     onFrom: e => this.setState({from: e.target.value.replace(/[^0-9.]/g,"")}), onTo: e => this.setState({to: e.target.value.replace(/[^0-9.]/g,"")})},
+    listFacet("vendor", "Brand"),
+    listFacet("col", "Product type")
+   ],
+   hasVehicle: !!v, model: v ? v.model : "",
+   fitText: st.fitOnly ? "Showing parts tagged for your " + vKey(v) + ", plus products that suit any vehicle." : "Shopping for your " + vKey(v) + "? Turn this on to hide parts that don't fit.",
+   fitBg: st.fitOnly ? "#DCFCE7" : "#F4F4F5", fitBorder: st.fitOnly ? "#86EFAC" : "#E4E4E7",
+   fitAria: st.fitOnly ? "true" : "false", switchBg: st.fitOnly ? "#15803D" : "#9A9EA6", knob: st.fitOnly ? "19px" : "3px",
+   toggleFit: () => this.setState({fitOnly: !st.fitOnly}),
+   chips: chips,
+   items: items.map(p => deco(p, v)), hasItems: items.length > 0, noItems: items.length === 0,
+   count: items.length, countWord: items.length===1 ? "product" : "products",
+   emptyTitle: totalInCol ? "Nothing matches these filters" : "Products for " + c.toLowerCase() + " are on their way",
+   emptyText: totalInCol ? "Clear a filter or turn off vehicle matching to see everything in this category." : "We're adding this range to the website. Ask us and we'll check stock in the warehouse for you.",
+   clearFilters: () => this.setState({sel:{stock:[],vendor:[],col:[]}, from:"", to:""}),
+   sort: st.sort, onSort: e => this.setState({sort:e.target.value}),
+   sideClass: st.sideOpen ? "" : "mx-side-closed", sideLabel: st.sideOpen ? "Hide filters" : "Filters",
+   toggleSide: () => this.setState({sideOpen: !st.sideOpen})
+  };
+ }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,955 @@
+{%- comment -%}
+  ============================================================================
+  COLLECTION LIST / INDEX  —  card grid (image + name only)   v3
+  Metro Auto Australia
+
+  Scope: the COLLECTION LIST page only (templates/list-collections.*).
+  The individual collection page (Custom_Collection_Template / main-collection)
+  is untouched — it keeps its product grid, filters, wishlist and cart.
+
+  v3 changes:
+    - Image area background now defaults to white, and there's a "match the
+      card background" option so no grey box sits behind logo PNGs.
+    - Tighter default spacing throughout: smaller gaps, smaller card padding,
+      smaller image padding. All still adjustable.
+    - New toolbar at the top: sort (A–Z, Z–A, most/fewest products, manual),
+      a live name search, and an optional A–Z letter filter. Vanilla JS,
+      no libraries, degrades to a plain grid if JS is off.
+  ============================================================================
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+  assign ratio = s.image_ratio | default: 100
+
+  assign lift_title = s.hover_lift_title
+  assign lift_cta = s.hover_lift_cta
+  if s.hover_effect == 'fade_only' or s.hover_effect == 'name_only' or s.hover_effect == 'none'
+    assign lift_title = 0
+    assign lift_cta = 0
+  endif
+
+  assign media_bg = s.image_bg
+  if s.image_bg_mode == 'card'
+    assign media_bg = s.card_bg
+  elsif s.image_bg_mode == 'transparent'
+    assign media_bg = 'transparent'
+  endif
+
+  assign show_toolbar = false
+  if s.show_sort or s.show_search or s.show_alpha
+    assign show_toolbar = true
+  endif
+-%}
+
+<style>
+  #ma-cl-{{ uid }}{
+    --macl-min: {{ s.card_min_width }}px;
+    --macl-max: {% if s.card_max_width > 0 %}{{ s.card_max_width }}px{% else %}none{% endif %};
+    --macl-gap: {{ s.grid_gap }}px;
+    --macl-gap-m: {{ s.grid_gap_mobile }}px;
+    --macl-radius: {{ s.card_radius }}px;
+    --macl-border: {{ s.border_color }};
+    --macl-border-hover: {{ s.border_color_hover }};
+    --macl-bg: {{ s.card_bg }};
+    --macl-bg-hover: {{ s.card_bg_hover }};
+    --macl-media-bg: {{ media_bg }};
+    --macl-title: {{ s.title_color }};
+    --macl-title-hover: {{ s.title_hover_color }};
+    --macl-cta: {{ s.cta_color }};
+    --macl-lift-title: {{ lift_title }}px;
+    --macl-lift-cta: {{ lift_cta }}px;
+    --macl-speed: {{ s.transition_speed }}ms;
+    --macl-accent: {{ s.toolbar_accent }};
+  }
+
+  #ma-cl-{{ uid }} .ma-cl__head{
+    margin: 0 0 {{ s.heading_margin_bottom }}px;
+    text-align: {{ s.text_align }};
+  }
+  #ma-cl-{{ uid }} .ma-cl__head h2{
+    margin: 0;
+    color: {{ s.heading_color }};
+    font-size: {{ s.heading_size }}px;
+    line-height: 1.25;
+  }
+  #ma-cl-{{ uid }} .ma-cl__head p{
+    margin: 8px 0 0;
+    color: {{ s.subheading_color }};
+    font-size: {{ s.subheading_size }}px;
+  }
+
+  /* ---- toolbar -------------------------------------------------------- */
+  #ma-cl-{{ uid }} .ma-cl__toolbar{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: {% if s.toolbar_align == 'left' %}flex-start{% elsif s.toolbar_align == 'right' %}flex-end{% else %}space-between{% endif %};
+    gap: 10px;
+    margin: 0 0 {{ s.toolbar_margin_bottom }}px;
+    padding-bottom: {% if s.toolbar_divider %}10px{% else %}0{% endif %};
+    {% if s.toolbar_divider %}border-bottom: 1px solid {{ s.border_color }};{% endif %}
+  }
+  #ma-cl-{{ uid }} .ma-cl__tools{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  #ma-cl-{{ uid }} .ma-cl__search,
+  #ma-cl-{{ uid }} .ma-cl__sort{
+    height: {{ s.toolbar_height }}px;
+    padding: 0 10px;
+    border: 1px solid {{ s.border_color }};
+    border-radius: {{ s.toolbar_radius }}px;
+    background: #fff;
+    color: {{ s.title_color }};
+    font-size: {{ s.toolbar_font_size }}px;
+    line-height: 1.2;
+    outline: none;
+    transition: border-color var(--macl-speed) ease;
+  }
+  #ma-cl-{{ uid }} .ma-cl__search{ width: {{ s.search_width }}px; max-width: 100%; }
+  #ma-cl-{{ uid }} .ma-cl__sort{ padding-right: 26px; cursor: pointer; }
+  #ma-cl-{{ uid }} .ma-cl__search:focus,
+  #ma-cl-{{ uid }} .ma-cl__sort:focus{ border-color: var(--macl-accent); }
+  #ma-cl-{{ uid }} .ma-cl__count{
+    color: {{ s.subheading_color }};
+    font-size: {{ s.toolbar_font_size }}px;
+  }
+
+  #ma-cl-{{ uid }} .ma-cl__alpha{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    width: 100%;
+    margin-top: 2px;
+  }
+  #ma-cl-{{ uid }} .ma-cl__letter{
+    min-width: {{ s.toolbar_height | minus: 6 }}px;
+    height: {{ s.toolbar_height | minus: 6 }}px;
+    padding: 0 6px;
+    border: 1px solid {{ s.border_color }};
+    border-radius: {{ s.toolbar_radius }}px;
+    background: #fff;
+    color: {{ s.title_color }};
+    font-size: {{ s.toolbar_font_size | minus: 1 }}px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all var(--macl-speed) ease;
+  }
+  #ma-cl-{{ uid }} .ma-cl__letter:hover{ border-color: var(--macl-accent); color: var(--macl-accent); }
+  #ma-cl-{{ uid }} .ma-cl__letter.is-active{
+    background: var(--macl-accent);
+    border-color: var(--macl-accent);
+    color: #fff;
+  }
+
+  /* ---- grid ---------------------------------------------------------- */
+  #ma-cl-{{ uid }} .ma-cl__grid{
+    display: grid;
+    /* auto-fill keeps the empty columns reserved, so filtering down to two
+       results leaves two normal-sized cards instead of two giant ones.
+       auto-fit (the "Stretch" option) collapses them and lets cards grow. */
+    grid-template-columns: repeat({% if s.grid_mode == 'stretch' %}auto-fit{% else %}auto-fill{% endif %}, minmax(var(--macl-min), 1fr));
+    gap: var(--macl-gap);
+    justify-content: {% if s.grid_align == 'center' %}center{% else %}start{% endif %};
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  /* hard ceiling on a single card, whatever the grid does */
+  #ma-cl-{{ uid }} .ma-cl__item{
+    width: 100%;
+    max-width: var(--macl-max);
+    {% if s.grid_align == 'center' %}margin-inline: auto;{% endif %}
+  }
+  #ma-cl-{{ uid }} .ma-cl__item.is-hidden{ display: none; }
+  #ma-cl-{{ uid }} .ma-cl__empty{
+    display: none;
+    padding: 30px 0;
+    color: {{ s.subheading_color }};
+    font-size: 14px;
+    text-align: center;
+  }
+  #ma-cl-{{ uid }}.is-empty .ma-cl__empty{ display: block; }
+
+  /* ---- card = ONE link, nothing nested inside it ---------------------- */
+  #ma-cl-{{ uid }} .ma-cl__card{
+    position: relative;
+    display: block;
+    height: 100%;
+    text-decoration: none;
+    background: var(--macl-bg);
+    border: {{ s.border_width }}px solid var(--macl-border);
+    border-radius: var(--macl-radius);
+    overflow: hidden;
+    transition: border-color var(--macl-speed) ease,
+                background-color var(--macl-speed) ease,
+                box-shadow var(--macl-speed) ease,
+                transform var(--macl-speed) ease;
+  }
+  #ma-cl-{{ uid }} .ma-cl__card:hover,
+  #ma-cl-{{ uid }} .ma-cl__card:focus-visible{
+    border-color: var(--macl-border-hover);
+    background: var(--macl-bg-hover);
+    {% if s.card_shadow_hover %}box-shadow: 0 4px 14px rgba(0,0,0,.09);{% endif %}
+    {% if s.card_raise %}transform: translateY(-2px);{% endif %}
+  }
+  #ma-cl-{{ uid }} .ma-cl__card:focus-visible{
+    outline: 2px solid var(--macl-border-hover);
+    outline-offset: 2px;
+  }
+
+  /* ---- media ---------------------------------------------------------- */
+  #ma-cl-{{ uid }} .ma-cl__media{
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 100 / {{ ratio }};
+    background: var(--macl-media-bg);
+    overflow: hidden;
+  }
+  @supports not (aspect-ratio: 1 / 1){
+    #ma-cl-{{ uid }} .ma-cl__media{ height: 0; padding-bottom: {{ ratio }}%; }
+  }
+  #ma-cl-{{ uid }} .ma-cl__media img,
+  #ma-cl-{{ uid }} .ma-cl__media svg{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: {{ s.image_fit }};
+    {% if s.image_fit == 'contain' %}padding: {{ s.image_padding }}px;{% endif %}
+    transition: transform var(--macl-speed) ease;
+  }
+  {% if s.image_zoom %}
+  #ma-cl-{{ uid }} .ma-cl__card:hover .ma-cl__media img{ transform: scale(1.05); }
+  {% endif %}
+
+  /* ---- body ----------------------------------------------------------- */
+  #ma-cl-{{ uid }} .ma-cl__body{
+    display: block;
+    padding: {{ s.body_padding_top }}px {{ s.body_padding_side }}px {{ s.body_padding_bottom }}px;
+    text-align: {{ s.card_text_align }};
+    overflow: hidden;
+  }
+  #ma-cl-{{ uid }} .ma-cl__title{
+    display: block;
+    margin: 0;
+    color: var(--macl-title);
+    font-size: {{ s.title_size }}px;
+    font-weight: {{ s.title_weight }};
+    line-height: {{ s.title_line_height }};
+    {% if s.title_uppercase %}text-transform: uppercase; letter-spacing: .02em;{% endif %}
+    {% if s.title_lines > 0 %}
+      display: -webkit-box;
+      -webkit-line-clamp: {{ s.title_lines }};
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    {% endif %}
+    transform: translateY(0);
+    transition: transform var(--macl-speed) ease, color var(--macl-speed) ease;
+  }
+
+  {%- if s.hover_effect != 'name_only' and s.hover_effect != 'none' -%}
+  #ma-cl-{{ uid }} .ma-cl__cta{
+    display: block;
+    margin-top: {{ s.cta_gap }}px;
+    color: var(--macl-cta);
+    font-size: {{ s.cta_size }}px;
+    font-weight: {{ s.cta_weight }};
+    line-height: 1.3;
+    white-space: nowrap;
+    opacity: {% if s.cta_always_visible %}1{% else %}0{% endif %};
+    transform: translateY(0);
+    transition: opacity var(--macl-speed) ease, transform var(--macl-speed) ease;
+  }
+  #ma-cl-{{ uid }} .ma-cl__card:hover .ma-cl__cta,
+  #ma-cl-{{ uid }} .ma-cl__card:focus-visible .ma-cl__cta{
+    opacity: 1;
+    transform: translateY(calc(var(--macl-lift-cta) * -1));
+  }
+  {%- endif -%}
+
+  {%- if s.hover_effect == 'lift_and_fade' -%}
+  #ma-cl-{{ uid }} .ma-cl__card:hover .ma-cl__title,
+  #ma-cl-{{ uid }} .ma-cl__card:focus-visible .ma-cl__title{
+    transform: translateY(calc(var(--macl-lift-title) * -1));
+  }
+  {%- endif -%}
+
+  {%- if s.title_hover_color_enable -%}
+  #ma-cl-{{ uid }} .ma-cl__card:hover .ma-cl__title,
+  #ma-cl-{{ uid }} .ma-cl__card:focus-visible .ma-cl__title{
+    color: var(--macl-title-hover);
+  }
+  {%- endif -%}
+
+  /* ---- debug badge (theme editor only) -------------------------------- */
+  #ma-cl-{{ uid }} .ma-cl__debug{
+    position: absolute;
+    top: 6px; left: 6px;
+    z-index: 2;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: rgba(0,0,0,.72);
+    color: #fff;
+    font-size: 10px;
+    line-height: 1.5;
+    pointer-events: none;
+  }
+  #ma-cl-{{ uid }} .ma-cl__debug--warn{ background: rgba(185,28,28,.85); }
+
+  /* ---- mobile --------------------------------------------------------- */
+  @media (max-width: 767px){
+    #ma-cl-{{ uid }}{
+      --macl-min: {{ s.card_min_width_mobile }}px;
+      --macl-max: {% if s.card_max_width_mobile > 0 %}{{ s.card_max_width_mobile }}px{% else %}none{% endif %};
+      --macl-lift-title: {{ s.hover_lift_mobile }}px;
+      --macl-lift-cta: {{ s.hover_lift_mobile }}px;
+    }
+    #ma-cl-{{ uid }} .ma-cl__grid{ gap: var(--macl-gap-m); }
+    #ma-cl-{{ uid }} .ma-cl__title{ font-size: {{ s.title_size_mobile }}px; }
+    #ma-cl-{{ uid }} .ma-cl__cta{ font-size: {{ s.cta_size_mobile }}px; }
+    #ma-cl-{{ uid }} .ma-cl__head h2{ font-size: {{ s.heading_size_mobile }}px; }
+    #ma-cl-{{ uid }} .ma-cl__body{
+      padding: {{ s.body_padding_top_mobile }}px {{ s.body_padding_side }}px {{ s.body_padding_bottom_mobile }}px;
+    }
+    #ma-cl-{{ uid }} .ma-cl__toolbar{ justify-content: flex-start; }
+    #ma-cl-{{ uid }} .ma-cl__tools{ width: 100%; }
+    #ma-cl-{{ uid }} .ma-cl__search{ flex: 1 1 auto; width: auto; }
+    #ma-cl-{{ uid }} .ma-cl__count{ display: none; }
+    {%- if s.alpha_hide_mobile -%}
+    #ma-cl-{{ uid }} .ma-cl__alpha{ display: none; }
+    {%- endif -%}
+  }
+
+  @media (hover: none){
+    {%- if s.mobile_show_cta -%}
+    #ma-cl-{{ uid }} .ma-cl__cta{ opacity: 1; }
+    {%- else -%}
+    #ma-cl-{{ uid }} .ma-cl__cta{ display: none; }
+    {%- endif -%}
+    #ma-cl-{{ uid }} .ma-cl__title,
+    #ma-cl-{{ uid }} .ma-cl__cta{ transform: none !important; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    #ma-cl-{{ uid }} .ma-cl__card,
+    #ma-cl-{{ uid }} .ma-cl__card *{ transition: none !important; }
+    #ma-cl-{{ uid }} .ma-cl__title,
+    #ma-cl-{{ uid }} .ma-cl__cta{ transform: none !important; }
+  }
+</style>
+
+<div
+  id="ma-cl-{{ uid }}"
+  class="ma-cl list-collections-index {% if settings.breadcrumb_banner_enable %}pt-100 pt-sm-70{% endif %} pb-50 pb-sm-20"
+  data-section-id="{{ uid }}"
+  data-section-type="collection-list">
+
+  <div class="container">
+
+    {%- if s.heading != blank or s.subheading != blank -%}
+      <div class="ma-cl__head">
+        {%- if s.heading != blank -%}<h2>{{ s.heading | escape }}</h2>{%- endif -%}
+        {%- if s.subheading != blank -%}<p>{{ s.subheading | escape }}</p>{%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if show_toolbar -%}
+      <div class="ma-cl__toolbar">
+        <div class="ma-cl__tools">
+          {%- if s.show_search -%}
+            <input
+              type="search"
+              class="ma-cl__search"
+              data-search
+              placeholder="{{ s.search_placeholder | escape }}"
+              aria-label="{{ s.search_placeholder | escape }}"
+              autocomplete="off">
+          {%- endif -%}
+
+          {%- if s.show_sort -%}
+            <select class="ma-cl__sort" data-sort aria-label="{{ s.sort_label | escape }}">
+              <option value="alpha_asc">{{ s.label_alpha_asc }}</option>
+              <option value="alpha_desc">{{ s.label_alpha_desc }}</option>
+              {%- if s.sort_show_count -%}
+                <option value="count_desc">{{ s.label_count_desc }}</option>
+                <option value="count_asc">{{ s.label_count_asc }}</option>
+              {%- endif -%}
+              {%- if s.sort_show_manual -%}
+                <option value="manual">{{ s.label_manual }}</option>
+              {%- endif -%}
+            </select>
+          {%- endif -%}
+        </div>
+
+        {%- if s.show_result_count -%}
+          <span class="ma-cl__count" data-count-label></span>
+        {%- endif -%}
+
+        {%- if s.show_alpha -%}
+          <div class="ma-cl__alpha" data-alpha role="group" aria-label="Filter by first letter"></div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <ul class="ma-cl__grid" data-grid role="list">
+
+      {%- if s.collection_source == 'selected' -%}
+
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'custom_collection' -%}
+            {%- assign coll = collections[block.settings.featured_product_handle] -%}
+            {%- if coll.handle != blank -%}
+
+              {%- liquid
+                assign img = nil
+                assign img_src = 'none'
+                if block.settings.custom_collection_img.src != blank
+                  assign img = block.settings.custom_collection_img
+                  assign img_src = 'block override'
+                elsif coll.image.src != blank
+                  assign img = coll.image
+                  assign img_src = 'collection image'
+                elsif s.image_fallback == 'featured' and coll.featured_image.src != blank
+                  assign img = coll.featured_image
+                  assign img_src = 'featured_image'
+                elsif s.image_fallback == 'product' and coll.products.first.featured_image.src != blank
+                  assign img = coll.products.first.featured_image
+                  assign img_src = 'first product'
+                endif
+
+                assign card_title = coll.title
+                if block.settings.custom_collection_title != blank
+                  assign card_title = block.settings.custom_collection_title
+                endif
+              -%}
+
+              <li
+                class="ma-cl__item"
+                data-title="{{ card_title | escape }}"
+                data-count="{{ coll.all_products_count }}"
+                {{ block.shopify_attributes }}>
+                <a class="ma-cl__card" href="{{ coll.url }}">
+                  {%- if request.design_mode and s.debug_image_source -%}
+                    <span class="ma-cl__debug {% if img_src == 'none' %}ma-cl__debug--warn{% endif %}">{{ img_src }}</span>
+                  {%- endif -%}
+                  <span class="ma-cl__media">
+                    {%- if img != nil -%}
+                      <img
+                        src="{{ img | image_url: width: 600 }}"
+                        srcset="{{ img | image_url: width: 300 }} 300w,
+                                {{ img | image_url: width: 450 }} 450w,
+                                {{ img | image_url: width: 600 }} 600w"
+                        sizes="(max-width: 767px) 45vw, {{ s.card_min_width }}px"
+                        width="{{ img.width | default: 600 }}"
+                        height="{{ img.height | default: 600 }}"
+                        alt="{{ img.alt | default: card_title | escape }}"
+                        loading="lazy">
+                    {%- else -%}
+                      {{ 'collection-1' | placeholder_svg_tag: 'ma-cl__placeholder' }}
+                    {%- endif -%}
+                  </span>
+                  <span class="ma-cl__body">
+                    <span class="ma-cl__title">{{ card_title | escape }}</span>
+                    {%- if s.hover_effect != 'name_only' and s.hover_effect != 'none' -%}
+                      <span class="ma-cl__cta" aria-hidden="true">{{ s.cta_text }}</span>
+                    {%- endif -%}
+                  </span>
+                </a>
+              </li>
+
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+      {%- else -%}
+
+        {%- assign shown = 0 -%}
+
+        {%- for coll in collections -%}
+          {%- unless coll.handle == 'frontpage' or coll.handle == 'all' -%}
+            {%- if shown < s.collections_limit -%}
+              {%- if s.hide_empty == false or coll.all_products_count > 0 -%}
+
+                {%- liquid
+                  assign shown = shown | plus: 1
+                  assign img = nil
+                  assign img_src = 'none'
+                  if coll.image.src != blank
+                    assign img = coll.image
+                    assign img_src = 'collection image'
+                  elsif s.image_fallback == 'featured' and coll.featured_image.src != blank
+                    assign img = coll.featured_image
+                    assign img_src = 'featured_image'
+                  elsif s.image_fallback == 'product' and coll.products.first.featured_image.src != blank
+                    assign img = coll.products.first.featured_image
+                    assign img_src = 'first product'
+                  endif
+                -%}
+
+                <li
+                  class="ma-cl__item"
+                  data-title="{{ coll.title | escape }}"
+                  data-count="{{ coll.all_products_count }}">
+                  <a class="ma-cl__card" href="{{ coll.url }}">
+                    {%- if request.design_mode and s.debug_image_source -%}
+                      <span class="ma-cl__debug {% if img_src == 'none' %}ma-cl__debug--warn{% endif %}">{{ img_src }}</span>
+                    {%- endif -%}
+                    <span class="ma-cl__media">
+                      {%- if img != nil -%}
+                        <img
+                          src="{{ img | image_url: width: 600 }}"
+                          srcset="{{ img | image_url: width: 300 }} 300w,
+                                  {{ img | image_url: width: 450 }} 450w,
+                                  {{ img | image_url: width: 600 }} 600w"
+                          sizes="(max-width: 767px) 45vw, {{ s.card_min_width }}px"
+                          width="{{ img.width | default: 600 }}"
+                          height="{{ img.height | default: 600 }}"
+                          alt="{{ img.alt | default: coll.title | escape }}"
+                          loading="lazy">
+                      {%- else -%}
+                        {{ 'collection-1' | placeholder_svg_tag: 'ma-cl__placeholder' }}
+                      {%- endif -%}
+                    </span>
+                    <span class="ma-cl__body">
+                      <span class="ma-cl__title">{{ coll.title | escape }}</span>
+                      {%- if s.hover_effect != 'name_only' and s.hover_effect != 'none' -%}
+                        <span class="ma-cl__cta" aria-hidden="true">{{ s.cta_text }}</span>
+                      {%- endif -%}
+                    </span>
+                  </a>
+                </li>
+
+              {%- endif -%}
+            {%- endif -%}
+          {%- endunless -%}
+        {%- endfor -%}
+
+      {%- endif -%}
+
+    </ul>
+
+    {%- if show_toolbar -%}
+      <p class="ma-cl__empty">{{ s.empty_text }}</p>
+    {%- endif -%}
+
+  </div>
+</div>
+
+{%- if show_toolbar -%}
+<script>
+(function(){
+  var root = document.getElementById('ma-cl-{{ uid }}');
+  if (!root) return;
+
+  var grid = root.querySelector('[data-grid]');
+  if (!grid) return;
+
+  var searchEl = root.querySelector('[data-search]');
+  var sortEl   = root.querySelector('[data-sort]');
+  var alphaEl  = root.querySelector('[data-alpha]');
+  var countEl  = root.querySelector('[data-count-label]');
+
+  var items = Array.prototype.slice.call(grid.querySelectorAll('.ma-cl__item'));
+  if (!items.length) return;
+
+  // remember the order the page rendered in, for "manual"
+  items.forEach(function(el, i){ el._maclIndex = i; });
+
+  var ALL = '{{ s.alpha_all_label | escape }}';
+  var state = { q: '', letter: ALL, sort: '{{ s.default_sort }}' };
+
+  function titleOf(el){ return (el.getAttribute('data-title') || '').trim(); }
+  function countOf(el){ return parseInt(el.getAttribute('data-count') || '0', 10); }
+  function firstLetter(el){
+    var t = titleOf(el).replace(/^[^a-z0-9]+/i, '');
+    var c = t.charAt(0).toUpperCase();
+    return /[A-Z]/.test(c) ? c : '#';
+  }
+
+  function buildAlpha(){
+    if (!alphaEl) return;
+    var seen = {};
+    items.forEach(function(el){ seen[firstLetter(el)] = true; });
+    var letters = Object.keys(seen).sort(function(a,b){
+      if (a === '#') return 1;
+      if (b === '#') return -1;
+      return a.localeCompare(b);
+    });
+    var frag = document.createDocumentFragment();
+    [ALL].concat(letters).forEach(function(l){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ma-cl__letter' + (l === ALL ? ' is-active' : '');
+      b.textContent = l;
+      b.setAttribute('data-letter', l);
+      frag.appendChild(b);
+    });
+    alphaEl.appendChild(frag);
+
+    alphaEl.addEventListener('click', function(e){
+      var btn = e.target.closest('.ma-cl__letter');
+      if (!btn) return;
+      state.letter = btn.getAttribute('data-letter');
+      alphaEl.querySelectorAll('.ma-cl__letter').forEach(function(x){
+        x.classList.toggle('is-active', x === btn);
+      });
+      apply();
+    });
+  }
+
+  function sortItems(){
+    var mode = state.sort;
+    var sorted = items.slice().sort(function(a, b){
+      switch (mode) {
+        case 'alpha_desc': return titleOf(b).localeCompare(titleOf(a), undefined, {sensitivity:'base'});
+        case 'count_desc': return countOf(b) - countOf(a) || titleOf(a).localeCompare(titleOf(b));
+        case 'count_asc':  return countOf(a) - countOf(b) || titleOf(a).localeCompare(titleOf(b));
+        case 'manual':     return a._maclIndex - b._maclIndex;
+        default:           return titleOf(a).localeCompare(titleOf(b), undefined, {sensitivity:'base'});
+      }
+    });
+    var frag = document.createDocumentFragment();
+    sorted.forEach(function(el){ frag.appendChild(el); });
+    grid.appendChild(frag);
+  }
+
+  function apply(){
+    var q = state.q.toLowerCase();
+    var visible = 0;
+    items.forEach(function(el){
+      var okQ = !q || titleOf(el).toLowerCase().indexOf(q) !== -1;
+      var okL = state.letter === ALL || firstLetter(el) === state.letter;
+      var show = okQ && okL;
+      el.classList.toggle('is-hidden', !show);
+      if (show) visible++;
+    });
+    root.classList.toggle('is-empty', visible === 0);
+    if (countEl) {
+      countEl.textContent = visible + (visible === 1 ? ' {{ s.count_singular | escape }}' : ' {{ s.count_plural | escape }}');
+    }
+  }
+
+  var t;
+  if (searchEl) {
+    searchEl.addEventListener('input', function(){
+      clearTimeout(t);
+      t = setTimeout(function(){ state.q = searchEl.value; apply(); }, 120);
+    });
+  }
+  if (sortEl) {
+    sortEl.value = state.sort;
+    sortEl.addEventListener('change', function(){ state.sort = sortEl.value; sortItems(); });
+  }
+
+  buildAlpha();
+  sortItems();
+  apply();
+})();
+</script>
+{%- endif -%}
+
+{%- render 'section-style' -%}
+
+{% schema %}
+{
+  "name": "Collection List",
+  "settings": [
+    { "type": "header", "content": "Source" },
+    {
+      "type": "select",
+      "id": "collection_source",
+      "label": "Which collections",
+      "options": [
+        { "value": "all", "label": "All collections" },
+        { "value": "selected", "label": "Selected collections (add blocks)" }
+      ],
+      "default": "all"
+    },
+    { "type": "range", "id": "collections_limit", "min": 4, "max": 200, "step": 2, "label": "Max collections to show", "default": 100, "info": "Only applies to \"All collections\"." },
+    { "type": "checkbox", "id": "hide_empty", "label": "Hide empty collections", "default": true },
+
+    { "type": "header", "content": "Toolbar (sort + search)" },
+    { "type": "checkbox", "id": "show_sort", "label": "Show sort dropdown", "default": true },
+    { "type": "checkbox", "id": "show_search", "label": "Show search box", "default": true },
+    { "type": "checkbox", "id": "show_alpha", "label": "Show A–Z letter filter", "default": false },
+    { "type": "checkbox", "id": "alpha_hide_mobile", "label": "Hide A–Z filter on mobile", "default": true },
+    { "type": "checkbox", "id": "show_result_count", "label": "Show result count", "default": true },
+    {
+      "type": "select",
+      "id": "default_sort",
+      "label": "Default sort",
+      "options": [
+        { "value": "alpha_asc", "label": "A–Z" },
+        { "value": "alpha_desc", "label": "Z–A" },
+        { "value": "count_desc", "label": "Most products" },
+        { "value": "count_asc", "label": "Fewest products" },
+        { "value": "manual", "label": "As arranged" }
+      ],
+      "default": "alpha_asc"
+    },
+    { "type": "checkbox", "id": "sort_show_count", "label": "Offer \"most/fewest products\" sorting", "default": true },
+    { "type": "checkbox", "id": "sort_show_manual", "label": "Offer \"as arranged\" sorting", "default": false },
+    { "type": "text", "id": "search_placeholder", "label": "Search placeholder", "default": "Search collections" },
+    { "type": "text", "id": "sort_label", "label": "Sort accessible label", "default": "Sort collections" },
+    { "type": "text", "id": "label_alpha_asc", "label": "Sort option: A–Z", "default": "Name: A–Z" },
+    { "type": "text", "id": "label_alpha_desc", "label": "Sort option: Z–A", "default": "Name: Z–A" },
+    { "type": "text", "id": "label_count_desc", "label": "Sort option: most products", "default": "Most products" },
+    { "type": "text", "id": "label_count_asc", "label": "Sort option: fewest products", "default": "Fewest products" },
+    { "type": "text", "id": "label_manual", "label": "Sort option: as arranged", "default": "Featured" },
+    { "type": "text", "id": "alpha_all_label", "label": "A–Z \"all\" button label", "default": "All" },
+    { "type": "text", "id": "count_singular", "label": "Result count word (one)", "default": "collection" },
+    { "type": "text", "id": "count_plural", "label": "Result count word (many)", "default": "collections" },
+    { "type": "text", "id": "empty_text", "label": "No results message", "default": "No collections match your search." },
+    {
+      "type": "select",
+      "id": "toolbar_align",
+      "label": "Toolbar alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "split", "label": "Split (controls left, count right)" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "split"
+    },
+    { "type": "checkbox", "id": "toolbar_divider", "label": "Line under toolbar", "default": true },
+    { "type": "color", "id": "toolbar_accent", "label": "Toolbar accent colour", "default": "#0aa0c0" },
+    { "type": "range", "id": "toolbar_height", "min": 26, "max": 48, "step": 1, "unit": "px", "label": "Control height", "default": 34 },
+    { "type": "range", "id": "toolbar_radius", "min": 0, "max": 20, "step": 1, "unit": "px", "label": "Control corner radius", "default": 4 },
+    { "type": "range", "id": "toolbar_font_size", "min": 10, "max": 18, "step": 1, "unit": "px", "label": "Control font size", "default": 13 },
+    { "type": "range", "id": "search_width", "min": 120, "max": 400, "step": 10, "unit": "px", "label": "Search box width", "default": 200 },
+    { "type": "range", "id": "toolbar_margin_bottom", "min": 0, "max": 50, "step": 2, "unit": "px", "label": "Space under toolbar", "default": 18 },
+
+    { "type": "header", "content": "Image source" },
+    {
+      "type": "select",
+      "id": "image_fallback",
+      "label": "If a collection has no image assigned",
+      "options": [
+        { "value": "none", "label": "Show a placeholder (recommended)" },
+        { "value": "featured", "label": "Use Shopify's featured_image" },
+        { "value": "product", "label": "Use the first product's image" }
+      ],
+      "default": "none",
+      "info": "The image assigned in Admin > Products > Collections is always used first."
+    },
+    { "type": "checkbox", "id": "debug_image_source", "label": "Show image source badge (theme editor only)", "default": false },
+
+    { "type": "header", "content": "Heading" },
+    { "type": "text", "id": "heading", "label": "Heading" },
+    { "type": "text", "id": "subheading", "label": "Subheading" },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "color", "id": "heading_color", "label": "Heading colour", "default": "#1a1a1a" },
+    { "type": "color", "id": "subheading_color", "label": "Subheading colour", "default": "#6b6b6b" },
+    { "type": "range", "id": "heading_size", "min": 16, "max": 48, "step": 1, "unit": "px", "label": "Heading size (desktop)", "default": 28 },
+    { "type": "range", "id": "heading_size_mobile", "min": 14, "max": 36, "step": 1, "unit": "px", "label": "Heading size (mobile)", "default": 20 },
+    { "type": "range", "id": "subheading_size", "min": 11, "max": 22, "step": 1, "unit": "px", "label": "Subheading size", "default": 14 },
+    { "type": "range", "id": "heading_margin_bottom", "min": 0, "max": 80, "step": 5, "unit": "px", "label": "Space under heading", "default": 20 },
+
+    { "type": "header", "content": "Grid" },
+    {
+      "type": "select",
+      "id": "grid_mode",
+      "label": "Card sizing",
+      "options": [
+        { "value": "fixed", "label": "Keep cards the same size (recommended)" },
+        { "value": "stretch", "label": "Stretch cards to fill each row" }
+      ],
+      "default": "fixed",
+      "info": "\"Keep the same size\" means cards stay put when a search narrows the list. \"Stretch\" makes few results grow to fill the row."
+    },
+    {
+      "type": "select",
+      "id": "grid_align",
+      "label": "Align cards",
+      "options": [
+        { "value": "start", "label": "Left" },
+        { "value": "center", "label": "Centered" }
+      ],
+      "default": "start",
+      "info": "Only visible when a row isn't full."
+    },
+    { "type": "range", "id": "card_min_width", "min": 110, "max": 320, "step": 5, "unit": "px", "label": "Minimum card width (desktop)", "default": 165 },
+    { "type": "range", "id": "card_max_width", "min": 0, "max": 400, "step": 5, "unit": "px", "label": "Maximum card width (desktop)", "default": 220, "info": "A card will never grow past this. 0 = no limit." },
+    { "type": "range", "id": "card_min_width_mobile", "min": 90, "max": 220, "step": 5, "unit": "px", "label": "Minimum card width (mobile)", "default": 135 },
+    { "type": "range", "id": "card_max_width_mobile", "min": 0, "max": 300, "step": 5, "unit": "px", "label": "Maximum card width (mobile)", "default": 0, "info": "0 = no limit." },
+    { "type": "range", "id": "grid_gap", "min": 2, "max": 48, "step": 1, "unit": "px", "label": "Gap (desktop)", "default": 12 },
+    { "type": "range", "id": "grid_gap_mobile", "min": 2, "max": 32, "step": 1, "unit": "px", "label": "Gap (mobile)", "default": 8 },
+
+    { "type": "header", "content": "Card" },
+    { "type": "color", "id": "card_bg", "label": "Card background", "default": "#ffffff" },
+    { "type": "color", "id": "card_bg_hover", "label": "Card background on hover", "default": "#ffffff" },
+    { "type": "range", "id": "border_width", "min": 0, "max": 4, "step": 1, "unit": "px", "label": "Border width", "default": 1 },
+    { "type": "color", "id": "border_color", "label": "Border colour", "default": "#e6e6e6" },
+    { "type": "color", "id": "border_color_hover", "label": "Border colour on hover", "default": "#0aa0c0" },
+    { "type": "range", "id": "card_radius", "min": 0, "max": 24, "step": 1, "unit": "px", "label": "Corner radius", "default": 6 },
+    { "type": "checkbox", "id": "card_shadow_hover", "label": "Shadow on hover", "default": true },
+    { "type": "checkbox", "id": "card_raise", "label": "Lift whole card on hover", "default": false },
+    {
+      "type": "select",
+      "id": "card_text_align",
+      "label": "Card text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+
+    { "type": "header", "content": "Image" },
+    {
+      "type": "select",
+      "id": "image_bg_mode",
+      "label": "Image area background",
+      "options": [
+        { "value": "card", "label": "Match card background (no grey box)" },
+        { "value": "transparent", "label": "Transparent" },
+        { "value": "custom", "label": "Custom colour" }
+      ],
+      "default": "card"
+    },
+    { "type": "color", "id": "image_bg", "label": "Custom image background", "default": "#ffffff" },
+    { "type": "range", "id": "image_ratio", "min": 70, "max": 130, "step": 5, "unit": "%", "label": "Image height vs width", "default": 100, "info": "100% = square." },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image fit",
+      "options": [
+        { "value": "cover", "label": "Cover (fills, may crop)" },
+        { "value": "contain", "label": "Contain (whole image, no crop)" }
+      ],
+      "default": "contain"
+    },
+    { "type": "range", "id": "image_padding", "min": 0, "max": 30, "step": 1, "unit": "px", "label": "Padding around image (Contain only)", "default": 4 },
+    { "type": "checkbox", "id": "image_zoom", "label": "Zoom image on hover", "default": false },
+
+    { "type": "header", "content": "Hover behaviour" },
+    {
+      "type": "select",
+      "id": "hover_effect",
+      "label": "Hover effect",
+      "options": [
+        { "value": "lift_and_fade", "label": "Name lifts + label fades in" },
+        { "value": "fade_only", "label": "Label fades in, name stays put" },
+        { "value": "name_only", "label": "No label at all" },
+        { "value": "none", "label": "No hover motion" }
+      ],
+      "default": "lift_and_fade"
+    },
+    { "type": "range", "id": "hover_lift_title", "min": 0, "max": 30, "step": 1, "unit": "px", "label": "How far the name lifts (desktop)", "default": 8 },
+    { "type": "range", "id": "hover_lift_cta", "min": 0, "max": 30, "step": 1, "unit": "px", "label": "How far the label lifts (desktop)", "default": 8, "info": "Keep equal to the name lift so the label stays under it." },
+    { "type": "range", "id": "hover_lift_mobile", "min": 0, "max": 20, "step": 1, "unit": "px", "label": "Lift distance (mobile)", "default": 0 },
+    { "type": "range", "id": "transition_speed", "min": 100, "max": 500, "step": 20, "unit": "ms", "label": "Transition speed", "default": 200 },
+    { "type": "checkbox", "id": "cta_always_visible", "label": "Always show the label", "default": false },
+    { "type": "checkbox", "id": "mobile_show_cta", "label": "Show the label on touch devices", "default": false },
+
+    { "type": "header", "content": "Collection name" },
+    { "type": "color", "id": "title_color", "label": "Name colour", "default": "#1a1a1a" },
+    { "type": "checkbox", "id": "title_hover_color_enable", "label": "Change name colour on hover", "default": true },
+    { "type": "color", "id": "title_hover_color", "label": "Name colour on hover", "default": "#0aa0c0" },
+    { "type": "range", "id": "title_size", "min": 9, "max": 24, "step": 1, "unit": "px", "label": "Name size (desktop)", "default": 13 },
+    { "type": "range", "id": "title_size_mobile", "min": 8, "max": 20, "step": 1, "unit": "px", "label": "Name size (mobile)", "default": 11 },
+    {
+      "type": "select",
+      "id": "title_weight",
+      "label": "Name weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    { "type": "range", "id": "title_line_height", "min": 1, "max": 2, "step": 0.1, "label": "Name line height", "default": 1.3 },
+    { "type": "checkbox", "id": "title_uppercase", "label": "Uppercase name", "default": false },
+    { "type": "range", "id": "title_lines", "min": 0, "max": 3, "step": 1, "label": "Max name lines (0 = no limit)", "default": 2 },
+
+    { "type": "header", "content": "Hover label" },
+    { "type": "text", "id": "cta_text", "label": "Label text", "default": "Shop now →" },
+    { "type": "color", "id": "cta_color", "label": "Label colour", "default": "#0aa0c0" },
+    { "type": "range", "id": "cta_size", "min": 8, "max": 18, "step": 1, "unit": "px", "label": "Label size (desktop)", "default": 11 },
+    { "type": "range", "id": "cta_size_mobile", "min": 8, "max": 16, "step": 1, "unit": "px", "label": "Label size (mobile)", "default": 10 },
+    {
+      "type": "select",
+      "id": "cta_weight",
+      "label": "Label weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    { "type": "range", "id": "cta_gap", "min": 0, "max": 16, "step": 1, "unit": "px", "label": "Gap between name and label", "default": 2 },
+
+    { "type": "header", "content": "Card spacing" },
+    { "type": "range", "id": "body_padding_top", "min": 0, "max": 40, "step": 1, "unit": "px", "label": "Space above name (desktop)", "default": 8 },
+    { "type": "range", "id": "body_padding_bottom", "min": 0, "max": 50, "step": 1, "unit": "px", "label": "Space below label (desktop)", "default": 8 },
+    { "type": "range", "id": "body_padding_top_mobile", "min": 0, "max": 30, "step": 1, "unit": "px", "label": "Space above name (mobile)", "default": 6 },
+    { "type": "range", "id": "body_padding_bottom_mobile", "min": 0, "max": 40, "step": 1, "unit": "px", "label": "Space below label (mobile)", "default": 6 },
+    { "type": "range", "id": "body_padding_side", "min": 0, "max": 30, "step": 1, "unit": "px", "label": "Side padding", "default": 6 }
+  ],
+  "blocks": [
+    {
+      "type": "custom_collection",
+      "name": "Collection",
+      "settings": [
+        { "type": "collection", "id": "featured_product_handle", "label": "Select collection" },
+        { "type": "image_picker", "id": "custom_collection_img", "label": "Custom image", "info": "Optional. Overrides the collection's own image." },
+        { "type": "text", "id": "custom_collection_title", "label": "Custom name", "info": "Optional. Overrides the collection title." }
+      ]
+    },
+    {
+      "type": "section_margin",
+      "name": "Section Margin",
+      "limit": 1,
+      "settings": [
+        { "type": "header", "content": "Large/Desktop Device" },
+        { "type": "range", "id": "section_margin_top", "min": 0, "max": 150, "step": 5, "label": "Margin Top", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_margin_bottom", "min": 0, "max": 150, "step": 5, "label": "Margin Bottom", "unit": "px", "default": 0 },
+        { "type": "header", "content": "Tablet Device" },
+        { "type": "range", "id": "section_margin_top_md", "min": 0, "max": 150, "step": 5, "label": "Margin Top", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_margin_bottom_md", "min": 0, "max": 150, "step": 5, "label": "Margin Bottom", "unit": "px", "default": 0 },
+        { "type": "header", "content": "Mobile Device" },
+        { "type": "range", "id": "section_margin_top_xs", "min": 0, "max": 150, "step": 5, "label": "Margin Top", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_margin_bottom_xs", "min": 0, "max": 150, "step": 5, "label": "Margin Bottom", "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "section_padding",
+      "name": "Section Padding",
+      "limit": 1,
+      "settings": [
+        { "type": "header", "content": "Large/Desktop Device" },
+        { "type": "range", "id": "section_padding_top", "min": 0, "max": 150, "step": 5, "label": "Padding Top", "unit": "px", "default": 60 },
+        { "type": "range", "id": "section_padding_bottom", "min": 0, "max": 150, "step": 5, "label": "Padding Bottom", "unit": "px", "default": 40 },
+        { "type": "header", "content": "Tablet Device" },
+        { "type": "range", "id": "section_padding_top_md", "min": 0, "max": 150, "step": 5, "label": "Padding Top", "unit": "px", "default": 50 },
+        { "type": "range", "id": "section_padding_bottom_md", "min": 0, "max": 150, "step": 5, "label": "Padding Bottom", "unit": "px", "default": 20 },
+        { "type": "header", "content": "Mobile Device" },
+        { "type": "range", "id": "section_padding_top_xs", "min": 0, "max": 150, "step": 5, "label": "Padding Top", "unit": "px", "default": 40 },
+        { "type": "range", "id": "section_padding_bottom_xs", "min": 0, "max": 150, "step": 5, "label": "Padding Bottom", "unit": "px", "default": 20 }
+      ]
+    }
+  ]
+}
+{% endschema %}

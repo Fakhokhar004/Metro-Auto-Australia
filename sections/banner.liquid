@@ -1,0 +1,754 @@
+<div class="banner-area common_slick_slider" id="section-{{ section.id }}" data-section="Simple_Banner">
+  
+  
+    {%- capture data_slick_activation -%}
+    data-slick='{
+  
+    "infinite": true,
+    "slidesToShow": {{section.settings.carsoule_banner_col}},
+    "slidesToScroll": 1,
+    "rows":{{ section.settings.product_casoule_row }},
+    {% if section.settings.tab_arsoule_arrow_enable %}
+    	"arrows": true,
+    	"prevArrow": "<span class=&#x27;product-dec-icon product-dec-prev&#x27;><i class=&#x27;sli sli-arrow-left&#x27;></i></span>",
+    	"nextArrow": "<span class=&#x27;product-dec-icon product-dec-next&#x27;><i class=&#x27;sli sli-arrow-right&#x27;></i></span>",
+    {%else%}
+    	"arrows": false,
+    {%endif%}
+    
+    "responsive": [{
+    "breakpoint": 1200,
+    "settings": {
+    "slidesToShow": {{section.settings.carsoule_banner_col}},
+    "slidesToScroll": 1
+    }
+    },
+    {
+      "breakpoint": 1199,
+      "settings": {
+      "slidesToShow": {{section.settings.carsoule_banner_col_lg}},
+      "slidesToScroll": 1
+      }
+    },
+    {
+      "breakpoint": 991,
+      "settings": {
+      "slidesToShow": {{section.settings.carsoule_banner_col_md}},
+      "slidesToScroll": 1
+      }
+    },
+    {
+      "breakpoint": 767,
+      "settings": {
+      "slidesToShow": {{section.settings.carsoule_banner_col_sm}},
+      "slidesToScroll": 1
+      }
+    },
+    {
+      "breakpoint": 575,
+      "settings": {
+      "slidesToShow": 1,
+      "slidesToScroll": 1
+      }
+    }
+    ]
+  
+
+    }'
+    {%- endcapture -%}
+  
+  
+
+
+
+  
+  
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %} {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+    
+ 	<div class="{% if section.settings.tab_arsoule_active %} banner-slider-active carsoule_arrow_style {% endif %}row {% if section.settings.no_gutter_enable %}no_gutter{% endif %} {% if settings.section__animation__enable %}scroll-zoom {% endif %}" {{ data_slick_activation }}>
+      
+      {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {%- when 'banner' -%}
+        <div class="{% if section.settings.tab_arsoule_active %}col-md-12 {% else %} col-lg-{{block.settings.product_column_handle}} col-md-{{block.settings.product_column_handle_md}} col-sm-{{block.settings.product_column_handle_sm}} col-12 {% endif %} block_{{ block.id }}">
+           {%- render 'banner-snippet', block:block -%}
+        </div>
+        {%- endcase -%}
+      {%- endfor -%}
+      
+    </div>
+  </div>
+</div>
+
+
+{%- render 'section-style' -%}
+
+
+<style>
+
+.simple__pro__wrap {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	text-align: center;
+	flex-wrap: wrap;
+}
+
+.simple__pro__img {
+    width: 50%;
+}
+.simple__pro__content {
+    width: 50%;
+    padding: 30px 50px;
+}
+.simple__pro__content h2 {
+    font-size: 90px;
+    line-height:1;
+}
+
+@media (min-width: 350px) and (max-width: 575px){
+  .simple__pro__img {
+      width: 100%;
+  }
+  .simple__pro__content {
+      width: 100%;
+      padding: 30px 50px;
+  }
+  .simple__pro__content h2 {
+  	font-size:40px;
+  }
+  .simple__pro__content h3 {
+  	font-size: 20px;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767px){
+  .simple__pro__content h2 {
+  	font-size: 30px;
+  }
+  .simple__pro__content h3 {
+  	font-size: 18px;
+  }
+  .simple__pro__content {
+	padding: 10px 20px;
+}
+}
+
+@media (min-width: 768px) and (max-width: 991px){
+  .simple__pro__content h2 {
+  	font-size: 40px;
+  }
+  .simple__pro__content h3 {
+  	font-size: 18px;
+  }
+  .simple__pro__content {
+	padding: 15px 30px;
+}
+}
+
+@media (min-width: 992px) and (max-width: 1365px){
+  .simple__pro__content h2 {
+  	font-size: 70px;
+  }
+}
+  
+.simple__pro__content h2 span {
+      color: rgba(0, 0, 0, 0);
+    -webkit-text-stroke-color: #000;
+    -webkit-text-stroke-width: 1px;
+}
+  
+.simple__pro__wrap{
+  outline: 1px dashed #eee;
+  outline-offset: -15px;
+  background:#fbfbfb
+}
+
+</style>
+
+
+
+
+{% schema %}
+  {
+    "name": "Banner",
+    "settings": [
+
+              {
+                "type": "select",
+                "id": "section_width",
+                "label": "Section Width",
+                "options":[
+                      {
+                          "label": "Full Width",
+                          "value": "full_width"
+                      },
+                      {
+                          "label": "Box Width",
+                          "value": "box_width"
+                      },
+                      {
+                          "label": "Default Width",
+                          "value": "default"
+                      }
+                  ],
+                  "default": "default"
+              },
+
+        {
+            "type": "checkbox",
+            "id": "no_gutter_enable",
+            "label": "No Gutter Enable",
+            "default": false
+        },
+              {
+                  "type": "checkbox",
+                  "id": "tab_arsoule_active",
+                  "label": "Active Carsoule",
+                  "default": true
+              },
+              {
+                "type": "range",
+                "id": "carsoule_banner_col",
+                "min": 1,
+                "max": 12,
+                "step": 1,
+                "label": "Carsoule Banner Coloum",
+                "unit": "/12",
+                "default": 4
+              },
+
+              {
+                "type": "range",
+                "id": "carsoule_banner_col_lg",
+                "min": 1,
+                "max": 12,
+                "step": 1,
+                "label": "Carsoule Banner Coloum (1199)",
+                "unit": "/12",
+                "default": 3
+              },
+
+              {
+                "type": "range",
+                "id": "carsoule_banner_col_md",
+                "min": 1,
+                "max": 12,
+                "step": 1,
+                "label": "Carsoule Banner Coloum (991)",
+                "unit": "/12",
+                "default": 2
+              },
+
+              {
+                "type": "range",
+                "id": "carsoule_banner_col_sm",
+                "min": 1,
+                "max": 12,
+                "step": 1,
+                "label": "Carsoule Banner Coloum (767)",
+                "unit": "/12",
+                "default": 1
+              },
+
+              {
+                  "type": "checkbox",
+                  "id": "tab_arsoule_arrow_enable",
+                  "label": "Carsoule Arrow Enable",
+                  "default": true
+              },
+              {
+                  "type": "range",
+                  "id": "product_casoule_row",
+                  "min": 1,
+                  "max": 10,
+                  "step": 1,
+                  "label": "Product Carsoule Row",
+                  "default": 2
+              }
+
+],
+	"blocks":[
+	   {
+          "type": "banner",
+          "name": "Banner",
+          "settings": [
+              {
+                "type": "select",
+                "id": "product_column_handle",
+                "label": "Product Column",
+                "options":[
+                      {
+                          "label": "1",
+                          "value": "1"
+                      },
+                      {
+                          "label": "2",
+                          "value": "2"
+                      },
+                      {
+                          "label": "3",
+                          "value": "3"
+                      },
+                      {
+                          "label": "4",
+                          "value": "4"
+                      },
+                      {
+                          "label": "5",
+                          "value": "5"
+                      },
+                      {
+                          "label": "6",
+                          "value": "6"
+                      },
+					  {
+                          "label": "7",
+                          "value": "7"
+                      },
+                      {
+                          "label": "8",
+                          "value": "8"
+                      },
+                      {
+                          "label": "9",
+                          "value": "9"
+                      },
+                      {
+                          "label": "10",
+                          "value": "10"
+                      },
+                      {
+                          "label": "11",
+                          "value": "11"
+                      },
+                      {
+                          "label": "12",
+                          "value": "12"
+                      }
+                  ],
+                  "default": "3"
+              },
+              {
+                "type": "select",
+                "id": "product_column_handle_md",
+                "label": "Product Column (Medium)",
+                "options":[
+                      {
+                          "label": "1",
+                          "value": "1"
+                      },
+                      {
+                          "label": "2",
+                          "value": "2"
+                      },
+                      {
+                          "label": "3",
+                          "value": "3"
+                      },
+                      {
+                          "label": "4",
+                          "value": "4"
+                      },
+                      {
+                          "label": "5",
+                          "value": "5"
+                      },
+                      {
+                          "label": "6",
+                          "value": "6"
+                      },
+					  {
+                          "label": "7",
+                          "value": "7"
+                      },
+                      {
+                          "label": "8",
+                          "value": "8"
+                      },
+                      {
+                          "label": "9",
+                          "value": "9"
+                      },
+                      {
+                          "label": "10",
+                          "value": "10"
+                      },
+                      {
+                          "label": "11",
+                          "value": "11"
+                      },
+                      {
+                          "label": "12",
+                          "value": "12"
+                      }
+                  ],
+                  "default": "4"
+              },
+              {
+                "type": "select",
+                "id": "product_column_handle_sm",
+                "label": "Product Column (Tablet)",
+                "options":[
+                      {
+                          "label": "1",
+                          "value": "1"
+                      },
+                      {
+                          "label": "2",
+                          "value": "2"
+                      },
+                      {
+                          "label": "3",
+                          "value": "3"
+                      },
+                      {
+                          "label": "4",
+                          "value": "4"
+                      },
+                      {
+                          "label": "5",
+                          "value": "5"
+                      },
+                      {
+                          "label": "6",
+                          "value": "6"
+                      },
+					  {
+                          "label": "7",
+                          "value": "7"
+                      },
+                      {
+                          "label": "8",
+                          "value": "8"
+                      },
+                      {
+                          "label": "9",
+                          "value": "9"
+                      },
+                      {
+                          "label": "10",
+                          "value": "10"
+                      },
+                      {
+                          "label": "11",
+                          "value": "11"
+                      },
+                      {
+                          "label": "12",
+                          "value": "12"
+                      }
+                  ],
+                  "default": "6"
+              },
+              {
+                  "type": "header",
+                  "content": "Banner"
+              },
+              {
+                  "type": "image_picker",
+                  "id": "img1",
+                  "label": "Image"
+              },
+              {
+                  "type": "text",
+                  "id": "t1",
+                  "label": "Title 1",
+                  "default": "15% off"
+              },
+              {
+                  "type": "text",
+                  "id": "t2",
+                  "label": "Title 2",
+                  "default": "Table Shiner Moving."
+              },
+              {
+                  "type": "text",
+                  "id": "btn1",
+                  "label": "Button",
+                  "default": "SHOP NOW"
+              },
+              {
+                  "type": "url",
+                  "id": "btn1_url",
+                  "label": "URL",
+                  "default": "\/collections\/all"
+              },
+              {
+                "type": "radio",
+                "id": "text1_p",
+                "label": "Text Style",
+                "options":[
+                      {
+                          "label": "Style 1",
+                          "value": "style_1"
+                      },
+                      {
+                          "label": "Style 2",
+                          "value": "style_2"
+                      },
+                      {
+                          "label": "Style 3",
+                          "value": "style_3"
+                      },
+                      {
+                          "label": "Style 4",
+                          "value": "style_4"
+                      },
+                      {
+                          "label": "Style 5",
+                          "value": "style_5"
+                      },
+                      {
+                          "label": "Simple Pro Banner",
+                          "value": "style_spb"
+                      }
+                  ],
+                  "default": "style_1"
+              },
+              {
+                  "type": "checkbox",
+                  "id": "banner__img__left",
+                  "label": "Banner Image left",
+                  "default": false
+              },
+            
+              {
+                  "type": "checkbox",
+                  "id": "banner_custom_enable",
+                  "label": "Banner Custom Color Enable",
+                  "default": false
+              },
+              {
+                  "type": "color",
+                  "id": "t1_color",
+                  "label": "Title 1 Color",
+                  "default": "#1f2226"
+              },
+              {
+                  "type": "color",
+                  "id": "t2_color",
+                  "label": "Title 2 Color",
+                  "default": "#1f2226"
+              },
+              {
+                  "type": "color",
+                  "id": "btn1_color",
+                  "label": "Button Color",
+                  "default": "#1f2226"
+              },
+              {
+                  "type": "color",
+                  "id": "btn1_border_color",
+                  "label": "Button Hover Color",
+                  "default": "#1f2226"
+              },
+              {
+                  "type": "color",
+                  "id": "banner__bg__color",
+                  "label": "Banner BG Color",
+                  "default": "#eee"
+              }
+
+            
+          ]
+       },
+	   {
+          "type": "section_margin",
+          "name": "Section Margin",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			}
+          ]
+       },
+	   {
+          "type": "section_padding",
+          "name": "Section Padding",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 100
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 65
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_md",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 80
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_md",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 45
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_xs",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 50
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_xs",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 30
+			}
+          ]
+       },
+	   {
+          "type": "section_background",
+          "name": "Section Background",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "image_picker",
+			  "id": "section_bg_image",
+			  "label": "BG Image"
+			},
+			{
+			  "type": "color",
+			  "id": "section_bg_color",
+			  "label": "BG Color",
+			  "default": "#ffffff"
+			}
+          ]
+       }
+	],
+	"presets": [
+		{
+		  "name": "Banner",
+		  "category": "2. Banner",
+		  "blocks":[
+				{
+					"type": "banner"
+				},
+				{
+					"type": "banner"
+				}
+			]
+		}
+	]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

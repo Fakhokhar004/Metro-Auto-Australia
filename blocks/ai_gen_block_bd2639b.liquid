@@ -1,0 +1,419 @@
+{% doc %}
+  @prompt
+    Create a "Shop by Car Brand" section for a Shopify store that dynamically displays collections where the metafield custom.is_car_brand is true.
+
+    UPDATE (v3): Removed the featured logo grid entirely. The section now only
+    renders the alphabetical letter-grouped list (A, B, C...) of every matching
+    collection, sorted A-Z, with an optional A-Z jump nav. List items are plain
+    names (not cards) but every style property remains theme-editor controllable.
+    Metafield custom.is_car_brand should be set up as a real metafield definition
+    in Shopify admin (Settings > Custom data > Collections) so merchants can
+    manage it without touching code.
+
+    Requirements:
+    1. DISPLAY: Show every matching collection as a plain name link, grouped
+       under alphabetical letter headings (A, B, C...).
+    2. ALPHABETICAL ORDER: All collections sorted A-Z by title.
+    3. CLICK BEHAVIOR: Each name links to its collection URL.
+    4. CUSTOMIZABLE SETTINGS in theme editor sidebar covering layout, spacing,
+       colors, borders, and typography for the heading, letter headings, jump
+       nav, and list items.
+    5. RESPONSIVE: Works on desktop, tablet, mobile.
+    6. Uses Liquid to loop through all collections and filter by metafield
+       custom.is_car_brand = true, sorted alphabetically.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% liquid
+  assign all_collections = collections | sort: 'title'
+  assign car_brand_collections = ''
+  assign car_brand_count = 0
+
+  for collection in all_collections
+    assign is_brand = false
+    if collection.metafields.custom.is_car_brand == true
+      assign is_brand = true
+    elsif collection.metafields.custom.is_car_brand.value == true
+      assign is_brand = true
+    endif
+
+    if is_brand
+      assign car_brand_collections = car_brand_collections | append: collection.handle | append: ','
+      assign car_brand_count = car_brand_count | plus: 1
+    endif
+  endfor
+
+  assign car_brand_handles = car_brand_collections | split: ','
+
+  assign alpha_letters = ''
+  if car_brand_count > 0
+    for i in (0..car_brand_count)
+      if i < car_brand_count
+        assign h = car_brand_handles[i]
+        assign c = collections[h]
+        assign l = c.title | slice: 0, 1 | upcase
+        unless alpha_letters contains l
+          assign alpha_letters = alpha_letters | append: l | append: ','
+        endunless
+      endif
+    endfor
+  endif
+  assign alpha_letters_list = alpha_letters | split: ','
+%}
+
+{% style %}
+  .ai-car-brands-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    background-color: {{ block.settings.section_bg_color }};
+    padding: 60px 20px;
+  }
+
+  .ai-car-brands-container-{{ ai_gen_id }} {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .ai-car-brands-heading-{{ ai_gen_id }} {
+    text-align: center;
+    margin: 0 0 40px;
+    font-size: {{ block.settings.heading_font_size }}px;
+    color: {{ block.settings.heading_color }};
+  }
+
+  .ai-car-brands-alpha-nav-{{ ai_gen_id }} {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 40px;
+  }
+
+  .ai-car-brands-alpha-nav-link-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 600;
+    color: {{ block.settings.letter_heading_color }};
+    text-decoration: none;
+    background-color: transparent;
+    border: 1px solid {{ block.settings.letter_heading_color }};
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .ai-car-brands-alpha-nav-link-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.letter_heading_color }};
+    color: {{ block.settings.section_bg_color }};
+  }
+
+  .ai-car-brands-letter-group-{{ ai_gen_id }} {
+    margin-bottom: {{ block.settings.group_spacing }}px;
+    scroll-margin-top: 100px;
+  }
+
+  .ai-car-brands-letter-heading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.letter_heading_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.letter_heading_color }};
+    background-color: {{ block.settings.letter_heading_bg_color }};
+    margin: 0 0 14px;
+    padding: 4px 0;
+    border-bottom: 2px solid {{ block.settings.letter_heading_color }};
+  }
+
+  .ai-car-brands-letter-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.list_columns_desktop }}, 1fr);
+    gap: {{ block.settings.list_item_gap }}px;
+  }
+
+  .ai-car-brands-letter-item-{{ ai_gen_id }} {
+    display: block;
+    padding: {{ block.settings.list_item_padding }}px;
+    background-color: {{ block.settings.list_item_bg_color }};
+    border: {{ block.settings.list_item_border_width }}px solid {{ block.settings.list_item_border_color }};
+    border-radius: {{ block.settings.list_item_border_radius }}px;
+    color: {{ block.settings.list_item_text_color }};
+    font-size: {{ block.settings.list_item_font_size }}px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  }
+
+  .ai-car-brands-letter-item-{{ ai_gen_id }}:hover {
+    transform: translateX(4px);
+    color: {{ block.settings.letter_heading_color }};
+  }
+
+  .ai-car-brands-empty-{{ ai_gen_id }} {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+    font-size: 16px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-car-brands-letter-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.list_columns_mobile }}, 1fr);
+    }
+
+    .ai-car-brands-heading-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.heading_font_size }}px * 0.75);
+      margin-bottom: 30px;
+    }
+  }
+{% endstyle %}
+
+<car-brand-section-{{ ai_gen_id }} class="ai-car-brands-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-car-brands-container-{{ ai_gen_id }}">
+    {% if block.settings.section_heading != blank %}
+      <h2 class="ai-car-brands-heading-{{ ai_gen_id }}">{{ block.settings.section_heading }}</h2>
+    {% endif %}
+
+    {% if car_brand_count > 0 %}
+      {% if block.settings.show_alpha_nav %}
+        <nav class="ai-car-brands-alpha-nav-{{ ai_gen_id }}" aria-label="Jump to letter">
+          {% for letter in alpha_letters_list %}
+            <a href="#letter-{{ ai_gen_id }}-{{ letter }}" class="ai-car-brands-alpha-nav-link-{{ ai_gen_id }}">{{ letter }}</a>
+          {% endfor %}
+        </nav>
+      {% endif %}
+
+      {% assign current_letter = '' %}
+      {% assign is_first_group = true %}
+      {% for i in (0..car_brand_count) %}
+        {% if i < car_brand_count %}
+          {% assign collection_handle = car_brand_handles[i] %}
+          {% assign collection = collections[collection_handle] %}
+          {% assign first_letter = collection.title | slice: 0, 1 | upcase %}
+
+          {% if first_letter != current_letter %}
+            {% unless is_first_group %}
+                </div>
+              </div>
+            {% endunless %}
+            {% assign current_letter = first_letter %}
+            {% assign is_first_group = false %}
+            <div class="ai-car-brands-letter-group-{{ ai_gen_id }}" id="letter-{{ ai_gen_id }}-{{ current_letter }}">
+              <h3 class="ai-car-brands-letter-heading-{{ ai_gen_id }}">{{ current_letter }}</h3>
+              <div class="ai-car-brands-letter-grid-{{ ai_gen_id }}">
+          {% endif %}
+
+                <a href="{{ collection.url }}" class="ai-car-brands-letter-item-{{ ai_gen_id }}">{{ collection.title }}</a>
+
+          {% if forloop.last %}
+              </div>
+            </div>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <div class="ai-car-brands-empty-{{ ai_gen_id }}">
+        <p>No car brand collections found. Add collections with the metafield custom.is_car_brand set to true.</p>
+      </div>
+    {% endif %}
+  </div>
+</car-brand-section-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class CarBrandSection{{ ai_gen_id }} extends HTMLElement {
+      connectedCallback() {
+        const navLinks = this.querySelectorAll('.ai-car-brands-alpha-nav-link-{{ ai_gen_id }}');
+        navLinks.forEach((link) => {
+          link.addEventListener('click', (e) => {
+            const targetId = link.getAttribute('href').slice(1);
+            const target = this.querySelector('#' + CSS.escape(targetId));
+            if (target) {
+              e.preventDefault();
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          });
+        });
+      }
+    }
+
+    if (!customElements.get('car-brand-section-{{ ai_gen_id }}')) {
+      customElements.define('car-brand-section-{{ ai_gen_id }}', CarBrandSection{{ ai_gen_id }});
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Shop by car brand",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "section_heading",
+      "label": "Heading",
+      "default": "Shop by Car Brand"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Heading font size",
+      "min": 20,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Alphabetical list"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_alpha_nav",
+      "label": "Show A-Z jump navigation",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "group_spacing",
+      "label": "Space between letter groups",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "letter_heading_size",
+      "label": "Letter heading font size",
+      "min": 16,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "color",
+      "id": "letter_heading_color",
+      "label": "Letter heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "letter_heading_bg_color",
+      "label": "Letter heading background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "list_columns_desktop",
+      "label": "List columns on desktop",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "list_columns_mobile",
+      "label": "List columns on mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "list_item_gap",
+      "label": "Gap between names",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "list_item_padding",
+      "label": "Name item padding",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "list_item_font_size",
+      "label": "Name font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "color",
+      "id": "list_item_bg_color",
+      "label": "Name item background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "list_item_text_color",
+      "label": "Name item text color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "list_item_border_color",
+      "label": "Name item border color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "range",
+      "id": "list_item_border_width",
+      "label": "Name item border width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "list_item_border_radius",
+      "label": "Name item border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop by car brand"
+    }
+  ]
+}
+{% endschema %}

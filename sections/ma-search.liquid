@@ -1,0 +1,349 @@
+{%- comment -%}
+  Metro Auto search results. Design reference: _design/metro-auto-design/pages/Search.dc.html
+  Modes:
+    text     /search?q=brake+pads              Shopify search with Search & Discovery filters (search.filters).
+    vehicle  /search?q=Hyundai+Tucson+2016&fit=1   Shopify finds candidates (it reads descriptions); ma-listing.js
+                                               keeps only parts listed for that vehicle (snippets/ma-fit-keys).
+    make     /search?q=Toyota                  When the query is a make from the vehicle list, ma-listing.js shows
+                                               the parts listed for any model of that make.
+    all      /search                           No query: with a garage vehicle ma-listing.js opens vehicle mode.
+  Layout matches the collection page (shared snippets/ma-filters, assets/ma-listing.css / .js).
+{%- endcomment -%}
+{{ 'ma-listing.css' | asset_url | stylesheet_tag }}
+<script>
+  /* vehicle mode (?fit=1): hide the plain search results before they paint; ma-listing.js shows the matches */
+  if (/[?&]fit=1(&|$)/.test(location.search)) document.documentElement.classList.add('ma-fitmode');
+</script>
+
+{%- liquid
+  # search.terms arrives HTML-escaped; unescape once, every output below escapes again
+  assign q = search.terms | strip | replace: '&quot;', '"' | replace: '&#39;', "'" | replace: '&lt;', '<' | replace: '&gt;', '>' | replace: '&amp;', '&'
+  assign sort_value = search.sort_by | default: search.default_sort_by
+  assign per_page = section.settings.per_page
+  assign q_enc = q | url_encode
+  assign clear_url = routes.search_url | append: '?type=product&options%5Bprefix%5D=last&q=' | append: q_enc
+  assign s_base = routes.search_url | append: '?type=product&options%5Bprefix%5D=last&q='
+  assign all_url = s_base | append: '*'
+
+  # modes: all products (q=*), one tag (q=tag:"X"), one product type (q=product_type:"X"), one brand (q=vendor:"X")
+  assign q_mode = 'text'
+  assign q_label = q
+  if q == '*'
+    assign q_mode = 'all'
+  elsif q contains 'tag:' and q.size > 4
+    assign q_head = q | slice: 0, 4
+    if q_head == 'tag:'
+      assign q_mode = 'tag'
+      assign q_label = q | remove_first: 'tag:' | remove: '"' | strip
+    endif
+  elsif q contains 'product_type:'
+    assign q_head = q | slice: 0, 13
+    if q_head == 'product_type:'
+      assign q_mode = 'type'
+      assign q_label = q | remove_first: 'product_type:' | remove: '"' | strip
+    endif
+  elsif q contains 'vendor:'
+    assign q_head = q | slice: 0, 7
+    if q_head == 'vendor:'
+      assign q_mode = 'brand'
+      assign q_label = q | remove_first: 'vendor:' | remove: '"' | strip
+    endif
+  endif
+
+  # tags shown in the filter panel: one per line, "Label|tag" or just "tag"
+  assign tag_lines = section.settings.tags | newline_to_br | split: '<br />'
+-%}
+
+<div class="ma-listing ma-listing--search" data-ma-listing data-mode="search" data-q="{{ q | escape }}" data-total="{{ search.results_count }}">
+  {%- comment -%} ---------- Banner (light, per design) ---------- {%- endcomment -%}
+  <section class="ma-sbanner">
+    <div class="ma-wrap ma-sbanner__in">
+      <div class="ma-sbanner__copy">
+        <nav class="ma-sbanner__crumb" aria-label="Breadcrumb">
+          <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span><span aria-current="page">Search</span>
+        </nav>
+        <h1 class="ma-sbanner__title" data-ma-search-title>
+          {%- case q_mode -%}
+            {%- when 'all' -%}All products
+            {%- when 'tag' -%}{{ q_label | escape }}
+            {%- when 'type' -%}{{ q_label | escape }}
+            {%- when 'brand' -%}All {{ q_label | escape }} parts
+            {%- else -%}{%- if q != blank -%}Results for “{{ q | escape }}”{%- else -%}All parts{%- endif -%}
+          {%- endcase -%}
+        </h1>
+        <p class="ma-sbanner__sub" data-ma-search-sub>
+          {%- if q_mode == 'all' or q_mode == 'tag' or q_mode == 'type' or q_mode == 'brand' -%}
+            {%- if search.results_count >= 1000 -%}
+              Showing the first 1,000 parts. Pick a tag or a filter to narrow it down.
+            {%- else -%}
+              {{ search.results_count }} {% if search.results_count == 1 %}part{% else %}parts{% endif %} in this list.
+            {%- endif -%}
+          {%- elsif q != blank -%}
+            {{ search.results_count }} {% if search.results_count == 1 %}part matches{% else %}parts match{% endif %} your search.
+          {%- else -%}
+            Add your vehicle to see only the parts that fit.
+          {%- endif -%}
+        </p>
+      </div>
+      <button type="button" class="ma-sbanner__change" data-ma-open="garage" data-ma-search-change{% if q != blank %} hidden{% endif %}>Change vehicle</button>
+    </div>
+  </section>
+
+  {%- paginate search.results by per_page -%}
+  <div class="ma-wrap ma-listing__body">
+    <div class="ma-listing__layout">
+      {%- render 'ma-filters',
+        filters: search.filters,
+        action: routes.search_url,
+        clear_url: clear_url,
+        section_id: section.id,
+        open_count: section.settings.open_count,
+        count: search.results_count,
+        q: q,
+        tag_lines: tag_lines,
+        tag_base: s_base,
+        active_tag: q_label,
+        tag_mode: q_mode
+      -%}
+
+      <div class="ma-results">
+        <div class="ma-toolbar ma-toolbar--search">
+          <button type="button" class="ma-toolbar__filters" aria-controls="ma-filters-{{ section.id }}" aria-expanded="false" data-ma-filters-toggle>
+            {%- render 'ma-icon', name: 'filter', size: 16, width: 2 -%}<span data-ma-filters-label>Filters</span>
+          </button>
+          <div class="ma-toolbar__left ma-toolbar__chips">
+            <span class="ma-toolbar__count" data-ma-count>{{ search.results_count }} product{% if search.results_count != 1 %}s{% endif %}</span>
+            {%- if q != blank -%}
+              {%- case q_mode -%}
+                {%- when 'all' -%}<a class="ma-fchip ma-fchip--mode" href="{{ routes.search_url }}" data-ma-mode-chip aria-label="Close all products">All products <span aria-hidden="true">&times;</span></a>
+                {%- when 'tag' -%}<a class="ma-fchip ma-fchip--mode" href="{{ all_url }}" data-ma-mode-chip data-ma-keep-was aria-label="Remove tag {{ q_label | escape }}">Tag: {{ q_label | escape }} <span aria-hidden="true">&times;</span></a>
+                {%- when 'type' -%}<a class="ma-fchip ma-fchip--mode" href="{{ all_url }}" data-ma-mode-chip aria-label="Remove {{ q_label | escape }}">Type: {{ q_label | escape }} <span aria-hidden="true">&times;</span></a>
+                {%- when 'brand' -%}<a class="ma-fchip ma-fchip--mode" href="{{ all_url }}" data-ma-mode-chip aria-label="Remove brand {{ q_label | escape }}">Brand: {{ q_label | escape }} <span aria-hidden="true">&times;</span></a>
+                {%- else -%}<a class="ma-fchip ma-fchip--mode" href="{{ routes.search_url }}" data-ma-mode-chip aria-label="Clear search {{ q | escape }}">Search: {{ q | escape }} <span aria-hidden="true">&times;</span></a>
+              {%- endcase -%}
+            {%- endif -%}
+            {%- for filter in search.filters -%}
+              {%- if filter.type == 'price_range' -%}
+                {%- if filter.min_value.value or filter.max_value.value -%}
+                  <a class="ma-fchip" href="{{ filter.url_to_remove }}" aria-label="Remove price filter">
+                    Price {{ filter.min_value.value | default: 0 | money_without_trailing_zeros }} to {% if filter.max_value.value %}{{ filter.max_value.value | money_without_trailing_zeros }}{% else %}any{% endif %}
+                    <span aria-hidden="true">&times;</span>
+                  </a>
+                {%- endif -%}
+              {%- else -%}
+                {%- for value in filter.active_values -%}
+                  <a class="ma-fchip" href="{{ value.url_to_remove }}" aria-label="Remove {{ value.label | escape }}">{{ value.label | escape }} <span aria-hidden="true">&times;</span></a>
+                {%- endfor -%}
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+          {%- if q != blank -%}
+            <label class="ma-toolbar__sort"><span class="ma-toolbar__sortword">Sort by</span>
+              <select name="sort_by" form="ma-filter-form-{{ section.id }}" class="ma-gselect" aria-label="Sort by" data-ma-sort>
+                {%- for option in search.sort_options -%}
+                  <option value="{{ option.value }}"{% if option.value == sort_value %} selected{% endif %}>{{ option.name | escape }}</option>
+                {%- endfor -%}
+              </select>
+            </label>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Phone: the vehicle these results are matched to, in its own row {%- endcomment -%}
+        <div class="ma-vrow" data-ma-vrow>
+          <span class="ma-vrow__dot" aria-hidden="true">{%- render 'ma-icon', name: 'car', size: 18, stroke: '#FFFFFF', width: 1.9 -%}</span>
+          <span class="ma-vrow__text">
+            <span class="ma-vrow__kicker" data-ma-vrow-kicker>Add your car to see what fits</span>
+            <strong class="ma-vrow__label" data-ma-vrow-label>No vehicle selected</strong>
+          </span>
+          <button type="button" class="ma-vrow__btn" data-ma-open="garage" data-ma-vrow-btn>Add vehicle</button>
+        </div>
+
+        {%- comment -%} Vehicle and make mode: filled by ma-listing.js {%- endcomment -%}
+        <div class="ma-fitres" data-ma-fit-results hidden>
+          <p class="ma-fitres__status" data-ma-fit-status role="status"></p>
+          <div class="ma-pgrid ma-pgrid--listing" data-ma-fit-grid></div>
+          <button type="button" class="ma-fitres__more" data-ma-fit-more hidden>Show more</button>
+          <div class="ma-empty-box" data-ma-fit-empty hidden>
+            <h2>No parts listed for your <span data-ma-fit-vehicle></span> yet</h2>
+            <p>Send us your rego or VIN and our team will find the right part.</p>
+            <div class="ma-empty-box__btns">
+              <a class="ma-button ma-button--red" href="{{ section.settings.ask_url | default: '/pages/contact-us' }}">Ask us to find the part</a>
+              <button type="button" class="ma-button ma-button--dark" data-ma-fit-off>Show all search results</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ma-pageres" data-ma-page-results>
+          {%- if q == blank -%}
+            <div class="ma-empty-box">
+              <h2>Search for a part</h2>
+              <p>Search by part name, brand or part number, or add your vehicle and we'll show the parts that fit.</p>
+              <div class="ma-empty-box__btns">
+                <button type="button" class="ma-button ma-button--red" data-ma-open="garage">Add your vehicle</button>
+                <a class="ma-button ma-button--dark" href="{{ routes.collections_url }}">Browse categories</a>
+              </div>
+            </div>
+          {%- elsif search.results_count > 0 -%}
+            {%- liquid
+              # exact match: the query is a part number (variant SKU) or the product handle, or the handle ends in it
+              assign found = nil
+              if q_mode == 'text' and paginate.current_page == 1 and q.size > 2
+                assign q_down = q | downcase
+                for item in search.results
+                  if item.object_type != 'product'
+                    continue
+                  endif
+                  assign h_last = item.handle | split: '-' | last
+                  if item.handle == q_down or h_last == q_down
+                    assign found = item
+                    break
+                  endif
+                  for variant in item.variants
+                    assign sku_down = variant.sku | downcase
+                    if sku_down == q_down
+                      assign found = item
+                      break
+                    endif
+                  endfor
+                  if found
+                    break
+                  endif
+                endfor
+              endif
+            -%}
+
+            {%- if found -%}
+              {%- liquid
+                assign fv = found.selected_or_first_available_variant
+                assign f_sku = q | upcase
+                assign f_alt = found.featured_image.alt | default: found.title
+              -%}
+              <section class="ma-found" aria-labelledby="ma-found-h">
+                <a class="ma-found__media" href="{{ found.url }}" tabindex="-1" aria-hidden="true">
+                  {%- if found.featured_image -%}
+                    {{ found.featured_image | image_url: width: 480 | image_tag: alt: f_alt, widths: '240,360,480', sizes: '(min-width: 641px) 200px, 40vw', loading: 'eager', class: 'ma-found__img' }}
+                  {%- endif -%}
+                </a>
+                <div class="ma-found__body">
+                  <p class="ma-found__kicker">{%- render 'ma-icon', name: 'check', size: 14, width: 3 -%} Exact part number match</p>
+                  <h2 class="ma-found__title" id="ma-found-h">We found part {{ f_sku | escape }}</h2>
+                  <a class="ma-found__name" href="{{ found.url }}">{{ found.title | escape }}</a>
+                  <p class="ma-found__meta">{{ found.vendor | escape }}{% if found.type != blank %} · {{ found.type | escape }}{% endif %}</p>
+                  <div class="ma-found__row">
+                    <strong class="ma-found__price">{{ fv.price | money }}</strong>
+                    <a class="ma-button ma-button--red" href="{{ found.url }}">View this part</a>
+                  </div>
+                </div>
+              </section>
+
+              {%- if found.type != blank -%}
+                {%- liquid
+                  assign type_q = 'product_type:"' | append: found.type | append: '"'
+                  assign type_enc = type_q | url_encode
+                  assign type_fetch = routes.search_url | append: '?type=product&section_id=ma-card-results&q=' | append: type_enc
+                  assign type_all = s_base | append: type_enc
+                -%}
+                <div class="ma-line" data-ma-more-type data-url="{{ type_fetch }}" data-exclude="{{ found.handle }}">
+                  <div class="ma-line__head">
+                    <h2 class="ma-line__title">More {{ found.type | escape }}</h2>
+                    <a class="ma-line__link" href="{{ type_all }}">See all {{ found.type | escape }}</a>
+                  </div>
+                  <p class="ma-line__sub">Other {{ found.type | downcase | escape }} we stock. Check the fitment on each part before you order.</p>
+                  <div class="ma-pgrid ma-pgrid--listing" data-ma-more-grid aria-busy="true"></div>
+                </div>
+              {%- endif -%}
+
+              {%- if search.results_count > 1 -%}
+                <div class="ma-line__head ma-line__head--rule"><h2 class="ma-line__title">All results for “{{ q | escape }}”</h2></div>
+              {%- endif -%}
+            {%- endif -%}
+
+            {%- if q_mode != 'text' -%}
+              <p class="ma-searched" data-ma-was hidden>You searched for “<strong data-ma-was-q></strong>”. Nothing matched, so here {% if q_mode == 'all' %}are all our parts{% else %}is everything in {{ q_label | escape }}{% endif %}.</p>
+              <div class="ma-line__head ma-line__head--rule">
+                <h2 class="ma-line__title">{% if q_mode == 'all' %}All parts{% else %}All {{ q_label | escape }} parts{% endif %}</h2>
+                <span class="ma-line__note">{% if search.results_count >= 1000 %}First 1,000 shown{% else %}{{ search.results_count }} parts{% endif %}</span>
+              </div>
+            {%- endif -%}
+
+            <div class="ma-pgrid ma-pgrid--listing">
+              {%- for item in search.results -%}
+                {%- if found and item.id == found.id -%}{%- continue -%}{%- endif -%}
+                {%- if item.object_type == 'product' -%}
+                  {%- liquid
+                    assign first_row = false
+                    if forloop.index <= 3
+                      assign first_row = true
+                    endif
+                  -%}
+                  {%- render 'ma-product-card', product: item, priority: first_row -%}
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+            {%- if paginate.pages > 1 -%}
+              <nav class="ma-pager" aria-label="Pages">
+                {%- if paginate.previous -%}<a class="ma-pager__btn" href="{{ paginate.previous.url }}" rel="prev">Previous</a>{%- endif -%}
+                {%- for part in paginate.parts -%}
+                  {%- if part.is_link -%}
+                    <a class="ma-pager__n" href="{{ part.url }}">{{ part.title }}</a>
+                  {%- elsif part.title == paginate.current_page -%}
+                    <span class="ma-pager__n is-on" aria-current="page">{{ part.title }}</span>
+                  {%- else -%}
+                    <span class="ma-pager__gap">{{ part.title }}</span>
+                  {%- endif -%}
+                {%- endfor -%}
+                {%- if paginate.next -%}<a class="ma-pager__btn" href="{{ paginate.next.url }}" rel="next">Next</a>{%- endif -%}
+              </nav>
+            {%- endif -%}
+          {%- else -%}
+            <div class="ma-empty-box">
+              <h2>No parts match “{{ q_label | escape }}”</h2>
+              <p>Check the spelling or try a part number. You can also browse everything we stock, or send us your rego or VIN and we'll find the part.</p>
+              <div class="ma-empty-box__btns">
+                <a class="ma-button ma-button--red" href="{{ all_url }}&was={{ q_label | url_encode }}">Show all products</a>
+                <a class="ma-button ma-button--dark" href="{{ section.settings.ask_url | default: '/pages/contact-us' }}?part={{ q_label | url_encode }}">Ask us to find the part</a>
+              </div>
+              {%- if tag_lines.size > 0 and section.settings.tags != blank -%}
+                <div class="ma-empty-tags">
+                  <span class="ma-empty-tags__label">Or browse by tag</span>
+                  <div class="ma-empty-tags__list">
+                    {%- for line in tag_lines -%}
+                      {%- liquid
+                        assign line = line | strip
+                        if line == blank
+                          continue
+                        endif
+                        assign parts = line | split: '|'
+                        assign t_label = parts[0] | strip
+                        assign t_tag = parts[1] | default: parts[0] | strip
+                        assign t_q = 'tag:"' | append: t_tag | append: '"' | url_encode
+                      -%}
+                      <a class="ma-tagchip" href="{{ s_base }}{{ t_q }}&was={{ q_label | url_encode }}">{{ t_label | escape }}</a>
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+  {%- endpaginate -%}
+</div>
+
+<script src="{{ 'ma-listing.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Metro search",
+  "tag": "section",
+  "class": "ma-body",
+  "settings": [
+    { "type": "range", "id": "per_page", "label": "Products per page", "min": 12, "max": 48, "step": 6, "default": 24 },
+    { "type": "range", "id": "open_count", "label": "Filter groups open by default", "min": 1, "max": 8, "step": 1, "default": 4 },
+    { "type": "url", "id": "ask_url", "label": "\"Ask us\" link", "info": "Defaults to /pages/contact-us" },
+    { "type": "textarea", "id": "tags", "label": "Tags in the filter panel", "info": "One per line. Use Label|tag when the shown name differs from the product tag, e.g. Thermostats|thermostats.", "default": "Brakes\nBrake Pads\nBrake Rotors\nBrake Wear Sensor\nBrake Drum\nEngine Oil\nTransmission\nThermostats|thermostats\nRadiator\nGaskets\nSealants\nControl Arm\nSway Bar\nBall Joint\nTie Rod\nDifferential\nGauges|gauges\nLighting|lighting\nManifolds|manifolds\nTapes|tapes\nWorkshop|WORKSHOP\nAdBlue|ADBLUE" }
+  ]
+}
+{% endschema %}

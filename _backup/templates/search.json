@@ -1,0 +1,89 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "search",
+      "blocks": {
+        "section_padding_CyKEEn": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 25,
+            "section_padding_bottom": 25,
+            "section_padding_top_md": 10,
+            "section_padding_bottom_md": 10,
+            "section_padding_top_xs": 5,
+            "section_padding_bottom_xs": 5
+          }
+        }
+      },
+      "block_order": [
+        "section_padding_CyKEEn"
+      ],
+      "settings": {
+        "layout_width": "full",
+        "boxed_max_width": 1320,
+        "side_padding": 25,
+        "side_padding_mobile": 2,
+        "hide_search_on_results": true,
+        "results_top_gap": 10,
+        "results_top_gap_mobile": 8,
+        "products_per_page": 28,
+        "grid_columns": 4,
+        "grid_columns_tablet": 3,
+        "grid_columns_mobile": 2,
+        "grid_gap": 12,
+        "grid_gap_mobile": 8,
+        "card_title_lines": 2,
+        "card_image_ratio": "4 / 3",
+        "card_image_fit": "contain",
+        "sidebar_width": 280,
+        "sidebar_width_tablet": 230,
+        "sidebar_gap": 32,
+        "accent_color": "#b91c1c",
+        "accent_hover_color": "#991b1b",
+        "pg_show_numbers": true,
+        "pg_hide_numbers_mobile": true,
+        "pg_show_labels": true,
+        "pg_prev_text": "Prev",
+        "pg_next_text": "Next",
+        "pg_align": "center",
+        "pg_radius": 10,
+        "pg_size": 42,
+        "pg_size_mobile": 38,
+        "pg_font_size": 15,
+        "pg_font_size_mobile": 14,
+        "pg_gap": 8,
+        "pg_gap_mobile": 6,
+        "pg_margin_top": 34,
+        "pg_margin_top_mobile": 26,
+        "pg_bg": "#ffffff",
+        "pg_text": "#111827",
+        "pg_border": "#e5e7eb",
+        "pg_hover_bg": "#f3f4f6",
+        "pg_hover_text": "#111827",
+        "pg_active_bg": "#b91c1c",
+        "pg_active_text": "#ffffff",
+        "wishlist_card_enable": true,
+        "wishlist_icon_color": "#9ca3af",
+        "wishlist_active_color": "#e60023",
+        "wishlist_btn_bg": "#ffffff",
+        "wishlist_btn_size": 34,
+        "wishlist_btn_radius": 50,
+        "atc_added_text": "Added to cart",
+        "atc_added_bg": "#9e9e9e",
+        "atc_added_color": "#ffffff"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

@@ -1,0 +1,436 @@
+<div class="box-slider-wrapper common_slick_slider" id="section-{{ section.id }}">
+  <div class="{% if section.settings.section_width == 'full_width' %}full-width {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container {% endif %}">
+    <div class="row">
+      
+      <div class="col-md-12 col-sm-12 col-12">
+        
+        <div class="slider-area center_mode_slider">
+           
+          <div class="slider-active-cmode carsoule_arrow_style">
+
+            
+            {%- for block in section.blocks -%}
+            <div class="class-{{block.id}} single-slider d-flex align-items-center" style="background-color:{{ section.settings.sec_bg_color }};height:{{ section.settings.p_top }}px;
+                                                                        {%- if block.settings.slider_bg_img -%}background-image: url('{{ block.settings.slider_bg_img | img_url: 'master' }}'){% endif %}">
+
+              <div class="slider-content slider-animated-1 text-{% if block.settings.content_align == 'center' %}center{% elsif block.settings.content_align == 'right' %}right{% else %}left{% endif %}">
+                {%- if block.settings.title1 != '' -%}
+                <h1 class="animated">{{ block.settings.title1 }}</h1>
+                {%- endif -%}
+
+                {%- if block.settings.description != '' -%}
+                <p class="animated">{{ block.settings.description }}</p>
+                {%- endif -%}
+
+                {%- if block.settings.btn != '' -%}
+                <div class="slider-btn btn-hover">
+                  <a class="animated" href="{{ block.settings.btn_url }}">
+                    {{ block.settings.btn }} {% if block.settings.show_icon %} <i style="font-size:{{ section.settings.btn_font_size }}px;" class="sli sli-basket-loaded"></i>{% endif %}
+                  </a>
+                </div>
+                {%- endif -%}
+              </div>
+              
+              
+              
+              
+              {%- if block.settings.slider_content_custom_style -%}              
+              
+              {%- assign header_font_slider = block.settings.header_font_slider -%}
+              {%- assign paragraph_font_slider = block.settings.paragraph_font_slider -%}
+              {%- assign button_font_slider = block.settings.button_font_slider -%}
+              
+              <style>
+                {{ header_font_slider | font_face }}
+                {{ paragraph_font_slider | font_face }}
+                {{ button_font_slider | font_face }}
+
+                #section-{{ section.id }}.box-slider-wrapper .slider-area .single-slider.class-{{block.id}} .slider-content h1 {
+                  font-family: {{ header_font_slider.family }}, {{ header_font_slider.fallback_families }};
+                  font-style: {{ header_font_slider.style }};
+                  font-weight: {{ header_font_slider.weight }};
+                  color:{{ block.settings.title1_color }};
+                  font-size:{{ block.settings.title1_font_size }}px;
+                  line-height: {{block.settings.heading_line_height}}px;
+          		  margin-bottom: {{block.settings.title_margin_bottom}}px;
+                }
+                #section-{{ section.id }}.box-slider-wrapper .slider-area .single-slider.class-{{block.id}} .slider-content h1 span {
+                  color:{{settings.color_primary}};
+                }
+                
+                #section-{{ section.id }}.box-slider-wrapper .slider-area .single-slider.class-{{block.id}} .slider-content p {
+                  font-family: {{ paragraph_font_slider.family }}, {{ paragraph_font_slider.fallback_families }};
+                  font-style: {{ paragraph_font_slider.style }};
+                  font-weight: {{ paragraph_font_slider.weight }};
+                  color:{{ block.settings.description_color }};
+                  font-size:{{ block.settings.description_font_size }}px;
+                  line-height: {{block.settings.des_line_height}}px;
+          		  margin:0 0 {{block.settings.des_margin_bottom}}px;
+                }
+                #section-{{ section.id }}.box-slider-wrapper .slider-area .single-slider.class-{{block.id}} .slider-content .slider-btn a {
+                  background-color: {{ block.settings.btn_bg_color }};
+                  color: {{ block.settings.btn_color }};
+                  border: 2px solid {{ block.settings.btn_border_color }};
+                  border-radius: {{ block.settings.btn_border_radius }}px;
+                  text-transform: unset;
+                  font-size:{{ block.settings.btn_font_size }}px;
+                  font-family: {{ button_font_slider.family }}, {{ button_font_slider.fallback_families }};
+                  font-style: {{ button_font_slider.style }};
+                  font-weight: {{ button_font_slider.weight }};
+                }
+                
+                #section-{{ section.id }}.box-slider-wrapper .slider-area .single-slider.class-{{block.id}} .slider-content .slider-btn {
+                  margin-top: {{block.settings.button_margin_top}}px;
+                }
+                
+                #section-{{ section.id }}.box-slider-wrapper .slider-area .single-slider.class-{{block.id}} .slider-content .slider-btn a:hover {
+                  background-color: {{ block.settings.btn_hover_bg_color }};
+                  color: {{ block.settings.btn_hover_color }};
+                  border: 2px solid {{ block.settings.btn_hover_border_color }};
+                }
+                
+                #section-{{ section.id }}.box-slider-wrapper .slider-area .single-slider.class-{{block.id}} .slider-content .slider-btn a i {
+                  color: {{ block.settings.btn_color }};
+                  font-size:{{ block.settings.btn_font_size }}px;
+                }
+
+                #section-{{ section.id }}.box-slider-wrapper .slider-area .single-slider.class-{{block.id}} .slider-content .slider-btn a:hover i {
+                  color: {{ block.settings.btn_hover_color }};
+                }
+                     
+                
+                
+                #section-{{ section.id }}.box-slider-wrapper .slick-slide.slick-active.class-{{block.id}}.single-slider .slider-animated-1 h3 {
+                  -webkit-animation-name: {{block.settings.content_animation}};
+                  animation-name: {{block.settings.content_animation}};
+                }
+                #section-{{ section.id }}.box-slider-wrapper .slick-slide.slick-active.class-{{block.id}}.single-slider .slider-animated-1 h1 {
+                  -webkit-animation-name: {{block.settings.content_animation}};
+                  animation-name: {{block.settings.content_animation}};
+                }
+                #section-{{ section.id }}.box-slider-wrapper .slick-slide.slick-active.class-{{block.id}}.single-slider .slider-animated-1 p {
+                  -webkit-animation-name: {{block.settings.content_animation}};
+                  animation-name: {{block.settings.content_animation}};
+                }
+                #section-{{ section.id }}.box-slider-wrapper .slick-slide.slick-active.class-{{block.id}}.single-slider .slider-animated-1 a {
+                  -webkit-animation-name: {{block.settings.content_animation}};
+                  animation-name: {{block.settings.content_animation}};
+                }
+                
+
+                
+              </style>
+
+              {%endif%}
+              
+                            
+            </div>
+            {%- endfor -%}
+            
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+{% schema %}
+  {
+    "name": "Slider Center Mode",
+    "settings": [
+              {
+                "type": "select",
+                "id": "section_width",
+                "label": "Section Width",
+                "options":[
+                      {
+                          "label": "Full Width",
+                          "value": "full_width"
+                      },
+                      {
+                          "label": "Box Width",
+                          "value": "box_width"
+                      },
+                      {
+                          "label": "Default Width",
+                          "value": "default"
+                      }
+                  ],
+                  "default": "full_width"
+              },
+
+        {
+          "type": "color",
+          "id": "sec_bg_color",
+          "label": "Slide BG Color",
+          "default": "#effafa"
+        },
+
+        {
+          "type": "header",
+          "content": "Slider Area"
+        },
+
+        {
+          "type": "text",
+          "id": "p_top",
+          "label": "Slider Height",
+          "default": "570",
+          "info": "Don't add 'px' unit. Just put number."
+        }
+
+	],
+    "blocks": [
+		{
+			"type": "slide",
+			"name": "Slide",
+			"settings": [
+                {
+                  "type": "select",
+                  "id": "content_align",
+                  "label": "Content Alignment",
+                  "options": [
+                      {"label": "Left", "value": "left"},
+                      {"label": "Center", "value": "center"},
+                      {"label": "Right", "value": "right"}
+                  ],
+                  "default": "left"
+                }, 
+                {
+                  "type": "select",
+                  "id": "content_animation",
+                  "label": "Slider Animation",
+                  "options": [
+                      {"label": "Animation Left", "value": "fadeInLeft"},
+                      {"label": "Animation Right", "value": "fadeInRight"},
+                      {"label": "Animation Up", "value": "fadeInUp"},
+                      {"label": "Animation Down", "value": "fadeInDown"},
+                      {"label": "Animation Fade", "value": "fade"}
+                ],
+                  "default": "fadeInLeft"
+                },
+
+				{
+					"type": "text",
+					"id": "title1",
+					"label": "Title",
+					"default": "Looky eye E5001"
+				},
+				{
+					"type": "textarea",
+					"id": "description",
+					"label": "Description",
+					"default": "Lorem Ipsum is simply dummy text of the <br> printing and typesetting industry."
+				},
+				{
+					"type": "text",
+					"id": "btn",
+					"label": "Button",
+					"default": "SHOP NOW"
+				},
+                {
+                  "type": "checkbox",
+                  "id": "show_icon",
+                  "label": "Show icon on button",
+                  "default": true
+                },
+				{
+					"type": "url",
+					"id": "btn_url",
+					"label": "Button URL",
+					"default": "\/collections\/all"
+				},
+
+				{
+					"type": "image_picker",
+					"id": "slider_bg_img",
+					"label": "Slider Bg Image",
+					"info": "Image Size: 1920x840"
+				},
+				{
+                  "type": "checkbox",
+                  "id": "slider_content_custom_style",
+                  "label": "Content Custom Style Enable",
+                  "default": false
+                },
+
+                {
+                  "type": "font_picker",
+                  "id": "header_font_slider",
+                  "label": "Font Family: Title",
+                  "default": "poppins_n6"
+                },
+                {
+                  "type": "text",
+                  "id": "title1_font_size",
+                  "label": "Font Size: Title",
+                  "default": "50",
+                  "info": "Don't add 'px' unit. Just put number."
+                },
+                {
+                  "type":      "range",
+                  "id":        "heading_line_height",
+                  "min":       20,
+                  "max":        150,
+                  "step":       5,
+                  "unit":       "px",
+                  "label":     "Heading Line Height",
+                  "default":   60
+                },
+                {
+                  "type":      "range",
+                  "id":        "title_margin_bottom",
+                  "min":       0,
+                  "max":        50,
+                  "step":       1,
+                  "unit":       "px",
+                  "label":     "Heading margin Bottom",
+                  "default":   10
+                },
+                {
+                  "type": "font_picker",
+                  "id": "paragraph_font_slider",
+                  "label": "Font Family: Description",
+                  "default": "poppins_n4"
+                },
+                {
+                  "type": "text",
+                  "id": "description_font_size",
+                  "label": "Font Size: Description",
+                  "default": "16",
+                  "info": "Don't add 'px' unit. Just put number."
+                },
+                {
+                  "type":      "range",
+                  "id":        "des_line_height",
+                  "min":       10,
+                  "max":        100,
+                  "step":       1,
+                  "unit":       "px",
+                  "label":     "Description Line Height",
+                  "default":   27
+                },
+                {
+                  "type":      "range",
+                  "id":        "des_margin_bottom",
+                  "min":       0,
+                  "max":        80,
+                  "step":       1,
+                  "unit":       "px",
+                  "label":     "Description margin Bottom",
+                  "default":   20
+                },
+                {
+                  "type": "font_picker",
+                  "id": "button_font_slider",
+                  "label": "Font Family: Button Font",
+                  "default": "poppins_n4"
+                },
+
+                {
+                  "type": "color",
+                  "id": "title1_color",
+                  "label": "Title Color",
+                  "default": "#1f2226"
+                },
+                {
+                  "type": "color",
+                  "id": "description_color",
+                  "label": "Description Color",
+                  "default": "#333"
+                },
+                {
+                  "type": "header",
+                  "content": "Button"
+                },
+                {
+                  "type":      "range",
+                  "id":        "button_margin_top",
+                  "min":       0,
+                  "max":        80,
+                  "step":       1,
+                  "unit":       "px",
+                  "label":     "Button margin Top",
+                  "default":   35
+                },
+                {
+                  "type": "range",
+                  "id": "btn_border_radius",
+                  "label": "Border Radius",
+                  "max": 30,
+                  "min": 0,
+                  "step": 5,
+                  "default": 0,
+                  "unit": "px"
+                },
+                {
+                  "type": "text",
+                  "id": "btn_font_size",
+                  "label": "Font Size",
+                  "default": "13",
+                  "info": "Don't add 'px' unit. Just put number."
+                }, 
+                {
+                  "type": "color",
+                  "id": "btn_color",
+                  "label": "Text Color",
+                  "default": "#1f2226"
+                },
+                {
+                  "type": "color",
+                  "id": "btn_bg_color",
+                  "label": "BG Color",
+                  "default": "transparent"
+                },
+                {
+                  "type": "color",
+                  "id": "btn_border_color",
+                  "label": "Border Color",
+                  "default": "#000"
+                },
+                {
+                  "type": "color",
+                  "id": "btn_hover_color",
+                  "label": "Hover Text Color",
+                  "default": "#fff"
+                },
+                {
+                  "type": "color",
+                  "id": "btn_hover_bg_color",
+                  "label": "Hover BG Color",
+                  "default": "#ff3535"
+                },
+                {
+                  "type": "color",
+                  "id": "btn_hover_border_color",
+                  "label": "Hover Border Color",
+                  "default": "#ff3535"
+                }
+			]			
+		}
+	],
+	"presets":[
+		{
+			"name": "Slider Center Mode",
+			"category": "1. Slider",
+			"blocks":[
+				{"type": "slide"},
+				{"type": "slide"}
+			]
+		}
+	]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

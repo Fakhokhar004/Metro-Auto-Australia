@@ -1,0 +1,1272 @@
+<div class="banner-area countdown_promotion_banner" id="section-{{ section.id }}">
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+    {% if section.settings.section_title != '' or section.settings.section_sub_title != '' %}
+      <div class="section-title {{ section.settings.title_align }} pb-40 {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+        {% if section.settings.section_title != '' %}
+          <h2>{{ section.settings.section_title }}</h2>
+        {% endif %}
+
+        {% if section.settings.section_sub_title != '' %}
+          <p>{{ section.settings.section_sub_title }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="row align-items-center {{ section.settings.content_align }} {{ section.settings.content_position }} {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+         
+          {%- when 'promoton-img' -%}
+
+              {%- liquid
+                assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+                assign fetch_priority = 'auto'
+                if section.index == 1
+                  assign fetch_priority = 'high'
+                endif
+                assign image_class = 'lazyload-main-image animated responsive-image__image'
+                assign lazy_load = 'lazy'
+              -%}
+          
+            <div class="col-xl-{{ block.settings.img_product_column_handle }} col-md-{{ block.settings.img_product_column_handle_md }} col-sm-12">
+              <div class="banner-img-2 pr-10 scroll-zoom promotion_video_btn border__radius">
+                {%- if block.settings.promotion_img_enable -%}
+                    <a href="{{ block.settings.btn1_url }}" class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.img1.aspect_ratio | times: 100}}%;">
+                    {%- if block.settings.img1 -%}
+                        {% assign image_height = block.settings.img1.width | divided_by: block.settings.img1.aspect_ratio %}
+                        {{ block.settings.img1 | image_url: width: 3840 | image_tag: width: block.settings.img1.width, height: image_height, 
+                        widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt}}
+                    {%- else -%}
+                      <img loading="lazy"  class="animated" src="https://via.placeholder.com/760x550" alt="{{ image.alt }}">
+                    {%- endif -%}
+                  </a>
+                {%- endif -%}
+
+                {%- if block.settings.video_btn_enable -%}
+                  <a class="video-popup magni_video_pop" href="{{ block.settings.video_btn_url }}">
+                    <i class="icofont-play"></i>
+                  </a>
+                {%- endif -%}
+              </div>
+            </div>
+          
+
+          {%- when 'promoton-content' -%}
+            <div class="col-xl-{{ block.settings.content_product_column_handle }} col-md-{{ block.settings.content_product_column_handle_md }} col-sm-12">
+              <div class="banner-bg-content scroll-zoom">
+                {%- if block.settings.t1 != '' -%}
+                  <h3>{{ block.settings.t1 }}</h3>
+                {%- endif -%}
+
+                {%- if block.settings.t2 != '' -%}
+                  <h2>{{ block.settings.t2 }}</h2>
+                {%- endif -%}
+
+                {%- if block.settings.des_text != '' -%}
+                  <p>{{ block.settings.des_text }}</p>
+                {%- endif -%}
+
+                {%- if block.settings.countdown_date != '' -%}
+                  <div class="count_down_wrapper {% if block.settings.count_border_disable %} count_border_disable{%endif%} ">
+                    <div data-countdown="{{ block.settings.countdown_date }}"></div>
+                  </div>
+                {%- endif -%}
+
+                {%- if block.settings.btn1 != '' -%}
+                  <a class="ban_btn1 {{ block.settings.button_style }}" href="{{ block.settings.btn1_url }}">
+                    {{- block.settings.btn1 -}}
+                  </a>
+                {%- endif -%}
+              </div>
+            </div>
+
+            {% if block.settings.content_custom_color %}
+              {% style %}
+                  {%- assign top_title = block.settings.top_title -%}
+                  {%- assign bottom_title = block.settings.bottom_title -%}
+                  {%- assign des_text_font = block.settings.des_text_font -%}
+                  {%- assign button_title = block.settings.button_title -%}
+
+                  {{ top_title | font_face }}
+                  {{ bottom_title | font_face }}
+                  {{ des_text_font | font_face }}
+                  {{ button_title | font_face }}
+
+
+                  #section-{{ section.id }}.countdown_promotion_banner .banner-bg-content h3 {
+                    color:{{ block.settings.t1_color }};
+                    font-family: {{ bottom_title.family }}, {{ bottom_title.fallback_families }};
+                    font-style: {{ bottom_title.style }};
+                    font-weight: {{ bottom_title.weight }};
+                    font-size:{{ block.settings.bottom_title_font_size }}px;
+                    line-height:{{ block.settings.bottom_title_font_line_height }}px;
+                    margin: 0 0 {{ block.settings.bottom_title_margin }}px;
+
+                    {% if block.settings.title_1_gradient_style %}
+                    	background-image: linear-gradient(180deg, {{ block.settings.t1_color | hex_to_rgba: 0.2 }}, {{ block.settings.t1_color | hex_to_rgba: 0 }} 100%);
+                    	color: #0000;
+                    	-webkit-box-decoration-break: clone;
+                    	box-decoration-break: clone;
+                    	-webkit-background-clip: text;
+                    	background-clip: text;
+                    {%- endif -%}
+                  }
+
+
+                  #section-{{ section.id }}.countdown_promotion_banner .banner-bg-content h2 {
+                    color:{{ block.settings.t2_color }};
+                    font-family: {{ top_title.family }}, {{ top_title.fallback_families }};
+                    font-style: {{ top_title.style }};
+                    font-weight: {{ top_title.weight }};
+                    font-size:{{ block.settings.top_title_font_size }}px;
+                    line-height:{{ block.settings.top_title_font_line_height }}px;
+                    margin: 0 0 {{ block.settings.top_title_margin }}px;
+                  }
+
+
+                  #section-{{ section.id }}.countdown_promotion_banner .banner-bg-content p {
+                    color:{{ block.settings.des_text_color }};
+                    font-family: {{ des_text_font.family }}, {{ des_text_font.fallback_families }};
+                    font-style: {{ des_text_font.style }};
+                    font-weight: {{ des_text_font.weight }};
+                    font-size:{{ block.settings.des_text_font_size }}px;
+                    margin: 0 0 {{ block.settings.des_text_font_margin }}px;
+                    line-height:{{ block.settings.des_text_font_line_height }}px;
+                  }
+
+
+                  @media (min-width: 768px) and (max-width: 992px) {
+
+                  #section-{{ section.id }}.countdown_promotion_banner .banner-bg-content h3 {
+                  	font-size:{{ block.settings.bottom_title_font_size_md }}px;
+                 	line-height:{{ block.settings.bottom_title_font_line_height_md }}px;
+                  }
+                  #section-{{ section.id }}.countdown_promotion_banner .banner-bg-content h2 {
+                  	font-size:{{ block.settings.top_title_font_size_md }}px;
+                  	line-height:{{ block.settings.top_title_font_line_height_md }}px;
+                  }
+                  #section-{{ section.id }}.countdown_promotion_banner .banner-bg-content p {
+                  	font-size:{{ block.settings.des_text_font_size_md }}px;
+                  	line-height:{{ block.settings.des_text_font_line_height_md }}px;
+                  }
+
+                  }
+
+                  @media (min-width: 300px) and (max-width: 767px) {
+
+                  #section-{{ section.id }}.countdown_promotion_banner .banner-bg-content h3 {
+                  	font-size:{{ block.settings.bottom_title_font_size_sm }}px;
+                  	line-height:{{ block.settings.bottom_title_font_line_height_sm }}px;
+                  }
+                  #section-{{ section.id }}.countdown_promotion_banner .banner-bg-content h2 {
+                  	font-size:{{ block.settings.top_title_font_size_sm }}px;
+                  	line-height:{{ block.settings.top_title_font_line_height_sm }}px;
+                  }
+                  #section-{{ section.id }}.countdown_promotion_banner .banner-bg-content p {
+                  	font-size:{{ block.settings.des_text_font_size_sm }}px;
+                  	line-height:{{ block.settings.des_text_font_line_height_sm }}px;
+                  }
+
+                  }
+
+
+
+                  #section-{{ section.id }} .count_down_wrapper .single-countdown {
+                  	border-radius: {{ block.settings.border_radius_count }}px;
+                  }
+
+                  #section-{{ section.id }} .banner-bg-content a.ban_btn1 {
+                  	font-family: {{ button_title.family }}, {{ button_title.fallback_families }};
+                  	font-style: {{ button_title.style }};
+                  	font-weight: {{ button_title.weight }};
+                  	font-size:{{ block.settings.button_title_font_size }}px;
+                  	margin: {{ block.settings.button_title_margin }}px 0 0;
+                  	color: {{ block.settings.btn1_color }};
+                  }
+
+                  #section-{{ section.id }} .banner-bg-content a.ban_btn1:hover {
+                  	color: {{ block.settings.btn1_hover_color }};
+                  }
+
+                  #section-{{ section.id }} .banner-bg-content a.ban_btn1.banner_style_2{
+                  	border: 1px solid {{ block.settings.btn1_border_color }};
+                  	background: {{ block.settings.btn1_bg_color }};
+                  	border-radius: {{ block.settings.button_border_radius }}px;
+                  	padding:{{block.settings.button_padding_tb}}px {{block.settings.button_padding_lr}}px;
+                  }
+
+                  #section-{{ section.id }} .banner-bg-content a.ban_btn1.banner_style_2:hover{
+                  	background: {{ block.settings.btn1_bg_hover_color }};
+                  	border: 1px solid {{ block.settings.btn1_border_hover_color }};
+                  }
+
+
+
+                  {%- if block.settings.heading_bottom_border_line -%}
+
+                  #section-{{ section.id }}.countdown_promotion_banner .banner-bg-content h2 {
+                  	position: relative;
+                  }
+
+                  #section-{{ section.id }}.countdown_promotion_banner .banner-bg-content h2::before {
+                  	position: absolute;
+                  	content: "";
+                  	background: {{ block.settings.heading_border_bottom_color }};
+                  	height: 4px;
+                  	width: 70px;
+                  	bottom: -{{block.settings.border_top_spacing}}px;
+                  }
+
+                {%- endif -%}
+              {% endstyle %}
+            {% endif %}
+
+
+          
+          {%- when 'promoton-code' -%}
+
+          <div class="col-12">
+            <div class="promo__code__wrapper">
+              <div class="promo__code__img__content">
+
+                <div class="promo__code__img">
+                  {%- if block.settings.pc__image -%}
+                    <img loading="lazy" class="animated" src="{{ block.settings.pc__image | img_url: 'master' }}" alt="{{ image.alt }}">
+                  {%- else -%}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#e05c6a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="48" height="48">
+                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                      <line x1="7" y1="7" x2="7.01" y2="7"/>
+                    </svg>
+                  {%- endif -%}
+                </div>
+
+                <div class="promo__code__content">
+                  {%- if block.settings.pc__main__title != '' -%}
+                    <h3>{{ block.settings.pc__main__title }}</h3>
+                  {%- endif -%}
+                  {%- if block.settings.pc__sub__title != '' -%}
+                    <p>{{ block.settings.pc__sub__title }}</p>
+                  {%- endif -%}
+                </div>
+
+              </div>
+
+              {%- if block.settings.pc__promo__code != '' -%}
+                <div class="promo__code__promo">
+                  <span class="promo__dots" id="promo-txt">••••••••</span>
+                  <span id="promo-txt-real" style="display:none;">{{ block.settings.pc__promo__code }}</span>
+                  <button id="promo-txt-button" class="promo-txt-button" onclick="togglePromo();" title="Show/Copy Code">Copy</button>
+                </div>
+              {%- endif -%}
+
+            </div>
+
+            <script>
+              function togglePromo() {
+                var dots = document.getElementById('promo-txt');
+                var real = document.getElementById('promo-txt-real');
+                var button = document.getElementById('promo-txt-button');
+                var code = real.innerText;
+                navigator.clipboard.writeText(code).then(function() {
+                  dots.innerText = code;
+                  dots.style.letterSpacing = 'normal';
+                  dots.style.fontSize = '14px';
+                  var orig = button.innerText;
+                  button.innerText = 'Copied!';
+                  setTimeout(function() {
+                    button.innerText = orig;
+                    dots.innerText = '••••••••';
+                    dots.style.letterSpacing = '3px';
+                    dots.style.fontSize = '20px';
+                  }, 1500);
+                }, function() {
+                  button.style.background = 'red';
+                  button.innerText = 'Error';
+                });
+              }
+            </script>
+
+            <style>
+              .promo__code__wrapper {
+                padding: 18px 24px;
+                border: 2px dashed #e8a0a8;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                background: #fff;
+                gap: 12px;
+              }
+              .promo__code__img__content {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                max-width: 70%;
+              }
+              .promo__code__img {
+                flex-shrink: 0;
+                width: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              }
+              .promo__code__img img {
+                width: 100%;
+              }
+              .promo__code__content h3 {
+                margin: 0 0 4px;
+                font-weight: 700;
+                font-size: 15px;
+                color: #1f2226;
+                line-height: 1.3;
+              }
+              .promo__code__content p {
+                margin: 0;
+                font-size: 13px;
+                color: #888;
+                font-weight: normal;
+              }
+              .promo__code__promo {
+                border: 2px dashed #e05c6a;
+                padding: 10px 20px 18px;
+                position: relative;
+                border-radius: 10px;
+                max-width: 30%;
+                min-width: 120px;
+                text-align: center;
+              }
+              .promo__dots {
+                font-size: 20px;
+                color: #e05c6a;
+                font-weight: 700;
+                letter-spacing: 3px;
+                display: block;
+              }
+              .promo-txt-button {
+                position: absolute;
+                bottom: -12px;
+                right: 8px;
+                line-height: 1;
+                border: 1.5px dashed #e05c6a;
+                background: #fff;
+                color: #e05c6a;
+                font-size: 11px;
+                font-weight: 600;
+                padding: 3px 10px;
+                border-radius: 20px;
+                cursor: pointer;
+                transition: .2s;
+              }
+              .promo-txt-button:hover {
+                background: #e05c6a;
+                color: #fff;
+              }
+              @media (max-width: 767px) {
+                .promo__code__wrapper {
+                  padding: 20px;
+                  justify-content: center;
+                }
+                .promo__code__img__content {
+                  max-width: 100%;
+                }
+                .promo__code__promo {
+                  max-width: 100%;
+                  width: 100%;
+                  text-align: center;
+                }
+              }
+            </style>
+
+          </div>
+
+
+          {%- when 'promotion-faq' -%}
+            <div class="col-xl-{{ block.settings.faq_column_handle }} col-md-{{ block.settings.faq_column_handle_md }} col-sm-12 faq-page">
+              <div id="section-{{ section.id }}-accordion">
+                {% if block.settings.accordion_content_1 != '' -%}
+                  <div class="card">
+                    <div class="card-header" id="section-{{ section.id }}-heading-1">
+                      <h5 class="mb-0">
+                        <button
+                          class="btn-link collapsed"
+                          data-toggle="collapse"
+                          data-target="#section-{{ section.id }}-collapse-1"
+                          aria-expanded="true"
+                          aria-controls="section-{{ section.id }}-collapse-1"
+                        >
+                          {{ block.settings.accordion_title_1 }}
+                        </button>
+                      </h5>
+                    </div>
+                    <div
+                      id="section-{{ section.id }}-collapse-1"
+                      class="collapse show"
+                      aria-labelledby="section-{{ section.id }}-heading-1"
+                      data-parent="#section-{{ section.id }}-accordion"
+                    >
+                      <div class="card-body">
+                        {{ block.settings.accordion_content_1 }}
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+
+                {% if block.settings.accordion_content_2 != '' -%}
+                  <div class="card">
+                    <div class="card-header" id="section-{{ section.id }}-heading-2">
+                      <h5 class="mb-0">
+                        <button
+                          class="btn-link"
+                          data-toggle="collapse"
+                          data-target="#section-{{ section.id }}-collapse-2"
+                          aria-expanded="true"
+                          aria-controls="section-{{ section.id }}-collapse-2"
+                        >
+                          {{ block.settings.accordion_title_2 }}
+                        </button>
+                      </h5>
+                    </div>
+                    <div
+                      id="section-{{ section.id }}-collapse-2"
+                      class="collapse"
+                      aria-labelledby="section-{{ section.id }}-heading-2"
+                      data-parent="#section-{{ section.id }}-accordion"
+                    >
+                      <div class="card-body">
+                        {{ block.settings.accordion_content_2 }}
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+
+                {% if block.settings.accordion_content_3 != '' -%}
+                  <div class="card">
+                    <div class="card-header" id="section-{{ section.id }}-heading-3">
+                      <h5 class="mb-0">
+                        <button
+                          class="btn-link"
+                          data-toggle="collapse"
+                          data-target="#section-{{ section.id }}-collapse-3"
+                          aria-expanded="true"
+                          aria-controls="section-{{ section.id }}-collapse-3"
+                        >
+                          {{ block.settings.accordion_title_3 }}
+                        </button>
+                      </h5>
+                    </div>
+                    <div
+                      id="section-{{ section.id }}-collapse-3"
+                      class="collapse"
+                      aria-labelledby="section-{{ section.id }}-heading-3"
+                      data-parent="#section-{{ section.id }}-accordion"
+                    >
+                      <div class="card-body">
+                        {{ block.settings.accordion_content_3 }}
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+
+                {% if block.settings.accordion_content_4 != '' -%}
+                  <div class="card">
+                    <div class="card-header" id="section-{{ section.id }}-heading-4">
+                      <h5 class="mb-0">
+                        <button
+                          class="btn-link"
+                          data-toggle="collapse"
+                          data-target="#section-{{ section.id }}-collapse-4"
+                          aria-expanded="true"
+                          aria-controls="section-{{ section.id }}-collapse-4"
+                        >
+                          {{ block.settings.accordion_title_4 }}
+                        </button>
+                      </h5>
+                    </div>
+                    <div
+                      id="section-{{ section.id }}-collapse-4"
+                      class="collapse"
+                      aria-labelledby="section-{{ section.id }}-heading-4"
+                      data-parent="#section-{{ section.id }}-accordion"
+                    >
+                      <div class="card-body">
+                        {{ block.settings.accordion_content_4 }}
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+
+                {% if block.settings.accordion_content_5 != '' -%}
+                  <div class="card">
+                    <div class="card-header" id="section-{{ section.id }}-heading-5">
+                      <h5 class="mb-0">
+                        <button
+                          class="btn-link"
+                          data-toggle="collapse"
+                          data-target="#section-{{ section.id }}-collapse-5"
+                          aria-expanded="true"
+                          aria-controls="section-{{ section.id }}-collapse-5"
+                        >
+                          {{ block.settings.accordion_title_5 }}
+                        </button>
+                      </h5>
+                    </div>
+                    <div
+                      id="section-{{ section.id }}-collapse-5"
+                      class="collapse"
+                      aria-labelledby="section-{{ section.id }}-heading-5"
+                      data-parent="#section-{{ section.id }}-accordion"
+                    >
+                      <div class="card-body">
+                        {{ block.settings.accordion_content_5 }}
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<style>
+    #section-{{ section.id }} .count_down_wrapper .single-countdown {
+      background: {{ settings.body_bg_color }};
+    }
+
+    #section-{{ section.id }} .count_down_wrapper.count_border_disable .single-countdown {
+      background: none;
+      border:none;
+      text-align:left;
+      padding-left:0;
+    }
+    .count_down_wrapper.count_border_disable .count-number {
+      margin-bottom: 10px;
+    }
+
+    #section-{{ section.id }} .promotion_video_btn{
+      position: relative;
+    }
+
+    #section-{{ section.id }} .promotion_video_btn .magni_video_pop {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      height: 90px;
+      width: 90px;
+      border: 1px solid #fff;
+      border-radius: 100%;
+      text-align: center;
+      line-height: 90px;
+      font-size: 20px;
+      background: #fff;
+      color: {{ settings.color_primary }};
+      transition: .3s;
+      margin-left: -45px;
+      margin-top: -45px;
+    }
+    #section-{{ section.id }} .promotion_video_btn .magni_video_pop:hover {
+      transform: scale(1.15);
+      background: transparent;
+      color: {{ settings.color_primary }};
+      border:1px solid {{ settings.color_primary }};
+    }
+
+
+
+    #section-{{ section.id }} .faq-page .card .card-header button {
+      color: {{ settings.content_color }};
+      transition: .3s;
+    }
+    #section-{{ section.id }} .faq-page .card .card-header button:hover {
+      color: {{ settings.color_primary }};
+    }
+    #section-{{ section.id }} .faq-page .card-body p{
+      color: {{ settings.content_color }};
+    }
+    #section-{{ section.id }} .card {
+      background-color: {{ settings.body_bg_color }};
+    }
+
+  {% if section.settings.section__inner__bg__enable %}
+  #section-{{ section.id }}.countdown_promotion_banner .banner-bg-content {
+      padding-right: 100px;
+    }
+      #section-{{ section.id }}.countdown_promotion_banner .row {
+        background: {{ section.settings.section__inner__bg__color }};
+        padding: 90px 60px;
+        border-radius: 10px;
+      }
+      @media (max-width: 991px){
+
+        #section-{{ section.id }}.countdown_promotion_banner .row{
+              padding:50px 20px;
+          }
+        #section-{{ section.id }}.countdown_promotion_banner .banner-bg-content {
+          padding-right: 0;
+           margin-bottom:20px;
+        }
+
+      }
+      {% endif %}
+</style>
+
+{%- render 'section-style' -%}
+
+{%- render 'heading-style' -%}
+
+<script>
+  $('.count_down_wrapper [data-countdown]').each(function() {
+    var $this = $(this), finalDate = $(this).data('countdown');
+    $this.countdown(finalDate, function(event) {
+      $this.html(event.strftime('<div class="countdown-area"><div class="single-countdown"><div class="count-number">%D</div><div class="count-title">days</div></div><div class="single-countdown"><div class="count-number">%H</div><div class="count-title">Hour</div></div><div class="single-countdown"><div class="count-number">%M</div><div class="count-title">Mint</div></div><div class="single-countdown"><div class="count-number">%S</div><div class="count-title">Sec</div></div></div>'));
+    });
+  });
+</script>
+
+{% schema %}
+ {
+   "name": "Promotion Banner",
+   "settings": [
+             {
+               "type": "select",
+               "id": "section_width",
+               "label": "Section Width",
+               "options":[
+                     {
+                         "label": "Full Width",
+                         "value": "full_width"
+                     },
+                     {
+                         "label": "Box Width",
+                         "value": "box_width"
+                     },
+                     {
+                         "label": "Default Width",
+                         "value": "default"
+                     }
+                 ],
+                 "default": "default"
+             },
+
+
+
+	{
+		"type": "header",
+           "content": "Section Title"
+       },
+
+       {
+         "type": "checkbox",
+         "id": "section_title_custom_color",
+         "label": "Section Title Custom Style Enable",
+         "default": false
+       },
+
+	{
+           "type": "text",
+           "id": "section_title",
+           "label": "Title",
+           "default": "New Arrivals"
+       },
+
+       {
+         "type": "color",
+         "id": "section_title_color",
+         "label": "Title Color",
+         "default": "#1f2226"
+       },
+         {
+           "type": "font_picker",
+           "id": "section_title_font",
+           "label": "Font Family: Section Title Font",
+           "default": "poppins_n6"
+         },
+         {
+             "type": "header",
+             "content": "Main Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_title_font_size",
+           "label": "Font Size: Font Size",
+           "default": "30",
+           "info": "Section Title Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_line_height",
+           "min":       20,
+           "max":        150,
+           "step":       5,
+           "unit":       "px",
+           "label":     "Section Title Line Height",
+           "default":   40
+         },
+         {
+             "type": "header",
+             "content": "Medium Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_title_font_size_md",
+           "label": "Font Size: Font Size (MD)",
+           "default": "24",
+           "info": "Section Title Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_line_height_md",
+           "min":       20,
+           "max":        150,
+           "step":       5,
+           "unit":       "px",
+           "label":     "Section Title Line Height (MD)",
+           "default":   35
+         },
+         {
+             "type": "header",
+             "content": "Small Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_title_font_size_sm",
+           "label": "Font Size: Font Size (SM)",
+           "default": "20",
+           "info": "Section Title Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_line_height_sm",
+           "min":       20,
+           "max":        150,
+           "step":       5,
+           "unit":       "px",
+           "label":     "Section Title Line Height (SM)",
+           "default":   30
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_margin_bottom",
+           "min":       0,
+           "max":        50,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Title margin Bottom",
+           "default":   10
+         },
+
+
+	{
+           "type": "textarea",
+           "id": "section_sub_title",
+           "label": "Subtitle",
+           "default": "Contrary to popular belief, Lorem Ipsum is not simply random text."
+       },
+
+       {
+         "type": "color",
+         "id": "section_subtitle_color",
+         "label": "Subtitle Color",
+         "default": "#5a5a5a"
+       },
+         {
+           "type": "font_picker",
+           "id": "section_sub_title_font",
+           "label": "Font Family: Section Sub Title Font",
+           "default": "poppins_n6"
+         },
+         {
+             "type": "header",
+             "content": "Main Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_des_font_size",
+           "label": "Font Size: Font Size",
+           "default": "14",
+           "info": "Section Description Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_line_height",
+           "min":       20,
+           "max":        100,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title Line Height",
+           "default":   24
+         },
+         {
+             "type": "header",
+             "content": "Medium Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_des_font_size_md",
+           "label": "Font Size: Font Size (MD)",
+           "default": "14",
+           "info": "Section Description Font Size (MD)"
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_line_height_md",
+           "min":       20,
+           "max":        100,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title Line Height (MD)",
+           "default":   24
+         },
+
+         {
+             "type": "header",
+             "content": "Small Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_des_font_size_sm",
+           "label": "Font Size: Font Size (SM)",
+           "default": "14",
+           "info": "Section Description Font Size (SM)"
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_line_height_sm",
+           "min":       20,
+           "max":        100,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title Line Height (SM)",
+           "default":   24
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_margin_bottom",
+           "min":       0,
+           "max":        50,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title margin Bottom",
+           "default":   10
+         },
+
+		{
+               "type": "select",
+               "id": "title_align",
+               "label": "Title Align",
+               "options":[
+                     {
+                         "label": "Text Left",
+                         "value": "text-left"
+                     },
+                     {
+                         "label": "Text Center",
+                         "value": "text-center"
+                     },
+                     {
+                         "label": "Text Right",
+                         "value": "text-right"
+                     }
+                 ],
+                 "default": "text-center"
+             },
+
+
+       {
+       "type": "select",
+       "id": "content_position",
+       "label": "Content Position",
+       "options":[
+
+           {
+           "label": "Left",
+           "value": "left-def"
+           },
+           {
+           "label": "Center",
+           "value": "pos-center"
+           },
+           {
+           "label": "Right",
+           "value": "flex-row-reverse"
+           }
+         ],
+         "default": "left-def"
+       },
+	{
+       "type": "select",
+       "id": "content_align",
+       "label": "Content Align",
+       "options":[
+           {
+           "label": "Text left",
+           "value": "text-left"
+           },
+           {
+           "label": "Text Center",
+           "value": "text-center"
+           },
+           {
+           "label": "Text Right",
+           "value": "text-right"
+           }
+         ],
+         "default": "text-left"
+       },
+       {
+             "type": "checkbox",
+             "id": "section__inner__bg__enable",
+             "label": "Section Inner BG Enable",
+             "default": false
+       },
+       {
+         "type": "color",
+         "id": "section__inner__bg__color",
+         "label": "Section Inner Color",
+         "default": "#eee"
+       }
+],
+
+"blocks":[
+
+   	{
+      "type": "promoton-code",
+      "name": "Promoton Code",
+	  "limit": 2,
+         "settings": [
+           {
+             "type": "image_picker",
+             "id": "pc__image",
+             "label": "Image"
+           },
+           {
+             "type": "text",
+             "id": "pc__sub__title",
+             "label": "Sub Title",
+             "default": "Subscribe to unlock your discount code instantly"
+           },
+           {
+             "type": "text",
+             "id": "pc__main__title",
+             "label": "Main Title",
+             "default": "Your 50% Welcome Discount"
+           },
+           {
+             "type": "text",
+             "id": "pc__promo__code",
+             "label": "Promo Code",
+             "default": "WELCO50"
+           }
+         ]
+      },
+
+
+  
+
+   	{
+         "type": "promotion-faq",
+         "name": "Promotion Faq",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "header",
+		  "content": "Promotion Faq"
+		},
+           {
+             "type": "select",
+             "id": "faq_column_handle",
+             "label": "FAQ Column",
+             "options":[
+                   { "label": "12", "value": "12" },
+                   { "label": "11", "value": "11" },
+                   { "label": "10", "value": "10" },
+                   { "label": "9", "value": "9" },
+                   { "label": "8", "value": "8" },
+                   { "label": "7", "value": "7" },
+                   { "label": "6", "value": "6" },
+                   { "label": "5", "value": "5" },
+                   { "label": "4", "value": "4" },
+                   { "label": "3", "value": "3" },
+                   { "label": "2", "value": "2" },
+                   { "label": "1", "value": "1" }
+               ],
+               "default": "6"
+           },
+           {
+             "type": "select",
+             "id": "faq_column_handle_md",
+             "label": "FAQ Column (MD)",
+             "options":[
+                   { "label": "12", "value": "12" },
+                   { "label": "11", "value": "11" },
+                   { "label": "10", "value": "10" },
+                   { "label": "9", "value": "9" },
+                   { "label": "8", "value": "8" },
+                   { "label": "7", "value": "7" },
+                   { "label": "6", "value": "6" },
+                   { "label": "5", "value": "5" },
+                   { "label": "4", "value": "4" },
+                   { "label": "3", "value": "3" },
+                   { "label": "2", "value": "2" },
+                   { "label": "1", "value": "1" }
+               ],
+               "default": "6"
+           },
+           { "type": "header", "content": "Single Faq" },
+           { "type": "text", "id": "accordion_title_1", "label": "Title", "default": "1. What is the use of Lorem?" },
+           { "type": "richtext", "id": "accordion_content_1", "label": "Content", "default": "<p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book</p>" },
+           { "type": "header", "content": "Single Faq 2" },
+           { "type": "text", "id": "accordion_title_2", "label": "Title", "default": "2. What is the use of Lorem?" },
+           { "type": "richtext", "id": "accordion_content_2", "label": "Content", "default": "<p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book</p>" },
+           { "type": "header", "content": "Single Faq 3" },
+           { "type": "text", "id": "accordion_title_3", "label": "Title", "default": "3. What is the use of Lorem?" },
+           { "type": "richtext", "id": "accordion_content_3", "label": "Content", "default": "<p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book</p>" },
+           { "type": "header", "content": "Single Faq 4" },
+           { "type": "text", "id": "accordion_title_4", "label": "Title", "default": "4. What is the use of Lorem?" },
+           { "type": "richtext", "id": "accordion_content_4", "label": "Content", "default": "<p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book</p>" },
+           { "type": "header", "content": "Single Faq 5" },
+           { "type": "text", "id": "accordion_title_5", "label": "Title", "default": "5. What is the use of Lorem?" },
+           { "type": "richtext", "id": "accordion_content_5", "label": "Content", "default": "<p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book</p>" }
+         ]
+      },
+
+
+   	{
+         "type": "promoton-img",
+         "name": "Promoton Image",
+	  "limit": 2,
+         "settings": [
+           { "type": "header", "content": "Promotion Image" },
+           { "type": "checkbox", "id": "promotion_img_enable", "label": "Promotion Img Enable", "default": true },
+           {
+             "type": "select",
+             "id": "img_product_column_handle",
+             "label": "Image Column",
+             "options":[
+                   { "label": "12", "value": "12" },
+                   { "label": "11", "value": "11" },
+                   { "label": "10", "value": "10" },
+                   { "label": "9", "value": "9" },
+                   { "label": "8", "value": "8" },
+                   { "label": "7", "value": "7" },
+                   { "label": "6", "value": "6" },
+                   { "label": "5", "value": "5" },
+                   { "label": "4", "value": "4" },
+                   { "label": "3", "value": "3" },
+                   { "label": "2", "value": "2" },
+                   { "label": "1", "value": "1" }
+               ],
+               "default": "6"
+           },
+           {
+             "type": "select",
+             "id": "img_product_column_handle_md",
+             "label": "Image Column (MD)",
+             "options":[
+                   { "label": "12", "value": "12" },
+                   { "label": "11", "value": "11" },
+                   { "label": "10", "value": "10" },
+                   { "label": "9", "value": "9" },
+                   { "label": "8", "value": "8" },
+                   { "label": "7", "value": "7" },
+                   { "label": "6", "value": "6" },
+                   { "label": "5", "value": "5" },
+                   { "label": "4", "value": "4" },
+                   { "label": "3", "value": "3" },
+                   { "label": "2", "value": "2" },
+                   { "label": "1", "value": "1" }
+               ],
+               "default": "6"
+           },
+           { "type": "image_picker", "id": "img1", "label": "Image" },
+           { "type": "header", "content": "Video Button" },
+           { "type": "checkbox", "id": "video_btn_enable", "label": "Video Button Enable", "default": true },
+           { "type": "video_url", "id": "video_btn_url", "label": "Video URL", "accept": ["youtube"], "default": "https://www.youtube.com/watch?v=_9VUPq3SxOc" }
+         ]
+      },
+
+   	{
+         "type": "promoton-content",
+         "name": "Promotion Content",
+	  "limit": 1,
+         "settings": [
+             { "type": "header", "content": "Promotion Content" },
+             {
+             "type": "select",
+             "id": "content_product_column_handle",
+             "label": "Content Column",
+             "options":[
+                   { "label": "12", "value": "12" },
+                   { "label": "11", "value": "11" },
+                   { "label": "10", "value": "10" },
+                   { "label": "9", "value": "9" },
+                   { "label": "8", "value": "8" },
+                   { "label": "7", "value": "7" },
+                   { "label": "6", "value": "6" },
+                   { "label": "5", "value": "5" },
+                   { "label": "4", "value": "4" },
+                   { "label": "3", "value": "3" },
+                   { "label": "2", "value": "2" },
+                   { "label": "1", "value": "1" }
+               ],
+               "default": "6"
+           },
+             {
+             "type": "select",
+             "id": "content_product_column_handle_md",
+             "label": "Content Column (MD)",
+             "options":[
+                   { "label": "12", "value": "12" },
+                   { "label": "11", "value": "11" },
+                   { "label": "10", "value": "10" },
+                   { "label": "9", "value": "9" },
+                   { "label": "8", "value": "8" },
+                   { "label": "7", "value": "7" },
+                   { "label": "6", "value": "6" },
+                   { "label": "5", "value": "5" },
+                   { "label": "4", "value": "4" },
+                   { "label": "3", "value": "3" },
+                   { "label": "2", "value": "2" },
+                   { "label": "1", "value": "1" }
+               ],
+               "default": "6"
+           },
+           { "type": "checkbox", "id": "content_custom_color", "label": "Content Custom Style Enable", "default": false },
+           { "type": "header", "content": "Banner Top Title" },
+           { "type": "text", "id": "t1", "label": "Title 1", "default": "35% off Black Monday" },
+           { "type": "checkbox", "id": "title_1_gradient_style", "label": "Title 1 Gradient Enable", "default": false },
+           { "type": "font_picker", "id": "bottom_title", "label": "Font Family: Banner Top Title", "default": "poppins_n4" },
+           { "type": "text", "id": "bottom_title_font_size", "label": "Font Size: Banner Top Title", "default": "24", "info": "Main Screen" },
+           { "type": "text", "id": "bottom_title_font_line_height", "label": "Line Height: Banner Top Title", "default": "28", "info": "Main Screen" },
+           { "type": "header", "content": "Medium Screen" },
+           { "type": "text", "id": "bottom_title_font_size_md", "label": "Font Size: Banner Top Title (MD)", "default": "24", "info": "Medium Screen" },
+           { "type": "text", "id": "bottom_title_font_line_height_md", "label": "Line Height: Banner Top Title (MD)", "default": "28", "info": "Medium Screen" },
+           { "type": "header", "content": "Small Screen" },
+           { "type": "text", "id": "bottom_title_font_size_sm", "label": "Font Size: Banner Top Title (SM)", "default": "24", "info": "Small Screen" },
+           { "type": "text", "id": "bottom_title_font_line_height_sm", "label": "Line Height: Banner Top Title (SM)", "default": "28", "info": "Small Screen" },
+           { "type": "color", "id": "t1_color", "label": "Banner Top Title Color", "default": "#1f2226" },
+           { "type": "range", "id": "bottom_title_margin", "min": 0, "max": 70, "step": 1, "unit": "px", "label": "Banner Top Title Margin Bottom", "default": 15 },
+           { "type": "header", "content": "Banner Middle Title" },
+           { "type": "text", "id": "t2", "label": "Title 2", "default": "Lighting For Home." },
+           { "type": "font_picker", "id": "top_title", "label": "Font Family: Banner Middle Title", "default": "poppins_n5" },
+           { "type": "text", "id": "top_title_font_size", "label": "Font Size: Banner Middle Title", "default": "55", "info": "Main Screen" },
+           { "type": "text", "id": "top_title_font_line_height", "label": "Line Height: Banner Middle Title", "default": "60", "info": "Main Screen" },
+           { "type": "header", "content": "Medium Screen" },
+           { "type": "text", "id": "top_title_font_size_md", "label": "Font Size: Banner Middle Title (MD)", "default": "40", "info": "Medium Screen" },
+           { "type": "text", "id": "top_title_font_line_height_md", "label": "Line Height: Banner Middle Title (MD)", "default": "50", "info": "Medium Screen" },
+           { "type": "header", "content": "Small Screen" },
+           { "type": "text", "id": "top_title_font_size_sm", "label": "Font Size: Banner Middle Title (SM)", "default": "30", "info": "Small Screen" },
+           { "type": "text", "id": "top_title_font_line_height_sm", "label": "Line Height: Banner Middle Title (SM)", "default": "40", "info": "Small Screen" },
+           { "type": "color", "id": "t2_color", "label": "Banner Middle Title Color", "default": "#1f2226" },
+           { "type": "range", "id": "top_title_margin", "min": 0, "max": 70, "step": 1, "unit": "px", "label": "Banner Middle Margin Bottom", "default": 20 },
+           { "type": "checkbox", "id": "heading_bottom_border_line", "label": "Title Middle Bottom Border Enable", "default": false },
+           { "type": "color", "id": "heading_border_bottom_color", "label": "Title Middle Bottom Border Color", "default": "#333" },
+           { "type": "range", "id": "border_top_spacing", "min": 0, "max": 50, "step": 1, "unit": "px", "label": "Border Top Spacing", "default": 10 },
+           { "type": "header", "content": "Banner Description Title" },
+           { "type": "textarea", "id": "des_text", "label": "Banner Description Text", "default": "For all your new furniture, seating & storage needs, all at fantastic prices." },
+           { "type": "font_picker", "id": "des_text_font", "label": "Font Family: Banner Description", "default": "poppins_n4" },
+           { "type": "color", "id": "des_text_color", "label": "Banner Description Text Color", "default": "#1f2226" },
+           { "type": "text", "id": "des_text_font_size", "label": "Font Size: Paragraph Font Size", "default": "18", "info": "Banner Description Font Size" },
+           { "type": "text", "id": "des_text_font_line_height", "label": "Line Height: Paragraph Line Height", "default": "28", "info": "Banner Description Line Height" },
+           { "type": "header", "content": "Medium Screen" },
+           { "type": "text", "id": "des_text_font_size_md", "label": "Font Size: Paragraph Font Size (MD)", "default": "16", "info": "Medium Screen" },
+           { "type": "text", "id": "des_text_font_line_height_md", "label": "Line Height: Paragraph Line Height (MD)", "default": "26", "info": "Medium Screen" },
+           { "type": "header", "content": "Small Screen" },
+           { "type": "text", "id": "des_text_font_size_sm", "label": "Font Size: Paragraph Font Size (SM)", "default": "14", "info": "Small Screen" },
+           { "type": "text", "id": "des_text_font_line_height_sm", "label": "Line Height: Paragraph Line Height (SM)", "default": "24", "info": "Small Screen" },
+           { "type": "range", "id": "des_text_font_margin", "min": 0, "max": 70, "step": 1, "unit": "px", "label": "Banner Description Margin Bottom", "default": 15 },
+           { "type": "header", "content": "Countdown Area" },
+           { "type": "text", "id": "countdown_date", "label": "Countdown Date", "default": "2021/11/11", "info": "Example: 2025/11/12" },
+           { "type": "checkbox", "id": "count_border_disable", "label": "Countdown Border Disable", "default": false },
+           { "type": "range", "id": "border_radius_count", "label": "Countdown Border Radius", "min": 0, "max": 100, "step": 10, "default": 10, "unit": "px" },
+           { "type": "header", "content": "Button Area" },
+           { "type": "text", "id": "btn1", "label": "Button", "default": "SHOP NOW" },
+           { "type": "url", "id": "btn1_url", "label": "URL", "default": "\/collections\/all" },
+           { "type": "font_picker", "id": "button_title", "label": "Font Family: Botton Title", "default": "poppins_n3" },
+           { "type": "text", "id": "button_title_font_size", "label": "Font Size: Font Size", "default": "14", "info": "Botton Title Font Size" },
+           { "type": "range", "id": "button_title_margin", "min": 0, "max": 70, "step": 1, "unit": "px", "label": "Button Title Margin Top", "default": 10 },
+           {
+             "type": "select",
+             "id": "button_style",
+             "label": "Button_style",
+             "options":[
+                   { "label": "Default", "value": "default" },
+                   { "label": "Style 2", "value": "banner_style_2" }
+               ],
+               "default": "default"
+           },
+           { "type": "range", "id": "button_border_radius", "min": 0, "max": 50, "step": 1, "label": "Button Border Radius", "unit": "px", "default": 0 },
+           { "type": "range", "id": "button_padding_tb", "min": 0, "max": 50, "step": 1, "label": "Button Padding Top Bottom", "unit": "px", "default": 15 },
+           { "type": "range", "id": "button_padding_lr", "min": 0, "max": 100, "step": 1, "label": "Button Padding Left Right", "unit": "px", "default": 30 },
+           { "type": "color", "id": "btn1_color", "label": "Button Color", "default": "#1f2226" },
+           { "type": "color", "id": "btn1_hover_color", "label": "Button Hover Color", "default": "#1f2226" },
+           { "type": "color", "id": "btn1_bg_color", "label": "Button BG Color", "default": "#fff" },
+           { "type": "color", "id": "btn1_bg_hover_color", "label": "Button BG Hover Color", "default": "#000" },
+           { "type": "color", "id": "btn1_border_color", "label": "Button Border Color", "default": "#fff" },
+           { "type": "color", "id": "btn1_border_hover_color", "label": "Button Border Hover Color", "default": "#000" }
+         ]
+      },
+   {
+         "type": "section_margin",
+         "name": "Section Margin",
+	  "limit": 1,
+         "settings": [
+           { "type": "header", "content": "Large/Desktop Device" },
+           { "type": "range", "id": "section_margin_top", "min": 0, "max": 150, "step": 5, "label": "Margin Top", "unit": "px", "default": 0 },
+           { "type": "range", "id": "section_margin_bottom", "min": 0, "max": 150, "step": 5, "label": "Margin Bottom", "unit": "px", "default": 0 },
+           { "type": "header", "content": "Tablet Device" },
+           { "type": "range", "id": "section_margin_top_md", "min": 0, "max": 150, "step": 5, "label": "Margin Top", "unit": "px", "default": 0 },
+           { "type": "range", "id": "section_margin_bottom_md", "min": 0, "max": 150, "step": 5, "label": "Margin Bottom", "unit": "px", "default": 0 },
+           { "type": "header", "content": "Mobile Device" },
+           { "type": "range", "id": "section_margin_top_xs", "min": 0, "max": 150, "step": 5, "label": "Margin Top", "unit": "px", "default": 0 },
+           { "type": "range", "id": "section_margin_bottom_xs", "min": 0, "max": 150, "step": 5, "label": "Margin Bottom", "unit": "px", "default": 0 }
+         ]
+      },
+   {
+         "type": "section_padding",
+         "name": "Section Padding",
+	  "limit": 1,
+         "settings": [
+           { "type": "header", "content": "Large/Desktop Device" },
+           { "type": "range", "id": "section_padding_top", "min": 0, "max": 300, "step": 5, "label": "Padding Top", "unit": "px", "default": 80 },
+           { "type": "range", "id": "section_padding_bottom", "min": 0, "max": 300, "step": 5, "label": "Padding Bottom", "unit": "px", "default": 80 },
+           { "type": "header", "content": "Tablet Device" },
+           { "type": "range", "id": "section_padding_top_md", "min": 0, "max": 300, "step": 5, "label": "Padding Top", "unit": "px", "default": 80 },
+           { "type": "range", "id": "section_padding_bottom_md", "min": 0, "max": 300, "step": 5, "label": "Padding Bottom", "unit": "px", "default": 80 },
+           { "type": "header", "content": "Mobile Device" },
+           { "type": "range", "id": "section_padding_top_xs", "min": 0, "max": 300, "step": 5, "label": "Padding Top", "unit": "px", "default": 80 },
+           { "type": "range", "id": "section_padding_bottom_xs", "min": 0, "max": 300, "step": 5, "label": "Padding Bottom", "unit": "px", "default": 80 }
+         ]
+      },
+   {
+         "type": "section_background",
+         "name": "Section Background",
+	  "limit": 1,
+         "settings": [
+           { "type": "image_picker", "id": "section_bg_image", "label": "BG Image" },
+           { "type": "color", "id": "section_bg_color", "label": "BG Color", "default": "#ffffff" }
+         ]
+      }
+],
+"presets": [
+	{
+	  "name": "Promotion Banner",
+	  "category": "2. Banner",
+	  "blocks":[
+			{ "type": "section_padding" },
+        	{ "type": "promoton-img" },
+            { "type": "promoton-content" }
+		]
+	}
+]
+ }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

@@ -1,0 +1,38 @@
+<div class="theme-default-margin icofont sli">
+  <div class="container">	
+    <div class="row">
+      <div class="col-lg-12 col-12">
+        <div class="error-content text-center">
+
+
+            {%- liquid
+              assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+              assign fetch_priority = 'auto'
+              if section.index == 1
+                assign fetch_priority = 'high'
+              endif
+              assign image_class = 'lazyload-main-image animated responsive-image__image'
+              assign lazy_load = 'lazy'
+            -%}
+          
+          {% if settings.opps_404 %}
+            <div class="lazyload-wraper-position pb-30" style="padding-top:{{ 1 | divided_by: settings.opps_404.aspect_ratio | times: 100}}%;">
+                {% assign image_height = settings.opps_404.width | divided_by: settings.opps_404.aspect_ratio %}
+                {{ settings.opps_404 | image_url: width: 3840 | image_tag: width: settings.opps_404.width, height: image_height, 
+                widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load }}
+            </div>
+          {% endif %}
+          {% if settings.heading_404 !='' %}
+          <h4>{{ settings.heading_404 }}</h4>
+          {% endif %}
+          {% if settings.sub_text_404 !='' %}
+          <p>{{ settings.sub_text_404 }}</p>
+          {% endif %}
+          {% if settings.button_title !='' %}
+          <a class="theme-default-button" href="{{ settings.button_url }}" data-text="{{ settings.button_title }}" >{{ settings.button_title }}</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

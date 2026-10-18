@@ -1,0 +1,70 @@
+{%- comment -%}
+  Home sidebar. Design reference: _design/metro-auto-design/components/Sidebar.dc.html (mode "home").
+  Price + brand "Apply filter" sends Shopify Search & Discovery params (filter.v.price.lte, filter.p.vendor)
+  to the shop-all collection.
+
+  Params: section_id, menu (linklist handle), brands (comma list), price_max (number), apply_url
+{%- endcomment -%}
+{%- liquid
+  assign cat_menu = linklists[menu]
+  assign icons = 'rotor,filter,kit,body,can,bottle,bolt,wrench' | split: ','
+  assign fallback = 'Brakes and suspension|/collections/brakes-suspension;Filters and maintenance|/collections/filters-kits;Kits and service packs|/collections/kits-service-packs;Struts, bonnet and body|/collections/struts-bonnet-body;Lubricants and aerosols|/collections/oil-fluids-chemicals;Cleaners|/collections/car-care-products;Electrical and ignition|/collections/electrical-ignition;Workshop essentials|/collections/workshop-essentials' | split: ';'
+  assign pmax = price_max | default: 700
+  assign brand_list = brands | split: ','
+  assign target = apply_url | default: routes.all_products_collection_url
+-%}
+<aside class="ma-side" aria-label="Shop filters" data-ma-sidebar>
+  <section class="ma-side__box ma-side__box--cats">
+    <h2 class="ma-side__title ma-side__title--bar">
+      {%- render 'ma-icon', name: 'filter', size: 16, width: 2.2 -%}Shop by category
+    </h2>
+    <ul class="ma-side__cats">
+      {%- if cat_menu.links.size > 0 -%}
+        {%- for link in cat_menu.links -%}
+          {%- assign i = forloop.index0 | modulo: 8 -%}
+          <li><a class="ma-side__cat" href="{{ link.url }}">
+            {%- render 'ma-icon', name: icons[i], size: 16, stroke: '#E1251B' -%}
+            <span>{{ link.title | escape }}</span>
+            {%- render 'ma-icon', name: 'chevron', size: 14, stroke: '#9A9EA6', width: 2 -%}
+          </a></li>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for item in fallback -%}
+          {%- assign parts = item | split: '|' -%}
+          <li><a class="ma-side__cat" href="{{ parts[1] }}">
+            {%- render 'ma-icon', name: icons[forloop.index0], size: 16, stroke: '#E1251B' -%}
+            <span>{{ parts[0] }}</span>
+            {%- render 'ma-icon', name: 'chevron', size: 14, stroke: '#9A9EA6', width: 2 -%}
+          </a></li>
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+  </section>
+
+  <section class="ma-side__box ma-side__box--pad">
+    <h2 class="ma-side__title">
+      {%- render 'ma-icon', name: 'tag', size: 16, stroke: '#E1251B', width: 2.2 -%}Filter by price
+    </h2>
+    <label for="ma-price-{{ section_id }}" class="ma-sr">Maximum price</label>
+    <input id="ma-price-{{ section_id }}" class="ma-side__range" type="range" min="10" max="{{ pmax }}" step="10" value="{{ pmax }}" data-ma-price>
+    <div class="ma-side__scale">
+      <span>$0</span><strong data-ma-price-label>Any price</strong><span>${{ pmax }}+</span>
+    </div>
+    <a href="{{ target }}" class="ma-button ma-button--dark ma-side__apply" data-ma-apply>Apply filter</a>
+  </section>
+
+  {%- if brand_list.size > 0 -%}
+    <section class="ma-side__box ma-side__box--pad ma-side__brands">
+      <div class="ma-side__brands-head">
+        <h2 class="ma-side__title">Top brands</h2>
+        <button type="button" class="ma-side__clear" data-ma-brand-clear hidden>Clear</button>
+      </div>
+      {%- for b in brand_list -%}
+        {%- assign name = b | strip -%}
+        <label class="ma-side__check">
+          <input type="checkbox" value="{{ name | escape }}" data-ma-brand>{{ name | escape }}
+        </label>
+      {%- endfor -%}
+    </section>
+  {%- endif -%}
+</aside>

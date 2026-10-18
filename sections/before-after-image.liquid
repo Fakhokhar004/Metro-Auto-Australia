@@ -1,0 +1,695 @@
+<div class="before__after__img" id="section-{{ section.id }}">
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+    {% if section.settings.section_title != '' or section.settings.section_sub_title != '' %}
+      <div class="section-title {{ section.settings.title_align }} pb-60 {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+        {% if section.settings.section_title != '' %}
+          <h2>{{ section.settings.section_title }}</h2>
+        {% endif %}
+
+        {% if section.settings.section_sub_title != '' %}
+          <p>{{ section.settings.section_sub_title }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="row">
+      <div class="col-xl-{{ section.settings.before__after__image__width }} col-lg-12 col-md-12 col-12 before__after__col {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+        <div class="before-after-wrap">
+          {% if section.settings.before__text != '' %}
+            <span class="before__after__common before__class">{{ section.settings.before__text }}</span>
+          {% endif %}
+          <figure>
+            <div id="compare"></div>
+          </figure>
+          <input oninput="beforeAfter()" onchange="beforeAfter()" type="range" min="0" max="100" value="50" id="slider">
+          {% if section.settings.after__text != '' %}
+            <span class="before__after__common after__class">{{ section.settings.after__text }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+       .before__after__col{
+         margin:auto
+       }
+       #section-{{ section.id }} .before-after-wrap {
+       	overflow: hidden;
+        position:relative;
+       }
+
+       @media only screen and (min-width: 350px) {
+        #section-{{ section.id }} .before-after-wrap {
+             	height: {{section.settings.ba__section__height__small}}px;
+            }
+       }
+
+      @media only screen and (min-width: 768px) {
+       #section-{{ section.id }} .before-after-wrap {
+             	height: {{section.settings.ba__section__height__medium}}px;
+            }
+       }
+
+        @media only screen and (min-width: 1366px) {
+       #section-{{ section.id }} .before-after-wrap {
+        height: {{section.settings.ba__section__height}}px;
+            }
+       }
+
+       #section-{{ section.id }} .before-after-wrap figure {
+        background-image: url({%- if section.settings.after__image -%}{{ section.settings.after__image | img_url: 'master' }}{%- else -%} https://via.placeholder.com/1400x750 {%- endif -%});
+       	background-size: cover;
+       	font-size: 0;
+       	height: 100%;
+       	margin: 0;
+       	position: relative;
+       	width: 100%;
+       }
+       #section-{{ section.id }} .before-after-wrap #compare {
+        background-image: url({%- if section.settings.before__image -%}{{ section.settings.before__image | img_url: 'master' }}{%- else -%} https://via.placeholder.com/1400x750 {%- endif -%});
+       	background-size: cover;
+       	bottom: 0;
+       	border-right: 5px solid rgba(255,255,255,0.7);
+       	box-shadow: 10px 0 15px -13px #000;
+       	height: 100%;
+       	max-width: 98.6%;
+       	min-width: 0.6%;
+       	overflow: visible;
+       	position: absolute;
+       	width: 50%;
+       	animation: first 2s 1 normal ease-in-out 0.1s;
+       	-webkit-animation: first 2s 1 normal ease-in-out 0.1s;
+       }
+       #section-{{ section.id }} .before-after-wrap input#slider {
+       	-moz-appearance: none;
+       	-webkit-appearance: none;
+       	border: none;
+       	background: transparent;
+       	cursor: col-resize;
+       	height: 100vw;
+       	left: 0;
+       	margin: 0;
+       	outline: none;
+       	padding: 0;
+       	position: relative;
+       	top: -100vw;
+       	width: 100%;
+       }
+       #section-{{ section.id }} .before-after-wrap input#slider::-moz-range-track {
+       	background: transparent;
+       }
+       #section-{{ section.id }} .before-after-wrap input#slider::-ms-track {
+       	border: none;
+       	background-color: transparent;
+       	height: 100vw;
+       	left: 0;
+       	outline: none;
+       	position: relative;
+       	top: -100vw;
+       	width: 100%;
+       	margin: 0;
+       	padding: 0;
+       	cursor: col-resize;
+       	color:transparent;
+       }
+       #section-{{ section.id }} .before-after-wrap input#slider::-ms-fill-lower {
+       	background-color:transparent;
+       }
+       #section-{{ section.id }} .before-after-wrap input#slider::-webkit-slider-thumb {
+       	-webkit-appearance:none;
+       	height: 100vw;
+       	width: 0.5%;
+       	opacity: 0;
+       }
+       #section-{{ section.id }} .before-after-wrap input#slider::-moz-range-thumb {
+       	-moz-appearance: none;
+       	height: 100vw;
+       	width: 0.5%;
+       	opacity: 0;
+       }
+       #section-{{ section.id }} .before-after-wrap input#slider::-ms-thumb {
+       	height: 100vw;
+       	width: 0.5%;
+       	opacity:0;
+       }
+       #section-{{ section.id }} .before-after-wrap input#slider::-ms-tooltip {
+       	display:none;
+       }
+       #section-{{ section.id }} .before-after-wrap #compare::before {
+       	background: url(https://webdevtrick.com/wp-content/uploads/comparision.png) no-repeat scroll 0 center transparent;
+       	background-size:contain;
+       	content: "";
+        float: right;
+       	height: 100%;
+       	margin-right: -34px;
+       	position: relative;
+       	top:0;
+       	width: 64px;
+       }
+       @keyframes first {
+         0% {width: 0%; }
+         50% {width: 80%; }
+         100% {width: 50%; }
+       }
+       @-webkit-keyframes first {
+         0% {width: 0%; }
+         50% {width: 80%; }
+         100% {width: 50%; }
+       }
+
+   #section-{{ section.id }} .before-after-wrap .before__after__common {
+       position: absolute;
+       color: {{section.settings.bf__button__text__color}};
+       z-index: 9;
+       font-size: 18px;
+       bottom: 20px;
+       left: 20px;
+       background: {{section.settings.bf__button__bg__color}};
+       padding: 8px 20px;
+       border-radius: 10px;
+   }
+
+  #section-{{ section.id }} .before-after-wrap .before__after__common.after__class {
+         right: 20px;
+         left: auto;
+     }
+</style>
+
+<script>
+  function beforeAfter() {
+    document.getElementById('compare').style.width = document.getElementById('slider').value + "%";
+  }
+</script>
+
+{%- render 'section-style' -%}
+
+{%- render 'heading-style' -%}
+
+{% schema %}
+ {
+   "name": "Before After Image",
+   "settings": [
+             {
+               "type": "select",
+               "id": "section_width",
+               "label": "Section Width",
+               "options":[
+                     {
+                         "label": "Full Width",
+                         "value": "full_width"
+                     },
+                     {
+                         "label": "Box Width",
+                         "value": "box_width"
+                     },
+                     {
+                         "label": "Default Width",
+                         "value": "default"
+                     }
+                 ],
+                 "default": "default"
+             },
+
+	{
+		"type": "header",
+           "content": "Section Title"
+       },
+
+       {
+         "type": "checkbox",
+         "id": "section_title_custom_color",
+         "label": "Section Title Custom Style Enable",
+         "default": false
+       },
+
+	{
+           "type": "text",
+           "id": "section_title",
+           "label": "Title",
+           "default": "New Arrivals"
+       },
+
+       {
+         "type": "color",
+         "id": "section_title_color",
+         "label": "Title Color",
+         "default": "#1f2226"
+       },
+         {
+           "type": "font_picker",
+           "id": "section_title_font",
+           "label": "Font Family: Section Title Font",
+           "default": "poppins_n6"
+         },
+         {
+             "type": "header",
+             "content": "Main Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_title_font_size",
+           "label": "Font Size: Font Size",
+           "default": "30",
+           "info": "Section Title Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_line_height",
+           "min":       20,
+           "max":        150,
+           "step":       5,
+           "unit":       "px",
+           "label":     "Section Title Line Height",
+           "default":   40
+         },
+         {
+             "type": "header",
+             "content": "Medium Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_title_font_size_md",
+           "label": "Font Size: Font Size (MD)",
+           "default": "24",
+           "info": "Section Title Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_line_height_md",
+           "min":       20,
+           "max":        150,
+           "step":       5,
+           "unit":       "px",
+           "label":     "Section Title Line Height (MD)",
+           "default":   35
+         },
+         {
+             "type": "header",
+             "content": "Small Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_title_font_size_sm",
+           "label": "Font Size: Font Size (SM)",
+           "default": "20",
+           "info": "Section Title Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_line_height_sm",
+           "min":       20,
+           "max":        150,
+           "step":       5,
+           "unit":       "px",
+           "label":     "Section Title Line Height (SM)",
+           "default":   30
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_margin_bottom",
+           "min":       0,
+           "max":        50,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Title margin Bottom",
+           "default":   10
+         },
+
+
+	{
+           "type": "textarea",
+           "id": "section_sub_title",
+           "label": "Subtitle",
+           "default": "Contrary to popular belief, Lorem Ipsum is not simply random text."
+       },
+
+       {
+         "type": "color",
+         "id": "section_subtitle_color",
+         "label": "Subtitle Color",
+         "default": "#5a5a5a"
+       },
+         {
+           "type": "font_picker",
+           "id": "section_sub_title_font",
+           "label": "Font Family: Section Sub Title Font",
+           "default": "poppins_n6"
+         },
+         {
+             "type": "header",
+             "content": "Main Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_des_font_size",
+           "label": "Font Size: Font Size",
+           "default": "14",
+           "info": "Section Description Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_line_height",
+           "min":       20,
+           "max":        100,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title Line Height",
+           "default":   24
+         },
+         {
+             "type": "header",
+             "content": "Medium Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_des_font_size_md",
+           "label": "Font Size: Font Size (MD)",
+           "default": "14",
+           "info": "Section Description Font Size (MD)"
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_line_height_md",
+           "min":       20,
+           "max":        100,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title Line Height (MD)",
+           "default":   24
+         },
+
+         {
+             "type": "header",
+             "content": "Small Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_des_font_size_sm",
+           "label": "Font Size: Font Size (SM)",
+           "default": "14",
+           "info": "Section Description Font Size (SM)"
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_line_height_sm",
+           "min":       20,
+           "max":        100,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title Line Height (SM)",
+           "default":   24
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_margin_bottom",
+           "min":       0,
+           "max":        50,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title margin Bottom",
+           "default":   10
+         },
+
+		{
+               "type": "select",
+               "id": "title_align",
+               "label": "Title Align",
+               "options":[
+                     {
+                         "label": "Text Left",
+                         "value": "text-left"
+                     },
+                     {
+                         "label": "Text Center",
+                         "value": "text-center"
+                     },
+                     {
+                         "label": "Text Right",
+                         "value": "text-right"
+                     }
+                 ],
+                 "default": "text-center"
+             },
+
+	{
+	  "type": "header",
+         "content": "Compare Image Area"
+       },
+       {
+           "type":      "range",
+           "id":        "before__after__image__width",
+           "min":       1,
+           "max":        12,
+           "step":       1,
+           "label":     "Befor After Image Width",
+           "default":   12
+         },
+       {
+           "type": "text",
+           "id": "ba__section__height",
+           "label": "Section Height",
+           "default": "750",
+           "info": "Section Height (Main Screen)"
+         },
+         {
+           "type": "text",
+           "id": "ba__section__height__medium",
+           "label": "Section Height Mudium",
+           "default": "550",
+           "info": "Section Height (Medium Screen)"
+         },
+            {
+           "type": "text",
+           "id": "ba__section__height__small",
+           "label": "Section Height Small",
+           "default": "450",
+           "info": "Section Height (Small Screen)"
+         },
+        {
+            "type": "image_picker",
+            "id": "before__image",
+            "label": "Before Image"
+        },
+        {
+            "type": "image_picker",
+            "id": "after__image",
+            "label": "After Image"
+        },
+        {
+           "type": "text",
+           "id": "before__text",
+           "label": "Befor Image Text",
+           "default": "Before"
+         },
+        {
+           "type": "text",
+           "id": "after__text",
+           "label": "After Image Text",
+           "default": "After"
+         },
+         {
+         "type": "color",
+         "id": "bf__button__text__color",
+         "label": "Button Text Color",
+         "default": "#fff"
+         },
+         {
+         "type": "color",
+         "id": "bf__button__bg__color",
+         "label": "Button BG Color",
+         "default": "#f00"
+         }
+],
+"blocks":[
+   {
+         "type": "section_padding",
+         "name": "Section Padding",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "header",
+		  "content": "Large/Desktop Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 100
+		},
+		{
+		  "type": "header",
+		  "content": "Tablet Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 80
+		},
+		{
+		  "type": "header",
+		  "content": "Mobile Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 60
+		}
+         ]
+      },
+   {
+         "type": "section_margin",
+         "name": "Section Margin",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "header",
+		  "content": "Large/Desktop Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "header",
+		  "content": "Tablet Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "header",
+		  "content": "Mobile Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		}
+         ]
+      },
+   {
+         "type": "section_background",
+         "name": "Section Background",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "image_picker",
+		  "id": "section_bg_image",
+		  "label": "BG Image"
+		},
+		{
+		  "type": "color",
+		  "id": "section_bg_color",
+		  "label": "BG Color",
+		  "default": "#ffffff"
+		}
+         ]
+      }
+],
+"presets": [
+	{
+	  "name": "Before After Image",
+	  "category": "others",
+	  "blocks":[
+			{
+				"type": "section_padding"
+			}
+		]
+	}
+]
+ }
+{% endschema %}

@@ -1,0 +1,36 @@
+{%- if settings.language_handle == 'shopify_language' -%}
+  {% if localization.available_languages.size > 1 %}
+  <div class="setting-wrap language">
+    <localization-form>
+      {% form 'localization' %}
+      <div class="disclosure">
+        <button type="button" class="disclosure__button header-search header_language__icon" aria-expanded="false" aria-controls="LanguageList">
+        {{section.settings.language_icon}}  
+        </button>
+
+        <ul id="LanguageList" role="list" class="disclosure__list dropdown-list" hidden="true">
+
+          <span class="selected__language"> {{ localization.language.endonym_name | capitalize }}</span>
+          
+          {% for language in localization.available_languages %}
+          <li class="disclosure__item" tabindex="-1">
+            <a href="#"{% if language.iso_code == localization.language.iso_code %} aria-current="true"{% endif %} hreflang="{{ language.iso_code }}" lang="{{ language.iso_code }}" data-value="{{ language.iso_code }}">
+              {{ language.endonym_name | capitalize }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        <input type="hidden" name="language_code" value="{{ localization.language.iso_code }}">
+      </div>
+      {% endform %}
+    </localization-form>
+  </div>
+  {% endif %}
+  
+  {%- elsif settings.language_handle == 'google_translate' -%}
+  <div class="setting-wrap language">
+    {%- render 'google-translate' -%}
+  </div>
+  {%- elsif settings.language_handle == 'gtranslate' -%}
+  {%- render 'gtranslate_menu' -%}
+  {%- endif -%} 

@@ -1,0 +1,304 @@
+#section-template--19616879214779__single_product_feature_DmpUf4{
+background:#000;
+padding:60px 0
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-wrap{
+width:100%;
+max-width:1400px;
+margin:auto;
+padding:0 20px
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-panel{
+position:relative;
+z-index: 1;
+padding:28px;
+border-radius:30px;
+/* Glassmorphism Change */
+background: rgba(255, 255, 255, 0.03) !important;
+backdrop-filter: blur(15px);
+-webkit-backdrop-filter: blur(15px);
+border:1px solid rgba(255,255,255,.08);
+box-shadow:0 20px 60px rgba(0,0,0,.55);
+overflow:hidden
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-slides-box{
+width:100%;
+height:100%;
+display:flex;
+align-items:stretch
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-slide{
+width:100%;
+height:100%
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-card {
+    z-index: 2;
+    position: relative;
+    overflow: hidden;
+    min-height: 440px;
+    padding: 42px;
+    /* Updated Radius */
+    border-radius: 20px !important; 
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    background: linear-gradient(to top, rgba(0,0,0,.9), rgba(0,0,0,.15)), center/cover no-repeat;
+    border: 1px solid rgba(255,255,255,.08);
+    /* Initial Shadow State for Animation */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    /* Transition includes Transform and Shadow */
+    transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), 
+                box-shadow 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    isolation: isolate;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    
+    /* This ensures the card is always visible even if the image takes a second to load */
+    background-color: #1a1a1a;
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-card:before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 20px; 
+    
+    /* This connects to the Liquid variable */
+    background-image: var(--card-bg-image);
+    background-size: cover;
+    background-position: center;
+    
+    /* This keeps your gradient overlay effect */
+    background-blend-mode: overlay;
+    background-color: rgba(255,255,255,.06); 
+    
+    /* Change opacity to 1 if you want it visible by default */
+    opacity: 1; 
+    transition: opacity 0.6s ease;
+    z-index: -1;
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-card:hover {
+    transform: translateY(-12px) scale(1.02);
+    /* Animated Shadow */
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 20px rgba(255,255,255,0.05);
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-card:hover:before{
+opacity:1;
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-sub{
+font-size:11px;
+font-weight:700;
+letter-spacing:3px;
+text-transform:uppercase;
+color:rgba(255,255,255,.6);
+margin-bottom:14px
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-title{
+font-size:48px;
+font-weight:800;
+line-height:1;
+letter-spacing:-2px;
+margin:0;
+/* Gradient Change */
+background: linear-gradient(135deg, #050100ff 25%, #ff2b2b 75%) !important;
+-webkit-background-clip: text !important;
+-webkit-text-fill-color: transparent !important;
+background-clip: text !important;
+color: transparent !important;
+display: inline-block;
+text-shadow:0 10px 30px rgba(0,0,0,.45)
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-text{
+margin-top:18px;
+max-width:560px;
+font-size:15px;
+line-height:1.8;
+color:rgba(255,255,255,.72)
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-cta {
+    position: absolute;
+    z-index: 9999;
+    right: 30px;
+    bottom: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    border-radius: 20px !important;
+    
+    /* Starting Colors */
+    background: #D10000!important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(251, 3, 3, 1) !important;
+    color: #fff !important;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    opacity: 1;
+    
+    /* --- THE FIX: ANIMATION DELEGATION --- */
+    /* We explicitly define the starting transform and shadow so the browser can calculate the "move" */
+    transform: translateY(0) scale(1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    
+    /* This makes the return-to-normal just as smooth as the hover */
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), 
+                box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1), 
+                background 0.5s ease !important;
+    will-change: transform; /* Optimizes browser performance for the lift */
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-cta:hover {
+    /* Lifting and slight growth */
+    transform: translateY(-8px) scale(1.03) !important;
+    
+    /* Ending Colors */
+    background: #D10000 !important;
+    border-color: #f7aeaeff !important;
+    
+    /* Glowing Shadow */
+    box-shadow: 0 15px 30px rgba(255, 43, 43, 0.5) !important;
+    color: #fff !important;
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-controls{
+display:flex;
+align-items:center;
+gap:14px;
+margin-top:24px
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-controls .spf-btn {
+    width: 60px !important;
+    height: 60px !important;
+    /* Updated Radius */
+    border-radius: 20px !important; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #D10000 !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 1) !important;
+    color: #fff;
+    
+    /* Animation Timing */
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-controls .spf-btn:hover {
+    background: #d10000 !important;
+    border-color: #f7aeaeff !important;
+    /* Lifting Animation */
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 20px rgba(255, 43, 43, 0.3);
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-dots{
+display:flex;
+align-items:center;
+gap:10px;
+margin-top:20px
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-dot{
+width:8px;
+height:8px;
+border-radius:50%;
+background:rgba(255,255,255,.25);
+transition:.4s
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-dot.is-active{
+width:12px;
+height:12px;
+background:#ff2b2b;
+box-shadow:0 0 20px rgba(251, 0, 0, 1)
+}
+
+/* ===== FIX FOR RIGHT PANEL ONLY (inside .spf-panel) ===== */
+/* Make the right-panel card a positioning context */
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-panel .spf-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* Turn .spf-main-image into a full‑cover background (like :before) */
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-panel .spf-main-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;           /* Below the text/icon */
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-panel .spf-main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;    /* Fills the card, same as background-size: cover */
+  display: block;
+}
+
+/* Ensure icon and text sit above the image – but do NOT alter the global .spf-cta button */
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-panel .spf-icon,
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-panel .spf-text {
+  position: relative;
+  z-index: 2;
+}
+
+/* Hide the original :before on right‑panel cards to avoid overlap */
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-panel .spf-card:before {
+  display: none !important;
+}
+
+@media(max-width:991px){
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-card{
+min-height:380px;
+padding:32px
+}
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-title{
+font-size:38px
+}
+
+}
+
+@media(max-width:767px){
+#section-template--19616879214779__single_product_feature_DmpUf4{
+padding:40px 0
+}
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-card{
+min-height:320px;
+padding:24px;
+border-radius:22px
+}
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-title{
+font-size:30px
+}
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-text{
+font-size:14px;
+line-height:1.7
+}
+#section-template--19616879214779__single_product_feature_DmpUf4 .spf-controls .spf-btn{
+width:48px !important;
+height:48px !important
+}
+}

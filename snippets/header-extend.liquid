@@ -1,0 +1,54 @@
+<div class="mobile-off-canvas-active">
+  <a class="mobile-aside-close"><i class="sli sli-close"></i></a>
+  <div class="header-mobile-aside-wrap">
+    {%- if section.settings.show_search -%}
+    <div class="mobile-search">
+      <form class="search-form" action="/search" method="get" role="search">
+        <input type="search" 
+               name="q" 
+               value="{{ search.terms | escape }}" 
+               placeholder="{{ 'general.search.placeholder' | t }}">
+        <button class="button-search" type="submit"><i class="sli sli-magnifier"></i></button>
+      </form>
+    </div>
+    {%- endif -%}
+    <div class="mobile-menu-wrap">
+      <div class="mobile-navigation">
+        {%- render 'mobile-menu' -%}
+      </div>
+    </div>
+
+    {%- if section.settings.currency_enable or section.settings.show_user_menu -%}
+    <div class="mobile-curr-lang-wrap">
+      {%- if section.settings.currency_enable -%}
+      <div class="single-mobile-curr-lang">
+        {%- render 'mobile-currency-picker' -%}
+      </div>
+      {%- endif -%}
+
+      {%- if section.settings.show_user_menu -%}
+      <div class="single-mobile-curr-lang">
+        {%- if section.settings.account_menu_t != '' -%}      
+        <a class="mobile-account-active remove_href" href="#">{{ section.settings.account_menu_t }} <i class="sli sli-arrow-down"></i></a>
+        {%- endif -%}
+        <div class="lang-curr-dropdown account-dropdown-active">
+          <ul>
+            {%- assign user_menu = section.settings.user_menu_handle -%}
+            {%- if customer and shop.customer_accounts_enabled -%}
+              <li><a href="{{ routes.account_logout_url }}">{{ section.settings.logout_title }}</a></li>
+              {%- else -%}
+              <li><a href="{{ routes.account_login_url }}">{{ section.settings.login_title }}</a></li>
+              <li><a href="{{ routes.account_register_url }}">{{ section.settings.register_title }}</a></li>
+            {%- endif -%}
+
+            {%- for link in linklists[user_menu].links -%}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      </div>
+      {%- endif -%}
+    </div>
+    {%- endif -%}
+  </div>
+</div>

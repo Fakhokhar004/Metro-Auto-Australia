@@ -1,0 +1,424 @@
+/* ==========================================================
+   METRO AUTO PREMIUM HEADER
+   COMPLETE HEADER REDESIGN
+========================================================== */
+
+/* =========================
+   HEADER FOUNDATION
+========================= */
+
+#shopify-section-sections--19616873414843__header{
+    position:relative;
+    z-index:999999 !important;
+}
+
+.header-area{
+    background:#ffffff !important;
+    border-bottom:1px solid #e5e7eb !important;
+    box-shadow:0 4px 20px rgba(0,0,0,.05);
+    position:relative;
+    z-index:999999 !important;
+}
+
+.header-area.sticky-bar.stick{
+    background:#ffffff !important;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+    z-index:999999 !important;
+}
+
+/* =========================
+   HEADER LAYOUT
+========================= */
+
+.main-header-wrap{
+    position:relative;
+    z-index:999999;
+}
+
+.header_custom_row{
+    min-height:90px;
+    align-items:center;
+}
+
+/* =========================
+   LOGO
+========================= */
+
+.theme-logo img{
+    transition:.3s ease;
+}
+
+.theme-logo img:hover{
+    transform:scale(1.03);
+}
+
+/* =========================
+   MAIN MENU
+========================= */
+
+.main-menu > nav > ul{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:22px;
+}
+
+.main-menu > nav > ul > li{
+    position:relative;
+}
+
+.main-menu > nav > ul > li > a{
+    color:#111827 !important;
+    font-size:15px;
+    font-weight:600;
+    letter-spacing:.4px;
+    transition:.3s ease;
+}
+
+.main-menu > nav > ul > li:hover > a{
+    color:#d10000 !important;
+}
+
+/* =========================
+   MEGA MENU
+========================= */
+
+.main-menu > nav > ul > li ul.mega-menu,
+.disturb_menu.mega-menu{
+
+    background:#ffffff !important;
+
+    width:1200px !important;
+    max-width:95vw !important;
+
+    left:50% !important;
+    transform:translateX(-50%) !important;
+
+    border-radius:24px !important;
+
+    border:1px solid #ececec !important;
+
+    padding:35px !important;
+
+    box-shadow:
+    0 30px 60px rgba(0,0,0,.12);
+
+    z-index:999999 !important;
+}
+
+/* =========================
+   MEGA MENU COLUMNS
+========================= */
+
+.mega-menu-li{
+    padding:0 20px !important;
+}
+
+.menu-title{
+    color:#111827 !important;
+
+    font-size:17px !important;
+    font-weight:700 !important;
+
+    padding-bottom:15px;
+
+    margin-bottom:18px;
+
+    border-bottom:1px solid #e5e7eb;
+}
+
+.mega-menu-li a{
+
+    display:block;
+
+    color:#374151 !important;
+
+    font-size:15px !important;
+
+    padding:8px 0 !important;
+
+    transition:.25s ease;
+}
+
+.mega-menu-li a:hover{
+    color:#d10000 !important;
+    padding-left:8px !important;
+}
+
+/* =========================
+   RED DROPDOWN ARROW
+========================= */
+
+.angle-shape:before,
+.drop_arrow:before{
+    border-bottom-color:#d10000 !important;
+}
+
+/* =========================
+   RIGHT SIDE WRAP
+========================= */
+
+.header-right-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:12px;
+}
+
+/* =========================
+   SEARCH BAR
+========================= */
+
+.header-global-search{
+
+    display:flex !important;
+
+    align-items:center;
+
+    width:320px;
+
+    height:52px;
+
+    background:#ffffff;
+
+    border:2px solid #d10000;
+
+    border-radius:60px;
+
+    overflow:hidden;
+
+    box-shadow:
+    0 6px 20px rgba(209,0,0,.08);
+}
+
+#headerSearchInput{
+
+    flex:1;
+
+    border:none !important;
+
+    background:transparent !important;
+
+    outline:none !important;
+
+    color:#111827 !important;
+
+    padding:0 18px;
+
+    font-size:14px;
+}
+
+#headerSearchInput::placeholder{
+    color:#9ca3af;
+}
+
+#headerSearchBtn{
+
+    width:52px;
+
+    height:52px;
+
+    border:none !important;
+
+    background:#d10000 !important;
+
+    color:#ffffff !important;
+
+    cursor:pointer;
+
+    transition:.3s ease;
+}
+
+#headerSearchBtn:hover{
+    background:#b80000 !important;
+}
+
+/* =========================
+   USER ICON
+========================= */
+
+.setting-wrap{
+
+    width:44px;
+    height:44px;
+
+    border-radius:14px;
+
+    background:#f5f5f5;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    transition:.3s ease;
+}
+
+.setting-wrap:hover{
+    background:#d10000;
+}
+
+.setting-wrap:hover svg,
+.setting-wrap:hover i{
+    color:#ffffff !important;
+}
+
+/* =========================
+   CART ICON
+========================= */
+
+.icon-cart-active{
+
+    width:44px;
+    height:44px;
+
+    border-radius:14px;
+
+    background:#f5f5f5;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    transition:.3s ease;
+}
+
+.icon-cart-active:hover{
+    background:#d10000;
+}
+
+.icon-cart-active:hover svg{
+    stroke:#ffffff !important;
+}
+
+/* =========================
+   CART COUNTER
+========================= */
+
+.count-style.bigcounter{
+
+    background:#d10000 !important;
+
+    color:#ffffff !important;
+
+    border-radius:50% !important;
+
+    font-weight:700 !important;
+}
+
+/* =========================
+   CART DRAWER
+========================= */
+
+.shopping-cart-content{
+
+    background:#ffffff !important;
+
+    border-radius:22px !important;
+
+    box-shadow:
+    0 25px 60px rgba(0,0,0,.15);
+
+    z-index:999999 !important;
+}
+
+/* =========================
+   CURRENCY / SETTINGS
+========================= */
+
+.setting-content{
+    border-radius:18px !important;
+    overflow:hidden;
+}
+
+/* =========================
+   MOBILE HEADER
+========================= */
+
+.header-small-mobile{
+    background:#ffffff !important;
+    z-index:999999 !important;
+}
+
+.mobile-logo img{
+    max-height:45px;
+}
+
+.mobile-aside-button,
+.mobile-account-active,
+.mobile-currency-active{
+
+    width:42px;
+    height:42px;
+
+    border-radius:12px;
+
+    background:#f5f5f5;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* =========================
+   MOBILE MENU
+========================= */
+
+.mobile-off-canvas-active{
+
+    background:#ffffff !important;
+
+    z-index:999999 !important;
+}
+
+.mobile-menu li a{
+    color:#111827 !important;
+}
+
+.mobile-menu li a:hover{
+    color:#d10000 !important;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1199px){
+
+    .header-global-search{
+        width:260px;
+    }
+
+    .main-menu > nav > ul{
+        gap:15px;
+    }
+}
+
+@media(max-width:991px){
+
+    .main-menu{
+        display:none;
+    }
+
+    .header-global-search{
+        display:none !important;
+    }
+
+    .header_custom_row{
+        min-height:75px;
+    }
+}
+
+/* =========================
+   ABSOLUTE TOP PRIORITY
+========================= */
+
+.header-area,
+.main-header-wrap,
+.main-menu,
+.mega-menu,
+.shopping-cart-content,
+.mobile-off-canvas-active{
+
+    position:relative;
+    z-index:999999 !important;
+}

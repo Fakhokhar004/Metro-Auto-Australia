@@ -1,0 +1,24 @@
+{%- comment -%}
+  Not for the theme editor. Brand numbers for the Brands page and brand banner, fetched as
+  /collections/vendors?q=<Brand>&sort_by=price-ascending&section_id=ma-brand-meta
+{%- endcomment -%}
+{%- liquid
+  assign in_stock = ''
+  assign types = ''
+  for f in collection.filters
+    if f.param_name == 'filter.v.availability'
+      for v in f.values
+        if v.value == '1'
+          assign in_stock = v.count
+        endif
+      endfor
+    elsif f.param_name == 'filter.p.product_type'
+      assign types = f.values.size
+    endif
+  endfor
+  assign first = collection.products | first
+-%}
+<script type="application/json" data-ma-brand-meta>
+  {"count": {{ collection.products_count | default: 0 }}, "inStock": {{ in_stock | json }}, "types": {{ types | json }}, "from": {% if first %}{{ first.price_min | money | json }}{% else %}null{% endif %}}
+</script>
+{% schema %}{ "name": "Metro brand meta", "settings": [] }{% endschema %}

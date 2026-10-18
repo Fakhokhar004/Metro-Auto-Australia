@@ -1,0 +1,674 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "52bfce27-7038-491f-a4e7-31e9f696eda6": {
+      "type": "banner",
+      "blocks": {
+        "template--15513976864813__52bfce27-7038-491f-a4e7-31e9f696eda6-168559681963f73a23-0": {
+          "type": "banner",
+          "settings": {
+            "product_column_handle": "12",
+            "product_column_handle_md": "12",
+            "product_column_handle_sm": "12",
+            "img1": "shopify://shop_images/simple__banner.png",
+            "t1": "Awesome Collections",
+            "t2": "BEST <span>DEAL</span>",
+            "btn1": "SHOP NOW",
+            "btn1_url": "shopify://collections/all",
+            "text1_p": "style_spb",
+            "banner__img__left": false,
+            "banner_custom_enable": true,
+            "t1_color": "#ffffff",
+            "t2_color": "#ffffff",
+            "btn1_color": "#ffffff",
+            "btn1_border_color": "#ff6162",
+            "banner__bg__color": "#3a3352"
+          }
+        },
+        "6b7a394e-d3b3-4fba-9ee7-1471d00211e4": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 50,
+            "section_padding_bottom": 0,
+            "section_padding_top_md": 50,
+            "section_padding_bottom_md": 0,
+            "section_padding_top_xs": 30,
+            "section_padding_bottom_xs": 0
+          }
+        }
+      },
+      "block_order": [
+        "template--15513976864813__52bfce27-7038-491f-a4e7-31e9f696eda6-168559681963f73a23-0",
+        "6b7a394e-d3b3-4fba-9ee7-1471d00211e4"
+      ],
+      "settings": {
+        "section_width": "default",
+        "no_gutter_enable": false,
+        "tab_arsoule_active": false,
+        "carsoule_banner_col": 4,
+        "carsoule_banner_col_lg": 3,
+        "carsoule_banner_col_md": 2,
+        "carsoule_banner_col_sm": 1,
+        "tab_arsoule_arrow_enable": true,
+        "product_casoule_row": 2
+      }
+    },
+    "main": {
+      "type": "product-template",
+      "blocks": {
+        "732cec85-5dc6-4f5f-a5be-781c4425af08": {
+          "type": "title",
+          "settings": {}
+        },
+        "04cfe80d-3074-44be-a2bc-4577c39482e4": {
+          "type": "price",
+          "settings": {}
+        },
+        "2fe6b280-c78c-4876-b232-61028ff60d77": {
+          "type": "sku_vendor_type",
+          "settings": {
+            "product_sku_enable": true,
+            "product_sku_title": "SKU:",
+            "product_vendor_enable": false,
+            "vendor_title": "Vendor:",
+            "vendors_list_limit_hanlde": 5,
+            "product_type_enable": false,
+            "type_title": "Type:",
+            "types_list_limit_hanlde": 5
+          }
+        },
+        "abd50e23-9b81-4e47-acf6-c2a3c2f6ac6b": {
+          "type": "inventory",
+          "settings": {
+            "inventory__features": "feature_1",
+            "availability_title": "Availability:",
+            "in_stock_title": "In stock",
+            "left_in_stock_title": "left in stock",
+            "out_of_stock_title": "Out of stock",
+            "inventory_threshold": 10,
+            "show_inventory_quantity": true
+          }
+        },
+        "f5343b5c-2076-4a2a-bb27-14e4378788c7": {
+          "type": "countdown",
+          "settings": {}
+        },
+        "visitor_counter_mnF3iY": {
+          "type": "visitor_counter",
+          "settings": {
+            "visitor_counter_content": "people are viewing this right now."
+          }
+        },
+        "f17449df-7247-426c-a789-7feed6ff6239": {
+          "type": "description",
+          "settings": {
+            "product_description_handle": "short_description",
+            "truncatewords_count_handle": 40,
+            "product_meta_enable": true,
+            "product_meta_title": "Name :",
+            "product_meta_author": "Vendor :",
+            "product_meta_type": "Type :",
+            "product_meta_date": "Manufacturing :",
+            "product_meta_barcode": "Barcode :"
+          }
+        },
+        "b95cda5d-9009-46dd-b274-7bb8c881248f": {
+          "type": "variants",
+          "settings": {
+            "product_variant_handle": "product_variant_swatch_option",
+            "show_variant_image": true
+          }
+        },
+        "2e08b0ef-27b3-46f2-b362-1d77cecfd999": {
+          "type": "product_actions",
+          "settings": {
+            "soldout_product_notification_enable": true,
+            "notification_text": "Click <a id=\"notify-me\" href=\"#\"><strong>here</strong></a> to be notified by email when this product becomes available.",
+            "notification_success_message": "Thanks! We will notify you when this product becomes available!",
+            "error_text": "Please provide a valid email address.",
+            "send_button_title": "Send",
+            "sticky_product_enable": true,
+            "dynamic_checkout_button_enable": true,
+            "dynamic_btn_bg": "#1f2226",
+            "dynamic_btn_size": 16
+          }
+        },
+        "2d7b4382-1f84-45d2-9d81-2c9d7a440739": {
+          "type": "additional_info",
+          "settings": {
+            "size_guide_enable": true,
+            "size_guide": "Size Guide",
+            "sizeguidhandle": "size-cart",
+            "shipping_guide_enable": true,
+            "shipping_guide": "Shipping",
+            "shipping_page_handle": "shipping-policy",
+            "ask_product_enable": true,
+            "ask_about_product": "Ask About This product",
+            "ask_about_prod_title": "Have a question?",
+            "send_btn_text": "Send",
+            "name_placeholder": "Name *",
+            "email_placeholder": "Email *",
+            "phone_placeholder": "Phone *",
+            "prod_url_placeholder": "Reference URL *",
+            "body_placholder": "Write Message *"
+          }
+        },
+        "estimated_delivery_MgpgJJ": {
+          "type": "estimated-delivery",
+          "settings": {
+            "delivery_date_label": "Estimated Delivery Date",
+            "minimum_day": 2,
+            "maximum_day": 5
+          }
+        },
+        "text_FzyNee": {
+          "type": "text",
+          "settings": {
+            "text": "<h5><strong>Return rules summary</strong></h5><ul><li>30 days return guarantee</li><li>Free return shipping</li><li>No restocking fee</li><li>Easy refund policy</li></ul>"
+          }
+        },
+        "59150ca1-63c8-40f0-8438-a4e739a6ee32": {
+          "type": "category_tags",
+          "settings": {
+            "show_cat": false,
+            "cat_title": "Categories:",
+            "show_tag": true,
+            "tag_title": "Tag:"
+          }
+        },
+        "60c7a141-2d9d-4857-ad98-a96edfc18843": {
+          "type": "payment_social_share",
+          "settings": {
+            "social_share_enable": true,
+            "social_share_title": "Share:",
+            "payment_option_enable": true,
+            "payment_information": "<p>Guaranteed safe checkout</p>",
+            "payment_icon": "custom_icon",
+            "amazon_payments": true,
+            "american_express": false,
+            "apple_pay": true,
+            "bitcoin": true,
+            "dankort": false,
+            "diners_club": false,
+            "discover": false,
+            "dogecoin": false,
+            "dwolla": false,
+            "Forbrugsforeningen": false,
+            "google_pay": true,
+            "jcb": false,
+            "klarna": false,
+            "litecoin": false,
+            "maestro": false,
+            "master": false,
+            "paypal": true,
+            "shopify_pay": false,
+            "sofort": false,
+            "visa": true
+          }
+        },
+        "982f3b42-23a1-421d-b8c3-e48e3ea2ef8e": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 50,
+            "section_padding_bottom": 0,
+            "section_padding_top_md": 50,
+            "section_padding_bottom_md": 0,
+            "section_padding_top_xs": 30,
+            "section_padding_bottom_xs": 0
+          }
+        },
+        "89797a2a-e313-477a-b999-da793c32b2b6": {
+          "type": "complementary",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "732cec85-5dc6-4f5f-a5be-781c4425af08",
+        "04cfe80d-3074-44be-a2bc-4577c39482e4",
+        "2fe6b280-c78c-4876-b232-61028ff60d77",
+        "abd50e23-9b81-4e47-acf6-c2a3c2f6ac6b",
+        "f5343b5c-2076-4a2a-bb27-14e4378788c7",
+        "visitor_counter_mnF3iY",
+        "f17449df-7247-426c-a789-7feed6ff6239",
+        "b95cda5d-9009-46dd-b274-7bb8c881248f",
+        "2e08b0ef-27b3-46f2-b362-1d77cecfd999",
+        "2d7b4382-1f84-45d2-9d81-2c9d7a440739",
+        "estimated_delivery_MgpgJJ",
+        "text_FzyNee",
+        "59150ca1-63c8-40f0-8438-a4e739a6ee32",
+        "60c7a141-2d9d-4857-ad98-a96edfc18843",
+        "982f3b42-23a1-421d-b8c3-e48e3ea2ef8e",
+        "89797a2a-e313-477a-b999-da793c32b2b6"
+      ],
+      "settings": {
+        "product_media_enable": false,
+        "content_handle": "content_in_right",
+        "product_style": "sticky",
+        "slider_arrow_enable": true,
+        "slider_dots_enable": true,
+        "product_zoom_enable": true,
+        "zoom_type": "inner",
+        "show_video": true,
+        "show_video_icon": true,
+        "video_btn": "View Video",
+        "product_popup_enable": true
+      }
+    },
+    "e593e919-cf24-46dd-8fad-e3100cbdfcec": {
+      "type": "promotion-banner",
+      "blocks": {
+        "template--14816928006210__e593e919-cf24-46dd-8fad-e3100cbdfcec-section_padding-1": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 50,
+            "section_padding_bottom": 50,
+            "section_padding_top_md": 50,
+            "section_padding_bottom_md": 50,
+            "section_padding_top_xs": 10,
+            "section_padding_bottom_xs": 40
+          }
+        },
+        "979dd072-9327-4a9c-91df-eb045a5de903": {
+          "type": "promoton-code",
+          "settings": {
+            "pc__sub__title": "Use discount code in checkout!",
+            "pc__main__title": "Discount 50% for first purchase.",
+            "pc__promo__code": "WELCO50%"
+          }
+        }
+      },
+      "block_order": [
+        "template--14816928006210__e593e919-cf24-46dd-8fad-e3100cbdfcec-section_padding-1",
+        "979dd072-9327-4a9c-91df-eb045a5de903"
+      ],
+      "settings": {
+        "section_width": "default",
+        "section_title_custom_color": false,
+        "section_title": "",
+        "section_title_color": "#1f2226",
+        "section_title_font": "poppins_n6",
+        "section_title_font_size": "30",
+        "section_title_line_height": 40,
+        "section_title_font_size_md": "24",
+        "section_title_line_height_md": 35,
+        "section_title_font_size_sm": "20",
+        "section_title_line_height_sm": 30,
+        "section_title_margin_bottom": 10,
+        "section_sub_title": "",
+        "section_subtitle_color": "#5a5a5a",
+        "section_sub_title_font": "poppins_n6",
+        "section_des_font_size": "14",
+        "section_sub_title_line_height": 24,
+        "section_des_font_size_md": "14",
+        "section_sub_title_line_height_md": 24,
+        "section_des_font_size_sm": "14",
+        "section_sub_title_line_height_sm": 24,
+        "section_sub_title_margin_bottom": 10,
+        "title_align": "text-center",
+        "content_position": "left-def",
+        "content_align": "text-left",
+        "section__inner__bg__enable": false,
+        "section__inner__bg__color": "#eeeeee"
+      }
+    },
+    "163402016127eea476": {
+      "type": "single-product-tab",
+      "blocks": {
+        "163402016127eea476-0": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 0,
+            "section_padding_bottom": 80,
+            "section_padding_top_md": 0,
+            "section_padding_bottom_md": 60,
+            "section_padding_top_xs": 0,
+            "section_padding_bottom_xs": 50
+          }
+        },
+        "932d760c-8755-474c-9e00-c53eb7f76a04": {
+          "type": "custom_tab",
+          "disabled": true,
+          "settings": {
+            "custom_tab_title": "Size Chart",
+            "custom_page_handle": "size-cart"
+          }
+        },
+        "2c4a6bd0-ccbf-4654-8e15-61f76199ccfc": {
+          "type": "custom_tab",
+          "settings": {
+            "custom_tab_title": "Shipping Policy",
+            "custom_page_handle": "shipping-policy"
+          }
+        },
+        "f45e2087-8afb-4d28-8bea-910b7c96be04": {
+          "type": "custom_tab",
+          "disabled": true,
+          "settings": {
+            "custom_tab_title": "Custom Tab",
+            "custom_page_handle": ""
+          }
+        },
+        "e6057564-fec0-421a-a4d3-ba2460c4fdd0": {
+          "type": "unique_tab_1",
+          "disabled": true,
+          "settings": {
+            "info_tab_title": "Info 1"
+          }
+        }
+      },
+      "block_order": [
+        "163402016127eea476-0",
+        "932d760c-8755-474c-9e00-c53eb7f76a04",
+        "2c4a6bd0-ccbf-4654-8e15-61f76199ccfc",
+        "f45e2087-8afb-4d28-8bea-910b7c96be04",
+        "e6057564-fec0-421a-a4d3-ba2460c4fdd0"
+      ],
+      "settings": {
+        "tab_active_handle": "info_tab",
+        "des_tab_enable": true,
+        "des_tab_title": "Description",
+        "comment_tab_enable": false,
+        "comment_tab_title": "Comments",
+        "product_page_comments_box": "disqus_comment",
+        "facebook_comments_post_limit": "10",
+        "disqus_shortname": "demo-store",
+        "review_tab_enable": true,
+        "review_tab_title": "Reviews",
+        "video_tab_enable": true,
+        "video_tab_title": "Video",
+        "show_banner": false,
+        "banner_img_url": "shopify://collections/all"
+      }
+    },
+    "62e42198-59d5-48b6-a5f9-1fa5117d6138": {
+      "type": "promotion-banner",
+      "blocks": {
+        "d9f36001-34a1-4875-b225-3b194ace5ba5": {
+          "type": "promoton-img",
+          "disabled": true,
+          "settings": {
+            "promotion_img_enable": true,
+            "img_product_column_handle": "6",
+            "img_product_column_handle_md": "6",
+            "video_btn_enable": true,
+            "video_btn_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc"
+          }
+        },
+        "3c26ff80-4e4e-4264-8001-d79a4ab091a0": {
+          "type": "promoton-content",
+          "settings": {
+            "content_product_column_handle": "6",
+            "content_product_column_handle_md": "6",
+            "content_custom_color": true,
+            "t1": "#FAQ",
+            "title_1_gradient_style": false,
+            "bottom_title": "work_sans_n4",
+            "bottom_title_font_size": "24",
+            "bottom_title_font_line_height": "30",
+            "bottom_title_font_size_md": "24",
+            "bottom_title_font_line_height_md": "28",
+            "bottom_title_font_size_sm": "24",
+            "bottom_title_font_line_height_sm": "28",
+            "t1_color": "#fdb819",
+            "bottom_title_margin": 15,
+            "t2": "Have question ? We are here to help.",
+            "top_title": "playfair_display_n4",
+            "top_title_font_size": "55",
+            "top_title_font_line_height": "60",
+            "top_title_font_size_md": "40",
+            "top_title_font_line_height_md": "50",
+            "top_title_font_size_sm": "30",
+            "top_title_font_line_height_sm": "40",
+            "t2_color": "#1f2226",
+            "top_title_margin": 20,
+            "heading_bottom_border_line": false,
+            "heading_border_bottom_color": "#333333",
+            "border_top_spacing": 10,
+            "des_text": "Check out the most common questions our customers asked. Still have questions ? Contact our customer support.",
+            "des_text_font": "work_sans_n4",
+            "des_text_color": "#1f2226",
+            "des_text_font_size": "18",
+            "des_text_font_line_height": "28",
+            "des_text_font_size_md": "16",
+            "des_text_font_line_height_md": "26",
+            "des_text_font_size_sm": "14",
+            "des_text_font_line_height_sm": "24",
+            "des_text_font_margin": 15,
+            "countdown_date": "",
+            "count_border_disable": false,
+            "border_radius_count": 10,
+            "btn1": "",
+            "btn1_url": "shopify://collections/all",
+            "button_title": "jost_n4",
+            "button_title_font_size": "14",
+            "button_title_margin": 10,
+            "button_style": "default",
+            "button_border_radius": 0,
+            "button_padding_tb": 15,
+            "button_padding_lr": 30,
+            "btn1_color": "#1f2226",
+            "btn1_hover_color": "#1f2226",
+            "btn1_bg_color": "#ffffff",
+            "btn1_bg_hover_color": "#000000",
+            "btn1_border_color": "#ffffff",
+            "btn1_border_hover_color": "#000000"
+          }
+        },
+        "b22796e6-33c5-4b4a-be9d-5a28f1fc31bb": {
+          "type": "promotion-faq",
+          "settings": {
+            "faq_column_handle": "6",
+            "faq_column_handle_md": "6",
+            "accordion_title_1": "1. What is the use of Lorem?",
+            "accordion_content_1": "<p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book</p>",
+            "accordion_title_2": "2. What is the use of Lorem?",
+            "accordion_content_2": "<p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book</p>",
+            "accordion_title_3": "3. What is the use of Lorem?",
+            "accordion_content_3": "<p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book</p>",
+            "accordion_title_4": "4. What is the use of Lorem?",
+            "accordion_content_4": "<p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book</p>",
+            "accordion_title_5": "5. What is the use of Lorem?",
+            "accordion_content_5": "<p>Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book</p>"
+          }
+        },
+        "template--15513976864813__62e42198-59d5-48b6-a5f9-1fa5117d6138-1685595343640e1078-0": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 0,
+            "section_padding_bottom": 80,
+            "section_padding_top_md": 0,
+            "section_padding_bottom_md": 80,
+            "section_padding_top_xs": 0,
+            "section_padding_bottom_xs": 80
+          }
+        }
+      },
+      "block_order": [
+        "d9f36001-34a1-4875-b225-3b194ace5ba5",
+        "3c26ff80-4e4e-4264-8001-d79a4ab091a0",
+        "b22796e6-33c5-4b4a-be9d-5a28f1fc31bb",
+        "template--15513976864813__62e42198-59d5-48b6-a5f9-1fa5117d6138-1685595343640e1078-0"
+      ],
+      "settings": {
+        "section_width": "default",
+        "section_title_custom_color": true,
+        "section_title": "",
+        "section_title_color": "#333333",
+        "section_title_font": "jost_n5",
+        "section_title_font_size": "46",
+        "section_title_line_height": 60,
+        "section_title_font_size_md": "30",
+        "section_title_line_height_md": 40,
+        "section_title_font_size_sm": "24",
+        "section_title_line_height_sm": 35,
+        "section_title_margin_bottom": 10,
+        "section_sub_title": "",
+        "section_subtitle_color": "#5a5a5a",
+        "section_sub_title_font": "work_sans_n4",
+        "section_des_font_size": "18",
+        "section_sub_title_line_height": 30,
+        "section_des_font_size_md": "16",
+        "section_sub_title_line_height_md": 28,
+        "section_des_font_size_sm": "16",
+        "section_sub_title_line_height_sm": 24,
+        "section_sub_title_margin_bottom": 10,
+        "title_align": "text-center",
+        "content_position": "left-def",
+        "content_align": "text-left",
+        "section__inner__bg__enable": true,
+        "section__inner__bg__color": "#fffafa"
+      }
+    },
+    "163402135034dd52ff": {
+      "type": "related-product",
+      "blocks": {
+        "163402135034dd52ff-0": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 0,
+            "section_padding_bottom": 50,
+            "section_padding_top_md": 0,
+            "section_padding_bottom_md": 40,
+            "section_padding_top_xs": 0,
+            "section_padding_bottom_xs": 30
+          }
+        }
+      },
+      "block_order": [
+        "163402135034dd52ff-0"
+      ],
+      "settings": {
+        "section_title_custom_color": true,
+        "section_title": "<strong><span>Related</span></strong> Products",
+        "section_title_color": "#333333",
+        "section_title_font": "playfair_display_n4",
+        "section_title_font_size": "46",
+        "section_title_line_height": 60,
+        "section_title_font_size_md": "30",
+        "section_title_line_height_md": 40,
+        "section_title_font_size_sm": "24",
+        "section_title_line_height_sm": 35,
+        "section_title_margin_bottom": 10,
+        "section_sub_title": "Contrary to popular belief, Lorem Ipsum is not simply random.",
+        "section_subtitle_color": "#5a5a5a",
+        "section_sub_title_font": "work_sans_n4",
+        "section_des_font_size": "18",
+        "section_sub_title_line_height": 30,
+        "section_des_font_size_md": "16",
+        "section_sub_title_line_height_md": 28,
+        "section_des_font_size_sm": "16",
+        "section_sub_title_line_height_sm": 24,
+        "section_sub_title_margin_bottom": 10,
+        "title_align": "text-center",
+        "tab_arsoule_active": true,
+        "tab_arsoule_arrow_enable": true,
+        "related_product_limit_handle": 10,
+        "product_casoule_row": 1,
+        "product_column_handle": "4",
+        "product_column_handle_md": "4",
+        "product_column_handle_sm": "3",
+        "product_column_handle_sm_2": "2",
+        "product_column_handle_xs": "2"
+      }
+    },
+    "1634021688ce132552": {
+      "type": "custom-collection",
+      "blocks": {
+        "1634021688ce132552-0": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 0,
+            "section_padding_bottom": 80,
+            "section_padding_top_md": 0,
+            "section_padding_bottom_md": 60,
+            "section_padding_top_xs": 0,
+            "section_padding_bottom_xs": 50
+          }
+        }
+      },
+      "block_order": [
+        "1634021688ce132552-0"
+      ],
+      "settings": {
+        "section_title_custom_color": true,
+        "section_title": "<strong><span>Custom</span></strong> Collection",
+        "section_title_color": "#333333",
+        "section_title_font": "playfair_display_n4",
+        "section_title_font_size": "46",
+        "section_title_line_height": 60,
+        "section_title_font_size_md": "30",
+        "section_title_line_height_md": 40,
+        "section_title_font_size_sm": "24",
+        "section_title_line_height_sm": 35,
+        "section_title_margin_bottom": 10,
+        "section_sub_title": "Contrary to popular belief, Lorem Ipsum is not simply random.",
+        "section_subtitle_color": "#5a5a5a",
+        "section_sub_title_font": "work_sans_n4",
+        "section_des_font_size": "18",
+        "section_sub_title_line_height": 30,
+        "section_des_font_size_md": "16",
+        "section_sub_title_line_height_md": 28,
+        "section_des_font_size_sm": "16",
+        "section_sub_title_line_height_sm": 24,
+        "section_sub_title_margin_bottom": 10,
+        "title_align": "text-center",
+        "tab_arsoule_active": true,
+        "tab_arsoule_arrow_enable": true,
+        "featured_product_handle": "top-ratted",
+        "featured_product_limit_handle": 10,
+        "product_casoule_row": 1,
+        "product_column_handle": "4",
+        "product_column_handle_md": "4",
+        "product_column_handle_sm": "3",
+        "product_column_handle_sm_2": "2",
+        "product_column_handle_xs": "2"
+      }
+    },
+    "9b36bccf-838f-4939-86e3-7da2568527f4": {
+      "type": "recently-viewed-product",
+      "settings": {
+        "section_width": "default",
+        "section_title_custom_color": true,
+        "section_title": "<strong><span>Recently</span></strong> Views",
+        "section_title_color": "#333333",
+        "section_title_font": "playfair_display_n4",
+        "section_title_font_size": "46",
+        "section_title_line_height": 60,
+        "section_title_font_size_md": "30",
+        "section_title_line_height_md": 40,
+        "section_title_font_size_sm": "24",
+        "section_title_line_height_sm": 35,
+        "section_title_margin_bottom": 10,
+        "section_sub_title": "Contrary to popular belief, Lorem Ipsum is not simply random.",
+        "section_subtitle_color": "#5a5a5a",
+        "section_sub_title_font": "work_sans_n4",
+        "section_des_font_size": "18",
+        "section_sub_title_line_height": 30,
+        "section_des_font_size_md": "16",
+        "section_sub_title_line_height_md": 28,
+        "section_des_font_size_sm": "16",
+        "section_sub_title_line_height_sm": 24,
+        "section_sub_title_margin_bottom": 10,
+        "title_align": "text-center"
+      }
+    }
+  },
+  "order": [
+    "52bfce27-7038-491f-a4e7-31e9f696eda6",
+    "main",
+    "e593e919-cf24-46dd-8fad-e3100cbdfcec",
+    "163402016127eea476",
+    "62e42198-59d5-48b6-a5f9-1fa5117d6138",
+    "163402135034dd52ff",
+    "1634021688ce132552",
+    "9b36bccf-838f-4939-86e3-7da2568527f4"
+  ]
+}

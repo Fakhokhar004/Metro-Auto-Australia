@@ -1,0 +1,178 @@
+{% if section.settings.google_map_enable %}
+<div class="contact-area pb-100 {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+  <div class="container">
+    <div class="contact-map">
+      <div id="map"></div>
+    </div>
+  </div>
+</div>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ section.settings.google_map_api_key }}"></script>
+<script>
+    function init() {
+        var mapOptions = {
+            zoom: 11,
+            scrollwheel: false,
+            center: new google.maps.LatLng({{ section.settings.latitude }}, {{ section.settings.languid }}),
+            styles: 
+            [
+                {
+                    "featureType": "landscape",
+                    "stylers": [
+                        {
+                            "hue": "#FFBB00"
+                        },
+                        {
+                            "saturation": 43.400000000000006
+                        },
+                        {
+                            "lightness": 37.599999999999994
+                        },
+                        {
+                            "gamma": 1
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.highway",
+                    "stylers": [
+                        {
+                            "hue": "#FFC200"
+                        },
+                        {
+                            "saturation": -61.8
+                        },
+                        {
+                            "lightness": 45.599999999999994
+                        },
+                        {
+                            "gamma": 1
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.arterial",
+                    "stylers": [
+                        {
+                            "hue": "#FF0300"
+                        },
+                        {
+                            "saturation": -100
+                        },
+                        {
+                            "lightness": 51.19999999999999
+                        },
+                        {
+                            "gamma": 1
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.local",
+                    "stylers": [
+                        {
+                            "hue": "#FF0300"
+                        },
+                        {
+                            "saturation": -100
+                        },
+                        {
+                            "lightness": 52
+                        },
+                        {
+                            "gamma": 1
+                        }
+                    ]
+                },
+                {
+                    "featureType": "water",
+                    "stylers": [
+                        {
+                            "hue": "#0078FF"
+                        },
+                        {
+                            "saturation": -13.200000000000003
+                        },
+                        {
+                            "lightness": 2.4000000000000057
+                        },
+                        {
+                            "gamma": 1
+                        }
+                    ]
+                },
+                {
+                    "featureType": "poi",
+                    "stylers": [
+                        {
+                            "hue": "#00FF6A"
+                        },
+                        {
+                            "saturation": -1.0989010989011234
+                        },
+                        {
+                            "lightness": 11.200000000000017
+                        },
+                        {
+                            "gamma": 1
+                        }
+                    ]
+                }
+            ]
+        };
+        var mapElement = document.getElementById('map');
+        var map = new google.maps.Map(mapElement, mapOptions);
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng({{ section.settings.latitude }}, {{ section.settings.languid }}),
+            map: map,
+            icon: '{% if section.settings.map_icon_image %}{{ section.settings.map_icon_image | img_url: 'small' }}{% else %}https://via.placeholder.com/100x150{% endif %}',
+            animation:google.maps.Animation.BOUNCE,
+            title: 'Snazzy!'
+        });
+    }
+    google.maps.event.addDomListener(window, 'load', init);
+</script>
+{% endif %}
+
+
+
+{% schema %}
+  {
+    "name": "Google Map",
+    "settings": [
+        {
+          "type": "checkbox",
+          "id": "google_map_enable",
+          "label": "Google Map Enable",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "google_map_api_key",
+          "label": "Google Map API Key",
+          "default": "AIzaSyCBEypW1XtGLWpikFPcityAok8rhJzzWRw"
+        },
+        {
+          "type": "text",
+          "id": "latitude",
+          "label": "Your Adderss Latititude",
+          "default": "47.606205"
+        },
+        {
+          "type": "text",
+          "id": "languid",
+          "label": "Your Adderss Languid",
+          "default": "-122.332046"
+        },
+        {
+          "type": "image_picker",
+          "id": "map_icon_image",
+          "label": "Map Marker Image"
+        }
+	],
+	"presets": [
+		{
+		  "name": "Google Map"
+		}
+	]
+  }
+{% endschema %}

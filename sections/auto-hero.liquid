@@ -1,0 +1,111 @@
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--orange:#d10000;--orange2:#e86d00;--navy:#ffffff;--dark:#1a1a2e;--darker:#111}
+body{font-family:'Barlow',sans-serif;background:#111}
+
+/* TOP BAR */
+.topbar{background:#fff;font-size:13px;padding:7px 24px;display:flex;justify-content:flex-end;align-items:center;gap:20px;flex-wrap:wrap}
+.topbar a{color:#000;text-decoration:none;display:flex;align-items:center;gap:5px;font-size:12px}
+
+/* NAV */
+nav{background:#fff;border-top:1px solid rgba(0,0,0,.08);display:flex;align-items:center;padding:0 24px;height:60px}
+.logo img{height:44px}
+
+.nav-links{display:flex;gap:2px;margin-left:auto}
+.nav-links a{color:#222;text-decoration:none;font-size:13px;font-weight:600;padding:7px 11px;border-radius:4px}
+.nav-links a:hover{background:rgba(0,0,0,.07)}
+
+/* HERO */
+.hero{position:relative;min-height:400px;background:linear-gradient(120deg,#0a1a34 0%,#1e2e50 100%);display:flex;align-items:stretch;overflow:hidden}
+.hero-photo{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;opacity:.22}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,26,52,.93) 0%,rgba(10,26,52,.7) 55%,transparent 100%)}
+
+.hero-inner{position:relative;z-index:2;width:100%;max-width:1200px;margin:auto;padding:48px 24px;display:flex;gap:36px}
+.hero-content{flex:1}
+.hero-content h1{font-size:clamp(28px,4.5vw,50px);color:#fff;margin-bottom:10px}
+.hero-content .sub{font-size:13px;color:rgba(255,255,255,.75);margin-bottom:20px}
+.hero-content .sub span{color:var(--orange)}
+
+.selector-form{background:rgba(255,255,255,.08);border-radius:10px;padding:18px;max-width:680px}
+.selects-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.selects-row select{padding:10px;border-radius:6px;font-size:13px}
+
+.btn-search{width:100%;background:var(--orange);color:#fff;border:none;border-radius:6px;font-size:16px;font-weight:700;padding:12px}
+
+/* BADGES */
+.hero-badges{display:flex;flex-direction:column;gap:10px;min-width:180px}
+.badge{background:rgba(10,26,52,.85);border-radius:8px;padding:12px;display:flex;gap:10px}
+.badge p{color:#fff;font-size:12px}
+
+/* TRUST BAR */
+.trust-bar{background:#000;border-top:3px solid var(--orange);display:flex;flex-wrap:wrap}
+.trust-item{flex:1;display:flex;gap:12px;padding:14px;color:#fff}
+
+/* MOBILE */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hero-inner{flex-direction:column}
+  .selects-row{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+  .selects-row{grid-template-columns:1fr}
+  .trust-bar{flex-direction:column}
+}
+</style>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a href="#">1300 123 456</a>
+  <a href="#">My Account</a>
+  <a href="#">Cart (2)</a>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <img src="https://cdn.shopify.com/s/files/1/0711/9814/6747/files/Black_Red_Modern_Automotive_Brand_Logo_4af373e8-fbbf-4536-b99b-c1e60a25bab2.png?v=1775034489">
+  </div>
+  <div class="nav-links">
+    <a href="#">Shop by Vehicle</a>
+    <a href="#">Shop by Category</a>
+    <a href="#">Brands</a>
+    <a href="#">About Us</a>
+    <a href="#">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <img class="hero-photo" src="https://images.unsplash.com/photo-1625047509248-ec889cbff17f?w=1400&q=80">
+  <div class="hero-overlay"></div>
+
+  <div class="hero-inner">
+    <div class="hero-content">
+      <h1>Find the Right Auto Parts for Your Vehicle</h1>
+      <p class="sub">Quality Parts <span>|</span> Fast Shipping Australia Wide</p>
+
+      <div class="selector-form">
+        <div class="selects-row">
+          <select><option>Select Make</option></select>
+          <select><option>Select Model</option></select>
+          <select><option>Select Year</option></select>
+          <select><option>Select Engine</option></select>
+        </div>
+        <button class="btn-search">Search Parts Now</button>
+      </div>
+    </div>
+
+    <div class="hero-badges">
+      <div class="badge"><p>Fast Same Day Dispatch</p></div>
+      <div class="badge"><p>12 Month Warranty</p></div>
+      <div class="badge"><p>Easy Returns</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item">Australian Owned</div>
+  <div class="trust-item">Free Shipping Over $150</div>
+  <div class="trust-item">Melbourne, Sydney &amp; Brisbane</div>
+</div>

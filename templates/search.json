@@ -1,0 +1,10 @@
+{
+  "layout": "metro",
+  "sections": {
+    "main": {
+      "type": "ma-search",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

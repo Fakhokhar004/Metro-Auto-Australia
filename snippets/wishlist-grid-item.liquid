@@ -1,0 +1,27 @@
+<div class="col-lg-3 col-md-4 col-sm-6 col-6 wishlist-product-item product-tile-container wishlist-tile-container test-class" data-product-id="{{ product.id }}" data-product-handle="{{ product.handle }}">
+  <div class="wishlist-item">
+    <div class="product-tile--tile-media">
+      <a class="tile-media--media-link" href="{{ product.url }}">
+        <div class="media-link--image">
+          <img loading="lazy"  class="image--main" src="{{ product.featured_image | product_img_url: 'large' }}" alt="{{ product.title }}">
+        </div>
+      </a>
+    </div>
+    <div class="product-tile--tile-content flex">
+      <div class="tile-content--text">
+        <h4 class="post-title"><a href="{{ product.url }}">{{ product.title }}</a></h4>
+          {%- if product.variants.first.compare_at_price > product.variants.first.price -%}
+        <p class="text--price pro-price">
+          <span class="price--sale">{{ product.variants.first.price | money }}</span>
+          <del><span class="price--compare strike-through">{{ product.variants.first.compare_at_price | money }}</span></del> 
+        </p>
+        {% else %}  
+        <p class="text--price pro-price">{{ product.variants.first.price | money }}</p>
+        {% endif %}
+      </div>
+      <div class="product-tile--tile-actions flex">
+        {% render 'wishlist-button-2' with product as product %}
+      </div>
+    </div>
+  </div>  
+</div>

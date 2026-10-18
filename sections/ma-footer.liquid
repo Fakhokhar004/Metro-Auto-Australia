@@ -1,0 +1,101 @@
+{%- comment -%}
+  Metro Auto footer. Design reference: _design/metro-auto-design/components/Footer.dc.html
+{%- endcomment -%}
+{%- liquid
+  assign shipping_url = shop.shipping_policy.url | default: '/policies/shipping-policy'
+  assign refund_url = shop.refund_policy.url | default: '/policies/refund-policy'
+  assign privacy_url = shop.privacy_policy.url | default: '/policies/privacy-policy'
+  assign terms_url = shop.terms_of_service.url | default: '/policies/terms-of-service'
+  assign quick_fallback = 'About us|/pages/about-us;Contact us|/pages/contact-us;Trade accounts (coming soon)|/pages/about-us;Shipping policy|' | append: shipping_url | append: ';Refund policy|' | append: refund_url | append: ';Privacy policy|' | append: privacy_url | append: ';Terms of service|' | append: terms_url | append: ';FAQs|/pages/faqs' | split: ';'
+  assign shop_fallback = 'All categories|/collections;Shop by vehicle|/pages/shop-by-vehicle;Brakes and suspension|/collections/brakes-suspension;Filters and maintenance|/collections/filters-kits;Kits and service packs|/collections/kits-service-packs;Lubricants and aerosols|/collections/oil-fluids-chemicals;Our trusted brands|/pages/shop-by-brands' | split: ';'
+  assign menu_1 = linklists[section.settings.menu_1]
+  assign menu_2 = linklists[section.settings.menu_2]
+-%}
+
+<footer class="ma-footer">
+  <div class="ma-footer__inner">
+    <div class="ma-footer__cols">
+      <div class="ma-footer__col ma-footer__col--wide">
+        <img class="ma-footer__logo" src="{{ 'ma-logo-dark.png' | asset_url }}" width="960" height="184" alt="{{ shop.name | escape }}" loading="lazy">
+        <div class="ma-footer__text">{{ section.settings.about }}</div>
+      </div>
+
+      <div class="ma-footer__col">
+        <h2 class="ma-footer__title">{{ section.settings.menu_1_title | escape }}</h2>
+        {%- if menu_1.links.size > 0 -%}
+          {%- for link in menu_1.links -%}<a class="ma-footer__link" href="{{ link.url }}">{{ link.title | escape }}</a>{%- endfor -%}
+        {%- else -%}
+          {%- for item in quick_fallback -%}{%- assign parts = item | split: '|' -%}<a class="ma-footer__link" href="{{ parts[1] }}">{{ parts[0] }}</a>{%- endfor -%}
+        {%- endif -%}
+      </div>
+
+      <div class="ma-footer__col">
+        <h2 class="ma-footer__title">{{ section.settings.menu_2_title | escape }}</h2>
+        {%- if menu_2.links.size > 0 -%}
+          {%- for link in menu_2.links -%}<a class="ma-footer__link" href="{{ link.url }}">{{ link.title | escape }}</a>{%- endfor -%}
+        {%- else -%}
+          {%- for item in shop_fallback -%}{%- assign parts = item | split: '|' -%}<a class="ma-footer__link" href="{{ parts[1] }}">{{ parts[0] }}</a>{%- endfor -%}
+        {%- endif -%}
+      </div>
+
+      <div class="ma-footer__col ma-footer__col--wide">
+        <h2 class="ma-footer__title">{{ section.settings.news_title | escape }}</h2>
+        <p class="ma-footer__text">{{ section.settings.news_text | escape }}</p>
+        {%- form 'customer', id: 'ma-footer-newsletter' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          {%- if form.posted_successfully? -%}
+            <p class="ma-footer__msg" role="status">Thanks, you're subscribed.</p>
+          {%- else -%}
+            <div class="ma-footer__news">
+              <label for="ma-news-{{ section.id }}" class="ma-sr">Email address</label>
+              <input id="ma-news-{{ section.id }}" type="email" name="contact[email]" placeholder="email@example.com" autocomplete="email" required>
+              <button type="submit">Subscribe</button>
+            </div>
+            {%- if form.errors -%}
+              <p class="ma-footer__msg" role="alert">{{ form.errors.translated_fields.email | default: 'Email' }} {{ form.errors.messages.email }}</p>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endform -%}
+        <p class="ma-footer__fine">By subscribing you agree to receive marketing emails. Unsubscribe any time.</p>
+        <div class="ma-footer__social">
+          {%- if section.settings.facebook_url != blank -%}
+            <a href="{{ section.settings.facebook_url }}" aria-label="{{ shop.name | escape }} on Facebook" target="_blank" rel="noopener">{%- render 'ma-icon', name: 'facebook', size: 18 -%}</a>
+          {%- endif -%}
+          {%- if section.settings.instagram_url != blank -%}
+            <a href="{{ section.settings.instagram_url }}" aria-label="{{ shop.name | escape }} on Instagram" target="_blank" rel="noopener">{%- render 'ma-icon', name: 'instagram', size: 18 -%}</a>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+
+    <div class="ma-footer__bottom">
+      <span>&copy; {{ 'now' | date: '%Y' }} {{ section.settings.copyright | escape }}</span>
+      {%- if section.settings.payment_badges != blank -%}
+        <div class="ma-footer__pay" aria-label="Payment methods">
+          {%- assign badges = section.settings.payment_badges | split: ',' -%}
+          {%- for b in badges -%}<span>{{ b | strip | escape }}</span>{%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Metro footer",
+  "enabled_on": { "groups": ["footer"] },
+  "settings": [
+    { "type": "richtext", "id": "about", "label": "About text", "default": "<p>Australian-owned. Parts bought direct from manufacturers and sent from our Melbourne warehouse.</p>" },
+    { "type": "text", "id": "menu_1_title", "label": "Column 1 heading", "default": "Quick links" },
+    { "type": "link_list", "id": "menu_1", "label": "Column 1 menu", "info": "Empty uses the design links (About, Contact, policies, FAQs)." },
+    { "type": "text", "id": "menu_2_title", "label": "Column 2 heading", "default": "Shop" },
+    { "type": "link_list", "id": "menu_2", "label": "Column 2 menu", "info": "Empty uses the design links (categories, vehicles, brands)." },
+    { "type": "text", "id": "news_title", "label": "Newsletter heading", "default": "Follow us" },
+    { "type": "text", "id": "news_text", "label": "Newsletter text", "default": "Get new stock, deals and workshop tips by email." },
+    { "type": "text", "id": "facebook_url", "label": "Facebook URL", "default": "https://www.facebook.com/profile.php?id=61578663545876" },
+    { "type": "text", "id": "instagram_url", "label": "Instagram URL", "info": "The icon shows once this is filled in." },
+    { "type": "text", "id": "copyright", "label": "Copyright text", "default": "Metro Auto Online. All rights reserved." },
+    { "type": "text", "id": "payment_badges", "label": "Payment badges", "info": "Comma separated", "default": "VISA, Mastercard, PayPal, Afterpay" }
+  ]
+}
+{% endschema %}

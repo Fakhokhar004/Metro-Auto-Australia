@@ -1,0 +1,8 @@
+{
+  "layout": "metro",
+  "sections": {
+    "main": { "type": "ma-cart", "settings": {} },
+    "recent": { "type": "ma-recent", "settings": { "title": "Recently viewed", "limit": 4, "fallback": "brake-pads", "fallback_title": "Popular parts" } }
+  },
+  "order": ["main", "recent"]
+}

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<title>Metro Auto cart</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FFFFFF}
+a{color:#E1251B}a:hover{color:#B71C14}
+:focus-visible{outline:3px solid #2F6FD6;outline-offset:2px}
+.mx-wrap{max-width:1320px;margin:0 auto;padding:0 24px;box-sizing:border-box}
+.mx-cart{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;align-items:start}
+.mx-line{display:grid;grid-template-columns:88px minmax(0,1fr) auto auto;gap:16px;align-items:center}
+.mx-pair{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:960px){
+ .mx-cart{grid-template-columns:1fr}
+ .mx-pair{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+ .mx-wrap{padding:0 16px}
+ .mx-line{grid-template-columns:72px minmax(0,1fr);gap:10px 12px}
+ .mx-line-qty{grid-column:2}
+ .mx-line-total{grid-column:2;justify-self:start !important;text-align:left !important}
+ .mx-pair{gap:10px}
+}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #121316; background: #FFFFFF; min-height: 100vh">
+<dc-import name="Header" current="cart" hint-size="100%,210px"></dc-import>
+
+<section style="background: #F4F4F5; border-bottom: 1px solid #E4E4E7">
+ <div class="mx-wrap" style="padding-top: 24px; padding-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap">
+  <div>
+   <nav aria-label="Breadcrumb" style="font-size: 13px; color: #62666D; display: flex; gap: 8px"><a href="Main.dc.html" style="color: #62666D">Home</a><span aria-hidden="true">/</span><span style="color: #121316">Cart</span></nav>
+   <h1 style="margin: 6px 0 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 48px; line-height: 1; text-transform: uppercase">Your cart</h1>
+  </div>
+  <a href="Search.dc.html" style="font-weight: 600; font-size: 15px">Continue shopping</a>
+ </div>
+</section>
+
+<div class="mx-wrap" style="padding-top: 24px; padding-bottom: 64px">
+ <div class="mx-cart">
+  <div style="border: 1px solid #E4E4E7; border-radius: 10px; overflow: hidden; min-width: 0">
+   <sc-if value="{{hasLines}}" hint-placeholder-val="{{ true }}">
+    <div style="display: flex; justify-content: space-between; padding: 12px 18px; background: #121316; color: #FFFFFF; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; text-transform: uppercase; letter-spacing: 0.03em">
+     <span>{{itemCount}}</span><span>Total</span>
+    </div>
+   </sc-if>
+   <sc-for list="{{lines}}" as="l" hint-placeholder-count="2">
+    <div class="mx-line" style="padding: 16px 18px; border-bottom: 1px solid #F0F0F2">
+     <a href="Product.dc.html" onClick="{{l.open}}" aria-label="{{l.title}}" style="aspect-ratio: 1 / 1; background: #17181B; border-radius: 8px; display: grid; place-items: center">
+      <svg width="58%" height="58%" viewBox="0 0 24 24" fill="none" stroke="#C9CBD0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{l.icon}}"></path></svg>
+     </a>
+     <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+      <span style="font-size: 12px; color: #62666D">{{l.vendor}}, part {{l.sku}}</span>
+      <a href="Product.dc.html" onClick="{{l.open}}" style="color: #121316; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.35">{{l.title}}</a>
+      <span style="font-size: 14px; color: #3F4249">{{l.each}} each</span>
+      <button onClick="{{l.remove}}" style="align-self: flex-start; border: 0; background: transparent; padding: 6px 0; color: #3F4249; text-decoration: underline; font-family: inherit; font-size: 13px; cursor: pointer">Remove</button>
+     </div>
+     <div class="mx-line-qty" style="display: flex; border: 1px solid #C9CBD0; border-radius: 6px; overflow: hidden; height: 44px">
+      <button aria-label="Decrease quantity of {{l.title}}" onClick="{{l.dec}}" style="width: 40px; border: 0; background: #FFFFFF; font-size: 20px; cursor: pointer; color: #121316">−</button>
+      <span aria-live="polite" style="width: 40px; display: grid; place-items: center; font-weight: 600">{{l.qty}}</span>
+      <button aria-label="Increase quantity of {{l.title}}" onClick="{{l.inc}}" style="width: 40px; border: 0; background: #FFFFFF; font-size: 20px; cursor: pointer; color: #121316">+</button>
+     </div>
+     <span class="mx-line-total" style="justify-self: end; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 26px; color: #E1251B; min-width: 90px; text-align: right">{{l.total}}</span>
+    </div>
+   </sc-for>
+   <sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+    <div style="padding: 48px 24px; display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center">
+     <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 32px; text-transform: uppercase">Your cart is empty</h2>
+     <p style="margin: 0; font-size: 15px; color: #3F4249">Find parts that fit your vehicle and add them here.</p>
+     <a href="Search.dc.html" style="min-height: 46px; padding: 0 20px; border-radius: 6px; background: #E1251B; color: #FFFFFF; display: inline-flex; align-items: center; text-decoration: none; font-weight: 600">Shop parts for my vehicle</a>
+    </div>
+   </sc-if>
+  </div>
+
+  <aside aria-label="Order summary" style="border: 1px solid #E4E4E7; border-radius: 10px; overflow: hidden">
+   <h2 style="margin: 0; padding: 12px 20px; background: #121316; color: #FFFFFF; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 22px; text-transform: uppercase">Order summary</h2>
+   <div style="padding: 20px; display: flex; flex-direction: column; gap: 16px">
+    <div style="border: 2px dashed #E1251B; border-radius: 8px; background: #FFF6F5; padding: 10px 12px; font-size: 14px; color: #3F4249">First order? Use <strong style="color: #121316">METRO15</strong> for 15% off.</div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+     <label for="mx-code" style="font-size: 13px; font-weight: 500; color: #62666D">Discount code</label>
+     <div style="display: flex; gap: 8px">
+      <input id="mx-code" value="{{code}}" onChange="{{onCode}}" placeholder="METRO15" style="flex: 1; min-width: 0; min-height: 46px; border: 1px solid #C9CBD0; border-radius: 6px; padding: 0 12px; font-family: inherit; font-size: 16px; text-transform: uppercase; color: #121316">
+      <button onClick="{{apply}}" style="min-height: 46px; padding: 0 16px; border-radius: 6px; border: 0; background: #121316; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer; color: #FFFFFF">Apply</button>
+     </div>
+     <sc-if value="{{hasMsg}}" hint-placeholder-val="{{ false }}"><span style="font-size: 14px; font-weight: 500; color: {{msgColor}}">{{msg}}</span></sc-if>
+    </div>
+    <dl style="margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 15px; border-top: 1px solid #F0F0F2; padding-top: 14px">
+     <div style="display: flex; justify-content: space-between"><dt>Subtotal</dt><dd style="margin: 0">{{subtotal}}</dd></div>
+     <sc-if value="{{hasDiscount}}" hint-placeholder-val="{{ false }}"><div style="display: flex; justify-content: space-between; color: #15803D"><dt>METRO15, 15% off</dt><dd style="margin: 0">−{{discount}}</dd></div></sc-if>
+     <div style="display: flex; justify-content: space-between"><dt>Delivery</dt><dd style="margin: 0">{{shipping}}</dd></div>
+    </dl>
+    <div style="display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid #F0F0F2; padding-top: 14px">
+     <span style="font-weight: 600; font-size: 16px">Total <span style="font-weight: 400; font-size: 13px; color: #62666D">including GST</span></span>
+     <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 40px; line-height: 1">{{total}}</span>
+    </div>
+    <sc-if value="{{hasLines}}" hint-placeholder-val="{{ true }}">
+     <a href="Main.dc.html" style="min-height: 54px; border-radius: 6px; background: #E1251B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; font-weight: 600; font-size: 16px; text-transform: uppercase; letter-spacing: 0.03em">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Secure checkout
+     </a>
+    </sc-if>
+    <div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: center" aria-label="Payment methods">
+     <span style="padding: 4px 8px; border-radius: 4px; border: 1px solid #E4E4E7; font-size: 12px; font-weight: 700">VISA</span>
+     <span style="padding: 4px 8px; border-radius: 4px; border: 1px solid #E4E4E7; font-size: 12px; font-weight: 700">Mastercard</span>
+     <span style="padding: 4px 8px; border-radius: 4px; border: 1px solid #E4E4E7; font-size: 12px; font-weight: 700">PayPal</span>
+     <span style="padding: 4px 8px; border-radius: 4px; border: 1px solid #E4E4E7; font-size: 12px; font-weight: 700">Afterpay</span>
+    </div>
+    <ul style="list-style: none; margin: 0; padding: 14px 0 0; border-top: 1px solid #F0F0F2; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #3F4249">
+     <li>Same-day dispatch when you order before 2PM</li>
+     <li>30-day returns on unused parts</li>
+     <li>Manufacturer warranty on every part</li>
+    </ul>
+   </div>
+  </aside>
+ </div>
+
+ <section style="margin-top: 44px">
+  <h2 style="margin: 0 0 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 36px; text-transform: uppercase; line-height: 1">Often added with these</h2>
+  <div class="mx-pair">
+   <sc-for list="{{pairs}}" as="x" hint-placeholder-count="4">
+    <dc-import name="ProductCard" item="{{x}}" hint-size="100%,520px"></dc-import>
+   </sc-for>
+  </div>
+ </section>
+</div>
+
+<dc-import name="Footer" hint-size="100%,500px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
+var MS={get:function(k,d){try{var v=window.localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set:function(k,v){try{window.localStorage.setItem(k,JSON.stringify(v));}catch(e){}MS.fire(k);},fire:function(k){try{window.dispatchEvent(new Event(k));}catch(e){}}};
+var PC_SEED=[{id:1,title:"HiQ Front Brake Pads Set SP2174",vendor:"HiQ",sku:"SP2174",price:65,kind:"pad",tint:"#3B4654",qty:1},{id:4,title:"CRC 5.56 Multi-Purpose Lubricant Aerosol Spray 400g",vendor:"CRC",sku:"5005",price:7.70,kind:"can",tint:"#2F6FD6",qty:1}];
+var CT_ICON={pad:"M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z",can:"M9 4h6v3H9zM8 7h8v13H8zM8 11h8",bottle:"M10 3h4v3h-4zM9 6h6l1 3v11H8V9z",tray:"M3 7h18v12H3zM3 12h18M9 7v12M15 7v12",clip:"M5 19L15 5M9 19L19 5"};
+var CT_PAIRS=[
+ {id:3,title:"CRC 5080 De-Squeak 300g",vendor:"CRC",sku:"5080",price:31.46,compare:0,kind:"can",tint:"#E1251B",col:"Brake care",fitLabel:"Suits any vehicle",fitOk:false},
+ {id:7,title:"CRC 5021 Gasket Stripper 300g",vendor:"CRC",sku:"5021",price:14.69,compare:23.80,kind:"can",tint:"#B45309",col:"Cleaners",fitLabel:"Suits any vehicle",fitOk:false},
+ {id:17,title:"Cable Lock Assortment 3336",vendor:"Goss",sku:"3336",price:27.99,compare:0,kind:"clip",tint:"#3F4249",col:"Body clips and fasteners",fitLabel:"",fitOk:false},
+ {id:8,title:"CRC 3071 So Easy Glass Cleaner 500ml Fast Acting",vendor:"CRC",sku:"3071",price:13.66,compare:0,kind:"bottle",tint:"#0E7C86",col:"Cleaners",fitLabel:"Suits any vehicle",fitOk:false}
+];
+function money(n){return "$"+n.toFixed(2);}
+function loadCart(){var c=MS.get("ma-cart",null);return c?c:PC_SEED.map(function(l){return Object.assign({},l);});}
+class Component extends DCLogic {
+ constructor(props){ super(props); this.state = {lines: loadCart(), code:"", applied:false, msg:""}; }
+ componentDidMount(){ this.onC = () => this.setState({lines: loadCart()}); window.addEventListener("ma-cart", this.onC); }
+ componentWillUnmount(){ window.removeEventListener("ma-cart", this.onC); }
+ save(lines){ MS.set("ma-cart", lines); }
+ renderVals(){
+  var st = this.state;
+  var sub = st.lines.reduce((s,l) => s + l.price*l.qty, 0);
+  var disc = st.applied ? sub*0.15 : 0, after = sub - disc;
+  var count = st.lines.reduce((s,l) => s + l.qty, 0);
+  return {
+   lines: st.lines.map(l => ({
+    title:l.title, vendor:l.vendor, sku:l.sku, qty:l.qty, icon: CT_ICON[l.kind] || CT_ICON.can,
+    each: money(l.price), total: money(l.price*l.qty),
+    open: () => MS.set("ma-prod", l.id),
+    inc: () => this.save(st.lines.map(x => x.id===l.id ? Object.assign({}, x, {qty: Math.min(99, x.qty+1)}) : x)),
+    dec: () => this.save(st.lines.map(x => x.id===l.id ? Object.assign({}, x, {qty: Math.max(1, x.qty-1)}) : x)),
+    remove: () => this.save(st.lines.filter(x => x.id!==l.id))
+   })),
+   hasLines: st.lines.length > 0, empty: st.lines.length === 0,
+   itemCount: count + (count===1 ? " item" : " items"),
+   code: st.code, onCode: e => this.setState({code: e.target.value}),
+   apply: () => { var ok = st.code.trim().toUpperCase()==="METRO15"; this.setState({applied: ok, msg: ok ? "METRO15 applied. 15% off your first order." : "That code isn't valid. Check it and try again."}); },
+   hasMsg: !!st.msg, msg: st.msg, msgColor: st.applied ? "#15803D" : "#B71C14",
+   subtotal: money(sub), hasDiscount: st.applied, discount: money(disc),
+   shipping: after >= 200 ? "Free" : "Calculated at checkout",
+   total: money(after),
+   pairs: CT_PAIRS.filter(p => !st.lines.some(l => l.id===p.id))
+  };
+ }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<nav>
+  <ul>
+
+{%- assign main_user_menu = section.settings.main_user_menu_handle -%}
+    
+    {% for link in linklists[main_user_menu].links %}
+    {% assign childlink_handle = link.title | handle %}
+    {% if linklists[childlink_handle] and linklists[childlink_handle].links.size > 0 %}
+    <li class="angle-shape drop_arrow"><a href="{{ link.url }}">{{ link.title }}</a>
+      <ul class="disturb_menu d-none">
+        {% for childlink in linklists[childlink_handle].links %}
+        {% assign grand_childlink_handle = childlink.title | handle %}
+        {% if linklists[grand_childlink_handle] and linklists[grand_childlink_handle].links.size > 0 %}
+        <li class="mega-menu-li"><a class="menu-title" href="{{ childlink.url }}">{{ childlink.title }}</a>
+          <ul>
+            {% for grand_childlink in linklists[grand_childlink_handle].links %}
+            <li><a href="{{ grand_childlink.url }}">{{ grand_childlink.title }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+        
+
+        {% elsif childlink.type == "collection_link" and childlink.object.image %}
+        <li class="sub-menu mega-menu-img sub-menu-li">
+          <a href="{{ childlink.url }}"><img loading="lazy"  src="{{ childlink.object.image | img_url: 'master' }}" alt="{{ childlink.object.image.alt }}" /></a>
+        </li>
+
+          
+        {% else %}
+        <li class="sub-menu-li"><a href="{{ childlink.url }}">{{ childlink.title }}</a></li>
+        {% endif %}  
+        {% endfor %}
+      </ul>
+    </li>
+    {% else %}
+    <li class="angle-shape"><a href="{{ link.url }}">{{ link.title }}</a></li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+</nav>
+
+
+<script>	
+  setTimeout(function(){
+    $('.disturb_menu').removeClass('d-none');
+  }, 2000);
+
+                 
+  $('.mega-menu-li').parent('ul').addClass('mega-menu');
+  $('.sub-menu-li').parent('ul').addClass('submenu');
+</script>

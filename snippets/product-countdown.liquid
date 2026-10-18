@@ -1,0 +1,22 @@
+{%- assign productCountdown = product.metafields.countdown.date -%}
+
+{%- assign cdownMeta = productCountdown | date: '%s' -%}
+{%- assign today_date = 'now' | date: '%s' -%}
+
+{%- if productCountdown != blank -%}
+  
+  {%- if today_date < cdownMeta -%}      
+    <div class="theme-product-countdown-wrap">
+      <div class="theme-product-countdown" data-countdown="{{ productCountdown }}"></div>
+    </div>
+  {%- endif -%}
+  
+{%- elsif product.description contains '[countdown]' -%}    
+  {%- assign count_down_first = product.description | split:'[/countdown]' | first -%}
+  {%- assign count_down_final = count_down_first | split:'[countdown]' | last -%}
+  <div class="theme-product-countdown-wrap">
+    <div class="theme-product-countdown" data-countdown="{{ count_down_final }}"></div>
+  </div>      
+{%- endif -%}
+
+  

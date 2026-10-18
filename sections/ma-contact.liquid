@@ -1,0 +1,170 @@
+{%- comment -%}
+  Metro Auto contact page. Design reference: _design/metro-auto-design/pages/Contact.dc.html
+  and components/ContactForm.dc.html. Uses Shopify's contact form, so messages go to the store's sender email.
+  ?part=<text> (from "Ask us to find the part") starts the message for the customer.
+{%- endcomment -%}
+{{ 'ma-pages.css' | asset_url | stylesheet_tag }}
+
+<section class="ma-banner">
+  <div class="ma-wrap ma-banner__in">
+    <nav class="ma-banner__crumb" aria-label="Breadcrumb">
+      <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span><span aria-current="page">{{ section.settings.title | escape }}</span>
+    </nav>
+    <h1 class="ma-banner__title">{{ section.settings.title | escape }}</h1>
+    {%- if section.settings.text != blank -%}<p class="ma-banner__text">{{ section.settings.text | escape }}</p>{%- endif -%}
+  </div>
+</section>
+
+<div class="ma-wrap ma-contact">
+  <section class="ma-contact__form" aria-labelledby="ma-cf-title">
+    <h2 class="ma-contact__h" id="ma-cf-title">Send us a message</h2>
+
+    {%- form 'contact', id: 'ma-contact-form', class: 'ma-cf' -%}
+      {%- if form.posted_successfully? -%}
+        <div class="ma-cf-sent" role="status" tabindex="-1" data-ma-cf-sent>
+          <strong>Message sent</strong>
+          <span data-ma-cf-thanks>Thanks. We've received your message and will reply by email.</span>
+          <a class="ma-cf-sent__again" href="{{ page.url | default: request.path }}">Send another message</a>
+        </div>
+      {%- else -%}
+        {%- if form.errors -%}
+          <div class="ma-cf-alert" role="alert">
+            {%- for field in form.errors -%}
+              <p>{% if field == 'form' %}{{ form.errors.messages[field] }}{% else %}{{ form.errors.translated_fields[field] | capitalize }} {{ form.errors.messages[field] }}{% endif %}</p>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+        <div class="ma-cf-pair">
+          <label class="ma-cf-field">First name
+            <input type="text" name="contact[first_name]" placeholder="Name" autocomplete="given-name" required data-ma-cf-req="first" aria-describedby="ma-cf-first-msg">
+            <span class="ma-cf-msg" id="ma-cf-first-msg">* Required</span>
+          </label>
+          <label class="ma-cf-field">Surname
+            <input type="text" name="contact[surname]" placeholder="Last name" autocomplete="family-name" required data-ma-cf-req="last" aria-describedby="ma-cf-last-msg">
+            <span class="ma-cf-msg" id="ma-cf-last-msg">* Required</span>
+          </label>
+        </div>
+        <label class="ma-cf-field">Email address
+          <input type="email" name="contact[email]" placeholder="Email" autocomplete="email" required data-ma-cf-req="email" aria-describedby="ma-cf-email-msg" value="{{ customer.email | escape }}">
+          <span class="ma-cf-msg" id="ma-cf-email-msg">* Required</span>
+        </label>
+        <label class="ma-cf-field">Mobile number
+          <input type="tel" name="contact[phone]" placeholder="04XX XXX XXX" autocomplete="tel">
+        </label>
+        <label class="ma-cf-field">VIN number
+          <input type="text" name="contact[vin]" maxlength="17" class="is-upper" autocapitalize="characters" spellcheck="false">
+        </label>
+        <label class="ma-cf-field">Registration number
+          <input type="text" name="contact[rego]" maxlength="8" class="is-upper" autocapitalize="characters" spellcheck="false">
+        </label>
+        <label class="ma-cf-field">State
+          <select name="contact[state]">
+            <option value="">Select state…</option>
+            {%- assign states = 'ACT,NSW,NT,QLD,SA,TAS,VIC,WA' | split: ',' -%}
+            {%- for s in states -%}<option value="{{ s }}">{{ s }}</option>{%- endfor -%}
+          </select>
+        </label>
+        <label class="ma-cf-field">Message
+          <textarea name="contact[body]" rows="5" placeholder="Your message" data-ma-cf-body></textarea>
+        </label>
+        <div class="ma-cf-submit">
+          <button type="submit" class="ma-button ma-button--red">Send message</button>
+        </div>
+      {%- endif -%}
+    {%- endform -%}
+  </section>
+
+  <aside class="ma-contact__side">
+    <div class="ma-contact__touch">
+      <h2>Get in touch</h2>
+      <dl>
+        {%- if settings.ma_address != blank -%}<dt>Warehouse</dt><dd>{{ settings.ma_address | escape | newline_to_br }}</dd>{%- endif -%}
+        {%- if settings.ma_phone != blank -%}<dt>Phone</dt><dd><a href="tel:{{ settings.ma_phone | remove: ' ' }}">{{ settings.ma_phone | escape }}</a></dd>{%- endif -%}
+        {%- assign c_email = settings.ma_email | default: shop.email -%}
+        {%- if c_email != blank -%}<dt>Email</dt><dd><a href="mailto:{{ c_email }}">{{ c_email | escape }}</a></dd>{%- endif -%}
+        {%- if settings.ma_hours != blank -%}<dt>Hours</dt><dd>{{ settings.ma_hours | escape | newline_to_br }}</dd>{%- endif -%}
+      </dl>
+      {%- if settings.ma_facebook != blank -%}
+        <div class="ma-contact__fb"><a href="{{ settings.ma_facebook }}" target="_blank" rel="noopener">Message us on Facebook</a></div>
+      {%- endif -%}
+    </div>
+    <div class="ma-contact__box">
+      <h2>{{ section.settings.tips_title | escape }}</h2>
+      <div class="ma-contact__rte">{{ section.settings.tips }}</div>
+    </div>
+    <div class="ma-contact__box">
+      <h2>{{ section.settings.orders_title | escape }}</h2>
+      <div class="ma-contact__rte">{{ section.settings.orders }}</div>
+      {%- assign faq_url = section.settings.faq_url | default: '/pages/faqs' -%}<a class="ma-contact__link" href="{{ faq_url }}">{{ section.settings.faq_label | escape }}</a>
+    </div>
+  </aside>
+</div>
+
+<script>
+  (function () {
+    var form = document.getElementById('ma-contact-form');
+    if (!form) return;
+    form.noValidate = true;
+    var KEY = 'ma_contact_sent';
+    var sent = form.querySelector('[data-ma-cf-sent]');
+    if (sent) {
+      try {
+        var d = JSON.parse(sessionStorage.getItem(KEY) || 'null');
+        if (d && d.first) sent.querySelector('[data-ma-cf-thanks]').textContent = 'Thanks, ' + d.first + '. We’ve received your message and will reply to ' + d.email + '.';
+        sessionStorage.removeItem(KEY);
+      } catch (e) {}
+      sent.focus();
+      return;
+    }
+    /* "Ask us to find the part" from search: ?part=... */
+    var part = new URLSearchParams(location.search).get('part');
+    var body = form.querySelector('[data-ma-cf-body]');
+    if (part && body && !body.value) body.value = 'I’m looking for: ' + part + '\n';
+    /* the customer's vehicle from the garage */
+    try {
+      var v = window.MA && MA.garage && MA.garage.load().vehicle;
+      if (v && body && body.value.indexOf(MA.vKey(v)) < 0) body.value += 'Vehicle: ' + MA.vKey(v) + '\n';
+    } catch (e) {}
+
+    var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    function check(input, show) {
+      var val = input.value.trim(), msg = '';
+      if (!val) msg = '* Required';
+      else if (input.type === 'email' && !emailRe.test(val)) msg = 'Enter an email like name@example.com';
+      var bad = show && !!msg;
+      input.setAttribute('aria-invalid', bad ? 'true' : 'false');
+      var m = document.getElementById(input.getAttribute('aria-describedby'));
+      if (m) { m.textContent = msg || (show ? '' : '* Required'); m.classList.toggle('is-bad', bad); }
+      return !msg;
+    }
+    var req = Array.prototype.slice.call(form.querySelectorAll('[data-ma-cf-req]'));
+    var tried = false;
+    req.forEach(function (i) { i.addEventListener('input', function () { if (tried) check(i, true); }); });
+    form.addEventListener('submit', function (e) {
+      tried = true;
+      var ok = req.map(function (i) { return check(i, true); }).every(Boolean);
+      if (!ok) { e.preventDefault(); var first = form.querySelector('[aria-invalid="true"]'); if (first) first.focus(); return; }
+      try { sessionStorage.setItem(KEY, JSON.stringify({ first: form.elements['contact[first_name]'].value.trim(), email: form.elements['contact[email]'].value.trim() })); } catch (err) {}
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Metro contact",
+  "tag": "section",
+  "class": "ma-body",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Heading", "default": "Contact us" },
+    { "type": "textarea", "id": "text", "label": "Banner text", "default": "Not sure which part fits? Send us your VIN or rego with your message and our team will find the right part for you." },
+    { "type": "paragraph", "content": "Address, phone, email, hours and Facebook are in Theme settings → Metro contact details." },
+    { "type": "header", "content": "Side boxes" },
+    { "type": "text", "id": "tips_title", "label": "Tips heading", "default": "Help us find your part faster" },
+    { "type": "richtext", "id": "tips", "label": "Tips", "default": "<ul><li>Add your VIN or registration number and state.</li><li>Tell us the part you need and which side or axle, if it matters.</li><li>Include the part number from the old part if you have it.</li></ul>" },
+    { "type": "text", "id": "orders_title", "label": "Orders heading", "default": "Orders and returns" },
+    { "type": "richtext", "id": "orders", "label": "Orders text", "default": "<p>Same-day dispatch when you order before 2PM on a working day. Free delivery on orders over $200. Returns within 30 days on unused parts.</p>" },
+    { "type": "text", "id": "faq_label", "label": "Questions link text", "default": "Read common questions" },
+    { "type": "url", "id": "faq_url", "label": "Questions link", "info": "Empty uses /pages/faqs" }
+  ]
+}
+{% endschema %}

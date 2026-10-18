@@ -1,0 +1,11 @@
+{
+  "type": "footer",
+  "name": "Metro footer",
+  "sections": {
+    "footer": {
+      "type": "ma-footer",
+      "settings": {}
+    }
+  },
+  "order": ["footer"]
+}

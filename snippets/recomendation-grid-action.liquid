@@ -1,0 +1,65 @@
+{%- assign on_sale = false -%}{%- if product.variants.first.compare_at_price > product.variants.first.price -%}{%- assign on_sale = true -%}{%- endif -%}
+{%- assign sold_out = true -%}{%- if product.available -%}{%- assign sold_out = false -%}{%- endif -%}
+{%- assign variant = product.selected_or_first_available_variant -%}
+{%- if product.available -%}{%- assign func = "Shopify.addItem(" | append: variant.id | append: ", 1)" -%}{%- endif -%}
+
+<div class="theme-product-action{% unless settings.product_action_pos == 'center' %} {{ p_content_align }}{% endunless %}">
+  <ul>
+
+    {%- unless product.description contains '[affiliate_link]' -%}
+    <li>
+      {%- if product.available -%}  
+      
+      {%- if settings.product_cart_type == 'ajax_spin_cart' -%}
+      <a href="javascript:void(0);" onclick="{{ func }}; return false;" class="ajax-spin-cart theme-product-action-btn">
+        <span class="cart-title">
+          Add to cart
+        </span>
+
+        <span class="cart-loading">
+                    Add to cart
+        </span>
+
+        <span class="cart-added">
+                    Add to cart
+        </span>
+
+        <span class="cart-unavailable">
+                    Add to cart
+        </span>        
+      </a>
+      
+      {%- elsif settings.product_cart_type == 'ajax_popup_cart' -%}
+      <a href="javascript:void(0);" onclick="{{ func }}; return false;" class="theme-product-action-btn">
+                  Add to cart
+      </a>
+
+     {%- elsif settings.product_cart_type == 'ajax_cart_drawer' -%}
+
+      <a href="javascript:void(0);" onclick="{{ func }}; return false;" class="theme-product-action-btn ajax-spin-cart-drawer">
+                  Add to cart
+      </a>
+        
+      {%- elsif settings.product_cart_type == 'without_ajax_cart' -%}
+      <form action="/cart/add" method="post" enctype="multipart/form-data">
+        <select name="id" style="display:none;">
+          {% for variant in product.variants %}
+          <option value="{{ variant.id }}">{{ variant.title | escape }} - {{ variant.price | money }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="theme-product-action-btn">
+                    Add to cart
+        </button>        
+      </form>
+      {%- endif -%}
+      
+      {%- else -%}
+      <a class="cart-disable remove_href">
+                  Add to cart
+      </a>
+      {%- endif -%}
+      
+    </li>
+    {%- endunless -%}
+  </ul>
+</div>

@@ -1,0 +1,734 @@
+<div class="contact__reservation__area" id="section-{{ section.id }}">
+	<div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+    {% if section.settings.section_title != '' or section.settings.section_sub_title != '' %}
+    <div class="section-title {{ section.settings.title_align }} pb-40 {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+      {% if section.settings.section_title != '' %}
+      <h2>{{ section.settings.section_title }}</h2>
+      {% endif %}
+
+      {% if section.settings.section_sub_title != '' %}
+      <p>{{ section.settings.section_sub_title }}</p>
+      {% endif %}
+    </div>
+    {% endif %}
+    <div class="row {% if section.settings.gutter__enable %}no__gutter {% endif %} {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+
+      {% if section.settings.reservation__map__enable %}
+      <div class="col-lg-{{section.settings.map_column_handle}} col-md-{{section.settings.map_column_handle}} col-12 custom__column">
+        <div class="contact-map-area">
+
+          {{section.settings.reservation__map}}
+
+        </div>
+      </div>
+      {% endif %}
+
+      {% if section.settings.reservation__map__enable %}
+      <div class="col-lg-{{section.settings.form_column_handle}} col-md-{{section.settings.form_column_handle}} col-12 custom__column">
+        <div class="contact-from contact-shadow">
+
+          {% if section.settings.reservation__top__title != '' %}
+          	<p>{{section.settings.reservation__top__title}}</p>
+          {% endif %}
+          
+          {% if section.settings.reservation__title != '' %}
+          	<h3>{{section.settings.reservation__title}}</h3>
+          {% endif %}
+          
+          {% form 'contact', id: 'reservation-form' %}
+
+          {% if form.posted_successfully? %}
+          <p class="note form-success form-messege">{{ 'contact.form.post_success' | t }}</p>
+          {% endif %}
+
+          {{ form.errors | default_errors }}
+          
+          <input type="email" 
+                 placeholder="{{ section.settings.email_placeholder }}" 
+                 class="{% if form.errors contains 'email' %}error{% endif %}" 
+                 name="contact[email]" 
+                 id="ContactFormEmail" 
+                 value="{% if form.email %}{{ form.email }}{% elsif customer.email %}{{ customer.email }}{% endif %}">
+          
+          <input type="number" min="1" 
+                 placeholder="{{ section.settings.name_placeholder }}" 
+                 class="{% if form.errors contains 'name' %}error{% endif %}" 
+                 name="contact[number]" 
+                 id="ContactFormNumber" 
+                 value="{% if form.number %}{{ form.number }}{% elsif customer.number %}{{ customer.number }}{% endif %}">
+
+          
+         <input type="date" 
+                 placeholder="Reservation Date" 
+                 class="{% if form.errors contains 'email' %}error{% endif %}" 
+                 name="contact[date]" 
+                 id="ContactFormDate" 
+                 value="{% if form.date %}{{ form.date }}{% elsif customer.date %}{{ customer.date }}{% endif %}">
+
+          <input type="time" 
+                 id="ContactFormTime" 
+                 name="contact[time]" 
+                 placeholder="{{ section.settings.subject_placeholder }}" 
+                 value="{{ form.time }}">
+
+          <textarea 
+                    placeholder="{{ section.settings.message_placeholder }}" 
+                    name="contact[body]" 
+                    id="ContactFormMessage">
+            {%- if form.body -%}{{ form.body }}{%- endif -%}
+          </textarea>
+          
+          <button class="submit" type="submit">{{ section.settings.form_button_name }}</button>
+          {% endform %}
+        </div>
+      </div>
+      {%endif%}
+      
+    </div>
+
+
+  </div>
+</div>
+
+<style>
+  #section-{{ section.id }}.contact__reservation__area .contact-from p{
+  	    color: {{ section.settings.reservation__top__title__color }};
+  }
+    #section-{{ section.id }}.contact__reservation__area .contact-from h3{
+  	    color: {{ section.settings.reservation__title__color }};
+  }
+  
+  #section-{{ section.id }}.contact__reservation__area .contact-from input::placeholder,
+  #section-{{ section.id }}.contact__reservation__area .contact-from textarea::placeholder,
+  #section-{{ section.id }}.contact__reservation__area .contact-from input,
+  #section-{{ section.id }}.contact__reservation__area .contact-from textarea
+  {
+    color: {{ section.settings.placeholder__color }};
+    opacity: 1; /* Firefox */
+  }
+  
+  #section-{{ section.id }}.contact__reservation__area .contact-from input:-ms-input-placeholder,
+    #section-{{ section.id }}.contact__reservation__area .contact-from textarea:-ms-input-placeholder{ /* Internet Explorer 10-11 */
+    color: red;
+  }
+
+  #section-{{ section.id }}.contact__reservation__area .contact-from input::-ms-input-placeholder,
+  #section-{{ section.id }}.contact__reservation__area .contact-from textarea::-ms-input-placeholder{ /* Microsoft Edge */
+    color: red;
+  }
+  
+  
+  
+</style>
+
+
+
+{%- render 'section-style' -%}
+
+{% if section.settings.section_title_custom_color %}
+<style>
+  
+  {%- assign section_title_font = section.settings.section_title_font -%}
+  {%- assign section_sub_title_font = section.settings.section_sub_title_font -%}
+  {{ section_title_font | font_face }}
+  {{ section_sub_title_font | font_face }}
+  
+  
+  #section-{{ section.id }} .section-title h2{
+    font-family: {{ section_title_font.family }}, {{ section_title_font.fallback_families }};
+    font-style: {{ section_title_font.style }};
+    font-weight: {{ section_title_font.weight }};
+    color: {{ section.settings.section_title_color }};
+    font-size:{{ section.settings.section_title_font_size }}px;
+    line-height: {{section.settings.section_title_line_height}}px;
+    margin-bottom: {{section.settings.section_title_margin_bottom}}px;
+  }
+  
+  #section-{{ section.id }} .section-title p{
+    font-family: {{ section_sub_title_font.family }}, {{ section_sub_title_font.fallback_families }};
+    font-style: {{ section_sub_title_font.style }};
+    font-weight: {{ section_sub_title_font.weight }};
+    color: {{ section.settings.section_subtitle_color }};
+    font-size:{{ section.settings.section_des_font_size }}px;
+    line-height: {{section.settings.section_sub_title_line_height}}px;
+    margin-bottom: {{section.settings.section_sub_title_margin_bottom}}px;
+  }
+  
+  
+  @media (min-width: 768px) and (max-width: 1200px) {
+
+    #section-{{ section.id }} .section-title h2{
+      font-size:{{ section.settings.section_title_font_size_md }}px;
+      line-height: {{section.settings.section_title_line_height_md}}px;
+    }
+    #section-{{ section.id }} .section-title p{
+      font-size:{{ section.settings.section_des_font_size_md }}px;
+      line-height: {{section.settings.section_sub_title_line_height_md}}px;
+    }
+  }
+
+  @media (min-width: 300px) and (max-width: 767px) {    
+    
+    #section-{{ section.id }} .section-title h2{
+      font-size:{{ section.settings.section_title_font_size_sm }}px;
+      line-height: {{section.settings.section_title_line_height_sm}}px;
+    }
+    #section-{{ section.id }} .section-title p{
+      font-size:{{ section.settings.section_des_font_size_sm }}px;
+      line-height: {{section.settings.section_sub_title_line_height_sm}}px;
+    }
+  }
+
+</style>
+{% endif %}
+
+
+{% schema %}
+  {
+    "name": "Reservation Area",
+    "settings": [
+              {
+                "type": "select",
+                "id": "section_width",
+                "label": "Section Width",
+                "options":[
+                      {
+                          "label": "Full Width",
+                          "value": "full_width"
+                      },
+                      {
+                          "label": "Box Width",
+                          "value": "box_width"
+                      },
+                      {
+                          "label": "Default Width",
+                          "value": "default"
+                      }
+                  ],
+                  "default": "default"
+              },
+
+
+		{
+			"type": "header",
+            "content": "Section Title"
+        },
+        {
+          "type": "checkbox",
+          "id": "section_title_custom_color",
+          "label": "Section Title Custom Style Enable",
+          "default": false
+        },
+
+		{
+            "type": "text",
+            "id": "section_title",
+            "label": "Title",
+            "default": "New Arrivals"
+        },
+
+        {
+          "type": "color",
+          "id": "section_title_color",
+          "label": "Title Color",
+          "default": "#1f2226"
+        },
+          {
+            "type": "font_picker",
+            "id": "section_title_font",
+            "label": "Font Family: Section Title Font",
+            "default": "poppins_n6"
+          },
+          {
+              "type": "header",
+              "content": "Main Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_title_font_size",
+            "label": "Font Size: Font Size",
+            "default": "30",
+            "info": "Section Title Font Size"
+          }, 
+          {
+            "type":      "range",
+            "id":        "section_title_line_height",
+            "min":       20,
+            "max":        150,
+            "step":       5,
+            "unit":       "px",
+            "label":     "Section Title Line Height",
+            "default":   40
+          },
+          {
+              "type": "header",
+              "content": "Medium Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_title_font_size_md",
+            "label": "Font Size: Font Size (MD)",
+            "default": "24",
+            "info": "Section Title Font Size"
+          }, 
+          {
+            "type":      "range",
+            "id":        "section_title_line_height_md",
+            "min":       20,
+            "max":        150,
+            "step":       5,
+            "unit":       "px",
+            "label":     "Section Title Line Height (MD)",
+            "default":   35
+          },
+          {
+              "type": "header",
+              "content": "Small Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_title_font_size_sm",
+            "label": "Font Size: Font Size (SM)",
+            "default": "20",
+            "info": "Section Title Font Size"
+          }, 
+          {
+            "type":      "range",
+            "id":        "section_title_line_height_sm",
+            "min":       20,
+            "max":        150,
+            "step":       5,
+            "unit":       "px",
+            "label":     "Section Title Line Height (SM)",
+            "default":   30
+          },
+          {
+            "type":      "range",
+            "id":        "section_title_margin_bottom",
+            "min":       0,
+            "max":        50,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Title margin Bottom",
+            "default":   10
+          },
+
+
+		{
+            "type": "textarea",
+            "id": "section_sub_title",
+            "label": "Subtitle",
+            "default": "Contrary to popular belief, Lorem Ipsum is not simply random text."
+        },
+
+        {
+          "type": "color",
+          "id": "section_subtitle_color",
+          "label": "Subtitle Color",
+          "default": "#5a5a5a"
+        },	
+          {
+            "type": "font_picker",
+            "id": "section_sub_title_font",
+            "label": "Font Family: Section Sub Title Font",
+            "default": "poppins_n6"
+          },
+          {
+              "type": "header",
+              "content": "Main Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_des_font_size",
+            "label": "Font Size: Font Size",
+            "default": "14",
+            "info": "Section Description Font Size"
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_line_height",
+            "min":       20,
+            "max":        100,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title Line Height",
+            "default":   24
+          },
+          {
+              "type": "header",
+              "content": "Medium Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_des_font_size_md",
+            "label": "Font Size: Font Size (MD)",
+            "default": "14",
+            "info": "Section Description Font Size (MD)"
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_line_height_md",
+            "min":       20,
+            "max":        100,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title Line Height (MD)",
+            "default":   24
+          },
+
+          {
+              "type": "header",
+              "content": "Small Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_des_font_size_sm",
+            "label": "Font Size: Font Size (SM)",
+            "default": "14",
+            "info": "Section Description Font Size (SM)"
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_line_height_sm",
+            "min":       20,
+            "max":        100,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title Line Height (SM)",
+            "default":   24
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_margin_bottom",
+            "min":       0,
+            "max":        50,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title margin Bottom",
+            "default":   10
+          },
+
+		{
+                "type": "select",
+                "id": "title_align",
+                "label": "Title Align",
+                "options":[
+                      {
+                          "label": "Text Left",
+                          "value": "text-left"
+                      },
+                      {
+                          "label": "Text Center",
+                          "value": "text-center"
+                      },
+                      {
+                          "label": "Text Right",
+                          "value": "text-right"
+                      }
+                  ],
+                  "default": "text-center"
+              },
+
+
+
+
+		{
+          "type": "checkbox",
+          "id": "gutter__enable",
+          "label": "Gutter Enable",
+          "default": false
+      	},
+        {
+          "type": "header",
+          "content": "Reservation Map"
+        },
+
+		{
+          "type": "checkbox",
+          "id": "reservation__map__enable",
+          "label": "Map Enable",
+          "default": true
+      	},
+        {
+          "type": "range",
+          "id": "map_column_handle",
+          "label": "Map Column",
+          "min": 2,
+          "max": 12,
+          "step": 1,
+          "default": 6,
+          "unit": "/12"
+        },
+        {
+          "type": "textarea",
+          "id": "reservation__map",
+          "label": "Reservation Map",
+          "default": "Input Map Code"
+        },
+
+
+
+        {
+          "type": "header",
+          "content": "Reservation Form"
+        },
+		{
+          "type": "checkbox",
+          "id": "reservation__form__enable",
+          "label": "Reservation Form",
+          "default": true
+      	},
+        {
+          "type": "range",
+          "id": "form_column_handle",
+          "label": "Form Column",
+          "min": 2,
+          "max": 12,
+          "step": 1,
+          "default": 6,
+          "unit": "/12"
+        },
+        {
+          "type": "text",
+          "id": "reservation__top__title",
+          "label": "Reservation top Title",
+          "default": "#Reservation"
+        },
+        {
+          "type": "color",
+          "id": "reservation__top__title__color",
+          "label": "Top Title Color",
+          "default": "#333"
+        },
+        {
+          "type": "text",
+          "id": "reservation__title",
+          "label": "Reservation Title",
+          "default": "BOOKING A TABLE"
+        },
+        {
+          "type": "color",
+          "id": "reservation__title__color",
+          "label": "Title Color",
+          "default": "#333"
+        },
+        {
+          "type": "color",
+          "id": "placeholder__color",
+          "label": "Placeholder Color",
+          "default": "#333"
+        },
+
+        {
+          "type": "text",
+          "id": "name_placeholder",
+          "label": "Total Person",
+          "default": "Total Person"
+        },
+        {
+          "type": "text",
+          "id": "email_placeholder",
+          "label": "Reservation Email",
+          "default": "Your Email"
+        },
+        {
+          "type": "text",
+          "id": "message_placeholder",
+          "label": "Email Placeholder",
+          "default": "Your Message"
+        },
+        {
+          "type": "text",
+          "id": "form_button_name",
+          "label": "Form Button Name",
+          "default": "Book A Table"
+        }
+	],
+
+	"blocks":[
+
+	   {
+          "type": "section_padding",
+          "name": "Section Padding",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 100
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 80
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 60
+			}
+          ]
+       },
+	   {
+          "type": "section_margin",
+          "name": "Section Margin",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			}
+          ]
+       },
+	   {
+          "type": "section_background",
+          "name": "Section Background",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "image_picker",
+			  "id": "section_bg_image",
+			  "label": "BG Image"
+			},
+			{
+			  "type": "color",
+			  "id": "section_bg_color",
+			  "label": "BG Color",
+			  "default": "#ffffff"
+			}
+          ]
+       }
+	],
+	"presets": [
+		{
+		  "name": "Reservation Area"
+		}
+	]
+  }
+{% endschema %}
+

@@ -1,0 +1,87 @@
+{%- unless product.description contains '[affiliate_link]' -%}
+<div class="theme-product-action{% unless settings.product_action_pos == 'center' %} {{ p_content_align }}{% endunless %}">
+  <ul>
+    {%- if settings.product_quickview_enalbe -%}
+    <li>
+      <a href="javascript:void(0);" 
+         onclick="quiqview('{{ product.handle | handleize }}')"
+         data-toggle="modal" 
+         data-target="#exampleModal">
+        <i class="sli sli-magnifier"></i>
+        <span class="theme-product-action-tooltip">{{ settings.qcv_title }}</span>
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if settings.show_product_wishlist -%}
+    <li>
+      {%- if product.handle != blank -%}
+      <a class="action-wishlist tile-actions--btn flex wishlist-btn wishlist" href="javascript: void(0)" button-wishlist data-product-handle="{{ product.handle }}" data-toggle="tooltip" data-placement="left" title="{{ settings.wishlist_title }}">
+        <span class="add-wishlist"><i class="sli sli-heart"></i><span class="theme-product-action-tooltip">{{ settings.wishlist_t }}</span></span>
+        <span class="loading-wishlist"><i class="sli sli-heart"></i><span class="theme-product-action-tooltip">{{ settings.wishlist_t }}</span></span>
+        <span class="remove-wishlist"><i class="sli sli-heart"></i><span class="theme-product-action-tooltip">{{ settings.wishlist_t }}</span></span>
+      </a>
+      {%- endif -%}
+    </li>
+    {%- endif -%}
+
+    {%- if settings.compare_product_enalbe -%}
+    <li><a href="#" data-pid="{{ product.handle }}" class="compare"><i class="sli sli-refresh"></i><span class="theme-product-action-tooltip">{{ settings.compare_popup_title }}</span></a></li>
+    {%- endif -%}
+
+    <li>
+      {%- if product.available -%}  
+      
+      {%- if settings.product_cart_type == 'ajax_spin_cart' -%}
+      <a href="javascript:void(0);" onclick="{{ func }}; return false;" class="ajax-spin-cart theme-product-action-btn">
+        <span class="cart-title">
+          <i class="sli sli-bag"></i><span class="theme-product-action-tooltip">{{ settings.cart_button_title }}</span>
+        </span>
+
+        <span class="cart-loading">
+          <i class="sli sli-reload rotate-inifinite"></i><span class="theme-product-action-tooltip">{{ settings.wait_title }}</span>
+        </span>
+
+        <span class="cart-added">
+          <i class="sli sli-check"></i><span class="theme-product-action-tooltip">{{ settings.added_title }}</span>
+        </span>
+
+        <span class="cart-unavailable">
+          <i class="sli sli-check"></i><span class="theme-product-action-tooltip">{{ settings.unavailable_title }}</span>
+        </span>        
+      </a>
+
+     {%- elsif settings.product_cart_type == 'ajax_cart_drawer' -%}
+      <a href="javascript:void(0);" onclick="{{ func }}; return false;" class="theme-product-action-btn ajax-spin-cart-drawer">
+        <i class="sli sli-bag"></i><span class="theme-product-action-tooltip">{{ settings.cart_button_title }}</span>
+      </a>
+        
+      {%- elsif settings.product_cart_type == 'ajax_popup_cart' -%}
+      <a href="javascript:void(0);" onclick="{{ func }}; return false;" class="theme-product-action-btn">
+        <i class="sli sli-bag"></i><span class="theme-product-action-tooltip">{{ settings.cart_button_title }}</span>
+      </a>
+      
+      {%- elsif settings.product_cart_type == 'without_ajax_cart' -%}
+      <form action="/cart/add" method="post" enctype="multipart/form-data">
+        <select name="id" style="display:none;">
+          {% for variant in product.variants %}
+          <option value="{{ variant.id }}">{{ variant.title | escape }} - {{ variant.price | money }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="theme-product-action-btn">
+          <i class="sli sli-bag"></i><span class="theme-product-action-tooltip">{{ settings.cart_button_title }}</span>
+        </button>        
+      </form>
+      {%- endif -%}
+      
+      {%- else -%}
+      <a class="cart-disable remove_href">
+        <i class="sli sli-bag"></i><span class="theme-product-action-tooltip">{{ settings.soldout_button_title }}</span>
+      </a>
+      {%- endif -%}
+      
+    </li>
+
+  </ul>
+</div>
+{%- endunless -%}

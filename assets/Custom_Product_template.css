@@ -1,0 +1,708 @@
+/* =========================================================
+   PREMIUM PRODUCT PAGE DESIGN
+   OPTIMIZED FOR YOUR LIQUID STRUCTURE
+========================================================= */
+
+/* =========================================================
+   MAIN WRAPPER
+========================================================= */
+
+#section-template--19616879575227__main,
+.single-product{
+    background:#f6f6f6 !important;
+    padding:50px 0 !important;
+    overflow:hidden !important;
+}
+
+.single-product .container{
+    max-width:1440px !important;
+    width:100% !important;
+    padding-left:25px !important;
+    padding-right:25px !important;
+}
+
+/* =========================================================
+   PRODUCT MAIN CARD
+========================================================= */
+
+.single-product .product-details-area{
+    background:#ffffff !important;
+    border-radius:32px !important;
+    padding:35px !important;
+    border:1px solid #ebebeb !important;
+    box-shadow:0 10px 35px rgba(0,0,0,0.04) !important;
+    overflow:hidden !important;
+}
+
+/* =========================================================
+   GRID FIX
+========================================================= */
+
+.single-product .row{
+    display:flex !important;
+    align-items:flex-start !important;
+}
+
+.single-product .col-lg-6,
+.single-product .col-md-6{
+    padding:0 18px !important;
+}
+
+/* =========================================================
+   IMAGE SECTION
+========================================================= */
+
+.single-product .product__media__inner{
+    background:#ffffff !important;
+    border-radius:28px !important;
+    border:1px solid #ececec !important;
+    padding:25px !important;
+    overflow:hidden !important;
+}
+
+/* MAIN IMAGE */
+
+.single-product .product-large-slider{
+    border-radius:22px !important;
+    overflow:hidden !important;
+    background:#fafafa !important;
+}
+
+.single-product .product-large-slider img{
+    width:100% !important;
+    border-radius:18px !important;
+    object-fit:contain !important;
+}
+
+/* =========================================================
+   THUMBNAILS
+========================================================= */
+
+.single-product .pro-nav{
+    margin-top:18px !important;
+}
+
+.single-product .pro-nav .slick-slide{
+    padding:6px !important;
+}
+
+.single-product .product-single__thumbnail{
+    border-radius:16px !important;
+    overflow:hidden !important;
+    border:2px solid transparent !important;
+    transition:0.3s ease !important;
+    background:#ffffff !important;
+}
+
+.single-product .slick-current .product-single__thumbnail{
+    border-color:#df0000 !important;
+}
+
+.single-product .product-single__thumbnail img{
+    border-radius:10px !important;
+}
+
+/* =========================================================
+   SLICK ARROWS
+========================================================= */
+
+.single-product .slick-prev,
+.single-product .slick-next{
+    width:42px !important;
+    height:42px !important;
+    border-radius:50% !important;
+    background:#ffffff !important;
+    border:1px solid #ececec !important;
+    z-index:10 !important;
+    box-shadow:0 5px 15px rgba(0,0,0,0.06) !important;
+}
+
+.single-product .slick-prev:hover,
+.single-product .slick-next:hover{
+    background:#df0000 !important;
+    color:#ffffff !important;
+}
+
+/* =========================================================
+   CONTENT AREA
+========================================================= */
+
+.single-product .product-details-content{
+    padding-left:20px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    gap:18px !important;
+}
+
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.single-product .pro__title,
+.single-product .product-details-content h1,
+.single-product .product-details-content h2{
+    font-size:35px !important;
+    line-height:1.1 !important;
+    font-weight:900 !important;
+    color:#111111 !important;
+    margin:0 !important;
+}
+
+/* =========================================================
+   PRICE
+========================================================= */
+
+.single-product .product-details-price,
+.single-product #ProductPrice{
+    font-size:24px !important;
+    font-weight:900 !important;
+    color:#df0000 !important;
+    padding: 10px;
+    margin:0 !important;
+}
+
+/* =========================================================
+   SKU + META
+========================================================= */
+
+.single-product .sku_size_vendor_type,
+.single-product .product-sku,
+.single-product .variant-sku{
+    display:flex !important;
+    flex-wrap:wrap !important;
+    /* padding: 10px; */
+    align-items:center !important;
+    /* font-size:15px !important; */
+    font-weight:700 !important;
+    color:#666666 !important;
+}
+
+/* =========================================================
+   INVENTORY
+========================================================= */
+
+.single-product .variant-inventory{
+    display:inline-flex !important;
+    align-items:center !important;
+    gap:8px !important;
+    background:#f5fff6 !important;
+    color:#1c8b36 !important;
+    border:1px solid #d6f2dc !important;
+    padding:10px 16px !important;
+    border-radius:10px !important;
+    font-weight:700 !important;
+    width:fit-content !important;
+}
+
+/* =========================================================
+   VISITOR COUNTER
+========================================================= */
+
+.single-product .visitor-counter-area{
+    background:#fafafa !important;
+    border:1px solid #ececec !important;
+    border-radius:10px !important;
+    padding:16px 18px !important;
+    margin-top:5px !important;
+}
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+.single-product .product-description{
+    background:#ffffff !important;
+    border:1px solid #ececec !important;
+    border-radius:24px !important;
+    padding:30px !important;
+    margin-top:30px !important;
+    color:#444444 !important;
+    font-size:17px !important;
+    line-height:1.9 !important;
+}
+
+/* =========================================================
+   VARIANTS
+========================================================= */
+
+.single-product .product-variant-option{
+    margin-top:10px !important;
+}
+
+.single-product .selector-wrapper{
+    margin-bottom:18px !important;
+}
+
+.single-product .selector-wrapper label{
+    display:block !important;
+    margin-bottom:10px !important;
+    font-size:15px !important;
+    font-weight:800 !important;
+    color:#111111 !important;
+}
+
+.single-product .single-option-selector{
+    width:100% !important;
+    height:60px !important;
+    border-radius:16px !important;
+    border:1px solid #dddddd !important;
+    padding:0 18px !important;
+    font-size:15px !important;
+    background:#ffffff !important;
+    transition:0.3s ease !important;
+}
+
+.single-product .single-option-selector:focus{
+    border-color:#df0000 !important;
+    box-shadow:0 0 0 4px rgba(223,0,0,0.08) !important;
+}
+
+/* =========================================================
+   QUANTITY + BUTTON AREA
+========================================================= */
+
+.single-product .pro-details-quality{
+    display:flex !important;
+    align-items:center !important;
+    gap:18px !important;
+    flex-wrap:wrap !important;
+    /* margin-top:15px !important; */
+}
+
+/* QUANTITY */
+
+.single-product .cart-plus-minus{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    /* height:62px !important; */
+    border-radius:10px !important;
+    border:1px solid #e5e5e5 !important;
+    overflow:hidden !important;
+    background:#ffffff !important;
+}
+
+.single-product .qtybutton{
+    width:26px !important;
+    
+    height:48px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    font-size:22px !important;
+    font-weight:700 !important;
+    cursor:pointer !important;
+    transition:0.3s ease !important;
+}
+
+
+.single-product .cart-plus-minus-box{
+    width:60px !important;
+    height:48pxpx !important;
+    border:none !important;
+    text-align:center !important;
+    font-size:20px !important;
+    font-weight:700 !important;
+}
+
+/* =========================================================
+   ACTION BUTTONS (Add to Cart only — wishlist is styled
+   completely separately further below, no shared values)
+========================================================= */
+
+.single-product .pro__action__flex{
+    display:flex !important;
+    align-items:center !important;
+    gap:16px !important;
+    flex-wrap:nowrap !important;
+}
+
+/* ADD TO CART */
+
+.single-product .pro-details-cart button,
+.single-product .sp_cart_btn{
+    border-radius:10px !important;
+    background:#df0000 !important;
+    color:#ffffff !important;
+    font-size:17px !important;
+    font-weight:800 !important;
+    box-shadow:0 5px 5px rgba(223,0,0,0.14) !important;
+    transition:0.3s ease !important;
+/* display: none !important;     */
+}
+
+.single-product .pro-details-cart button:hover,
+.single-product .sp_cart_btn:hover{
+    background:#c40000 !important;
+    transform:translateY(-2px) !important;
+}
+
+/* =========================================================
+   WISHLIST BUTTON — FULLY INDEPENDENT STYLING
+   This block does not reference or reuse any Add to Cart
+   values (no shared height/radius). Change anything here
+   and the cart button is unaffected, and vice versa.
+   Background always stays white — only the heart glyph
+   itself changes from an outline heart to a filled red
+   heart on hover / when saved.
+========================================================= */
+
+.single-product .compare{
+    display:none !important;
+}
+
+.single-product .pro-details-wishlist{
+    display:flex !important;
+    align-items:center !important;
+}
+
+.single-product .pro-details-wishlist a{
+    /* Independent box size — not tied to the cart button */
+    width:56px !important;
+    height:56px !important;
+    min-width:56px !important;
+    border-radius:14px !important;
+    border:1px solid #e5e5e5 !important;
+    background:#ffffff !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    font-size:0 !important;
+    line-height:0 !important;
+    transition:border-color 0.3s ease !important;
+    position:relative !important;
+    top:0px !important;
+}
+
+/* Default state: white bg, thin outline heart, dark color */
+.single-product .pro-details-wishlist a::before{
+    content:"♡" !important;
+    font-size:30px !important;
+    color:#111111 !important;
+    display:flex !important;
+    justify-content:center !important;
+    align-items:center !important;
+    transition:color 0.25s ease, transform 0.25s ease !important;
+}
+
+/* Hover: bg stays white, border gets a subtle highlight, heart fills red */
+.single-product .pro-details-wishlist a:hover{
+    background:#ffffff !important;
+    border-color:#df0000 !important;
+}
+
+.single-product .pro-details-wishlist a:hover::before{
+    content:"♥" !important;
+    color:#df0000 !important;
+    transform:scale(1.15) !important;
+}
+
+/* Saved / active state (covers common class names used by wishlist apps) —
+   stays filled red even without hovering, bg still white */
+.single-product .pro-details-wishlist a.active,
+.single-product .pro-details-wishlist a.is-active,
+.single-product .pro-details-wishlist a.added,
+.single-product .pro-details-wishlist a.wishlisted,
+.single-product .pro-details-wishlist a.in-wishlist{
+    background:#ffffff !important;
+    border-color:#df0000 !important;
+}
+
+.single-product .pro-details-wishlist a.active::before,
+.single-product .pro-details-wishlist a.is-active::before,
+.single-product .pro-details-wishlist a.added::before,
+.single-product .pro-details-wishlist a.wishlisted::before,
+.single-product .pro-details-wishlist a.in-wishlist::before{
+    content:"♥" !important;
+    color:#df0000 !important;
+}
+
+/* ---- .action-wishlist variant (same button, different theme markup) ---- */
+
+/* Independent box size — not tied to the cart button */
+.action-wishlist {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 56px !important;
+    width: 56px !important;
+    min-width: 56px !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    border: 1px solid #e5e5e5 !important;
+    border-radius: 14px !important;
+    cursor: pointer !important;
+    transition: border-color 0.3s ease !important;
+    margin: 0 !important;
+    flex: 0 0 auto !important;
+}
+
+/* Icon inside the button (outline heart by default) */
+.action-wishlist::before {
+    content: "♡" !important;
+    font-size: 30px !important;
+    color: #111111 !important;
+    line-height: 1 !important;
+    transition: color 0.25s ease, transform 0.25s ease !important;
+}
+
+/* Hover: bg stays white, only the heart fills red */
+.action-wishlist:hover {
+    background: #ffffff !important;
+    border-color: #df0000 !important;
+}
+.action-wishlist:hover::before {
+    content: "♥" !important;
+    color: #df0000 !important;
+    transform: scale(1.15) !important;
+}
+
+/* Active / saved state — filled red heart, bg still white */
+.action-wishlist.active,
+.action-wishlist.is-active,
+.action-wishlist.added,
+.action-wishlist.wishlisted,
+.action-wishlist.in-wishlist {
+    background: #ffffff !important;
+    border-color: #df0000 !important;
+}
+.action-wishlist.active::before,
+.action-wishlist.is-active::before,
+.action-wishlist.added::before,
+.action-wishlist.wishlisted::before,
+.action-wishlist.in-wishlist::before {
+    content: "♥" !important;
+    color: #df0000 !important;
+}
+
+/* Remove any text inside (if present) */
+.action-wishlist span,
+.action-wishlist .text {
+    display: none !important;
+}
+
+/* Layout container for quantity + cart + wishlist row (layout only —
+   does not set any button's own size) */
+.pro-details-quality,
+.sticky__pro_button {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 16px !important;
+}
+
+/* On mobile, make the wishlist button full width if needed */
+@media (max-width: 767px) {
+    .pro-details-quality {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    .action-wishlist {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}
+/* Hide the broken, void JS wishlist button */
+.action-wishlist.tile-actions--btn.wishlist-btn {
+    display: none !important;
+}
+
+.single-product .product_additional_information{
+    margin-top:35px !important;
+    background:#ffffff !important;
+    border:1px solid #ececec !important;
+    border-radius:10px !important;
+    overflow:hidden !important;
+    padding: 14px;
+}
+
+.single-product .product_additional_information table{
+    width:100% !important;
+    border-collapse:collapse !important;
+}
+
+.single-product .product_additional_information tr{
+    border-bottom:1px solid #efefef !important;
+}
+
+.single-product .product_additional_information td{
+    padding:24px 28px !important;
+    font-size:16px !important;
+    line-height:1.8 !important;
+}
+
+.single-product .product_additional_information td:first-child{
+    width:32% !important;
+    font-weight:800 !important;
+    color:#111111 !important;
+}
+
+/* =========================================================
+   DYNAMIC CHECKOUT BUTTON
+========================================================= */
+
+.single-product .dynamic_btn{
+    width:100% !important;
+    max-width:100% !important;
+    margin-top:5px !important;
+}
+
+.single-product .dynamic_btn button{
+    width:100% !important;
+    height:62px !important;
+    border-radius:18px !important;
+    font-size:17px !important;
+    font-weight:700 !important;
+}
+
+/* =========================================================
+   PAYMENT AREA
+========================================================= */
+
+.single-product .methods-of-payment{
+    margin-top:25px !important;
+    padding-top:25px !important;
+    border-top:1px solid #ececec !important;
+}
+
+/* =========================================================
+   SOCIAL ICONS
+========================================================= */
+
+.single-product .social-links{
+    display:flex !important;
+    align-items:center !important;
+    gap:12px !important;
+    margin-top:15px !important;
+}
+
+.single-product .social-links a{
+    width:42px !important;
+    height:42px !important;
+    border-radius:10px !important;
+    background:#f5f5f5 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    transition:0.3s ease !important;
+}
+
+.single-product .social-links a:hover{
+    background:#df0000 !important;
+    color:#ffffff !important;
+}
+
+/* =========================================================
+   STICKY ADD TO CART
+========================================================= */
+
+.single-product .sticky__pro_add_cart,
+.single-product .pro_sticky_atc{
+    background:#ffffff !important;
+    border-top:1px solid #ececec !important;
+    box-shadow:0 -5px 25px rgba(0,0,0,0.06) !important;
+    padding:12px 20px !important;
+    min-height:78px !important;
+}
+
+/* SMALL TITLE */
+
+.single-product .sticky__pro_add_cart .pro__title,
+.single-product .pro_sticky_atc .pro__title{
+    font-size:14px !important;
+    line-height:1.3 !important;
+    font-weight:700 !important;
+    max-width:220px !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+}
+
+/* SMALL PRICE */
+
+.single-product .sticky__pro_add_cart .product-details-price{
+    font-size:18px !important;
+}
+
+/* SMALL BUTTON */
+
+.single-product .sticky__pro_add_cart button{
+    height:46px !important;
+    min-width:150px !important;
+    border-radius:10px !important;
+    font-size:15px !important;
+    padding:0 20px !important;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:991px){
+
+    .single-product{
+        padding:25px 0 !important;
+    }
+
+    .single-product .container{
+        padding-left:14px !important;
+        padding-right:14px !important;
+    }
+
+    .single-product .product-details-area{
+        padding:18px !important;
+        border-radius:24px !important;
+    }
+
+    .single-product .product-details-content{
+        padding-left:0 !important;
+        margin-top:25px !important;
+    }
+
+    .single-product .pro__title{
+        font-size:32px !important;
+    }
+
+    .single-product .product-details-price{
+        font-size:32px !important;
+    }
+
+    .single-product .pro-details-quality{
+        flex-direction:column !important;
+        align-items:stretch !important;
+    }
+
+    .single-product .pro__action__flex{
+        width:100% !important;
+        flex-wrap:wrap !important;
+    }
+
+    .single-product .pro-details-cart button,
+    .single-product .sp_cart_btn{
+        width:100% !important;
+        min-width:100% !important;
+    }
+
+    .single-product .pro-details-wishlist a{
+        width:100% !important;
+        min-width:100% !important;
+    }
+
+    .single-product .sticky__pro_add_cart{
+        padding:10px !important;
+        min-height:auto !important;
+    }
+
+    .single-product .sticky__pro_add_cart .pro__title{
+        display:none !important;
+    }
+
+    .single-product .product_additional_information td{
+        padding:18px !important;
+        display:block !important;
+        width:100% !important;
+    }
+
+}

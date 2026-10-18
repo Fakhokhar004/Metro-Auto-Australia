@@ -1,0 +1,67 @@
+<div class="theme-product-list-action">
+  {%- if settings.show_product_wishlist -%}
+  {%- if customer -%}
+  <a class="wishlist-btn list-wishlist" href="#" data-product-handle="{{ product.handle }}" title="Add To Wishlist">
+    <i class="sli sli-heart"></i>
+  </a>
+  {%- else -%}
+  <a class="list-wishlist" href="/account/login" title="Add To Wishlist">
+    <i class="sli sli-heart"></i>
+  </a>
+  {%- endif -%}
+  {%- endif -%}
+
+  {%- unless product.description contains '[affiliate_link]' -%}
+  {%- if product.available -%}
+  {%- if settings.product_cart_type == 'ajax_popup_cart' -%}
+  <a href="javascript:void(0);" onclick="{{ func }}; return false;" class="list-cart" title="Add To Cart">
+    {{ settings.cart_button_title }}
+  </a>
+
+     {%- elsif settings.product_cart_type == 'ajax_cart_drawer' -%}
+      <a href="javascript:void(0);" onclick="{{ func }}; return false;" class="list-cart ajax-spin-cart-drawer" title="Add To Cart">
+        {{ settings.cart_button_title }}
+      </a>
+    
+  {%- elsif settings.product_cart_type == 'ajax_spin_cart' -%}
+  <a href="javascript:void(0);" onclick="{{ func }}; return false;" class="ajax-spin-cart list-cart">
+    <span class="cart-title">
+      {{ settings.cart_button_title }}
+    </span>
+
+    <span class="cart-loading">
+      <i class="sli sli-reload rotate-inifinite"></i>
+    </span>
+
+    <span class="cart-added">
+      <i class="sli sli-check"></i>
+    </span>
+
+    <span class="cart-unavailable">
+      <i class="sli sli-check"></i>{{ settings.unavailable_title }}
+    </span>        
+  </a>
+  {%- elsif settings.product_cart_type == 'without_ajax_cart' -%}
+  <form action="/cart/add" method="post" enctype="multipart/form-data">
+    <select name="id" style="display:none;">
+      {% for variant in product.variants %}
+      <option value="{{ variant.id }}">{{ variant.title | escape }} - {{ variant.price | money }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="list-cart">
+      {{ settings.cart_button_title }}
+    </button>        
+  </form>
+  {%- else -%}
+  <a class="cart-disable remove_href list-cart" title="Add To Cart">
+    {{ settings.soldout_button_title }}
+  </a>
+  {%- endif -%}
+  {%- endif -%}
+  {%- endunless -%}
+
+  {%- if settings.compare_product_enalbe -%}
+  <a href="#" data-pid="{{ product.handle }}" class="compare list-refresh" title="Add To Compare">
+    <i class="sli sli-refresh"></i></a>
+  {%- endif -%}
+</div>

@@ -1,0 +1,469 @@
+{%- comment -%}
+  ============================================================================
+  snippets/ma-fitment-core.liquid
+  Metro Auto Australia — site-wide vehicle fitment engine
+
+  INSTALL
+    1. Save as snippets/ma-fitment-core.liquid
+    2. In layout/theme.liquid, just before </body>:
+         {% render 'ma-fitment-core' %}
+    3. Edit the CONFIG block below.
+
+  WHAT IT DOES
+    - Loads Make / Model / Year from Supabase RPC (normalised tables, id-based)
+    - Saves the chosen vehicle + up to 5 recent vehicles in localStorage
+    - Pins a "Shopping Parts For: ..." bar under the header, with a clear X
+    - "My Garage" modal to switch, add or remove vehicles
+    - Sends the shopper to a tag URL, a search URL or a metafield filter
+      depending on LINK_MODE, and carries that across internal links
+    - Auto-applies the vehicle when someone lands on a collection without it
+
+  EXPOSES
+    window.MAFit.open()      -> open the garage modal
+    window.MAFit.current()   -> {make, model, year, key, label} or null
+    window.MAFit.clear()     -> remove active vehicle and reload
+    window.MAFit.options(level, parents) -> Promise of option list
+  ============================================================================
+{%- endcomment -%}
+
+{%- liquid
+  # ---------------------------- CONFIG ----------------------------
+  assign SB_URL    = 'https://agqbeulmaqbookokxkgs.supabase.co/rest/v1'
+  assign SB_KEY    = 'sb_publishable_FzH9EUlosemwafRHniikeQ_P1RDg9gR'
+
+  # How the chosen vehicle turns into a storefront URL.
+  #   'tag'       -> /collections/all/toyota-corolla-2019      (product tags)
+  #   'search'    -> /search?q=Toyota Corolla 2019&type=product
+  #   'metafield' -> ?filter.p.m.custom.fitment_keys=...       (original)
+  assign LINK_MODE = 'search'
+
+  # Only used when LINK_MODE is 'metafield'.
+  assign FILTER_PARAM = 'filter.p.m.custom.fitment_keys'
+
+  # Where "Find parts" goes when the shopper isn't already on a collection.
+  assign DEFAULT_COLLECTION = '/collections/all'
+
+  # Auto-apply the saved vehicle on collection/search pages that don't
+  # already carry the filter. Set to false to only apply on click.
+  assign AUTO_APPLY = true
+  # ----------------------------------------------------------------
+-%}
+
+<div id="ma-fit-bar" class="ma-fit-bar" hidden>
+  <div class="ma-fit-bar__inner">
+    <span class="ma-fit-bar__chip">
+      <span class="ma-fit-bar__label">Shopping parts for:</span>
+      <strong data-ma-fit-label></strong>
+      <button type="button" class="ma-fit-bar__x" data-ma-fit-clear aria-label="Clear vehicle">&times;</button>
+    </span>
+    <button type="button" class="ma-fit-bar__link" data-ma-fit-open>Change vehicle</button>
+  </div>
+</div>
+
+<div id="ma-fit-modal" class="ma-fit-modal" hidden role="dialog" aria-modal="true" aria-labelledby="ma-fit-modal-title">
+  <div class="ma-fit-modal__backdrop" data-ma-fit-close></div>
+  <div class="ma-fit-modal__panel">
+    <div class="ma-fit-modal__head">
+      <div>
+        <h2 id="ma-fit-modal-title">My garage</h2>
+        <p>Choose your vehicle to see only the parts that fit.</p>
+      </div>
+      <button type="button" class="ma-fit-modal__x" data-ma-fit-close aria-label="Close">&times;</button>
+    </div>
+
+    <div class="ma-fit-modal__selects">
+      <select data-ma-level="make" aria-label="Make"><option value="">Make</option></select>
+      <select data-ma-level="model" aria-label="Model" disabled><option value="">Model</option></select>
+      <select data-ma-level="year" aria-label="Year" disabled><option value="">Year</option></select>
+      <button type="button" class="ma-fit-modal__go" data-ma-fit-go disabled>Find parts</button>
+    </div>
+
+    <p class="ma-fit-modal__msg" data-ma-fit-msg role="status" aria-live="polite" hidden></p>
+
+    <div class="ma-fit-modal__cols">
+      <div>
+        <h3>Currently shopping for</h3>
+        <div class="ma-fit-modal__current" data-ma-fit-current>No vehicle selected</div>
+      </div>
+      <div>
+        <h3>Recent vehicles</h3>
+        <ul class="ma-fit-modal__recent" data-ma-fit-recent></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .ma-fit-bar { background:#1b1b1b; color:#fff; }
+  .ma-fit-bar[hidden] { display:none; }
+  .ma-fit-bar__inner {
+    max-width:1400px; margin:0 auto; padding:8px 16px;
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  }
+  .ma-fit-bar__chip {
+    display:inline-flex; align-items:center; gap:8px;
+    background:#0a58ca; border-radius:4px; padding:5px 8px 5px 12px;
+    font-size:14px; line-height:1.3;
+  }
+  .ma-fit-bar__label { opacity:.8; }
+  .ma-fit-bar__x {
+    border:0; background:transparent; color:#fff; font-size:19px;
+    line-height:1; cursor:pointer; padding:0 2px;
+  }
+  .ma-fit-bar__link {
+    border:0; background:transparent; color:#8ec5ff;
+    font-size:14px; cursor:pointer; text-decoration:underline;
+  }
+
+  .ma-fit-modal { position:fixed; inset:0; z-index:9999; }
+  .ma-fit-modal[hidden] { display:none; }
+  .ma-fit-modal__backdrop { position:absolute; inset:0; background:rgba(0,0,0,.5); }
+  .ma-fit-modal__panel {
+    position:relative; background:#fff; max-width:900px; width:calc(100% - 32px);
+    margin:6vh auto 0; border-radius:6px; padding:0 0 24px; max-height:88vh; overflow:auto;
+  }
+  .ma-fit-modal__head {
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap:16px; padding:20px 24px; border-bottom:1px solid #e6e6e6; background:#f7f7f7;
+  }
+  .ma-fit-modal__head h2 { margin:0; font-size:26px; text-transform:uppercase; letter-spacing:.5px; }
+  .ma-fit-modal__head p { margin:4px 0 0; font-size:14px; color:#5c6670; }
+  .ma-fit-modal__x { border:0; background:transparent; font-size:26px; line-height:1; cursor:pointer; }
+
+  .ma-fit-modal__selects {
+    display:grid; grid-template-columns:repeat(3,1fr) auto; gap:10px; padding:22px 24px 0;
+  }
+  .ma-fit-modal__selects select {
+    height:44px; padding:0 12px; border:1px solid #d4d9dd; border-radius:4px;
+    background:#fff; font-size:15px; width:100%;
+  }
+  .ma-fit-modal__selects select:disabled { background:#f0f2f4; color:#9aa3ab; }
+  .ma-fit-modal__go {
+    height:44px; padding:0 22px; border:0; border-radius:4px;
+    background:#b21f24; color:#fff; font-size:15px; font-weight:600; cursor:pointer;
+  }
+  .ma-fit-modal__go:disabled { opacity:.45; cursor:not-allowed; }
+
+  .ma-fit-modal__msg { margin:12px 24px 0; font-size:14px; color:#b91c1c; }
+  .ma-fit-modal__msg[hidden] { display:none; }
+
+  .ma-fit-modal__cols {
+    display:grid; grid-template-columns:1fr 1fr; gap:28px; padding:24px 24px 0;
+  }
+  .ma-fit-modal__cols h3 { font-size:17px; margin:0 0 10px; }
+  .ma-fit-modal__current {
+    border:1px solid #d4d9dd; border-left:4px solid #0a58ca;
+    padding:14px; font-size:15px; min-height:52px;
+  }
+  .ma-fit-modal__recent { list-style:none; margin:0; padding:0; display:grid; gap:8px; }
+  .ma-fit-modal__recent li {
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    border:1px solid #d4d9dd; padding:10px 12px;
+  }
+  .ma-fit-modal__recent button.use {
+    border:0; background:transparent; text-align:left; font-size:15px; cursor:pointer; flex:1;
+  }
+  .ma-fit-modal__recent button.del {
+    border:0; background:transparent; font-size:17px; line-height:1; cursor:pointer; color:#666;
+  }
+
+  @media screen and (max-width:749px) {
+    .ma-fit-modal__selects { grid-template-columns:1fr; }
+    .ma-fit-modal__cols { grid-template-columns:1fr; gap:20px; }
+    .ma-fit-modal__panel { margin-top:0; border-radius:0; min-height:100vh; }
+    .ma-fit-modal__selects select { font-size:16px; }
+  }
+</style>
+
+<script>
+(function () {
+  if (window.MAFit) return;
+
+  var CFG = {
+    url:   {{ SB_URL | json }},
+    key:   {{ SB_KEY | json }},
+    mode:  {{ LINK_MODE | json }},
+    param: {{ FILTER_PARAM | json }},
+    coll:  {{ DEFAULT_COLLECTION | json }},
+    auto:  {{ AUTO_APPLY | json }}
+  };
+
+  var STORE = 'ma_garage_v1';
+  var MAX_RECENT = 5;
+
+  /* ---------- storage ---------- */
+  function read() {
+    try { return JSON.parse(localStorage.getItem(STORE)) || { current: null, recent: [] }; }
+    catch (e) { return { current: null, recent: [] }; }
+  }
+  function write(s) { try { localStorage.setItem(STORE, JSON.stringify(s)); } catch (e) {} }
+
+  function slug(v) {
+    return String(v).toLowerCase().trim()
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  }
+  function makeKey(v) { return slug(v.make) + '-' + slug(v.model) + '-' + v.year; }
+  function makeLabel(v) { return (v.make + ' ' + v.model + ' ' + v.year).toUpperCase(); }
+
+  /* ---------- supabase ---------- */
+  function rpc(fn, body) {
+    return fetch(CFG.url + '/rpc/' + fn, {
+      method: 'POST',
+      headers: {
+        apikey: CFG.key,
+        Authorization: 'Bearer ' + CFG.key,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body || {})
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) { throw new Error(t || r.status); });
+      return r.json();
+    });
+  }
+
+  // Every level returns a uniform [{id, name}] list.
+  function options(level, p) {
+    p = p || {};
+    if (level === 'make') {
+      return rpc('fitment_makes');
+    }
+    if (level === 'model') {
+      return rpc('fitment_models', { p_make_id: Number(p.makeId) });
+    }
+    return rpc('fitment_years', { p_model_id: Number(p.modelId) })
+      .then(function (rows) {
+        return rows.map(function (r) { return { id: r.year, name: String(r.year) }; });
+      });
+  }
+
+  /* ---------- url handling ---------- */
+  function isFilterable(pathname) {
+    return /^\/collections\//.test(pathname) || /^\/search/.test(pathname);
+  }
+
+  // Strip any vehicle we previously added to this path.
+  function stripVehicle(u) {
+    u.searchParams.delete(CFG.param);
+    u.searchParams.delete('page');
+    if (CFG.mode === 'tag') {
+      u.pathname = u.pathname.replace(/^(\/collections\/[^\/]+)\/.*$/, '$1');
+    }
+    return u;
+  }
+
+  function withVehicle(href, v) {
+    var u;
+    try { u = new URL(href, window.location.origin); } catch (e) { return href; }
+    if (u.origin !== window.location.origin) return href;
+
+    if (CFG.mode === 'search') {
+      var terms = (v.make + ' ' + v.model + ' ' + v.year)
+                    .split(/\s+/).filter(Boolean).join(' AND ');
+      return '/search?q=' + encodeURIComponent(terms) + '&type=product';
+    }
+
+    if (!isFilterable(u.pathname)) return href;
+    stripVehicle(u);
+
+    if (CFG.mode === 'tag') {
+      if (!/^\/collections\//.test(u.pathname)) return u.pathname + u.search + u.hash;
+      u.pathname = u.pathname.replace(/\/$/, '') + '/' + v.key;
+      return u.pathname + u.search + u.hash;
+    }
+
+    u.searchParams.set(CFG.param, v.key);
+    return u.pathname + u.search + u.hash;
+  }
+
+  function hasVehicle(u) {
+    if (CFG.mode === 'search') return u.searchParams.has('q');
+    if (CFG.mode === 'tag') return /^\/collections\/[^\/]+\/.+/.test(u.pathname);
+    return u.searchParams.has(CFG.param);
+  }
+
+  function applyNow(v) {
+    var here = window.location.pathname;
+    var target = (CFG.mode !== 'search' && isFilterable(here))
+      ? window.location.pathname + window.location.search
+      : CFG.coll;
+    window.location.href = withVehicle(target, v);
+  }
+
+  /* ---------- public api ---------- */
+  var MAFit = {
+    current: function () { return read().current; },
+    options: options,
+    set: function (v) {
+      var s = read();
+      v.key = makeKey(v);
+      v.label = makeLabel(v);
+      s.current = v;
+      s.recent = [v].concat((s.recent || []).filter(function (r) { return r.key !== v.key; }))
+                    .slice(0, MAX_RECENT);
+      write(s);
+      applyNow(v);
+    },
+    clear: function () {
+      var s = read();
+      s.current = null;
+      write(s);
+      var u = new URL(window.location.href);
+      stripVehicle(u);
+      if (CFG.mode === 'search') u.searchParams.delete('q');
+      window.location.href = u.pathname + u.search;
+    },
+    remove: function (key) {
+      var s = read();
+      s.recent = (s.recent || []).filter(function (r) { return r.key !== key; });
+      if (s.current && s.current.key === key) s.current = null;
+      write(s);
+      renderAll();
+    },
+    open: function () { modal.hidden = false; document.body.style.overflow = 'hidden'; renderAll(); },
+    close: function () { modal.hidden = true; document.body.style.overflow = ''; }
+  };
+  window.MAFit = MAFit;
+
+  /* ---------- dom ---------- */
+  var bar    = document.getElementById('ma-fit-bar');
+  var modal  = document.getElementById('ma-fit-modal');
+  var labelEl = bar.querySelector('[data-ma-fit-label]');
+  var selMake  = modal.querySelector('[data-ma-level="make"]');
+  var selModel = modal.querySelector('[data-ma-level="model"]');
+  var selYear  = modal.querySelector('[data-ma-level="year"]');
+  var goBtn    = modal.querySelector('[data-ma-fit-go]');
+  var msgEl    = modal.querySelector('[data-ma-fit-msg]');
+  var curEl    = modal.querySelector('[data-ma-fit-current]');
+  var recentEl = modal.querySelector('[data-ma-fit-recent]');
+
+  function say(t) {
+    msgEl.hidden = !t;
+    msgEl.textContent = t || '';
+  }
+
+  function fill(sel, values, placeholder) {
+    sel.innerHTML = '';
+    var o = document.createElement('option');
+    o.value = ''; o.textContent = placeholder;
+    sel.appendChild(o);
+    values.forEach(function (v) {
+      var el = document.createElement('option');
+      el.value = v.id; el.textContent = v.name;
+      sel.appendChild(el);
+    });
+    sel.disabled = values.length === 0;
+  }
+
+  function syncGo() {
+    goBtn.disabled = !(selMake.value && selModel.value && selYear.value);
+  }
+
+  selMake.addEventListener('change', function () {
+    fill(selModel, [], 'Model'); fill(selYear, [], 'Year');
+    selModel.disabled = selYear.disabled = true; syncGo(); say('');
+    if (!selMake.value) return;
+    options('model', { makeId: selMake.value })
+      .then(function (v) { fill(selModel, v, 'Model'); syncGo(); })
+      .catch(function (e) { say('Could not load models.'); console.warn('[MAFit]', e); });
+  });
+
+  selModel.addEventListener('change', function () {
+    fill(selYear, [], 'Year'); selYear.disabled = true; syncGo(); say('');
+    if (!selModel.value) return;
+    options('year', { modelId: selModel.value })
+      .then(function (v) { fill(selYear, v, 'Year'); syncGo(); })
+      .catch(function (e) { say('Could not load years.'); console.warn('[MAFit]', e); });
+  });
+
+  selYear.addEventListener('change', syncGo);
+
+  goBtn.addEventListener('click', function () {
+    if (goBtn.disabled) return;
+    MAFit.set({
+      make:    selMake.options[selMake.selectedIndex].textContent,
+      model:   selModel.options[selModel.selectedIndex].textContent,
+      year:    selYear.options[selYear.selectedIndex].textContent,
+      makeId:  selMake.value,
+      modelId: selModel.value
+    });
+  });
+
+  function renderAll() {
+    var s = read();
+    if (s.current) {
+      labelEl.textContent = s.current.label;
+      bar.hidden = false;
+      curEl.textContent = s.current.label;
+    } else {
+      bar.hidden = true;
+      curEl.textContent = 'No vehicle selected';
+    }
+
+    recentEl.innerHTML = '';
+    (s.recent || []).forEach(function (v) {
+      var li = document.createElement('li');
+      var use = document.createElement('button');
+      use.type = 'button'; use.className = 'use'; use.textContent = v.label;
+      use.onclick = function () { MAFit.set(v); };
+      var del = document.createElement('button');
+      del.type = 'button'; del.className = 'del'; del.innerHTML = '&times;';
+      del.setAttribute('aria-label', 'Remove ' + v.label);
+      del.onclick = function () { MAFit.remove(v.key); };
+      li.appendChild(use); li.appendChild(del);
+      recentEl.appendChild(li);
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-ma-fit-open]')) { e.preventDefault(); MAFit.open(); return; }
+    if (e.target.closest('[data-ma-fit-close]')) { MAFit.close(); return; }
+    if (e.target.closest('[data-ma-fit-clear]')) { MAFit.clear(); return; }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !modal.hidden) MAFit.close();
+  });
+
+  /* ---------- carry the vehicle across internal links ---------- */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a || !a.href || a.target === '_blank') return;
+    var cur = read().current;
+    if (!cur) return;
+    var u;
+    try { u = new URL(a.href); } catch (err) { return; }
+    if (u.origin !== window.location.origin) return;
+    if (!isFilterable(u.pathname)) return;
+    if (hasVehicle(u)) return;
+    a.href = withVehicle(a.href, cur);
+  }, true);
+
+  /* ---------- auto-apply on landing ---------- */
+  function autoApply() {
+    if (!CFG.auto) return;
+    var cur = read().current;
+    if (!cur) return;
+    if (!isFilterable(window.location.pathname)) return;
+    if (CFG.mode === 'search') return;
+    var u = new URL(window.location.href);
+    if (hasVehicle(u)) return;
+    // don't fight a shopper who just cleared filters on this page
+    if (u.search.indexOf('filter.') > -1) return;
+    if (sessionStorage.getItem('ma_fit_auto') === u.pathname + u.search) return;
+    try { sessionStorage.setItem('ma_fit_auto', u.pathname + u.search); } catch (e) {}
+    window.location.replace(withVehicle(u.pathname + u.search, cur));
+  }
+
+  /* ---------- boot ---------- */
+  renderAll();
+  autoApply();
+
+  options('make')
+    .then(function (v) { fill(selMake, v, 'Make'); })
+    .catch(function (e) {
+      fill(selMake, [], 'Unavailable');
+      say('Vehicle list unavailable.');
+      console.warn('[MAFit]', e);
+    });
+})();
+</script>

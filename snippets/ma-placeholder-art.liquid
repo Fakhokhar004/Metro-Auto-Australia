@@ -1,0 +1,17 @@
+{%- comment -%}
+  SVG stand-ins from ProductCard.dc.html, used when a product has no image.
+  kind: pad | can | bottle | tray | clip.  tint: fill colour for can/bottle/tray.
+{%- endcomment -%}
+{%- assign tint = tint | default: '#2F6FD6' -%}
+{%- case kind -%}
+  {%- when 'can' -%}
+    <svg width="46%" height="74%" viewBox="0 0 120 200" fill="none" aria-hidden="true"><rect x="52" y="4" width="16" height="12" rx="2" fill="#62666D"/><path d="M40 16h40v18H40z" fill="#E4E4E7"/><rect x="30" y="34" width="60" height="160" rx="10" fill="{{ tint }}"/><rect x="30" y="80" width="60" height="52" fill="#FFFFFF"/><rect x="38" y="90" width="44" height="10" rx="2" fill="{{ tint }}"/><rect x="38" y="106" width="28" height="6" rx="2" fill="#9A9EA6"/><rect x="36" y="40" width="6" height="34" rx="3" fill="#FFFFFF" opacity="0.3"/></svg>
+  {%- when 'bottle' -%}
+    <svg width="46%" height="74%" viewBox="0 0 120 200" fill="none" aria-hidden="true"><path d="M48 6h26v18H48z" fill="#E4E4E7"/><path d="M74 8h24l-5 10H74z" fill="#E4E4E7"/><path d="M42 32h36l8 16v140a8 8 0 0 1-8 8H42a8 8 0 0 1-8-8V48z" fill="{{ tint }}"/><rect x="38" y="84" width="44" height="58" rx="3" fill="#FFFFFF"/><rect x="44" y="94" width="32" height="8" rx="2" fill="{{ tint }}"/></svg>
+  {%- when 'tray' -%}
+    <svg width="80%" height="64%" viewBox="0 0 200 140" fill="none" aria-hidden="true"><rect x="14" y="22" width="172" height="104" rx="8" fill="{{ tint }}"/><rect x="22" y="30" width="156" height="88" rx="4" fill="#2A2C31"/><rect x="26" y="34" width="34" height="38" rx="3" fill="#3A3D44"/><rect x="64" y="34" width="34" height="38" rx="3" fill="#3A3D44"/><rect x="102" y="34" width="34" height="38" rx="3" fill="#3A3D44"/><rect x="140" y="34" width="34" height="38" rx="3" fill="#3A3D44"/><rect x="26" y="76" width="34" height="38" rx="3" fill="#3A3D44"/><rect x="64" y="76" width="34" height="38" rx="3" fill="#3A3D44"/><rect x="102" y="76" width="34" height="38" rx="3" fill="#3A3D44"/><rect x="140" y="76" width="34" height="38" rx="3" fill="#3A3D44"/><circle cx="43" cy="53" r="7" fill="#C9CBD0"/><circle cx="81" cy="53" r="6" fill="#E1251B"/><circle cx="119" cy="53" r="8" fill="#C9CBD0"/><circle cx="157" cy="53" r="6" fill="#9A9EA6"/><circle cx="43" cy="95" r="6" fill="#9A9EA6"/><circle cx="81" cy="95" r="8" fill="#C9CBD0"/><circle cx="119" cy="95" r="6" fill="#E1251B"/><circle cx="157" cy="95" r="7" fill="#C9CBD0"/></svg>
+  {%- when 'clip' -%}
+    <svg width="66%" height="60%" viewBox="0 0 200 140" fill="none" aria-hidden="true"><path d="M30 100 L80 40 L92 50 L48 104 Z" fill="#C9CBD0"/><path d="M70 110 L130 34 L142 44 L88 114 Z" fill="#E1251B"/><path d="M112 112 L168 46 L178 56 L126 116 Z" fill="#9A9EA6"/></svg>
+  {%- else -%}
+    <svg width="72%" height="72%" viewBox="0 0 200 200" fill="none" aria-hidden="true"><circle cx="100" cy="100" r="78" fill="#2A2C31" stroke="#4A4D55" stroke-width="2"/><circle cx="100" cy="100" r="68" stroke="#3A3D44" stroke-width="1.5" stroke-dasharray="2 6"/><circle cx="100" cy="100" r="28" fill="#3A3D44"/><circle cx="100" cy="100" r="10" fill="#17181B"/><path d="M34 62 C24 84 24 116 34 138 L54 128 C47 112 47 88 54 72 Z" fill="#E1251B"/><path d="M146 54 Q176 100 146 146 L134 138 Q158 100 134 62 Z" fill="#9A9EA6"/></svg>
+{%- endcase -%}

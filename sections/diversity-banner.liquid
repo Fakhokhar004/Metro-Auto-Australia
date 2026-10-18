@@ -1,0 +1,975 @@
+<div class="banner-area diversity-banner {% if settings.section__animation__enable %}scroll-zoom {% endif %}" id="section-{{ section.id }}">
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'full_width_full' %}fullwidth {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+ 	<div class="row custom_margin_row">
+      {%- for block in section.blocks -%}{%- case block.type -%}
+
+        
+      {%- when 'banner' -%}
+
+      {%- liquid
+        assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+        assign fetch_priority = 'auto'
+        if section.index == 1
+          assign fetch_priority = 'high'
+        endif
+        assign image_class = 'lazyload-main-image animated responsive-image__image'
+        assign lazy_load = 'lazy'
+      -%}
+        
+      <div class="col-lg-{{ block.settings.ban_col }} col-md-{{ block.settings.ban_md_col }} col-sm-{{ block.settings.ban_sm_col }} col-12 block_{{ block.id }} custom_margin_col">
+                
+        <div class="single-banner mb-30 scroll-zoom">
+          <a href="{{ bset.btn1_url }}" class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.img1.aspect_ratio | times: 100}}%;">
+            {%- if block.settings.img1 -%}
+              
+              {% assign image_height = block.settings.img1.width | divided_by: block.settings.img1.aspect_ratio %}
+              {{ block.settings.img1 | image_url: width: 3840 | image_tag: width: block.settings.img1.width, height: image_height, 
+              widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt}}
+      
+            {%- else -%}
+            <img loading="lazy"  class="animated" src="https://via.placeholder.com/700x400" alt="{{ image.alt }}">
+            {%- endif -%}
+          </a>
+          <div class="banner-common banner-content {{ block.settings.content_align }}">
+            {%- if block.settings.t1 != '' -%}
+            <h1>{{ block.settings.t1 }}</h1>
+            {%- endif -%}
+
+            {%- if block.settings.t2 != '' -%}
+            <h2 class="multi_bottom" >{{ block.settings.t2 }}</h2>
+            {%- endif -%}
+
+            {%- if block.settings.btn1 != '' -%}
+            <a class="ban_btn1 {{ block.settings.button_style }}"  href="{{ block.settings.btn1_url }}">{{ block.settings.btn1 }}</a>
+            {%- endif -%}
+          </div>
+        </div>
+        
+        
+                  
+        {% if block.settings.banner_custom_color %}
+          {% style %}
+
+        .block_{{ block.id }} .single-banner .banner-common a.ban_btn1{
+        	color: {{ block.settings.btn1_color }};
+        }
+        .block_{{ block.id }} .single-banner .banner-common a.ban_btn1:hover{
+        	color: {{ block.settings.btn1_hover_color }};
+        }  
+
+        .block_{{ block.id }} .single-banner .banner-common a.ban_btn1.banner_style_2{
+        	border: 1px solid {{ block.settings.btn1_border_color }};
+        	background: {{ block.settings.btn1_bg_color }};
+        	border-radius: {{ block.settings.button_border_radius }}px;
+        }
+
+        .block_{{ block.id }} .single-banner .banner-common a.ban_btn1.banner_style_2:hover{
+       	 	background: {{ block.settings.btn1_bg_hover_color }};
+       		border: 1px solid {{ block.settings.btn1_border_hover_color }};
+        } 
+        
+
+        
+          .banner-area .block_{{ block.id }} .single-banner .banner-common h1{
+              color: {{ block.settings.t1_color }};
+          }
+          .banner-area .block_{{ block.id }} .single-banner .banner-common h2{
+              color: {{ block.settings.t2_color }};
+          }
+          .diversity-banner .block_{{ block.id }} .single-banner .banner-common {
+              left: {{ block.settings.content_left_right_position }}%;
+              top: {{ block.settings.content_top_bottom_position }}%;
+          }
+        
+        
+          {%- assign top_title = block.settings.top_title -%}
+          {%- assign bottom_title = block.settings.bottom_title -%}
+          {%- assign button_title = block.settings.button_title -%}
+
+          {{ top_title | font_face }}
+          {{ bottom_title | font_face }}
+          {{ button_title | font_face }}
+
+          .banner-area .block_{{ block.id }} .single-banner .banner-common h1{
+            font-family: {{ top_title.family }}, {{ top_title.fallback_families }};
+            font-style: {{ top_title.style }};
+            font-weight: {{ top_title.weight }};
+            font-size:{{ block.settings.top_title_font_size }}px;
+            line-height:{{ block.settings.top_title_font_lineheight }}px;
+            margin: 0 0 {{ block.settings.top_title_margin }}px;
+          }
+
+          .banner-area .block_{{ block.id }} .single-banner .banner-common h2 {
+            font-family: {{ bottom_title.family }}, {{ bottom_title.fallback_families }};
+            font-style: {{ bottom_title.style }};
+            font-weight: {{ bottom_title.weight }};
+            font-size:{{ block.settings.bottom_title_font_size }}px;
+            line-height:{{ block.settings.bottom_title_font_lineheight }}px;
+            margin: 0 0 {{ block.settings.bottom_title_margin }}px;
+          }
+
+          .block_{{ block.id }} .single-banner .banner-common a.ban_btn1 {
+            font-family: {{ button_title.family }}, {{ button_title.fallback_families }};
+            font-style: {{ button_title.style }};
+            font-weight: {{ button_title.weight }};
+            font-size:{{ block.settings.button_title_font_size }}px;
+            margin: {{ block.settings.button_title_margin }}px 0 0;
+          }
+        
+        
+        
+        
+          @media (min-width: 768px) and (max-width: 1200px) {
+        
+            .banner-area .block_{{ block.id }} .single-banner .banner-common h1{
+              	font-size:{{ block.settings.top_title_font_size_md }}px;
+              	line-height:{{ block.settings.top_title_font_lineheight_md }}px;
+            }
+            .banner-area .block_{{ block.id }} .single-banner .banner-common h2 {
+            	font-size:{{ block.settings.bottom_title_font_size_md }}px;
+            	line-height:{{ block.settings.bottom_title_font_lineheight_md }}px;
+            }
+        
+          }
+
+          @media (min-width: 300px) and (max-width: 767px) {    
+
+           .banner-area .block_{{ block.id }} .single-banner .banner-common h1{
+              	font-size:{{ block.settings.top_title_font_size_sm }}px;
+              	line-height:{{ block.settings.top_title_font_lineheight_sm }}px;
+            }
+            .banner-area .block_{{ block.id }} .single-banner .banner-common h2 {
+            	font-size:{{ block.settings.bottom_title_font_size_sm }}px;
+            	line-height:{{ block.settings.bottom_title_font_lineheight_sm }}px;
+            }
+
+          }
+        
+        
+        
+       	{% endstyle %}
+        {% endif %}
+        
+        
+      </div>
+      {%- endcase -%}
+      {%- endfor -%}
+      
+      
+    </div>
+  </div>
+</div>
+
+
+{%- render 'section-style' -%}
+
+
+
+
+{% if section.settings.banner_custom_margin %}
+<style>
+  #section-{{ section.id }} .custom_margin_row{
+    margin-left: -{{ section.settings.banner_margin_left_right }}px;
+    margin-right: -{{ section.settings.banner_margin_left_right }}px;
+  }
+
+  #section-{{ section.id }} .custom_margin_row .custom_margin_col{
+    padding-left: {{ section.settings.banner_margin_left_right }}px;
+    padding-right: {{ section.settings.banner_margin_left_right }}px;
+  }
+
+  #section-{{ section.id }} .custom_margin_row .single-banner{
+    margin-bottom:{{ section.settings.banner_margin_bottom }}px
+  }
+</style>
+{% endif %}
+
+
+
+{% schema %}
+  {
+    "name": "Diversity Banner",
+    "settings": [
+              {
+                "type": "select",
+                "id": "section_width",
+                "label": "Section Width",
+                "options":[
+                      {
+                          "label": "Full Width",
+                          "value": "full_width_full"
+                      },
+                      {
+                          "label": "Full Width ( Container )",
+                          "value": "full_width"
+                      },
+
+                      {
+                          "label": "Box Width",
+                          "value": "box_width"
+                      },
+                      {
+                          "label": "Default Width",
+                          "value": "default"
+                      }
+                  ],
+                  "default": "default"
+              },
+              {
+                  "type": "header",
+                  "content": "Banner Custom Margin"
+              },
+              {
+                "type": "checkbox",
+                "id": "banner_custom_margin",
+                "label": "Banner Custom Margin Enable",
+                "default": false
+              },
+              {
+                "type": "range",
+                "id": "banner_margin_bottom",
+                "min": 0,
+                "max": 50,
+                "step": 1,
+                "label": "Margin Top",
+                "unit": "px",
+                "default": 30
+              },
+              {
+                "type": "range",
+                "id": "banner_margin_left_right",
+                "min": 0,
+                "max": 50,
+                "step": 1,
+                "label": "Banner Margin Left Right",
+                "unit": "px",
+                "default": 15
+              }
+
+],
+	"blocks":[
+	   {
+          "type": "banner",
+          "name": "Banner",
+          "settings": [
+              {
+                "type": "select",
+                "id": "ban_col",
+                "label": "Select Column Main",
+                "options":[
+                      {
+                          "label": "1",
+                          "value": "1"
+                      },
+                      {
+                          "label": "2",
+                          "value": "2"
+                      },
+                      {
+                          "label": "3",
+                          "value": "3"
+                      },
+                      {
+                          "label": "4",
+                          "value": "4"
+                      },
+					  {
+                          "label": "5",
+                          "value": "5"
+                      },
+                      {
+                          "label": "6",
+                          "value": "6"
+                      },
+                      {
+                          "label": "7",
+                          "value": "7"
+                      },
+                      {
+                          "label": "8",
+                          "value": "8"
+                      },
+					  {
+                          "label": "9",
+                          "value": "9"
+                      },
+                      {
+                          "label": "10",
+                          "value": "10"
+                      },
+                      {
+                          "label": "11",
+                          "value": "11"
+                      },
+                      {
+                          "label": "12",
+                          "value": "12"
+                      }
+                  ],
+                  "default": "6"
+              },
+              {
+                "type": "select",
+                "id": "ban_md_col",
+                "label": "Select Column Medium",
+                "options":[
+                      {
+                          "label": "1",
+                          "value": "1"
+                      },
+                      {
+                          "label": "2",
+                          "value": "2"
+                      },
+                      {
+                          "label": "3",
+                          "value": "3"
+                      },
+                      {
+                          "label": "4",
+                          "value": "4"
+                      },
+					  {
+                          "label": "5",
+                          "value": "5"
+                      },
+                      {
+                          "label": "6",
+                          "value": "6"
+                      },
+                      {
+                          "label": "7",
+                          "value": "7"
+                      },
+                      {
+                          "label": "8",
+                          "value": "8"
+                      },
+					  {
+                          "label": "9",
+                          "value": "9"
+                      },
+                      {
+                          "label": "10",
+                          "value": "10"
+                      },
+                      {
+                          "label": "11",
+                          "value": "11"
+                      },
+                      {
+                          "label": "12",
+                          "value": "12"
+                      }
+                  ],
+                  "default": "6"
+              },
+              {
+                "type": "select",
+                "id": "ban_sm_col",
+                "label": "Select Column Small",
+                "options":[
+                      {
+                          "label": "1",
+                          "value": "1"
+                      },
+                      {
+                          "label": "2",
+                          "value": "2"
+                      },
+                      {
+                          "label": "3",
+                          "value": "3"
+                      },
+                      {
+                          "label": "4",
+                          "value": "4"
+                      },
+					  {
+                          "label": "5",
+                          "value": "5"
+                      },
+                      {
+                          "label": "6",
+                          "value": "6"
+                      },
+                      {
+                          "label": "7",
+                          "value": "7"
+                      },
+                      {
+                          "label": "8",
+                          "value": "8"
+                      },
+					  {
+                          "label": "9",
+                          "value": "9"
+                      },
+                      {
+                          "label": "10",
+                          "value": "10"
+                      },
+                      {
+                          "label": "11",
+                          "value": "11"
+                      },
+                      {
+                          "label": "12",
+                          "value": "12"
+                      }
+                  ],
+                  "default": "6"
+              },
+              {
+                  "type": "image_picker",
+                  "id": "img1",
+                  "label": "Image"
+              },
+
+              {
+                  "type": "checkbox",
+                  "id": "banner_custom_color",
+                  "label": "Banner Custom Color Enable",
+                  "default": false
+              },
+              {
+                "type": "select",
+                "id": "content_align",
+                "label": "Content Align",
+                "options":[
+                      {
+                          "label": "Text Center",
+                          "value": "text-center"
+                      },
+                      {
+                          "label": "Text Right",
+                          "value": "text-right"
+                      },
+                      {
+                          "label": "Text Left",
+                          "value": "text-left"
+                      }
+                  ],
+                  "default": "text-left"
+              },
+              {
+                "type": "range",
+                "id": "content_left_right_position",
+                "min": 0,
+                "max": 100,
+                "step": 1,
+                "label": "Content Left Right Position",
+                "unit": "%",
+                "default": 0
+              },
+              {
+                "type": "range",
+                "id": "content_top_bottom_position",
+                "min": 0,
+                "max": 100,
+                "step": 1,
+                "label": "Content Top Bottom Position",
+                "unit": "%",
+                "default": 0
+              },
+
+
+			  {
+                  "type": "header",
+                  "content": "Top Title"
+              },
+              {
+                  "type": "text",
+                  "id": "t1",
+                  "label": "Title 1",
+                  "default": "BLACK FRIDAY"
+              },
+              {
+                "type": "font_picker",
+                "id": "top_title",
+                "label": "Font Family: Top Title",
+                "default": "poppins_n7"
+              },
+              {
+                  "type": "header",
+                  "content": "Main Screen"
+              },
+              {
+                "type": "text",
+                "id": "top_title_font_size",
+                "label": "Font Size: Font Size",
+                "default": "40",
+                "info": "Top Title Font Size"
+              },
+
+              {
+                "type":      "range",
+                "id":        "top_title_font_lineheight",
+                "min":       0,
+                "max":        100,
+                "step":       1,
+                "unit":       "px",
+                "label":     "Top Title Line Height",
+                "default":   50
+              },
+              {
+                  "type": "header",
+                  "content": "Medium Screen"
+              },
+              {
+                "type": "text",
+                "id": "top_title_font_size_md",
+                "label": "Font Size: Font Size",
+                "default": "30",
+                "info": "Top Title Font Size (MD)"
+              },
+
+              {
+                "type":      "range",
+                "id":        "top_title_font_lineheight_md",
+                "min":       0,
+                "max":        100,
+                "step":       1,
+                "unit":       "px",
+                "label":     "Top Title Line Height (MD)",
+                "default":   40
+              },
+              {
+                  "type": "header",
+                  "content": "Small Screen"
+              },
+              {
+                "type": "text",
+                "id": "top_title_font_size_sm",
+                "label": "Font Size: Font Size (SM)",
+                "default": "25",
+                "info": "Top Title Font Size (SM)"
+              },
+
+              {
+                "type":      "range",
+                "id":        "top_title_font_lineheight_sm",
+                "min":       0,
+                "max":        100,
+                "step":       1,
+                "unit":       "px",
+                "label":     "Top Title Line Height (SM)",
+                "default":   30
+              },
+              {
+                "type":      "range",
+                "id":        "top_title_margin",
+                "min":       0,
+                "max":        70,
+                "step":       1,
+                "unit":       "px",
+                "label":     "Top Title Margin Bottom",
+                "default":   20
+              },
+
+
+			  {
+                  "type": "header",
+                  "content": "Bottom Title"
+              },
+              {
+                  "type": "text",
+                  "id": "t2",
+                  "label": "Title 2",
+                  "default": "Wall Lighting <br>Black."
+              },
+              {
+                "type": "font_picker",
+                "id": "bottom_title",
+                "label": "Font Family: Bottom Title",
+                "default": "poppins_n4"
+              },
+              {
+                  "type": "header",
+                  "content": "Main Screen"
+              },
+              {
+                "type": "text",
+                "id": "bottom_title_font_size",
+                "label": "Font Size: Font Size",
+                "default": "28",
+                "info": "Bottom Title Font Size"
+              },              
+			  {
+                "type":      "range",
+                "id":        "bottom_title_font_lineheight",
+                "min":       0,
+                "max":        100,
+                "step":       1,
+                "unit":       "px",
+                "label":     "Bottom Title Margin Bottom",
+                "default":   35
+              },              
+			  {
+                  "type": "header",
+                  "content": "Medium Screen"
+              },
+              {
+                "type": "text",
+                "id": "bottom_title_font_size_md",
+                "label": "Font Size: Font Size (MD)",
+                "default": "20",
+                "info": "Bottom Title Font Size (MD)"
+              },              
+			  {
+                "type":      "range",
+                "id":        "bottom_title_font_lineheight_md",
+                "min":       0,
+                "max":        100,
+                "step":       1,
+                "unit":       "px",
+                "label":     "Bottom Title Margin Bottom (MD)",
+                "default":   30
+              },              
+			  {
+                  "type": "header",
+                  "content": "Small Screen"
+              },
+              {
+                "type": "text",
+                "id": "bottom_title_font_size_sm",
+                "label": "Font Size: Font Size (SM)",
+                "default": "18",
+                "info": "Bottom Title Font Size (SM)"
+              },              
+			  {
+                "type":      "range",
+                "id":        "bottom_title_font_lineheight_sm",
+                "min":       0,
+                "max":        100,
+                "step":       1,
+                "unit":       "px",
+                "label":     "Bottom Title Margin Bottom (SM)",
+                "default":   28
+              },
+              {
+                "type":      "range",
+                "id":        "bottom_title_margin",
+                "min":       0,
+                "max":        70,
+                "step":       1,
+                "unit":       "px",
+                "label":     "Bottom Title Margin Bottom",
+                "default":   35
+              },
+
+
+			  {
+                  "type": "header",
+                  "content": "Button"
+              },
+              {
+                  "type": "text",
+                  "id": "btn1",
+                  "label": "Button",
+                  "default": "SHOP NOW"
+              },
+              {
+                  "type": "url",
+                  "id": "btn1_url",
+                  "label": "URL",
+                  "default": "\/collections\/all"
+              },
+              {
+                "type": "font_picker",
+                "id": "button_title",
+                "label": "Font Family: Botton Title",
+                "default": "poppins_n4"
+              },
+              {
+                "type": "text",
+                "id": "button_title_font_size",
+                "label": "Font Size: Font Size",
+                "default": "14",
+                "info": "Botton Title Font Size"
+              },
+              {
+                "type":      "range",
+                "id":        "button_title_margin",
+                "min":       0,
+                "max":        70,
+                "step":       1,
+                "unit":       "px",
+                "label":     "Button Title Margin Top",
+                "default":   10
+              },
+              {
+                "type": "select",
+                "id": "button_style",
+                "label": "Button_style",
+                "options":[
+                      {
+                          "label": "Default",
+                          "value": "default"
+                      },
+                      {
+                          "label": "Style 2",
+                          "value": "banner_style_2"
+                      }
+                  ],
+                  "default": "default"
+              },
+              {
+                "type": "range",
+                "id": "button_border_radius",
+                "min": 0,
+                "max": 50,
+                "step": 1,
+                "label": "Button Border Radius",
+                "unit": "px",
+                "default": 0
+              },
+              {
+                  "type": "color",
+                  "id": "t1_color",
+                  "label": "Title 1 Color",
+                  "default": "#1f2226"
+              },
+              {
+                  "type": "color",
+                  "id": "t2_color",
+                  "label": "Title 2 Color",
+                  "default": "#1f2226"
+              },
+              {
+                  "type": "color",
+                  "id": "btn1_color",
+                  "label": "Button Color",
+                  "default": "#1f2226"
+              },
+              {
+                  "type": "color",
+                  "id": "btn1_hover_color",
+                  "label": "Button Hover Color",
+                  "default": "#1f2226"
+              },              
+			  {
+                  "type": "color",
+                  "id": "btn1_bg_color",
+                  "label": "Button BG Color",
+                  "default": "#fff"
+              },
+              {
+                  "type": "color",
+                  "id": "btn1_bg_hover_color",
+                  "label": "Button BG Hover Color",
+                  "default": "#000"
+              },
+			  {
+                  "type": "color",
+                  "id": "btn1_border_color",
+                  "label": "Button Border Color",
+                  "default": "#fff"
+              },
+              {
+                  "type": "color",
+                  "id": "btn1_border_hover_color",
+                  "label": "Button Border Hover Color",
+                  "default": "#000"
+              }
+          ]
+       },
+	   {
+          "type": "section_margin",
+          "name": "Section Margin",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			}
+          ]
+       },
+	   {
+          "type": "section_padding",
+          "name": "Section Padding",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 100
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 65
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_md",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 80
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_md",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 45
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_xs",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 50
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_xs",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 30
+			}
+          ]
+       },
+	   {
+          "type": "section_background",
+          "name": "Section Background",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "image_picker",
+			  "id": "section_bg_image",
+			  "label": "BG Image"
+			},
+			{
+			  "type": "color",
+			  "id": "section_bg_color",
+			  "label": "BG Color",
+			  "default": "#ffffff"
+			}
+          ]
+       }
+	],
+	"presets": [
+		{
+		  "name": "Diversity Banner",
+		  "category": "2. Banner",
+		  "blocks":[
+				{
+					"type": "banner"
+				},
+				{
+					"type": "banner"
+				}
+			]
+		}
+	]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

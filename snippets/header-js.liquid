@@ -1,0 +1,58 @@
+<!-- Your update file include here -->
+<script src="{{ 'modernizr-3.5.0.min.js' | asset_url }}"></script>
+<script src="{{ 'jquery-1.12.4.min.js' | asset_url }}"></script>
+<script src="{{ 'popper.min.js' | asset_url }}"></script>
+<script src="{{ 'bootstrap.min.js' | asset_url }}"></script>
+
+{% if content_for_layout contains 'magni_video_pop' or content_for_layout contains 'img-popup' %}
+<script src="{{ 'magnific-popup.js' | asset_url }}"></script>
+{% endif %}
+
+{% if content_for_layout contains 'countdown'%}
+<script src="{{ 'countdown.js' | asset_url }}"></script>
+{% endif %}
+
+{% if content_for_layout contains 'counter'%}
+<script src="{{ 'waypoints.js' | asset_url }}"></script>
+<script src="{{ 'counterup.js' | asset_url }}"></script>
+{% endif %}
+
+{% if content_for_layout contains 'owl-carousel' %}
+<script src="{{ 'owl-carousel.js' | asset_url }}"></script>
+{% endif %}
+
+{% if content_for_layout contains 'common_slick_slider' %}
+<script src="{{ 'slick-slider.js' | asset_url }}"></script>
+{% endif %}
+
+{% if content_for_layout contains 'sidebar-active' %}
+<script src="{{ 'sticky-sidebar.js' | asset_url }}"></script>
+{% endif %}
+
+{% if content_for_layout contains 'scroll-zoom' %}
+<script src="{{ 'scrollreveal.js' | asset_url }}"></script>
+{% endif %}
+
+{% if content_for_layout contains 'youtube-bg' %}
+<script src="{{ 'ytplayer.js' | asset_url }}"></script>
+{% endif %}
+
+
+<script src="{{ 'plugins.js' | asset_url }}"></script>
+
+
+<script src="{{ 'vendor.js' | asset_url }}"></script>
+
+
+<script src="{{ 'auto-parts-search-filter.js' | asset_url }}" defer="defer"></script> 
+
+<script src="{{ 'estimated-delivery-date.min.js' | asset_url }}"></script>
+  
+<!-- Ajax Cart js -->
+<script src="{{ 'option_selection.js' | shopify_asset_url }}"></script>
+<script src="{{ 'api.jquery.js' | shopify_asset_url }}"></script>
+<script src="{{ 'cart.api.js' | asset_url }}"></script>
+
+<!-- Your main.js file upload this file -->
+<script src="{{ 'theme.js' | asset_url }}"></script>
+

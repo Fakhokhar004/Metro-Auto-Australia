@@ -1,0 +1,254 @@
+{
+  "layout": "metro",
+  "sections": {
+    "hero": {
+      "type": "ma-home-hero",
+      "blocks": {
+        "hc1": {
+          "type": "hero_card",
+          "settings": {
+            "icon": "truck",
+            "title": "Fast delivery",
+            "text": "Same day before 2PM"
+          }
+        },
+        "hc2": {
+          "type": "hero_card",
+          "settings": {
+            "icon": "shield",
+            "title": "Manufacturer warranty",
+            "text": "On every part we sell"
+          }
+        },
+        "hc3": {
+          "type": "hero_card",
+          "settings": {
+            "icon": "returns",
+            "title": "Easy returns",
+            "text": "30 days on unused parts"
+          }
+        },
+        "tr1": {
+          "type": "trust",
+          "settings": {
+            "icon": "pin",
+            "title": "Australian owned",
+            "text": "Melbourne based, shipping Australia-wide"
+          }
+        },
+        "tr2": {
+          "type": "trust",
+          "settings": {
+            "icon": "shield",
+            "title": "Manufacturer warranty",
+            "text": "Bought direct from the makers"
+          }
+        },
+        "tr3": {
+          "type": "trust",
+          "settings": {
+            "icon": "shield-check",
+            "title": "Fitment guarantee",
+            "text": "The right part for your make and model"
+          }
+        }
+      },
+      "block_order": [
+        "hc1",
+        "hc2",
+        "hc3",
+        "tr1",
+        "tr2",
+        "tr3"
+      ],
+      "settings": {
+        "show_sidebar": true,
+        "btn1_url": "/pages/shop-by-vehicle",
+        "btn2_url": "/collections"
+      }
+    },
+    "bento": {
+      "type": "ma-category-bento",
+      "blocks": {
+        "t1": {
+          "type": "tile",
+          "settings": {
+            "label": "Brake pads",
+            "art": "rotor",
+            "collection": "brake-pads"
+          }
+        },
+        "t2": {
+          "type": "tile",
+          "settings": {
+            "label": "Lubricants and sprays",
+            "art": "can",
+            "collection": "oil-fluids-chemicals"
+          }
+        },
+        "t3": {
+          "type": "tile",
+          "settings": {
+            "label": "Ignition system",
+            "art": "plug",
+            "collection": "electrical-ignition"
+          }
+        },
+        "t4": {
+          "type": "tile",
+          "settings": {
+            "label": "Suspension",
+            "art": "shock",
+            "collection": "shock-absorbers-struts"
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2",
+        "t3",
+        "t4"
+      ],
+      "settings": {}
+    },
+    "shipping": {
+      "type": "ma-shipping-cards",
+      "blocks": {
+        "s1": {
+          "type": "card",
+          "settings": {
+            "icon": "truck",
+            "title": "Free shipping over $200",
+            "text": "Australia-wide delivery"
+          }
+        },
+        "s2": {
+          "type": "card",
+          "settings": {
+            "icon": "clock",
+            "title": "Same-day dispatch",
+            "text": "Order before 2PM on working days"
+          }
+        },
+        "s3": {
+          "type": "card",
+          "settings": {
+            "icon": "returns",
+            "title": "30-day returns",
+            "text": "Easy returns on unused parts"
+          }
+        }
+      },
+      "block_order": [
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "settings": {}
+    },
+    "marquee": {
+      "type": "ma-marquee",
+      "settings": {}
+    },
+    "for_vehicle": {
+      "type": "ma-vehicle-products",
+      "settings": {}
+    },
+    "deals": {
+      "type": "ma-featured-products",
+      "settings": {}
+    },
+    "brands": {
+      "type": "ma-brand-cards",
+      "blocks": {
+        "b1": {
+          "type": "brand",
+          "settings": {
+            "name": "CRC",
+            "covers": "Lubricants, cleaners and brake care",
+            "bg": "#1F4FA3",
+            "fg": "#FFFFFF"
+          }
+        },
+        "b2": {
+          "type": "brand",
+          "settings": {
+            "name": "HiQ",
+            "covers": "Brake pads",
+            "bg": "#E1251B",
+            "fg": "#FFFFFF"
+          }
+        },
+        "b3": {
+          "type": "brand",
+          "settings": {
+            "name": "Goss",
+            "covers": "Workshop trays, clips and fasteners",
+            "bg": "#F2B705",
+            "fg": "#121316"
+          }
+        },
+        "b4": {
+          "type": "brand",
+          "settings": {
+            "name": "Penrite",
+            "covers": "Oils and fluids",
+            "bg": "#0F6B3A",
+            "fg": "#FFFFFF"
+          }
+        },
+        "b5": {
+          "type": "brand",
+          "settings": {
+            "name": "Nulon",
+            "covers": "Oils and fluids",
+            "bg": "#5B2A86",
+            "fg": "#FFFFFF"
+          }
+        },
+        "b6": {
+          "type": "brand",
+          "settings": {
+            "name": "Hi-Tec",
+            "covers": "Oils and fluids",
+            "bg": "#0E6F78",
+            "fg": "#FFFFFF"
+          }
+        },
+        "b7": {
+          "type": "brand",
+          "settings": {
+            "name": "Caltex",
+            "covers": "Oils and fluids",
+            "bg": "#121316",
+            "fg": "#FFFFFF"
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5",
+        "b6",
+        "b7"
+      ],
+      "settings": {}
+    },
+    "promo": {
+      "type": "ma-promo-banner",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero",
+    "bento",
+    "shipping",
+    "marquee",
+    "for_vehicle",
+    "deals",
+    "brands",
+    "promo"
+  ]
+}

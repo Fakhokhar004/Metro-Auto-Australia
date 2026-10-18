@@ -1,0 +1,21 @@
+{%- comment -%}
+  Not for the theme editor. Fetched by assets/ma-listing.js for "Only parts that fit my car" and the
+  search page's vehicle mode:
+    /collections/<handle>?page=N&section_id=ma-fit-scan
+    /search?q=…&type=product&page=N&section_id=ma-fit-scan
+  (plus any active filters and sort). Returns, as JSON, the products on that page that have fitment
+  keys (snippets/ma-fit-keys) or are universal. paginate needs the original object, hence two branches.
+{%- endcomment -%}
+{%- if search.performed -%}
+  {%- paginate search.results by 250 -%}
+    {%- render 'ma-fit-scan-json', items: search.results, paginate: paginate -%}
+  {%- endpaginate -%}
+{%- elsif collection -%}
+  {%- paginate collection.products by 250 -%}
+    {%- render 'ma-fit-scan-json', items: collection.products, paginate: paginate -%}
+  {%- endpaginate -%}
+{%- endif -%}
+
+{% schema %}
+{ "name": "Metro fit scan", "settings": [] }
+{% endschema %}

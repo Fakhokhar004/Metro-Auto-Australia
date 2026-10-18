@@ -1,0 +1,416 @@
+{%- comment -%}
+  Metro Auto — Contact Form Section
+  Every visual property (roundness, colours, focus/selection colour, padding,
+  margins, fonts, button, responsiveness) is controlled from the Theme Editor.
+  Save this as a section (e.g. sections/contact-form.liquid) and add it to your
+  contact page template, OR paste into your page.contact template.
+
+  Shopify contact form field mapping (what lands in the email):
+    contact[First Name] / contact[Surname] / contact[email] /
+    contact[phone] / contact[VIN Number] / contact[State] / contact[body]
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+  assign arrow = s.field_arrow_color | replace: '#', '%23'
+-%}
+
+{%- style -%}
+  #ma-contact-{{ uid }} {
+    background: {{ s.section_bg }};
+    padding-top: {{ s.section_padding_top }}px;
+    padding-bottom: {{ s.section_padding_bottom }}px;
+  }
+  #ma-contact-{{ uid }} .ma-contact__inner {
+    max-width: {{ s.form_max_width }}px;
+    margin-left: {% if s.form_align == 'center' %}auto{% else %}0{% endif %};
+    margin-right: {% if s.form_align == 'center' %}auto{% else %}0{% endif %};
+    padding-left: 15px;
+    padding-right: 15px;
+    box-sizing: border-box;
+  }
+
+  /* ---------- Labels ---------- */
+  #ma-contact-{{ uid }} .ma-field label {
+    display: block;
+    color: {{ s.label_color }};
+    font-size: {{ s.label_size }}px;
+    font-weight: {{ s.label_weight }};
+    margin-bottom: {{ s.label_margin_bottom }}px;
+    line-height: 1.3;
+  }
+
+  /* ---------- Fields (inputs, textarea, select) ---------- */
+  #ma-contact-{{ uid }} .ma-field {
+    margin-bottom: {{ s.field_spacing }}px;
+  }
+  #ma-contact-{{ uid }} .ma-input,
+  #ma-contact-{{ uid }} .ma-select,
+  #ma-contact-{{ uid }} .ma-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    background: {{ s.field_bg }};
+    color: {{ s.field_text_color }};
+    border: {{ s.field_border_width }}px solid {{ s.field_border_color }};
+    border-radius: {{ s.field_radius }}px;
+    padding: {{ s.field_padding_y }}px {{ s.field_padding_x }}px;
+    font-size: {{ s.field_font_size }}px;
+    font-family: inherit;
+    line-height: 1.4;
+    transition: border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  #ma-contact-{{ uid }} .ma-input::placeholder,
+  #ma-contact-{{ uid }} .ma-textarea::placeholder {
+    color: {{ s.field_placeholder_color }};
+    opacity: 1;
+  }
+
+  /* ---------- Focus / selection colour ---------- */
+  #ma-contact-{{ uid }} .ma-input:focus,
+  #ma-contact-{{ uid }} .ma-select:focus,
+  #ma-contact-{{ uid }} .ma-textarea:focus {
+    background: {{ s.field_focus_bg }};
+    border-color: {{ s.field_focus_border_color }};
+    box-shadow: 0 0 0 {{ s.field_focus_ring_size }}px {{ s.field_focus_ring_color }};
+  }
+  /* Highlight colour when text is highlighted with the cursor */
+  #ma-contact-{{ uid }} .ma-input::selection,
+  #ma-contact-{{ uid }} .ma-textarea::selection {
+    background: {{ s.text_selection_bg }};
+    color: {{ s.text_selection_text }};
+  }
+
+  /* ---------- Select / dropdown ---------- */
+  #ma-contact-{{ uid }} .ma-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='{{ arrow }}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right {{ s.field_padding_x }}px center;
+    padding-right: {{ s.field_padding_x | plus: 24 }}px;
+    cursor: pointer;
+  }
+  /* Option highlight colour. NOTE: honoured by Firefox/Windows; on macOS &
+     iOS the highlight colour of a native dropdown is drawn by the OS and
+     cannot be overridden by CSS (see message for the custom-dropdown option). */
+  #ma-contact-{{ uid }} .ma-select option:checked,
+  #ma-contact-{{ uid }} .ma-select option:hover {
+    background: {{ s.option_selected_bg }};
+    color: {{ s.option_selected_text }};
+    box-shadow: inset 0 0 0 100px {{ s.option_selected_bg }};
+  }
+
+  /* ---------- Textarea ---------- */
+  #ma-contact-{{ uid }} .ma-textarea {
+    min-height: {{ s.textarea_height }}px;
+    resize: vertical;
+  }
+
+  /* ---------- Required note ---------- */
+  #ma-contact-{{ uid }} .ma-required {
+    display: block;
+    color: {{ s.required_color }};
+    font-size: {{ s.required_size }}px;
+    margin-top: 4px;
+  }
+
+  /* ---------- Two-column name row ---------- */
+  #ma-contact-{{ uid }} .ma-field-row--two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 {{ s.column_gap }}px;
+  }
+
+  /* ---------- Button ---------- */
+  #ma-contact-{{ uid }} .ma-field--submit {
+    text-align: {{ s.btn_align }};
+    margin-top: {{ s.btn_margin_top }}px;
+    margin-bottom: 0;
+  }
+  #ma-contact-{{ uid }} .ma-submit {
+    display: {% if s.btn_full_width %}block{% else %}inline-block{% endif %};
+    width: {% if s.btn_full_width %}100%{% else %}auto{% endif %};
+    background: {{ s.btn_bg }};
+    color: {{ s.btn_text_color }};
+    border: {{ s.btn_border_width }}px solid {{ s.btn_border_color }};
+    border-radius: {{ s.btn_radius }}px;
+    padding: {{ s.btn_padding_y }}px {{ s.btn_padding_x }}px;
+    font-size: {{ s.btn_font_size }}px;
+    font-weight: {{ s.btn_weight }};
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color .18s ease, color .18s ease, border-color .18s ease;
+  }
+  #ma-contact-{{ uid }} .ma-submit:hover {
+    background: {{ s.btn_bg_hover }};
+    color: {{ s.btn_text_hover }};
+    border-color: {{ s.btn_border_color_hover }};
+  }
+
+  /* ---------- Success message ---------- */
+  #ma-contact-{{ uid }} .ma-contact__success {
+    background: {{ s.success_bg }};
+    color: {{ s.success_text }};
+    border-radius: {{ s.field_radius }}px;
+    padding: 14px 18px;
+    margin-bottom: {{ s.field_spacing }}px;
+  }
+
+  /* ---------- Mobile ---------- */
+  @media (max-width: 749px) {
+    #ma-contact-{{ uid }} {
+      padding-top: {{ s.mobile_section_padding_top }}px;
+      padding-bottom: {{ s.mobile_section_padding_bottom }}px;
+    }
+    #ma-contact-{{ uid }} .ma-field-row--two {
+      grid-template-columns: 1fr;   /* names stack on mobile */
+    }
+    #ma-contact-{{ uid }} .ma-input,
+    #ma-contact-{{ uid }} .ma-select,
+    #ma-contact-{{ uid }} .ma-textarea {
+      padding: {{ s.mobile_field_padding_y }}px {{ s.field_padding_x }}px;
+      font-size: {{ s.mobile_field_font_size }}px;
+    }
+    #ma-contact-{{ uid }} .ma-submit {
+      display: {% if s.mobile_btn_full_width %}block{% else %}inline-block{% endif %};
+      width: {% if s.mobile_btn_full_width %}100%{% else %}auto{% endif %};
+    }
+  }
+{%- endstyle -%}
+
+<div id="ma-contact-{{ uid }}" class="ma-contact">
+  <div class="ma-contact__inner">
+    {%- form 'contact', id: 'ma-contact-form' -%}
+      {%- if form.posted_successfully? -%}
+        <p class="ma-contact__success">{{ 'contact.form.post_success' | t }}</p>
+      {%- endif -%}
+
+      {{ form.errors | default_errors }}
+
+      {%- comment -%} First Name + Surname {%- endcomment -%}
+      <div class="ma-field-row{% if s.name_two_columns %} ma-field-row--two{% endif %}">
+        <div class="ma-field">
+          <label for="ma-first-{{ uid }}">{{ s.first_name_label }}</label>
+          <input
+            type="text"
+            class="ma-input"
+            id="ma-first-{{ uid }}"
+            name="contact[First Name]"
+            placeholder="{{ s.first_name_placeholder }}"
+            value="{{ form['First Name'] }}"
+            required
+          >
+          {%- if s.show_required -%}<span class="ma-required">{{ s.required_text }}</span>{%- endif -%}
+        </div>
+
+        <div class="ma-field">
+          <label for="ma-surname-{{ uid }}">{{ s.surname_label }}</label>
+          <input
+            type="text"
+            class="ma-input"
+            id="ma-surname-{{ uid }}"
+            name="contact[Surname]"
+            placeholder="{{ s.surname_placeholder }}"
+            value="{{ form.Surname }}"
+            required
+          >
+          {%- if s.show_required -%}<span class="ma-required">{{ s.required_text }}</span>{%- endif -%}
+        </div>
+      </div>
+
+      {%- comment -%} Email {%- endcomment -%}
+      <div class="ma-field">
+        <label for="ma-email-{{ uid }}">{{ s.email_label }}</label>
+        <input
+          type="email"
+          class="ma-input{% if form.errors contains 'email' %} error{% endif %}"
+          id="ma-email-{{ uid }}"
+          name="contact[email]"
+          placeholder="{{ s.email_placeholder }}"
+          value="{% if form.email %}{{ form.email }}{% elsif customer.email %}{{ customer.email }}{% endif %}"
+          required
+        >
+        {%- if s.show_required -%}<span class="ma-required">{{ s.required_text }}</span>{%- endif -%}
+      </div>
+
+      {%- comment -%} Mobile {%- endcomment -%}
+      <div class="ma-field">
+        <label for="ma-mobile-{{ uid }}">{{ s.mobile_label }}</label>
+        <input
+          type="tel"
+          class="ma-input"
+          id="ma-mobile-{{ uid }}"
+          name="contact[phone]"
+          placeholder="{{ s.mobile_placeholder }}"
+          value="{{ form.phone }}"
+        >
+      </div>
+
+      {%- comment -%} VIN {%- endcomment -%}
+      <div class="ma-field">
+        <label for="ma-vin-{{ uid }}">{{ s.vin_label }}</label>
+        <input
+          type="text"
+          class="ma-input"
+          id="ma-vin-{{ uid }}"
+          name="contact[VIN Number]"
+          placeholder="{{ s.vin_placeholder }}"
+          value="{{ form['VIN Number'] }}"
+        >
+      </div>
+
+      {%- comment -%} Registration Number {%- endcomment -%}
+      <div class="ma-field">
+        <label for="ma-rego-{{ uid }}">{{ s.rego_label }}</label>
+        <input
+          type="text"
+          class="ma-input"
+          id="ma-rego-{{ uid }}"
+          name="contact[Registration Number]"
+          placeholder="{{ s.rego_placeholder }}"
+          value="{{ form['Registration Number'] }}"
+        >
+      </div>
+
+      {%- comment -%} State {%- endcomment -%}
+      <div class="ma-field">
+        <label for="ma-state-{{ uid }}">{{ s.state_label }}</label>
+        <select class="ma-select" id="ma-state-{{ uid }}" name="contact[State]">
+          <option value="">{{ s.state_placeholder }}</option>
+          <option value="Australian Capital Territory">Australian Capital Territory</option>
+          <option value="New South Wales">New South Wales</option>
+          <option value="Northern Territory">Northern Territory</option>
+          <option value="Queensland">Queensland</option>
+          <option value="South Australia">South Australia</option>
+          <option value="Tasmania">Tasmania</option>
+          <option value="Victoria">Victoria</option>
+          <option value="Western Australia">Western Australia</option>
+        </select>
+      </div>
+
+      {%- comment -%} Message {%- endcomment -%}
+      <div class="ma-field">
+        <label for="ma-message-{{ uid }}">{{ s.message_label }}</label>
+        <textarea
+          class="ma-textarea"
+          id="ma-message-{{ uid }}"
+          name="contact[body]"
+          placeholder="{{ s.message_placeholder }}"
+        >{{ form.body }}</textarea>
+      </div>
+
+      {%- comment -%} Submit {%- endcomment -%}
+      <div class="ma-field ma-field--submit">
+        <button type="submit" class="ma-submit">{{ s.btn_text }}</button>
+      </div>
+    {%- endform -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Contact Form",
+  "settings": [
+    { "type": "header", "content": "Section Layout" },
+    { "type": "color", "id": "section_bg", "label": "Section background", "default": "#ffffff" },
+    { "type": "range", "id": "section_padding_top", "label": "Padding top", "min": 0, "max": 150, "step": 5, "unit": "px", "default": 60 },
+    { "type": "range", "id": "section_padding_bottom", "label": "Padding bottom", "min": 0, "max": 150, "step": 5, "unit": "px", "default": 60 },
+    { "type": "range", "id": "form_max_width", "label": "Form max width", "min": 400, "max": 1200, "step": 20, "unit": "px", "default": 640 },
+    { "type": "select", "id": "form_align", "label": "Form alignment", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ], "default": "center" },
+    { "type": "checkbox", "id": "name_two_columns", "label": "First Name & Surname side by side (desktop)", "default": false },
+    { "type": "range", "id": "column_gap", "label": "Gap between the two name columns", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 20 },
+
+    { "type": "header", "content": "Labels" },
+    { "type": "color", "id": "label_color", "label": "Label colour", "default": "#111111" },
+    { "type": "range", "id": "label_size", "label": "Label font size", "min": 12, "max": 26, "step": 1, "unit": "px", "default": 17 },
+    { "type": "select", "id": "label_weight", "label": "Label font weight", "options": [ { "value": "400", "label": "Regular" }, { "value": "500", "label": "Medium" }, { "value": "600", "label": "Semi-bold" }, { "value": "700", "label": "Bold" } ], "default": "700" },
+    { "type": "range", "id": "label_margin_bottom", "label": "Space below label", "min": 0, "max": 24, "step": 1, "unit": "px", "default": 8 },
+
+    { "type": "header", "content": "Fields — Colours" },
+    { "type": "color", "id": "field_bg", "label": "Field background", "default": "#f2f2f2" },
+    { "type": "color", "id": "field_text_color", "label": "Typed text colour", "default": "#111111" },
+    { "type": "color", "id": "field_placeholder_color", "label": "Placeholder colour", "default": "#8a8a8a" },
+    { "type": "color", "id": "field_border_color", "label": "Border colour", "default": "#cfcfcf" },
+
+    { "type": "header", "content": "Fields — Shape, Padding & Spacing" },
+    { "type": "range", "id": "field_border_width", "label": "Border width", "min": 0, "max": 5, "step": 1, "unit": "px", "default": 1 },
+    { "type": "range", "id": "field_radius", "label": "Roundness (corner radius)", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 6 },
+    { "type": "range", "id": "field_padding_y", "label": "Inner padding — top/bottom", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 12 },
+    { "type": "range", "id": "field_padding_x", "label": "Inner padding — left/right", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "field_font_size", "label": "Field text size", "min": 12, "max": 22, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "field_spacing", "label": "Space between fields (margin)", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "textarea_height", "label": "Message box height", "min": 80, "max": 400, "step": 10, "unit": "px", "default": 140 },
+
+    { "type": "header", "content": "Fields — Focus / Selection Colour" },
+    { "type": "color", "id": "field_focus_border_color", "label": "Border colour when focused", "default": "#1f8f4e" },
+    { "type": "color", "id": "field_focus_bg", "label": "Background when focused", "default": "#ffffff" },
+    { "type": "color", "id": "field_focus_ring_color", "label": "Glow colour when focused", "default": "#bfe6cd" },
+    { "type": "range", "id": "field_focus_ring_size", "label": "Glow thickness", "min": 0, "max": 8, "step": 1, "unit": "px", "default": 3 },
+    { "type": "color", "id": "text_selection_bg", "label": "Highlighted text background", "default": "#1f8f4e" },
+    { "type": "color", "id": "text_selection_text", "label": "Highlighted text colour", "default": "#ffffff" },
+
+    { "type": "header", "content": "Dropdown (State)", "info": "Option-highlight colours work in Firefox / Windows. On macOS & iOS the native dropdown highlight is drawn by the operating system and can't be recoloured with CSS." },
+    { "type": "color", "id": "field_arrow_color", "label": "Dropdown arrow colour", "default": "#111111" },
+    { "type": "color", "id": "option_selected_bg", "label": "Selected option background", "default": "#1f8f4e" },
+    { "type": "color", "id": "option_selected_text", "label": "Selected option text", "default": "#ffffff" },
+
+    { "type": "header", "content": "Required Note" },
+    { "type": "checkbox", "id": "show_required", "label": "Show \"required\" note", "default": true },
+    { "type": "text", "id": "required_text", "label": "Required note text", "default": "* Required" },
+    { "type": "color", "id": "required_color", "label": "Required note colour", "default": "#c0392b" },
+    { "type": "range", "id": "required_size", "label": "Required note size", "min": 10, "max": 18, "step": 1, "unit": "px", "default": 13 },
+
+    { "type": "header", "content": "Submit Button" },
+    { "type": "text", "id": "btn_text", "label": "Button text", "default": "Send Message" },
+    { "type": "color", "id": "btn_bg", "label": "Background", "default": "#1f8f4e" },
+    { "type": "color", "id": "btn_bg_hover", "label": "Background (hover)", "default": "#176e3c" },
+    { "type": "color", "id": "btn_text_color", "label": "Text colour", "default": "#ffffff" },
+    { "type": "color", "id": "btn_text_hover", "label": "Text colour (hover)", "default": "#ffffff" },
+    { "type": "range", "id": "btn_border_width", "label": "Border width", "min": 0, "max": 5, "step": 1, "unit": "px", "default": 0 },
+    { "type": "color", "id": "btn_border_color", "label": "Border colour", "default": "#1f8f4e" },
+    { "type": "color", "id": "btn_border_color_hover", "label": "Border colour (hover)", "default": "#176e3c" },
+    { "type": "range", "id": "btn_radius", "label": "Roundness", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 6 },
+    { "type": "range", "id": "btn_padding_y", "label": "Padding — top/bottom", "min": 5, "max": 30, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "btn_padding_x", "label": "Padding — left/right", "min": 10, "max": 60, "step": 1, "unit": "px", "default": 32 },
+    { "type": "range", "id": "btn_font_size", "label": "Text size", "min": 12, "max": 22, "step": 1, "unit": "px", "default": 16 },
+    { "type": "select", "id": "btn_weight", "label": "Font weight", "options": [ { "value": "400", "label": "Regular" }, { "value": "500", "label": "Medium" }, { "value": "600", "label": "Semi-bold" }, { "value": "700", "label": "Bold" } ], "default": "600" },
+    { "type": "checkbox", "id": "btn_full_width", "label": "Full width button (desktop)", "default": false },
+    { "type": "select", "id": "btn_align", "label": "Button alignment", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "right", "label": "Right" } ], "default": "left" },
+    { "type": "range", "id": "btn_margin_top", "label": "Space above button", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 8 },
+
+    { "type": "header", "content": "Success Message" },
+    { "type": "color", "id": "success_bg", "label": "Background", "default": "#e6f6ec" },
+    { "type": "color", "id": "success_text", "label": "Text colour", "default": "#176e3c" },
+
+    { "type": "header", "content": "Mobile Overrides" },
+    { "type": "range", "id": "mobile_section_padding_top", "label": "Section padding top", "min": 0, "max": 120, "step": 5, "unit": "px", "default": 40 },
+    { "type": "range", "id": "mobile_section_padding_bottom", "label": "Section padding bottom", "min": 0, "max": 120, "step": 5, "unit": "px", "default": 40 },
+    { "type": "range", "id": "mobile_field_padding_y", "label": "Field padding — top/bottom", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 12 },
+    { "type": "range", "id": "mobile_field_font_size", "label": "Field text size", "min": 12, "max": 22, "step": 1, "unit": "px", "default": 16 },
+    { "type": "checkbox", "id": "mobile_btn_full_width", "label": "Full width button on mobile", "default": true },
+
+    { "type": "header", "content": "Field Labels & Placeholders" },
+    { "type": "text", "id": "first_name_label", "label": "First name — label", "default": "First Name" },
+    { "type": "text", "id": "first_name_placeholder", "label": "First name — placeholder" },
+    { "type": "text", "id": "surname_label", "label": "Surname — label", "default": "Surname" },
+    { "type": "text", "id": "surname_placeholder", "label": "Surname — placeholder" },
+    { "type": "text", "id": "email_label", "label": "Email — label", "default": "Email Address" },
+    { "type": "text", "id": "email_placeholder", "label": "Email — placeholder" },
+    { "type": "text", "id": "mobile_label", "label": "Mobile — label", "default": "Mobile Number" },
+    { "type": "text", "id": "mobile_placeholder", "label": "Mobile — placeholder", "default": "04XX XXX XXX" },
+    { "type": "text", "id": "vin_label", "label": "VIN — label", "default": "Vin Number" },
+    { "type": "text", "id": "vin_placeholder", "label": "VIN — placeholder" },
+    { "type": "text", "id": "rego_label", "label": "Registration number — label", "default": "Registration Number" },
+    { "type": "text", "id": "rego_placeholder", "label": "Registration number — placeholder" },
+    { "type": "text", "id": "state_label", "label": "State — label", "default": "State" },
+    { "type": "text", "id": "state_placeholder", "label": "State — placeholder", "default": "Select State..." },
+    { "type": "text", "id": "message_label", "label": "Message — label", "default": "Message" },
+    { "type": "text", "id": "message_placeholder", "label": "Message — placeholder", "default": "Your Message" }
+  ],
+  "presets": [
+    { "name": "Contact Form" }
+  ]
+}
+{% endschema %}

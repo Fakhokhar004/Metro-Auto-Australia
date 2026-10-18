@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<title>Metro Auto product</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FFFFFF}
+a{color:#E1251B}a:hover{color:#B71C14}
+:focus-visible{outline:3px solid #2F6FD6;outline-offset:2px}
+.mx-wrap{max-width:1320px;margin:0 auto;padding:0 24px;box-sizing:border-box}
+.mx-pdp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:36px;align-items:start}
+.mx-fitsel{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mx-pair{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:960px){
+ .mx-pdp{grid-template-columns:1fr}
+ .mx-pair{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+ .mx-wrap{padding:0 16px}
+ .mx-fitsel{grid-template-columns:1fr}
+ .mx-pair{gap:10px}
+ .mx-ptitle{font-size:30px !important}
+}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #121316; background: #FFFFFF; min-height: 100vh">
+<dc-import name="Header" current="product" hint-size="100%,210px"></dc-import>
+
+<div class="mx-wrap" style="padding-top: 20px; padding-bottom: 64px">
+ <nav aria-label="Breadcrumb" style="font-size: 13px; color: #62666D; display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px">
+  <a href="Main.dc.html" style="color: #62666D">Home</a><span aria-hidden="true">/</span>
+  <a href="Collection.dc.html" onClick="{{goDept}}" style="color: #62666D">{{deptName}}</a><span aria-hidden="true">/</span>
+  <a href="Collection.dc.html" onClick="{{goCol}}" style="color: #62666D">{{p.col}}</a><span aria-hidden="true">/</span>
+  <span style="color: #121316">{{p.sku}}</span>
+ </nav>
+
+ <div class="mx-pdp">
+  <div style="display: flex; flex-direction: column; gap: 12px">
+   <div style="position: relative; border-radius: 12px; aspect-ratio: 1 / 1; display: grid; place-items: center; overflow: hidden; background: radial-gradient(circle at 60% 40%, rgba(225,37,27,0.25), rgba(225,37,27,0) 60%), #17181B">
+    <div style="width: 74%; height: 74%; display: grid; place-items: center; transform: rotate({{rot}})">
+     <sc-if value="{{isPad}}" hint-placeholder-val="{{ true }}"><svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" aria-hidden="true"><circle cx="100" cy="100" r="78" fill="#2A2C31" stroke="#4A4D55" stroke-width="2"></circle><circle cx="100" cy="100" r="68" stroke="#3A3D44" stroke-width="1.5" stroke-dasharray="2 6"></circle><circle cx="100" cy="100" r="28" fill="#3A3D44"></circle><circle cx="100" cy="100" r="10" fill="#17181B"></circle><path d="M34 62 C24 84 24 116 34 138 L54 128 C47 112 47 88 54 72 Z" fill="#E1251B"></path><path d="M146 54 Q176 100 146 146 L134 138 Q158 100 134 62 Z" fill="#9A9EA6"></path></svg></sc-if>
+     <sc-if value="{{isCan}}" hint-placeholder-val="{{ false }}"><svg width="60%" height="100%" viewBox="0 0 120 200" fill="none" aria-hidden="true"><rect x="52" y="4" width="16" height="12" rx="2" fill="#62666D"></rect><path d="M40 16h40v18H40z" fill="#E4E4E7"></path><rect x="30" y="34" width="60" height="160" rx="10" fill="{{p.tint}}"></rect><rect x="30" y="80" width="60" height="52" fill="#FFFFFF"></rect><rect x="38" y="90" width="44" height="10" rx="2" fill="{{p.tint}}"></rect></svg></sc-if>
+     <sc-if value="{{isBottle}}" hint-placeholder-val="{{ false }}"><svg width="60%" height="100%" viewBox="0 0 120 200" fill="none" aria-hidden="true"><path d="M48 6h26v18H48z" fill="#E4E4E7"></path><path d="M74 8h24l-5 10H74z" fill="#E4E4E7"></path><path d="M42 32h36l8 16v140a8 8 0 0 1-8 8H42a8 8 0 0 1-8-8V48z" fill="{{p.tint}}"></path><rect x="38" y="84" width="44" height="58" rx="3" fill="#FFFFFF"></rect></svg></sc-if>
+     <sc-if value="{{isTray}}" hint-placeholder-val="{{ false }}"><svg width="100%" height="80%" viewBox="0 0 200 140" fill="none" aria-hidden="true"><rect x="14" y="22" width="172" height="104" rx="8" fill="{{p.tint}}"></rect><rect x="22" y="30" width="156" height="88" rx="4" fill="#2A2C31"></rect><rect x="26" y="34" width="34" height="38" rx="3" fill="#3A3D44"></rect><rect x="64" y="34" width="34" height="38" rx="3" fill="#3A3D44"></rect><rect x="102" y="34" width="34" height="38" rx="3" fill="#3A3D44"></rect><rect x="140" y="34" width="34" height="38" rx="3" fill="#3A3D44"></rect><rect x="26" y="76" width="34" height="38" rx="3" fill="#3A3D44"></rect><rect x="64" y="76" width="34" height="38" rx="3" fill="#3A3D44"></rect><rect x="102" y="76" width="34" height="38" rx="3" fill="#3A3D44"></rect><rect x="140" y="76" width="34" height="38" rx="3" fill="#3A3D44"></rect></svg></sc-if>
+     <sc-if value="{{isClip}}" hint-placeholder-val="{{ false }}"><svg width="100%" height="80%" viewBox="0 0 200 140" fill="none" aria-hidden="true"><path d="M30 100 L80 40 L92 50 L48 104 Z" fill="#C9CBD0"></path><path d="M70 110 L130 34 L142 44 L88 114 Z" fill="#E1251B"></path><path d="M112 112 L168 46 L178 56 L126 116 Z" fill="#9A9EA6"></path></svg></sc-if>
+    </div>
+    <sc-if value="{{onSale}}" hint-placeholder-val="{{ false }}">
+     <span style="position: absolute; top: 14px; left: 14px; background: #E1251B; color: #FFFFFF; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; padding: 4px 10px; border-radius: 4px; text-transform: uppercase">{{save}}% off</span>
+    </sc-if>
+   </div>
+   <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px">
+    <sc-for list="{{thumbs}}" as="t" hint-placeholder-count="4">
+     <button onClick="{{t.pick}}" aria-label="{{t.label}}" aria-pressed="{{t.on}}" style="aspect-ratio: 1 / 1; border-radius: 8px; background: #17181B; border: 2px solid {{t.border}}; cursor: pointer; display: grid; place-items: center; padding: 0">
+      <svg width="50%" height="50%" viewBox="0 0 24 24" fill="none" stroke="#9A9EA6" stroke-width="1.5" aria-hidden="true" style="transform: rotate({{t.rot}})"><rect x="4" y="6" width="16" height="12" rx="2"></rect><path d="M4 14l4-4 4 4 3-3 5 5"></path></svg>
+     </button>
+    </sc-for>
+   </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 18px">
+   <div style="display: flex; flex-direction: column; gap: 8px">
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-size: 14px">
+     <span style="display: inline-flex; align-items: center; gap: 6px; color: #15803D; font-weight: 600"><span style="width: 8px; height: 8px; border-radius: 99px; background: #15803D"></span>In stock in Melbourne</span>
+     <span style="color: #62666D">{{p.vendor}}, part number {{p.sku}}</span>
+    </div>
+    <h1 class="mx-ptitle" style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 40px; line-height: 1; text-transform: uppercase">{{p.title}}</h1>
+    <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 4px">
+     <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 48px; line-height: 1; color: #E1251B">{{price}}</span>
+     <sc-if value="{{onSale}}" hint-placeholder-val="{{ false }}"><span style="font-size: 18px; color: #62666D; text-decoration: line-through">{{compare}}</span></sc-if>
+     <span style="font-size: 14px; color: #62666D">including GST</span>
+    </div>
+    <div style="display: flex; gap: 6px 10px; flex-wrap: wrap; align-items: center; font-size: 14px">
+     <span style="color: #62666D">Category:</span>
+     <a href="Collection.dc.html" onClick="{{goDept}}">{{deptName}}</a>
+     <span aria-hidden="true" style="color: #9A9EA6">/</span>
+     <a href="Collection.dc.html" onClick="{{goCol}}">{{p.col}}</a>
+    </div>
+   </div>
+
+   <section aria-labelledby="mx-fit" style="border: 1px solid #E4E4E7; border-radius: 10px; overflow: hidden">
+    <h2 id="mx-fit" style="margin: 0; padding: 10px 16px; background: #121316; color: #FFFFFF; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px; text-transform: uppercase; letter-spacing: 0.03em">Check it fits</h2>
+    <div style="padding: 16px; display: flex; flex-direction: column; gap: 12px">
+     <sc-if value="{{vehicleSpecific}}" hint-placeholder-val="{{ true }}">
+      <div class="mx-fitsel">
+       <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #62666D">Make
+        <select value="{{fMake}}" onChange="{{onMake}}" style="min-height: 46px; border: 1px solid #C9CBD0; border-radius: 6px; padding: 0 10px; font-family: inherit; font-size: 16px; color: #121316; background: #FFFFFF">
+         <option value="">Select</option><sc-for list="{{makes}}" as="m" hint-placeholder-count="6"><option value="{{m}}">{{m}}</option></sc-for>
+        </select>
+       </label>
+       <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #62666D">Model
+        <select value="{{fModel}}" onChange="{{onModel}}" disabled="{{noMake}}" style="min-height: 46px; border: 1px solid #C9CBD0; border-radius: 6px; padding: 0 10px; font-family: inherit; font-size: 16px; color: #121316; background: #FFFFFF">
+         <option value="">Select</option><sc-for list="{{models}}" as="m" hint-placeholder-count="4"><option value="{{m}}">{{m}}</option></sc-for>
+        </select>
+       </label>
+       <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #62666D">Year
+        <select value="{{fYear}}" onChange="{{onYear}}" disabled="{{noModel}}" style="min-height: 46px; border: 1px solid #C9CBD0; border-radius: 6px; padding: 0 10px; font-family: inherit; font-size: 16px; color: #121316; background: #FFFFFF">
+         <option value="">Select</option><sc-for list="{{years}}" as="y" hint-placeholder-count="8"><option value="{{y}}">{{y}}</option></sc-for>
+        </select>
+       </label>
+      </div>
+      <sc-if value="{{fitIncomplete}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; font-size: 14px; color: #3F4249">Choose your make, model and year to check.</p></sc-if>
+      <sc-if value="{{fitYes}}" hint-placeholder-val="{{ true }}">
+       <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; background: #DCFCE7; border: 1px solid #86EFAC; color: #14532D; border-radius: 6px; padding: 10px 12px">
+        <span style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>Fits a {{fitLabel}}</span>
+        <sc-if value="{{notActive}}" hint-placeholder-val="{{ false }}"><button onClick="{{saveVehicle}}" style="min-height: 36px; padding: 0 12px; border-radius: 6px; border: 1px solid #14532D; background: #FFFFFF; color: #14532D; font-family: inherit; font-weight: 600; font-size: 13px; cursor: pointer">Save to my garage</button></sc-if>
+       </div>
+      </sc-if>
+      <sc-if value="{{fitNo}}" hint-placeholder-val="{{ false }}">
+       <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; background: #FEE2E2; border: 1px solid #FCA5A5; color: #7F1D1D; border-radius: 6px; padding: 10px 12px">
+        <span style="font-weight: 600; font-size: 15px">Doesn't fit a {{fitLabel}}</span>
+        <a href="Search.dc.html" onClick="{{seeFits}}" style="color: #7F1D1D; font-weight: 600; font-size: 14px">See parts that fit it</a>
+       </div>
+      </sc-if>
+     </sc-if>
+     <sc-if value="{{universal}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; display: flex; gap: 8px; align-items: center; font-size: 15px; color: #14532D; font-weight: 600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>Suits any vehicle. No fitment check needed.</p></sc-if>
+     <sc-if value="{{workshop}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; font-size: 15px; color: #3F4249">This is a workshop product and isn't matched to a particular vehicle.</p></sc-if>
+    </div>
+   </section>
+
+   <div style="display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap">
+    <div style="display: flex; border: 1px solid #C9CBD0; border-radius: 6px; overflow: hidden; height: 54px">
+     <button aria-label="Decrease quantity" onClick="{{dec}}" style="width: 46px; border: 0; background: #FFFFFF; font-size: 22px; cursor: pointer; color: #121316">−</button>
+     <input aria-label="Quantity" inputmode="numeric" value="{{qty}}" onChange="{{onQty}}" style="width: 44px; border: 0; text-align: center; font-family: inherit; font-size: 17px; font-weight: 600; color: #121316">
+     <button aria-label="Increase quantity" onClick="{{inc}}" style="width: 46px; border: 0; background: #FFFFFF; font-size: 22px; cursor: pointer; color: #121316">+</button>
+    </div>
+    <button onClick="{{add}}" disabled="{{added}}" style="flex: 1 1 200px; min-height: 54px; border-radius: 6px; border: 0; background: {{atcBg}}; color: #FFFFFF; font-family: inherit; font-weight: 600; font-size: 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.03em">{{atcLabel}}</button>
+    <button onClick="{{toggleWish}}" aria-label="{{wishLabel}}" aria-pressed="{{wishPressed}}" style="width: 54px; height: 54px; border-radius: 6px; border: 1px solid #C9CBD0; background: #FFFFFF; cursor: pointer; display: grid; place-items: center; color: {{wishColor}}">
+     <svg width="22" height="22" viewBox="0 0 24 24" fill="{{wishFill}}" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"></path></svg>
+    </button>
+   </div>
+   <sc-if value="{{added}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; font-size: 15px">Added to your cart. <a href="Cart.dc.html">View cart</a></p></sc-if>
+
+   <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+    <sc-for list="{{perks}}" as="k" hint-placeholder-count="3">
+     <div style="background: #121316; color: #FFFFFF; border-radius: 8px; padding: 10px; display: flex; gap: 8px; align-items: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF5A50" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="{{k.icon}}"></path></svg>
+      <span style="font-size: 13px; line-height: 1.3">{{k.text}}</span>
+     </div>
+    </sc-for>
+   </div>
+
+   <div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid #E4E4E7; padding-top: 16px">
+    <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; text-transform: uppercase; letter-spacing: 0.03em">Tags</span>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+     <sc-for list="{{tags}}" as="t" hint-placeholder-count="2">
+      <a href="Search.dc.html" onClick="{{t.go}}" style="min-height: 34px; padding: 0 12px; display: inline-flex; align-items: center; border-radius: 4px; border: 1px solid #E4E4E7; background: #F4F4F5; color: #121316; text-decoration: none; font-size: 13px; font-weight: 500">{{t.label}}</a>
+     </sc-for>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <section style="margin-top: 44px; border: 1px solid #E4E4E7; border-radius: 10px; overflow: hidden">
+  <div role="tablist" aria-label="Product details" style="display: flex; background: #121316; overflow-x: auto; scrollbar-width: none">
+   <sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+    <button role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="flex: none; min-height: 52px; padding: 0 20px; border: 0; background: {{t.bg}}; cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 17px; text-transform: uppercase; letter-spacing: 0.03em; color: #FFFFFF">{{t.label}}</button>
+   </sc-for>
+  </div>
+  <div style="padding: 24px">
+   <sc-if value="{{tDesc}}" hint-placeholder-val="{{ true }}">
+    <div style="max-width: 72ch; font-size: 16px; line-height: 1.65; color: #3F4249; display: flex; flex-direction: column; gap: 12px">
+     <p style="margin: 0">{{p.title}} from {{p.vendor}}, stocked in our Melbourne warehouse.</p>
+     <p style="margin: 0">[Product description from Shopify]</p>
+    </div>
+   </sc-if>
+   <sc-if value="{{tSpec}}" hint-placeholder-val="{{ false }}">
+    <div style="overflow-x: auto">
+     <table style="border-collapse: collapse; width: 100%; max-width: 760px; font-size: 15px">
+      <tbody>
+       <sc-for list="{{specs}}" as="s" hint-placeholder-count="5">
+        <tr style="background: {{s.bg}}"><th scope="row" style="text-align: left; padding: 12px 14px; width: 40%; font-weight: 500; color: #62666D">{{s.k}}</th><td style="padding: 12px 14px">{{s.v}}</td></tr>
+       </sc-for>
+      </tbody>
+     </table>
+    </div>
+   </sc-if>
+   <sc-if value="{{tFit}}" hint-placeholder-val="{{ false }}">
+    <sc-if value="{{hasFitRows}}" hint-placeholder-val="{{ true }}">
+     <div style="overflow-x: auto; border: 1px solid #E4E4E7; border-radius: 8px">
+      <table style="border-collapse: collapse; width: 100%; min-width: 480px; font-size: 15px">
+       <thead><tr style="background: #E1251B; color: #FFFFFF"><th scope="col" style="text-align: left; padding: 12px 14px; font-weight: 600">Make</th><th scope="col" style="text-align: left; padding: 12px 14px; font-weight: 600">Model</th><th scope="col" style="text-align: left; padding: 12px 14px; font-weight: 600">Years</th></tr></thead>
+       <tbody>
+        <sc-for list="{{fitRows}}" as="r" hint-placeholder-count="2">
+         <tr style="background: {{r.bg}}"><td style="padding: 12px 14px">{{r.make}}</td><td style="padding: 12px 14px">{{r.model}}</td><td style="padding: 12px 14px">{{r.years}}</td></tr>
+        </sc-for>
+       </tbody>
+      </table>
+     </div>
+    </sc-if>
+    <sc-if value="{{noFitRows}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; font-size: 16px; color: #3F4249">{{noFitText}}</p></sc-if>
+   </sc-if>
+   <sc-if value="{{tShip}}" hint-placeholder-val="{{ false }}">
+    <div style="max-width: 72ch; font-size: 16px; line-height: 1.65; color: #3F4249; display: flex; flex-direction: column; gap: 10px">
+     <p style="margin: 0"><strong style="color: #121316">Free delivery</strong> on orders over $200, Australia-wide.</p>
+     <p style="margin: 0"><strong style="color: #121316">Same-day dispatch</strong> when you order before 2PM on a working day.</p>
+     <p style="margin: 0"><strong style="color: #121316">Returns</strong> within 30 days on unused parts. See our refund policy for details.</p>
+    </div>
+   </sc-if>
+  </div>
+ </section>
+
+ <section style="margin-top: 44px">
+  <h2 style="margin: 0 0 16px; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 36px; text-transform: uppercase; line-height: 1">Pair it with</h2>
+  <div class="mx-pair">
+   <sc-for list="{{pairs}}" as="x" hint-placeholder-count="4">
+    <dc-import name="ProductCard" item="{{x}}" hint-size="100%,520px"></dc-import>
+   </sc-for>
+  </div>
+ </section>
+</div>
+
+<dc-import name="Footer" hint-size="100%,500px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3000}}'>
+var MS={get:function(k,d){try{var v=window.localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set:function(k,v){try{window.localStorage.setItem(k,JSON.stringify(v));}catch(e){}MS.fire(k);},fire:function(k){try{window.dispatchEvent(new Event(k));}catch(e){}}};
+var MA_DV={make:"Toyota",model:"Corolla",year:"2019"};
+function vKey(v){return v?v.year+" "+v.make+" "+v.model:"";}
+function slug(s){return String(s).toLowerCase().replace(/[^a-z0-9]+/g,"-");}
+function vTag(v){return v?slug(v.make+"-"+v.model+"-"+v.year):"";}
+function gLoad(){var g=MS.get("ma-garage",null);return (g&&g.garage)?g:{vehicle:MA_DV,garage:[MA_DV,{make:"Mazda",model:"CX-5",year:"2017"}]};}
+function gSet(v){var g=gLoad();var l=g.garage.slice();if(v&&!l.some(function(x){return vKey(x)===vKey(v);}))l.unshift(v);MS.set("ma-garage",{vehicle:v,garage:l});}
+var PC_SEED=[{id:1,title:"HiQ Front Brake Pads Set SP2174",vendor:"HiQ",sku:"SP2174",price:65,kind:"pad",tint:"#3B4654",qty:1},{id:4,title:"CRC 5.56 Multi-Purpose Lubricant Aerosol Spray 400g",vendor:"CRC",sku:"5005",price:7.70,kind:"can",tint:"#2F6FD6",qty:1}];
+var MA_STOCK={1:18,2:4,3:32,4:120,5:46,6:14,7:27,8:15,9:3,10:22,11:0,12:2,13:1,14:5,15:9,16:0,17:40,18:6,19:7}; /* units on hand; from Shopify inventory on the live site */
+var MA_P=[
+[1,"HiQ Front Brake Pads Set SP2174","HiQ","SP2174",65,0,"pad","#3B4654","brakes","Brake pads",["Front","Brake pads"],["toyota-corolla-2017","toyota-corolla-2018","toyota-corolla-2019","toyota-corolla-2020"],0],
+[2,"HiQ Front Brake Pads Set SP1253","HiQ","SP1253",52.92,0,"pad","#3B4654","brakes","Brake pads",["Front","Brake pads"],["mazda-cx-5-2016","mazda-cx-5-2017","mazda-cx-5-2018","ford-ranger-2018"],0],
+[3,"CRC 5080 De-Squeak 300g","CRC","5080",31.46,0,"can","#E1251B","brakes","Brake care",["Aerosol","Brake noise"],[],1],
+[4,"CRC 5.56 Multi-Purpose Lubricant Aerosol Spray 400g","CRC","5005",7.70,12.68,"can","#2F6FD6","care","Lubricants and aerosols",["Aerosol","Lubricant"],[],1],
+[5,"CRC 2016 Co Contact Cleaner 350g Precision Electronic Cleaning Solvent","CRC","2016",18.32,28.71,"can","#0E7C86","care","Cleaners",["Aerosol","Electrical","Cleaner"],[],1],
+[6,"CRC 3055 808 Silicone Spray 330g Aerosol","CRC","3055",13.83,19.94,"can","#5B2A86","care","Lubricants and aerosols",["Aerosol","Silicone"],[],1],
+[7,"CRC 5021 Gasket Stripper 300g","CRC","5021",14.69,23.80,"can","#B45309","care","Cleaners",["Aerosol","Gasket removal"],[],1],
+[8,"CRC 3071 So Easy Glass Cleaner 500ml Fast Acting","CRC","3071",13.66,0,"bottle","#0E7C86","care","Cleaners",["Glass","Cleaner"],[],1],
+[9,"CRC 3081 Belt Grip Aerosol Spray 400g","CRC","3081",26.51,0,"can","#3F4249","care","Lubricants and aerosols",["Aerosol","Belts"],[],1],
+[10,"CRC 1754520 TAC-2 Non-Flammable 400g Adhesive Lubricant","CRC","1754520",37.04,0,"can","#B45309","care","Lubricants and aerosols",["Aerosol","Adhesive lubricant"],[],1],
+[11,"CRC 5-56 Marine 300g","CRC","6006",15.59,0,"can","#1E3A5F","care","Lubricants and aerosols",["Aerosol","Marine"],[],1],
+[12,"Wheel Stud Tech Tray 030-612","Goss","030-612",390.99,0,"tray","#2F6FD6","workshop","Wheel nuts and studs",["Workshop tray","Assortment"],[],0],
+[13,"Wheel Nut Tech Tray 030-613","Goss","030-613",606.99,0,"tray","#2F6FD6","workshop","Wheel nuts and studs",["Workshop tray","Assortment"],[],0],
+[14,"Door Lock Rod Clip Tech Tray 030-209","Goss","030-209",242.99,0,"tray","#2F6FD6","body","Body clips and fasteners",["Workshop tray","Clips"],[],0],
+[15,"Body Retainer Tech Tray 030-720","Goss","030-720",137.99,0,"tray","#2F6FD6","body","Body clips and fasteners",["Workshop tray","Retainers"],[],0],
+[16,"Stone Tray / Mud Guard 030-212","Goss","030-212",165.99,0,"tray","#2F6FD6","body","Body and exterior parts",["Workshop tray","Mud guard"],[],0],
+[17,"Cable Lock Assortment 3336","Goss","3336",27.99,0,"clip","#3F4249","body","Body clips and fasteners",["Assortment","Cable locks"],[],0],
+[18,"Vacuum Tees and Connectors 030-496","Goss","030-496",162.99,0,"tray","#2F6FD6","engine","Vacuum and breather hose",["Workshop tray","Connectors"],[],0],
+[19,"Wiper Linkage Bushing Tech Tray 030-203","Goss","030-203",139.99,0,"tray","#2F6FD6","body","Wiper arms and parts",["Workshop tray","Wipers"],[],0]
+].map(function(a){return {id:a[0],title:a[1],vendor:a[2],sku:a[3],price:a[4],compare:a[5],kind:a[6],tint:a[7],dept:a[8],col:a[9],tags:a[10],fit:a[11],uni:!!a[12],onHand:MA_STOCK[a[0]],stock:MA_STOCK[a[0]]>0};});
+function deco(p,v){var ok=!!(v&&p.fit.indexOf(vTag(v))>-1);return Object.assign({},p,{fitLabel:ok?"Fits your "+v.model:(p.uni?"Suits any vehicle":""),fitOk:ok});}
+var MA_DEPT={brakes:"Brakes and suspension",care:"Service and electrical",engine:"Performance and engine",body:"Body and accessories",workshop:"Workshop essentials"};
+var MA_VEH={
+ "Toyota":{"Corolla":[2014,2024],"HiLux":[2012,2024],"RAV4":[2013,2024],"Camry":[2012,2023]},
+ "Mazda":{"CX-5":[2012,2024],"Mazda3":[2010,2024],"BT-50":[2012,2024]},
+ "Ford":{"Ranger":[2011,2024],"Focus":[2011,2019]},
+ "Hyundai":{"i30":[2012,2024],"Tucson":[2015,2024]},
+ "Kia":{"Cerato":[2013,2024],"Sportage":[2011,2024]},
+ "Volkswagen":{"Golf":[2009,2024],"Amarok":[2011,2024]},
+ "Honda":{"Civic":[2012,2024],"CR-V":[2012,2024]},
+ "Mitsubishi":{"Triton":[2009,2024],"Outlander":[2012,2024]},
+ "Nissan":{"Navara":[2012,2024],"X-Trail":[2013,2024]},
+ "Subaru":{"Forester":[2012,2024],"Outback":[2012,2024]}
+};
+function parseTag(t){for(var mk in MA_VEH){var a=slug(mk)+"-";if(t.indexOf(a)!==0)continue;var rest=t.slice(a.length);for(var md in MA_VEH[mk]){var b=slug(md)+"-";if(rest.indexOf(b)===0)return {make:mk,model:md,year:rest.slice(b.length)};}}return null;}
+function money(n){return "$"+Number(n).toFixed(2);}
+class Component extends DCLogic {
+ constructor(props){
+  super(props);
+  var v = gLoad().vehicle;
+  this.state = {id: MS.get("ma-prod", 1) || 1, active:v, fMake: v ? v.make : "", fModel: v ? v.model : "", fYear: v ? v.year : "", img:0, qty:1, added:false, wish:false, tab:"desc"};
+ }
+ componentDidMount(){
+  this.onG = () => this.setState({active: gLoad().vehicle});
+  this.onP = () => this.setState({id: MS.get("ma-prod", 1) || 1, added:false, qty:1, img:0, tab:"desc"});
+  window.addEventListener("ma-garage", this.onG);
+  window.addEventListener("ma-prod", this.onP);
+ }
+ componentWillUnmount(){ window.removeEventListener("ma-garage", this.onG); window.removeEventListener("ma-prod", this.onP); }
+ renderVals(){
+  var st = this.state;
+  var p = MA_P.filter(x => x.id===st.id)[0] || MA_P[0];
+  var onSale = p.compare > p.price;
+  var sel = {make:st.fMake, model:st.fModel, year:st.fYear};
+  var complete = !!(st.fMake && st.fModel && st.fYear), specific = p.fit.length > 0;
+  var fits = complete && p.fit.indexOf(vTag(sel)) > -1;
+  var models = st.fMake && MA_VEH[st.fMake] ? Object.keys(MA_VEH[st.fMake]) : [];
+  var years = [];
+  if (st.fMake && st.fModel && MA_VEH[st.fMake] && MA_VEH[st.fMake][st.fModel]) { var r = MA_VEH[st.fMake][st.fModel]; for (var y=r[1]; y>=r[0]; y--) years.push(String(y)); }
+  var groups = {};
+  p.fit.forEach(t => { var o = parseTag(t); if (!o) return; var k = o.make + "|" + o.model; (groups[k] = groups[k] || {make:o.make, model:o.model, ys:[]}).ys.push(+o.year); });
+  var fitRows = Object.keys(groups).map((k,i) => { var g = groups[k]; g.ys.sort(); var lo = g.ys[0], hi = g.ys[g.ys.length-1]; return {make:g.make, model:g.model, years: lo===hi ? String(lo) : lo + " to " + hi, bg: i%2 ? "#FFFFFF" : "#F4F4F5"}; });
+  var rots = ["0deg","-10deg","10deg","180deg"];
+  var specs = [["Brand",p.vendor],["Part number",p.sku],["Category",MA_DEPT[p.dept]],["Product type",p.col]];
+  if (p.tags.indexOf("Front") > -1) specs.push(["Position","Front"]);
+  specs.push(["More specifications","[From the product's specifications metafield]"]);
+  return {
+   p: p, deptName: MA_DEPT[p.dept],
+   goDept: () => MS.set("ma-col", MA_DEPT[p.dept]), goCol: () => MS.set("ma-col", p.col),
+   isPad: p.kind==="pad", isCan: p.kind==="can", isBottle: p.kind==="bottle", isTray: p.kind==="tray", isClip: p.kind==="clip",
+   rot: rots[st.img],
+   thumbs: rots.map((r,i) => ({rot:r, label:"Show view " + (i+1), on: i===st.img ? "true" : "false", pick:() => this.setState({img:i}), border: i===st.img ? "#E1251B" : "#17181B"})),
+   onSale: onSale, save: onSale ? Math.round((1 - p.price/p.compare)*100) : 0,
+   price: money(p.price), compare: onSale ? money(p.compare) : "",
+   vehicleSpecific: specific, universal: !specific && p.uni, workshop: !specific && !p.uni,
+   makes: Object.keys(MA_VEH), models: models, years: years,
+   fMake: st.fMake, fModel: st.fModel, fYear: st.fYear, noMake: !st.fMake, noModel: !st.fModel,
+   onMake: e => this.setState({fMake:e.target.value, fModel:"", fYear:""}),
+   onModel: e => this.setState({fModel:e.target.value, fYear:""}),
+   onYear: e => this.setState({fYear:e.target.value}),
+   fitIncomplete: !complete, fitYes: fits, fitNo: complete && !fits, fitLabel: vKey(sel),
+   notActive: vKey(sel) !== vKey(st.active),
+   saveVehicle: () => gSet(sel),
+   seeFits: () => { MS.set("ma-q",""); MS.set("ma-tag",""); gSet(sel); },
+   qty: st.qty,
+   inc: () => this.setState({qty: Math.min(99, st.qty+1), added:false}),
+   dec: () => this.setState({qty: Math.max(1, st.qty-1), added:false}),
+   onQty: e => { var n = parseInt(String(e.target.value).replace(/\D/g,""), 10); this.setState({qty: isNaN(n) ? 1 : Math.max(1, Math.min(99, n)), added:false}); },
+   added: st.added,
+   add: () => {
+    var cart = MS.get("ma-cart", null) || PC_SEED.slice();
+    var line = cart.filter(l => l.id===p.id)[0];
+    if (line) line.qty = Math.min(99, line.qty + st.qty); else cart.push({id:p.id, title:p.title, vendor:p.vendor, sku:p.sku, price:p.price, kind:p.kind, tint:p.tint, qty:st.qty});
+    MS.set("ma-cart", cart); this.setState({added:true});
+   },
+   atcLabel: st.added ? "Added " + st.qty + " to cart" : "Add to cart, " + money(p.price * st.qty),
+   atcBg: st.added ? "#62666D" : "#E1251B",
+   toggleWish: () => this.setState({wish: !st.wish}),
+   wishColor: st.wish ? "#E1251B" : "#3F4249", wishFill: st.wish ? "#E1251B" : "none",
+   wishLabel: st.wish ? "Remove from wishlist" : "Save to wishlist", wishPressed: st.wish ? "true" : "false",
+   perks: [
+    {text:"Same-day dispatch before 2PM", icon:"M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0"},
+    {text:"Free delivery over $200", icon:"M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19a2 2 0 1 0 0-.1M17 19a2 2 0 1 0 0-.1"},
+    {text:"Manufacturer warranty", icon:"M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"}
+   ],
+   tags: p.tags.map(t => ({label:t, go:() => { MS.set("ma-q",""); MS.set("ma-tag", t); }})),
+   tabs: [["desc","Description"],["spec","Specifications"],["fit","Compatible vehicles"],["ship","Shipping and returns"]].map(t => ({label:t[1], on: t[0]===st.tab ? "true" : "false", pick:() => this.setState({tab:t[0]}), bg: t[0]===st.tab ? "#E1251B" : "transparent"})),
+   tDesc: st.tab==="desc", tSpec: st.tab==="spec", tFit: st.tab==="fit", tShip: st.tab==="ship",
+   specs: specs.map((s,i) => ({k:s[0], v:s[1], bg: i%2 ? "#FFFFFF" : "#F4F4F5"})),
+   fitRows: fitRows, hasFitRows: fitRows.length > 0, noFitRows: fitRows.length === 0,
+   noFitText: p.uni ? "This product suits any vehicle." : "This is a workshop product and isn't matched to a particular vehicle.",
+   pairs: MA_P.filter(x => x.id!==p.id && (x.dept===p.dept || x.uni)).slice(0,4).map(x => deco(x, st.active))
+  };
+ }
+}
+</script>
+</body>
+</html>

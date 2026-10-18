@@ -1,0 +1,7 @@
+{% if article.tags.size > 0 %}
+<li>
+  {% for tag in article.tags limit: 5 %}
+  <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last == true %}, {% endunless %}
+  {% endfor %}
+</li>
+{% endif %}

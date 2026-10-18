@@ -1,0 +1,37 @@
+<div class="blog-reply-wrapper mt-50">
+  <h4 class="blog-dec-title">{{ 'blogs.comments.title' | t }}</h4>
+  {% form 'new_comment', article, class: 'blog-form' %}
+  {{ form.errors | default_errors }}
+  <div class="row">
+    <div class="col-md-6">
+      <div class="leave-form">
+        <input type="text" 
+               class="{% if form.errors contains 'author' %}error{% endif %}" 
+               name="comment[author]" 
+               id="commentAuthor" 
+               value="{{ form.author }}" 
+               placeholder="{{ 'blogs.comments.name' | t }}">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="leave-form">
+        <input type="text" 
+               class="{% if form.errors contains 'email' %}error{% endif %}" 
+               name="comment[email]" 
+               id="commentEmail" 
+               value="{{ form.email }}" 
+               placeholder="{{ 'blogs.comments.email' | t }}">
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="text-leave">
+        <textarea name="comment[body]" id="commentBody"  placeholder="{{ 'blogs.comments.message' | t }}">{{ form.body }}</textarea>
+        <input type="submit" value="{{ 'blogs.comments.post' | t }}">
+        {% if blog.moderated? %}
+        <p>{{ 'blogs.comments.moderated' | t }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endform %}
+</div>

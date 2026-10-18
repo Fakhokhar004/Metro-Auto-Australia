@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<title>Metro Auto product card</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<article style="height: 100%; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; display: flex; flex-direction: column; overflow: hidden; font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #121316; position: relative; box-shadow: 0 1px 2px rgba(18,19,22,0.06)">
+ <a href="Product.dc.html" onClick="{{open}}" aria-label="{{p.title}}" style="display: block; position: relative; aspect-ratio: 1 / 1; background: radial-gradient(circle at 60% 40%, rgba(225,37,27,0.22), rgba(225,37,27,0) 60%), #17181B">
+  <div style="position: absolute; inset: 0; display: grid; place-items: center">
+   <sc-if value="{{isPad}}" hint-placeholder-val="{{ true }}">
+    <svg width="72%" height="72%" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+     <circle cx="100" cy="100" r="78" fill="#2A2C31" stroke="#4A4D55" stroke-width="2"></circle>
+     <circle cx="100" cy="100" r="68" stroke="#3A3D44" stroke-width="1.5" stroke-dasharray="2 6"></circle>
+     <circle cx="100" cy="100" r="28" fill="#3A3D44"></circle><circle cx="100" cy="100" r="10" fill="#17181B"></circle>
+     <path d="M34 62 C24 84 24 116 34 138 L54 128 C47 112 47 88 54 72 Z" fill="#E1251B"></path>
+     <path d="M146 54 Q176 100 146 146 L134 138 Q158 100 134 62 Z" fill="#9A9EA6"></path>
+    </svg>
+   </sc-if>
+   <sc-if value="{{isCan}}" hint-placeholder-val="{{ false }}">
+    <svg width="46%" height="74%" viewBox="0 0 120 200" fill="none" aria-hidden="true">
+     <rect x="52" y="4" width="16" height="12" rx="2" fill="#62666D"></rect>
+     <path d="M40 16h40v18H40z" fill="#E4E4E7"></path>
+     <rect x="30" y="34" width="60" height="160" rx="10" fill="{{p.tint}}"></rect>
+     <rect x="30" y="80" width="60" height="52" fill="#FFFFFF"></rect>
+     <rect x="38" y="90" width="44" height="10" rx="2" fill="{{p.tint}}"></rect>
+     <rect x="38" y="106" width="28" height="6" rx="2" fill="#9A9EA6"></rect>
+     <rect x="36" y="40" width="6" height="34" rx="3" fill="#FFFFFF" opacity="0.3"></rect>
+    </svg>
+   </sc-if>
+   <sc-if value="{{isBottle}}" hint-placeholder-val="{{ false }}">
+    <svg width="46%" height="74%" viewBox="0 0 120 200" fill="none" aria-hidden="true">
+     <path d="M48 6h26v18H48z" fill="#E4E4E7"></path><path d="M74 8h24l-5 10H74z" fill="#E4E4E7"></path>
+     <path d="M42 32h36l8 16v140a8 8 0 0 1-8 8H42a8 8 0 0 1-8-8V48z" fill="{{p.tint}}"></path>
+     <rect x="38" y="84" width="44" height="58" rx="3" fill="#FFFFFF"></rect>
+     <rect x="44" y="94" width="32" height="8" rx="2" fill="{{p.tint}}"></rect>
+    </svg>
+   </sc-if>
+   <sc-if value="{{isTray}}" hint-placeholder-val="{{ false }}">
+    <svg width="80%" height="64%" viewBox="0 0 200 140" fill="none" aria-hidden="true">
+     <rect x="14" y="22" width="172" height="104" rx="8" fill="{{p.tint}}"></rect>
+     <rect x="22" y="30" width="156" height="88" rx="4" fill="#2A2C31"></rect>
+     <rect x="26" y="34" width="34" height="38" rx="3" fill="#3A3D44"></rect><rect x="64" y="34" width="34" height="38" rx="3" fill="#3A3D44"></rect><rect x="102" y="34" width="34" height="38" rx="3" fill="#3A3D44"></rect><rect x="140" y="34" width="34" height="38" rx="3" fill="#3A3D44"></rect>
+     <rect x="26" y="76" width="34" height="38" rx="3" fill="#3A3D44"></rect><rect x="64" y="76" width="34" height="38" rx="3" fill="#3A3D44"></rect><rect x="102" y="76" width="34" height="38" rx="3" fill="#3A3D44"></rect><rect x="140" y="76" width="34" height="38" rx="3" fill="#3A3D44"></rect>
+     <circle cx="43" cy="53" r="7" fill="#C9CBD0"></circle><circle cx="81" cy="53" r="6" fill="#E1251B"></circle><circle cx="119" cy="53" r="8" fill="#C9CBD0"></circle><circle cx="157" cy="53" r="6" fill="#9A9EA6"></circle>
+     <circle cx="43" cy="95" r="6" fill="#9A9EA6"></circle><circle cx="81" cy="95" r="8" fill="#C9CBD0"></circle><circle cx="119" cy="95" r="6" fill="#E1251B"></circle><circle cx="157" cy="95" r="7" fill="#C9CBD0"></circle>
+    </svg>
+   </sc-if>
+   <sc-if value="{{isClip}}" hint-placeholder-val="{{ false }}">
+    <svg width="66%" height="60%" viewBox="0 0 200 140" fill="none" aria-hidden="true">
+     <path d="M30 100 L80 40 L92 50 L48 104 Z" fill="#C9CBD0"></path>
+     <path d="M70 110 L130 34 L142 44 L88 114 Z" fill="#E1251B"></path>
+     <path d="M112 112 L168 46 L178 56 L126 116 Z" fill="#9A9EA6"></path>
+    </svg>
+   </sc-if>
+  </div>
+  <sc-if value="{{onSale}}" hint-placeholder-val="{{ false }}">
+   <span style="position: absolute; top: 10px; left: 10px; background: #E1251B; color: #FFFFFF; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; padding: 3px 8px; border-radius: 4px; text-transform: uppercase">{{save}}% off</span>
+  </sc-if>
+ </a>
+ <button aria-label="{{wishLabel}}" aria-pressed="{{wishPressed}}" onClick="{{toggleWish}}" style="position: absolute; top: 8px; right: 8px; width: 40px; height: 40px; border-radius: 6px; border: 0; background: #FFFFFF; display: grid; place-items: center; cursor: pointer; color: {{wishColor}}">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="{{wishFill}}" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"></path></svg>
+ </button>
+ <div style="padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 6px; flex: 1">
+  <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap">
+   <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: {{stockColor}}"><span style="width: 8px; height: 8px; border-radius: 99px; background: {{stockColor}}"></span>{{stockLabel}}</span>
+   <span style="font-size: 12px; color: #62666D">{{p.vendor}} {{p.sku}}</span>
+  </div>
+  <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #62666D">{{p.col}}</span>
+  <a href="Product.dc.html" onClick="{{open}}" style="color: #121316; text-decoration: none; font-weight: 600; font-size: 15px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 40px">{{p.title}}</a>
+  <sc-if value="{{hasFit}}" hint-placeholder-val="{{ false }}">
+   <span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 4px; background: {{fitBg}}; color: {{fitColor}}">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>{{p.fitLabel}}
+   </span>
+  </sc-if>
+  <div style="display: flex; align-items: baseline; gap: 8px; margin-top: auto; padding-top: 4px; flex-wrap: wrap">
+   <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 28px; line-height: 1; color: #E1251B">{{price}}</span>
+   <sc-if value="{{onSale}}" hint-placeholder-val="{{ false }}">
+    <span style="font-size: 14px; color: #62666D; text-decoration: line-through">{{compare}}</span>
+   </sc-if>
+  </div>
+  <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px">
+   <div style="display: flex; flex: 0 0 auto; border: 1px solid #C9CBD0; border-radius: 6px; overflow: hidden; height: 42px; background: #FFFFFF">
+    <button aria-label="Decrease quantity" onClick="{{dec}}" style="width: 32px; border: 0; background: #FFFFFF; font-size: 20px; line-height: 1; cursor: pointer; color: #121316">−</button>
+    <input aria-label="Quantity" inputmode="numeric" value="{{qty}}" onChange="{{onQty}}" style="width: 32px; border: 0; text-align: center; font-family: inherit; font-size: 15px; font-weight: 600; color: #121316; padding: 0">
+    <button aria-label="Increase quantity" onClick="{{inc}}" style="width: 32px; border: 0; background: #FFFFFF; font-size: 20px; line-height: 1; cursor: pointer; color: #121316">+</button>
+   </div>
+   <button onClick="{{add}}" disabled="{{atcOff}}" style="flex: 1 1 110px; min-height: 42px; border-radius: 6px; border: 0; background: {{atcBg}}; color: #FFFFFF; font-family: inherit; font-weight: 600; font-size: 14px; cursor: {{atcCursor}}; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 6px">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 11h10.2L20 8H6.2"></path></svg>{{atcLabel}}
+   </button>
+  </div>
+ </div>
+</article>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"item":{"editor":null},"$preview":{"width":300,"height":540}}'>
+var MS={get:function(k,d){try{var v=window.localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set:function(k,v){try{window.localStorage.setItem(k,JSON.stringify(v));}catch(e){}try{window.dispatchEvent(new Event(k));}catch(e){}}};
+var PC_SEED=[{id:1,title:"HiQ Front Brake Pads Set SP2174",vendor:"HiQ",sku:"SP2174",price:65,kind:"pad",tint:"#3B4654",qty:1},{id:4,title:"CRC 5.56 Multi-Purpose Lubricant Aerosol Spray 400g",vendor:"CRC",sku:"5005",price:7.70,kind:"can",tint:"#2F6FD6",qty:1}];
+var PC_DEFAULT={id:1,title:"HiQ Front Brake Pads Set SP2174",vendor:"HiQ",sku:"SP2174",price:65,compare:0,onHand:18,kind:"pad",tint:"#3B4654",col:"Brake pads",fitLabel:"Fits your Corolla",fitOk:true};
+function pcMoney(n){return "$"+Number(n).toFixed(2);}
+class Component extends DCLogic {
+ constructor(props){ super(props); this.state = {wish:false, added:false, qty:1}; }
+ addToCart(p, qty){
+  var cart = MS.get("ma-cart", null) || PC_SEED.slice();
+  var line = cart.filter(function(l){ return l.id === p.id; })[0];
+  if (line) line.qty = Math.min(99, line.qty + qty);
+  else cart.push({id:p.id, title:p.title, vendor:p.vendor, sku:p.sku, price:p.price, kind:p.kind, tint:p.tint, qty:qty});
+  MS.set("ma-cart", cart);
+ }
+ renderVals(){
+  var p = this.props.item || PC_DEFAULT;
+  var st = this.state;
+  var onSale = !!(p.compare && p.compare > p.price);
+  var known = typeof p.onHand === "number", out = known && p.onHand <= 0, low = known && p.onHand > 0 && p.onHand <= 5;
+  var cap = known && p.onHand > 0 ? Math.min(99, p.onHand) : 99;
+  return {
+   p: p,
+   open: () => MS.set("ma-prod", p.id),
+   isPad: p.kind==="pad", isCan: p.kind==="can", isBottle: p.kind==="bottle", isTray: p.kind==="tray", isClip: p.kind==="clip",
+   onSale: onSale, save: onSale ? Math.round((1 - p.price/p.compare)*100) : 0,
+   price: pcMoney(p.price), compare: onSale ? pcMoney(p.compare) : "",
+   hasFit: !!p.fitLabel, fitBg: p.fitOk ? "#DCFCE7" : "#F4F4F5", fitColor: p.fitOk ? "#14532D" : "#3F4249",
+   wishColor: st.wish ? "#E1251B" : "#3F4249", wishFill: st.wish ? "#E1251B" : "none",
+   wishLabel: st.wish ? "Remove from wishlist" : "Save to wishlist", wishPressed: st.wish ? "true" : "false",
+   toggleWish: () => this.setState({wish: !st.wish}),
+   qty: st.qty,
+   stockLabel: out ? "Out of stock" : (low ? "Only " + p.onHand + " left" : (known ? "In stock, " + p.onHand + " available" : "In stock")),
+   stockColor: out ? "#62666D" : (low ? "#B45309" : "#15803D"),
+   inc: () => this.setState({qty: Math.min(cap, st.qty + 1), added:false}),
+   dec: () => this.setState({qty: Math.max(1, st.qty - 1), added:false}),
+   onQty: e => { var n = parseInt(String(e.target.value).replace(/\D/g, ""), 10); this.setState({qty: isNaN(n) ? 1 : Math.max(1, Math.min(cap, n)), added:false}); },
+   added: st.added, atcOff: st.added || out,
+   add: () => { if (out) return; this.addToCart(p, st.qty); this.setState({added:true}); },
+   atcLabel: out ? "Out of stock" : (st.added ? "Added " + st.qty : "Add to cart"),
+   atcBg: (st.added || out) ? "#62666D" : "#121316", atcCursor: out ? "not-allowed" : "pointer"
+  };
+ }
+}
+</script>
+</body>
+</html>

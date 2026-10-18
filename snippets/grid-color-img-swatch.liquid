@@ -1,0 +1,122 @@
+{%- if product.variants.size > 1 or settings.product_size_enable or settings.product_color_enable -%}
+
+<div class="color_size_img_wrap">
+ 
+  {%- if settings.product_size_enable -%}
+  
+    <div class="size-container">
+      {% for option in product.options %}
+      {% if option == 'Size' %}
+      {% assign index = forloop.index0 %}
+      {% assign sizelist = '' %}
+      {% assign size = '' %}
+      {% for variant in product.variants %}
+      {% capture size %}
+      {{ variant.options[index] }}
+      {% endcapture %}
+      {% unless sizelist contains size %}
+
+      {% assign text = size | handleize %}
+
+      <span class="size_varient">{{ size }}</span>
+      
+
+      {% capture tempList %}
+      {{ sizelist | append: size | append: ' ' }}
+      {% endcapture %}
+
+      {% assign sizelist = tempList %}
+      {% endunless %}
+
+      {% endfor %}
+      {% endif %}
+      {% endfor %}
+    </div>
+
+
+    <script>	
+      $('.size_varient').parent('div').addClass('size_var_parent');
+      $('.size_var_parent').parent('div').addClass('size_var_conatiner');
+    </script> 
+
+  {%- endif -%} 
+  
+  
+  {%- if settings.product_color_enable -%}
+    
+  {%- assign number = 0 -%}
+    
+    <ul class="color-categories grid-color-swatch{% if variant.image != null %} grid-image-swatch{% endif %}">
+      {%- for option in product.options -%}
+      {%- if option == 'Color' -%}
+      {%- assign index = forloop.index0 -%}
+      {%- assign colorlist = '' -%}
+      {%- assign color = '' -%}
+      {%- for variant in product.variants limit: 5 -%}
+      {%- capture color -%}
+      {{ variant.options[index] }}
+      {%- endcapture -%}
+      {%- unless colorlist contains color -%}
+
+    {% assign number = number | plus: 1 %}
+        
+      {%- assign text = color | handleize -%}
+      
+      {% if number <= 4 %}
+      <li class="{{ color | split: ' ' | last | handle }} color_img_variant">
+          <label data-toggle="tooltip" data-placement="top" title="{{ color | capitalize }}" style="{%- if text == 'white' -%}border: 1px solid #f1f1f1;{%- endif -%} 
+            {%- if variant.image -%}background: url({{ variant.image.src | product_img_url: 'thumb' }}) no-repeat scroll center center / cover;{%- else -%}background: {{ color | split: ' ' | last | handle }};{%- endif -%}">
+          </label>
+        {%- if variant.image != null -%}
+        <div class="hidden">
+          <a href="{{ variant.image.src | product_img_url: 'large' }}"></a>
+        </div>
+        {%- endif -%}
+      </li>
+      {%- endif -%}
+        
+      {%- capture tempList -%}
+      {{ colorlist | append: color | append: ' ' }}
+      {%- endcapture -%}
+      {%- assign colorlist = tempList -%}
+      {%- endunless -%}
+      {%- endfor -%}
+
+
+    {%- if option == 'Color' and number > 4 -%}
+    <li class="vaiant-plus-one">
+      <a href="{{ product.url | within: collection }}">
+        <span>+{{ number | minus: 4 }}</span>
+      </a>
+    </li>
+    {%- endif -%}
+
+
+        
+      {%- endif -%}
+      {%- endfor -%}
+    </ul>
+
+  {%- endif -%} 
+  
+ 
+</div> 
+  
+{%- endif -%}
+
+
+<script>	
+  $('.color_img_variant').parent('ul').addClass('color_img_parent');
+  $('.color_img_parent').parent('div').addClass('color_img_conatiner');
+</script>
+  
+
+
+
+
+
+                
+
+                
+
+

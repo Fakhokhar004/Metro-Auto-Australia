@@ -1,0 +1,842 @@
+{% comment %}
+  ============================================================
+  Section: Filters & Top Brands Panel — "Control Deck" design
+  Standalone section that sits BELOW the Vehicle Search Hero.
+  Tabs: BY CATEGORY / BY PRICE / TOP BRANDS (Top Brands is
+  pulled live from Supabase). Trust badges row underneath.
+
+  FUNCTIONALITY IS UNCHANGED — same tab/accordion toggle logic,
+  same price-slider label update, same Supabase brand fetch +
+  live search filter, same Apply/Clear behaviour. The only
+  behavioural addition is that "By Category" now starts open by
+  default instead of every panel being collapsed on page load.
+  ============================================================
+{% endcomment %}
+
+<section class="vfp" id="vfp-{{ section.id }}">
+  <div class="vfp__inner">
+
+    <div class="vfp__card">
+      <div class="vfp__accent-bar" style="background: {{ section.settings.accent_color }};" aria-hidden="true"></div>
+
+      <div class="vfp__head">
+        <span class="vfp__title">
+          <span class="vfp__title-dot" style="background: {{ section.settings.accent_color }};"></span>
+          {{ section.settings.panel_title | default: 'Filters' }}
+        </span>
+        <button type="button" class="vfp__clear" id="vfp-clear-{{ section.id }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          Clear
+        </button>
+      </div>
+
+      <div class="vfp__tabs" role="tablist">
+        <button type="button" class="vfp__tab is-active" data-tab="category" id="vfp-tabbtn-category-{{ section.id }}" role="tab" aria-selected="true">
+          <span class="vfp__tab-icon">{% render 'vfp-icon', icon: 'funnel' %}</span>
+          By Category
+        </button>
+        <button type="button" class="vfp__tab" data-tab="price" id="vfp-tabbtn-price-{{ section.id }}" role="tab" aria-selected="false">
+          <span class="vfp__tab-icon">{% render 'vfp-icon', icon: 'search' %}</span>
+          By Price
+        </button>
+        <button type="button" class="vfp__tab" data-tab="brands" id="vfp-tabbtn-brands-{{ section.id }}" role="tab" aria-selected="false">
+          <span class="vfp__tab-icon">{% render 'vfp-icon', icon: 'award' %}</span>
+          Top Brands
+        </button>
+      </div>
+
+      <!-- BY CATEGORY -->
+      <div class="vfp__panel is-open" data-panel="category" id="vfp-panel-category-{{ section.id }}">
+        <div class="vfp__panel-heading"><span class="vfp__icon">{% render 'vfp-icon', icon: 'funnel' %}</span> Shop by Category</div>
+        <div class="vfp__category-list">
+          {% for block in section.blocks %}
+            {% if block.type == 'category' %}
+              {% assign cat_collection = block.settings.collection %}
+              <a
+                href="{{ block.settings.custom_url | default: cat_collection.url | default: '#' }}"
+                class="vfp__category-item"
+                {{ block.shopify_attributes }}
+              >
+                <span class="vfp__category-icon"><span class="vfp__icon">{% render 'vfp-icon', icon: block.settings.icon %}</span></span>
+                <span class="vfp__category-name">{{ block.settings.label | default: cat_collection.title | default: 'Category' }}</span>
+                {% if cat_collection != blank %}
+                  <span class="vfp__category-count">{{ cat_collection.products_count }}</span>
+                {% elsif block.settings.count != blank %}
+                  <span class="vfp__category-count">{{ block.settings.count }}</span>
+                {% endif %}
+                <span class="vfp__category-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                </span>
+              </a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- BY PRICE -->
+      <div class="vfp__panel" data-panel="price" id="vfp-panel-price-{{ section.id }}">
+        <div class="vfp__panel-heading"><span class="vfp__icon">{% render 'vfp-icon', icon: 'search' %}</span> Filter by Price</div>
+        <div class="vfp__price">
+          <div class="vfp__price-value" id="vfp-price-label-{{ section.id }}">
+            Up to {{ section.settings.price_currency }}{{ section.settings.price_default }}
+          </div>
+          <input
+            type="range"
+            id="vfp-price-slider-{{ section.id }}"
+            class="vfp__price-slider"
+            min="{{ section.settings.price_min }}"
+            max="{{ section.settings.price_max }}"
+            step="{{ section.settings.price_step }}"
+            value="{{ section.settings.price_default }}"
+            style="--vfp-accent: {{ section.settings.accent_color }};"
+          >
+          <div class="vfp__price-scale">
+            <span>{{ section.settings.price_currency }}{{ section.settings.price_min }}</span>
+            <span>{{ section.settings.price_currency }}{{ section.settings.price_max }}+</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOP BRANDS (Supabase) -->
+      <div class="vfp__panel" data-panel="brands" id="vfp-panel-brands-{{ section.id }}">
+        <div class="vfp__panel-heading"><span class="vfp__icon">{% render 'vfp-icon', icon: 'award' %}</span> Top Brands</div>
+        <div class="vfp__brand-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vfp__brand-search-icon"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input type="text" id="vfp-brand-search-{{ section.id }}" placeholder="Search brand...">
+        </div>
+        <div class="vfp__brand-grid" id="vfp-brand-list-{{ section.id }}">
+          <div class="vfp__loading">Loading brands...</div>
+        </div>
+      </div>
+
+      <button type="button" class="vfp__apply" id="vfp-apply-{{ section.id }}" style="background: {{ section.settings.apply_button_color }};">
+        {{ section.settings.apply_button_label | default: 'Apply Filters' }}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+
+    {% if section.blocks.size > 0 %}
+      {% assign has_badges = false %}
+      {% for block in section.blocks %}
+        {% if block.type == 'badge' %}{% assign has_badges = true %}{% endif %}
+      {% endfor %}
+      {% if has_badges %}
+        <div class="vfp__badges">
+          {% for block in section.blocks %}
+            {% if block.type == 'badge' %}
+              <div class="vfp__badge" {{ block.shopify_attributes }}>
+                <span class="vfp__badge-icon"><span class="vfp__icon">{% render 'vfp-icon', icon: block.settings.icon %}</span></span>
+                <span>{{ block.settings.label }}</span>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endif %}
+
+  </div>
+</section>
+
+<style>
+  #vfp-{{ section.id }} {
+    position: relative;
+    z-index: 1;
+    background: {{ section.settings.section_background }};
+    padding: 40px 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  #vfp-{{ section.id }} .vfp__inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  #vfp-{{ section.id }} .vfp__card {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #ececef;
+    border-radius: 16px;
+    padding: 28px 28px 24px;
+    box-shadow: 0 1px 2px rgba(16,20,30,0.04), 0 18px 40px rgba(16,20,30,0.06);
+    overflow: hidden;
+  }
+
+  #vfp-{{ section.id }} .vfp__accent-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+  }
+
+  #vfp-{{ section.id }} .vfp__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+
+  #vfp-{{ section.id }} .vfp__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 19px;
+    font-weight: 800;
+    color: #0d1220;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  #vfp-{{ section.id }} .vfp__title-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 3px;
+    transform: rotate(45deg);
+    flex: none;
+  }
+
+  #vfp-{{ section.id }} .vfp__clear {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: #7c828f;
+    font-weight: 700;
+    font-size: 12.5px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+
+  #vfp-{{ section.id }} .vfp__clear svg { width: 14px; height: 14px; }
+
+  #vfp-{{ section.id }} .vfp__clear:hover {
+    color: {{ section.settings.accent_color }};
+    background: rgba(0,0,0,0.03);
+  }
+
+  /* Segmented tab switcher */
+  #vfp-{{ section.id }} .vfp__tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    background: #f2f3f5;
+    padding: 6px;
+    border-radius: 12px;
+  }
+
+  #vfp-{{ section.id }} .vfp__tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex: 1 1 180px;
+    padding: 13px 18px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: #5a5f6b;
+    font-weight: 700;
+    font-size: 12.5px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  #vfp-{{ section.id }} .vfp__tab-icon { display: inline-flex; width: 16px; height: 16px; flex: none; }
+  #vfp-{{ section.id }} .vfp__tab-icon svg { width: 100%; height: 100%; }
+
+  #vfp-{{ section.id }} .vfp__tab:hover:not(.is-active) {
+    background: rgba(255,255,255,0.7);
+    color: #0d1220;
+  }
+
+  #vfp-{{ section.id }} .vfp__tab.is-active {
+    background: {{ section.settings.accent_color }};
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+  }
+
+  #vfp-{{ section.id }} .vfp__panel {
+    display: none;
+    background: #fbfbfc;
+    border: 1px solid #eef0f2;
+    border-radius: 12px;
+    margin-top: 14px;
+    padding: 22px;
+  }
+
+  #vfp-{{ section.id }} .vfp__panel.is-open {
+    display: block;
+    animation: vfp-panel-in 0.2s ease;
+  }
+
+  @keyframes vfp-panel-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  #vfp-{{ section.id }} .vfp__panel-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #0d1220;
+    font-weight: 800;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #eaebee;
+  }
+
+  #vfp-{{ section.id }} .vfp__panel-heading .vfp__icon { color: {{ section.settings.accent_color }}; }
+
+  #vfp-{{ section.id }} .vfp__icon { display: inline-flex; width: 17px; height: 17px; flex: none; }
+  #vfp-{{ section.id }} .vfp__icon svg { width: 100%; height: 100%; }
+
+  /* Category list */
+  #vfp-{{ section.id }} .vfp__category-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+
+  #vfp-{{ section.id }} .vfp__category-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid #ececef;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #242832;
+    font-weight: 700;
+    font-size: 13.5px;
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  #vfp-{{ section.id }} .vfp__category-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex: none;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.04);
+    color: {{ section.settings.accent_color }};
+  }
+
+  #vfp-{{ section.id }} .vfp__category-item:hover {
+    border-color: {{ section.settings.accent_color }};
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.07);
+  }
+
+  #vfp-{{ section.id }} .vfp__category-item:hover .vfp__category-icon {
+    background: {{ section.settings.accent_color }};
+    color: #fff;
+  }
+
+  #vfp-{{ section.id }} .vfp__category-name { flex: 1 1 auto; }
+
+  #vfp-{{ section.id }} .vfp__category-count {
+    color: #a2a6b0;
+    font-weight: 700;
+    font-size: 12px;
+    background: rgba(0,0,0,0.045);
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+  #vfp-{{ section.id }} .vfp__category-arrow {
+    display: inline-flex;
+    width: 14px;
+    height: 14px;
+    flex: none;
+    color: #c3c6cd;
+    transition: transform 0.15s ease, color 0.15s ease;
+  }
+
+  #vfp-{{ section.id }} .vfp__category-item:hover .vfp__category-arrow {
+    transform: translateX(3px);
+    color: {{ section.settings.accent_color }};
+  }
+
+  /* Price */
+  #vfp-{{ section.id }} .vfp__price { text-align: center; padding: 6px 10px 0; }
+
+  #vfp-{{ section.id }} .vfp__price-value {
+    display: inline-block;
+    color: #fff;
+    background: {{ section.settings.accent_color }};
+    font-weight: 800;
+    font-size: 15px;
+    padding: 8px 20px;
+    border-radius: 30px;
+    margin-bottom: 22px;
+  }
+
+  #vfp-{{ section.id }} .vfp__price-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, {{ section.settings.accent_color }} 0%, {{ section.settings.accent_color }} var(--vfp-fill, 50%), #e6e7ea var(--vfp-fill, 50%), #e6e7ea 100%);
+    outline: none;
+  }
+  #vfp-{{ section.id }} .vfp__price-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    border: 4px solid {{ section.settings.accent_color }};
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    margin-top: -1px;
+  }
+  #vfp-{{ section.id }} .vfp__price-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    border: 4px solid {{ section.settings.accent_color }};
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  #vfp-{{ section.id }} .vfp__price-slider::-moz-range-progress {
+    background: {{ section.settings.accent_color }};
+    height: 8px;
+    border-radius: 4px;
+  }
+
+  #vfp-{{ section.id }} .vfp__price-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+    color: #a2a6b0;
+    margin-top: 10px;
+  }
+
+  /* Brands */
+  #vfp-{{ section.id }} .vfp__brand-search {
+    position: relative;
+    margin-bottom: 16px;
+  }
+
+  #vfp-{{ section.id }} .vfp__brand-search-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 15px;
+    color: #a2a6b0;
+    pointer-events: none;
+  }
+
+  #vfp-{{ section.id }} .vfp__brand-search input {
+    width: 100%;
+    padding: 11px 14px 11px 38px;
+    background: #fff;
+    border: 1px solid #e2e3e7;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  #vfp-{{ section.id }} .vfp__brand-search input:focus {
+    border-color: {{ section.settings.accent_color }};
+  }
+
+  #vfp-{{ section.id }} .vfp__brand-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px;
+  }
+
+  #vfp-{{ section.id }} .vfp__brand-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #333844;
+    cursor: pointer;
+    background: #fff;
+    border: 1px solid #e6e7ea;
+    border-radius: 8px;
+    padding: 10px 12px;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+
+  #vfp-{{ section.id }} .vfp__brand-item:hover {
+    border-color: {{ section.settings.accent_color }};
+  }
+
+  #vfp-{{ section.id }} .vfp__brand-item input {
+    accent-color: {{ section.settings.accent_color }};
+    width: 16px;
+    height: 16px;
+    flex: none;
+  }
+
+  #vfp-{{ section.id }} .vfp__brand-item:has(input:checked) {
+    background: {{ section.settings.accent_color }};
+    border-color: {{ section.settings.accent_color }};
+    color: #fff;
+  }
+
+  #vfp-{{ section.id }} .vfp__loading {
+    color: #a2a6b0;
+    font-size: 13px;
+    font-weight: 600;
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  /* Apply button */
+  #vfp-{{ section.id }} .vfp__apply {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 18px;
+    padding: 15px;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 13.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    cursor: pointer;
+    transition: filter 0.15s ease, transform 0.15s ease;
+  }
+
+  #vfp-{{ section.id }} .vfp__apply svg { width: 17px; height: 17px; }
+
+  #vfp-{{ section.id }} .vfp__apply:hover {
+    filter: brightness(1.12);
+    transform: translateY(-1px);
+  }
+
+  #vfp-{{ section.id }} .vfp__apply:active { transform: translateY(0); }
+
+  /* Badges */
+  #vfp-{{ section.id }} .vfp__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  #vfp-{{ section.id }} .vfp__badge {
+    flex: 1 1 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #ececef;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 13px;
+    color: #0d1220;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  #vfp-{{ section.id }} .vfp__badge:hover {
+    border-color: {{ section.settings.accent_color }};
+    box-shadow: 0 10px 22px rgba(0,0,0,0.06);
+  }
+
+  #vfp-{{ section.id }} .vfp__badge-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex: none;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.045);
+  }
+
+  #vfp-{{ section.id }} .vfp__badge .vfp__icon { width: 18px; height: 18px; color: {{ section.settings.accent_color }}; }
+
+  @media (max-width: 640px) {
+    #vfp-{{ section.id }} .vfp__card { padding: 22px 18px 20px; border-radius: 14px; }
+    #vfp-{{ section.id }} .vfp__tabs { flex-direction: column; }
+    #vfp-{{ section.id }} .vfp__tab { flex: 1 1 auto; }
+  }
+</style>
+
+<script>
+(function () {
+  var root = document.getElementById('vfp-{{ section.id }}');
+  if (!root) return;
+
+  var SUPABASE_URL   = {{ section.settings.supabase_url | json }};
+  var SUPABASE_KEY    = {{ section.settings.supabase_key | json }};
+  var BRANDS_TABLE    = {{ section.settings.supabase_brands_table | default: 'brands' | json }};
+  var BRAND_NAME_COL  = {{ section.settings.supabase_brand_name_col | default: 'name' | json }};
+  var BRAND_SLUG_COL  = {{ section.settings.supabase_brand_slug_col | default: 'slug' | json }};
+  var VENDOR_PARAM    = {{ section.settings.vendor_filter_param | default: 'filter.p.vendor' | json }};
+  var RESULTS_URL     = {{ section.settings.results_url | default: '/collections/all' | json }};
+  var PRICE_GTE_PARAM = {{ section.settings.price_gte_param | default: 'filter.v.price.gte' | json }};
+  var PRICE_LTE_PARAM = {{ section.settings.price_lte_param | default: 'filter.v.price.lte' | json }};
+  var CURRENCY        = {{ section.settings.price_currency | json }};
+
+  var tabs   = root.querySelectorAll('.vfp__tab');
+  var panels = root.querySelectorAll('.vfp__panel');
+
+  function syncAria() {
+    tabs.forEach(function (t) {
+      t.setAttribute('aria-selected', t.classList.contains('is-active') ? 'true' : 'false');
+    });
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var target = tab.getAttribute('data-tab');
+      var alreadyOpen = tab.classList.contains('is-active');
+
+      tabs.forEach(function (t) { t.classList.remove('is-active'); });
+      panels.forEach(function (p) { p.classList.remove('is-open'); });
+
+      if (!alreadyOpen) {
+        tab.classList.add('is-active');
+        var panel = root.querySelector('.vfp__panel[data-panel="' + target + '"]');
+        if (panel) panel.classList.add('is-open');
+        if (target === 'brands') loadBrands();
+      }
+
+      syncAria();
+    });
+  });
+
+  // ---- Price slider ----
+  var slider = document.getElementById('vfp-price-slider-{{ section.id }}');
+  var priceLabel = document.getElementById('vfp-price-label-{{ section.id }}');
+
+  function updateSliderFill() {
+    if (!slider) return;
+    var min = Number(slider.min) || 0;
+    var max = Number(slider.max) || 100;
+    var val = Number(slider.value);
+    var pct = max > min ? ((val - min) / (max - min)) * 100 : 0;
+    slider.style.setProperty('--vfp-fill', pct + '%');
+  }
+
+  slider && slider.addEventListener('input', function () {
+    priceLabel.textContent = 'Up to ' + CURRENCY + Number(slider.value).toLocaleString();
+    updateSliderFill();
+  });
+  updateSliderFill();
+
+  // ---- Supabase brands ----
+  var brandsLoaded = false;
+  var allBrands = [];
+  var brandListEl = document.getElementById('vfp-brand-list-{{ section.id }}');
+
+  function loadBrands() {
+    if (brandsLoaded) return;
+    if (!SUPABASE_URL || !SUPABASE_KEY) {
+      brandListEl.innerHTML = '<div class="vfp__loading">Supabase not configured in theme settings.</div>';
+      return;
+    }
+    fetch(SUPABASE_URL + '/rest/v1/' + BRANDS_TABLE + '?select=' + BRAND_NAME_COL + ',' + BRAND_SLUG_COL + '&order=' + BRAND_NAME_COL + '.asc', {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        allBrands = data;
+        brandsLoaded = true;
+        renderBrands(allBrands);
+      })
+      .catch(function (err) {
+        brandListEl.innerHTML = '<div class="vfp__loading">Could not load brands. Check Supabase settings.<br><small>' + err.message + '</small></div>';
+      });
+  }
+
+  function renderBrands(brands) {
+    if (!brands.length) {
+      brandListEl.innerHTML = '<div class="vfp__loading">No brands found.</div>';
+      return;
+    }
+    brandListEl.innerHTML = brands.map(function (b) {
+      var name = b[BRAND_NAME_COL] || 'Unknown';
+      var slug = b[BRAND_SLUG_COL] || '';
+      return '<label class="vfp__brand-item">' +
+        '<input type="checkbox" value="' + slug + '">' +
+        '<span>' + name + '</span>' +
+        '</label>';
+    }).join('');
+  }
+
+  var brandSearch = document.getElementById('vfp-brand-search-{{ section.id }}');
+  brandSearch && brandSearch.addEventListener('input', function () {
+    var q = this.value.toLowerCase();
+    renderBrands(allBrands.filter(function (b) {
+      return (b[BRAND_NAME_COL] || '').toLowerCase().indexOf(q) !== -1;
+    }));
+  });
+
+  // ---- Apply Filters ----
+  document.getElementById('vfp-apply-{{ section.id }}').addEventListener('click', function () {
+    var activeTab = root.querySelector('.vfp__tab.is-active');
+    var target = activeTab ? activeTab.getAttribute('data-tab') : null;
+    var url = new URL(RESULTS_URL, window.location.origin);
+
+    if (target === 'price') {
+      url.searchParams.set(PRICE_GTE_PARAM, '{{ section.settings.price_min }}');
+      url.searchParams.set(PRICE_LTE_PARAM, slider.value);
+    } else if (target === 'brands') {
+      var checked = root.querySelectorAll('.vfp__brand-item input:checked');
+      checked.forEach(function (c) { url.searchParams.append(VENDOR_PARAM, c.value); });
+    } else {
+      return; // category links navigate on their own
+    }
+
+    window.location.href = url.pathname + url.search;
+  });
+
+  // ---- Clear ----
+  document.getElementById('vfp-clear-{{ section.id }}').addEventListener('click', function () {
+    tabs.forEach(function (t) { t.classList.remove('is-active'); });
+    panels.forEach(function (p) { p.classList.remove('is-open'); });
+    if (slider) {
+      slider.value = slider.max;
+      priceLabel.textContent = 'Up to ' + CURRENCY + Number(slider.max).toLocaleString();
+      updateSliderFill();
+    }
+    root.querySelectorAll('.vfp__brand-item input:checked').forEach(function (c) { c.checked = false; });
+    if (brandSearch) brandSearch.value = '';
+    syncAria();
+  });
+
+  syncAria();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Filters & Top Brands",
+  "tag": "section",
+  "class": "vehicle-filters-panel-section",
+  "settings": [
+    { "type": "header", "content": "General" },
+    { "type": "text", "id": "panel_title", "label": "Panel title", "default": "Filters" },
+    { "type": "color", "id": "section_background", "label": "Section background", "default": "#ffffff" },
+    { "type": "color", "id": "accent_color", "label": "Accent / active tab color", "default": "#e30000" },
+    { "type": "color", "id": "apply_button_color", "label": "Apply button color", "default": "#0d1220" },
+    { "type": "text", "id": "apply_button_label", "label": "Apply button label", "default": "Apply Filters" },
+    { "type": "url", "id": "results_url", "label": "Filter results page", "info": "Leave blank to use /collections/all" },
+
+    { "type": "header", "content": "Price Filter" },
+    { "type": "text", "id": "price_currency", "label": "Currency symbol", "default": "$" },
+    { "type": "number", "id": "price_min", "label": "Minimum price", "default": 0 },
+    { "type": "number", "id": "price_max", "label": "Maximum price", "default": 1000 },
+    { "type": "number", "id": "price_default", "label": "Default slider value", "default": 500 },
+    { "type": "number", "id": "price_step", "label": "Step", "default": 10 },
+    { "type": "text", "id": "price_gte_param", "label": "Min-price query parameter", "default": "filter.v.price.gte" },
+    { "type": "text", "id": "price_lte_param", "label": "Max-price query parameter", "default": "filter.v.price.lte" },
+
+    { "type": "header", "content": "Supabase — Top Brands" },
+    { "type": "text", "id": "supabase_url", "label": "Supabase project URL", "info": "e.g. https://yourproject.supabase.co" },
+    { "type": "text", "id": "supabase_key", "label": "Supabase anon key" },
+    { "type": "text", "id": "supabase_brands_table", "label": "Brands table name", "default": "brands" },
+    { "type": "text", "id": "supabase_brand_name_col", "label": "Brand name column", "default": "name" },
+    { "type": "text", "id": "supabase_brand_slug_col", "label": "Brand slug / vendor column", "default": "slug" },
+    { "type": "text", "id": "vendor_filter_param", "label": "Vendor query parameter", "default": "filter.p.vendor" }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Collection", "info": "Used for the link and live product count" },
+        { "type": "text", "id": "label", "label": "Custom label", "info": "Leave blank to use the collection title" },
+        { "type": "url", "id": "custom_url", "label": "Custom link", "info": "Leave blank to use the collection link" },
+        { "type": "text", "id": "count", "label": "Custom count", "info": "Only used if no collection is selected" },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "shield",
+          "options": [
+            { "value": "shield", "label": "Shield" },
+            { "value": "funnel", "label": "Funnel" },
+            { "value": "wrench", "label": "Wrench" },
+            { "value": "award", "label": "Award / Star" },
+            { "value": "star", "label": "Star" },
+            { "value": "restore", "label": "Restore / Ignition" },
+            { "value": "truck", "label": "Truck" },
+            { "value": "pin", "label": "Pin" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "badge",
+      "name": "Trust badge",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Australian Owned" },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "pin",
+          "options": [
+            { "value": "shield", "label": "Shield" },
+            { "value": "funnel", "label": "Funnel" },
+            { "value": "wrench", "label": "Wrench" },
+            { "value": "award", "label": "Award / Star" },
+            { "value": "star", "label": "Star" },
+            { "value": "restore", "label": "Restore / Ignition" },
+            { "value": "truck", "label": "Truck" },
+            { "value": "pin", "label": "Pin" }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Filters & Top Brands",
+      "blocks": [
+        { "type": "category", "settings": { "label": "Brakes & Suspension", "icon": "shield" } },
+        { "type": "category", "settings": { "label": "Filters & Maintenance", "icon": "funnel" } },
+        { "type": "category", "settings": { "label": "Kits & Service Packs", "icon": "wrench" } },
+        { "type": "category", "settings": { "label": "Struts, Bonnet & Body", "icon": "award" } },
+        { "type": "category", "settings": { "label": "Cleaners & Lubricants", "icon": "star" } },
+        { "type": "category", "settings": { "label": "Electrical & Ignition", "icon": "restore" } },
+        { "type": "badge", "settings": { "label": "Australian Owned", "icon": "pin" } },
+        { "type": "badge", "settings": { "label": "Leading Warranties", "icon": "shield" } },
+        { "type": "badge", "settings": { "label": "Fast Delivery", "icon": "truck" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,31 @@
+<!-- Modal -->
+<div class="modal fade bd-example-modal-lg" id="shipping_policy" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header justify-content-end">
+        <button type="button" data-dismiss="modal" aria-label="Close"><i class="sli sli-close"></i> </button>
+      </div>
+      <div class="modal-body">
+        {%- assign shippinghandle = pages[block.settings.shipping_page_handle].content -%}
+        {%- if shippinghandle != empty -%}
+        {{ shippinghandle }}
+        {%- else -%}
+
+          <h4 class="mb-10">Shipping</h4>
+          <ul class="mb-30">
+            <li>Complimentary ground shipping within 1 to 7 business days</li>
+            <li>In-store collection available within 1 to 7 business days</li>
+            <li>Next-day and Express delivery options also available</li>
+            <li>Purchases are delivered in an orange box tied with a Bolduc ribbon, with the exception of certain items</li>
+            <li>See the delivery FAQs for details on shipping methods, costs and delivery times</li>
+          </ul>
+          <h4 class="mb-10">Returns And Exchanges</h4>
+          <ul >
+            <li>Easy and complimentary, within 14 days</li>
+            <li>See conditions and procedure in our return FAQs</li>
+          </ul>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>

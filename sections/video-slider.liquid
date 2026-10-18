@@ -1,0 +1,437 @@
+<!-- slider start -->
+ <div class="slider-area  slider-style-5 {% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}default {% endif %} slider_style_1" id="section-{{ section.id }}">
+   <div class="text-center single-slider">
+    <div class="slider-opacity ptb-250 youtube-bg" data-property="{videoURL:'{% if section.settings.youtube_video_url %}{{ section.settings.youtube_video_url }}{% else %}KcAca6CEBN0{% endif %}', autoPlay:{{ section.settings.slider_autoplay }}, mute:{{ section.settings.video_sound }} }" {% if section.settings.slider_bg_image %}style="background-image: url({{ section.settings.slider_bg_image | img_url: 'master' }})"{% endif %}>
+      {% if section.settings.slider_content_enable %}
+      <div class="slider-text style-2 slider-content">
+        {% if section.settings.slider_title != '' %}
+        <h2>{{ section.settings.slider_title }}</h2>
+        {% endif %}
+        {% if section.settings.slider_content != '' %}
+        <h3>{{ section.settings.slider_content }}</h3>
+        {% endif %}
+        {% if section.settings.slider_button != '' %}
+        <div class="slider-btn">
+          <a href="{{ section.settings.slider_url }}">{{ section.settings.slider_button }}</a>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+    {% if section.settings.slider_autoplay == 'false' %}
+    <div class="slider-button-for-video">
+      <button onclick="jQuery('.youtube-bg').YTPPlay()"><i class="sli sli-control-play"></i></button>
+      <button onclick="jQuery('.youtube-bg').YTPPause()"><i class="sli sli-control-pause"></i></button>
+      <button onclick="jQuery('.youtube-bg').YTPStop()"><i class="sli sli-close"></i></button>
+    </div>
+    {% endif %}
+  </div>
+</div>
+<!-- slider end -->
+
+
+{% if section.settings.slider_custom_style_enable %}
+
+  <style>
+    #section-{{ section.id }}.slider-area.slider-style-5 .slider-opacity::before {
+      background-color: {{ section.settings.slider_opacity_color }};
+      opacity: {{ section.settings.slider_opacity }};
+    }
+    {% if section.settings.slider_content_enable == false %}
+    #section-{{ section.id }}.slider-area.slider-style-5 .youtube-bg {
+      height: {{ section.settings.video_slider_height }}px;
+    }
+    {% endif %}
+    #section-{{ section.id }}.slider-area.slider-style-5 .ptb-250{
+      padding: {{ section.settings.video_slider_padding }}px 0px;
+    }
+
+
+    /* Typography */
+    {% assign heading_font = section.settings.heading_font_handle %}
+    {% assign content_font = section.settings.content_font_handle %}
+    {% assign button_font = section.settings.button_font_handle %}
+
+    {{ heading_font | font_face }}
+    {{ content_font | font_face }}
+    {{ button_font | font_face }}
+
+    #section-{{ section.id }}.slider-area.slider-style-5 .slider-text.style-2 h2 {
+      font-family: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+      font-weight: {{ heading_font.weight }};
+      font-style: {{ heading_font.style }};
+      font-size: {{ section.settings.slider_heading_font_size }}px;
+      color:{{ section.settings.title1_color }};
+      line-height: {{section.settings.heading_line_height}}px;
+      margin-bottom: {{section.settings.header_font_top_margin_bottom}}px;
+    }
+    #section-{{ section.id }}.slider-area.slider-style-5 .slider-text.style-2 > h3 {
+      font-family: {{ content_font.family }}, {{ content_font.fallback_families }};
+      font-weight: {{ content_font.weight }};
+      font-style: {{ content_font.style }};
+      font-size: {{ section.settings.slider_content_font_size }}px;
+      color:{{ section.settings.description_color }};
+      line-height: {{section.settings.des_line_height}}px;
+      margin-bottom: {{section.settings.des_margin_bottom}}px;
+    }
+    #section-{{ section.id }}.slider-area .slider-text.slider-content .slider-btn a {
+      font-family: {{ button_font.family }}, {{ button_font.fallback_families }};
+      font-weight: {{ button_font.weight }};
+      font-style: {{ button_font.style }};
+      font-size: {{ section.settings.slider_button_font_size }}px;
+      background-color: {{ section.settings.btn_bg_color }};
+      color: {{ section.settings.btn_color }};
+      border: 2px solid {{ section.settings.btn_border_color }};
+      border-radius: {{ section.settings.btn_border_radius }}px;
+    }
+    
+    #section-{{ section.id }}.slider-area .slider-text.slider-content .slider-btn {
+    	margin-top: {{section.settings.button_margin_top}}px;
+  	}
+    
+    #section-{{ section.id }}.slider-area .slider-text.slider-content .slider-btn a:hover {
+      background-color: {{ section.settings.btn_hover_bg_color }};
+      color: {{ section.settings.btn_hover_color }};
+      border: 2px solid {{ section.settings.btn_hover_border_color }};
+    }
+
+  </style>
+
+{% endif %}
+
+
+
+<script>
+  if($(window).width() > 767){
+
+    $('.youtube-bg').YTPlayer({
+      containment: '.youtube-bg',
+      autoPlay: true,
+      loop: true,
+    });
+  }
+</script>
+
+
+
+{% schema %}
+
+	  {
+    "name": "Video Slider",
+    "settings": [
+      {
+        "type": "select",
+        "id": "section_width",
+        "label": "Section Width",
+        "options":[
+        {
+          "label": "Full Width",
+          "value": "full_width"
+        },
+        {
+          "label": "Box Width",
+          "value": "box_width"
+        },
+        {
+          "label": "Default Width",
+          "value": "default"
+      }
+      ],
+      "default": "default"
+      },
+      {
+        "type": "checkbox",
+        "id": "slider_custom_style_enable",
+        "label": "Custom Style Enable",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "video_slider_padding",
+        "label": "Slider content Padding (top-bottom)",
+        "default": "250",
+        "info": "if you want increase your slider height then increase padding"
+      },
+      {
+        "type": "text",
+        "id": "video_slider_height",
+        "label": "Slider Hight",
+        "default": "700",
+        "info": "if applicable when slider content disabled"
+      },
+      {
+        "type": "text",
+        "id": "youtube_video_url",
+        "label": "Slider Video URL/ID",
+        "default": "KcAca6CEBN0",
+        "info": "Youtube video URL/ID"
+      },
+      {
+        "type": "header",
+        "content": "Slider Options"
+      },
+      {
+        "type": "color",
+        "id": "slider_opacity_color",
+        "label": "Slider Overlay Color",
+        "default": "#000"
+      },
+      {
+        "type": "range",
+        "id": "slider_opacity",
+        "min": 0,
+        "max": 1,
+        "step": 0.1,
+        "label": "Slider Overlay Color Opacity",
+        "default": 0.5
+      },
+      {
+        "type": "radio",
+        "id": "slider_autoplay",
+        "label": "Video Autoplay",
+        "options":[
+          {
+            "label": "True",
+            "value": "true"
+          },
+          {
+            "label": "False",
+            "value": "false"
+          }
+        ],
+        "default": "true"
+      },
+      {
+        "type": "radio",
+        "id": "video_sound",
+        "label": "Video Sound",
+        "options":[
+          {
+            "label": "on",
+            "value": "false"
+          },
+          {
+            "label": "off",
+            "value": "true"
+          }
+        ],
+        "default": "false"
+      },
+      {
+        "type": "image_picker",
+        "id": "slider_bg_image",
+        "label": "Slider Video Thumbnail Image",
+        "info": "Recommended Size: 1650 x 1100px"
+      },
+      {
+        "type": "checkbox",
+        "id": "slider_content_enable",
+        "label": "Show Slider Content",
+        "default": true
+      },
+
+      {
+        "type": "header",
+        "content": "Slider Title"
+      },
+      {
+        "type": "text",
+        "id": "slider_title",
+        "label": "Slider Title",
+        "default": "Top Collection 2020"
+      },
+      {
+        "type": "font_picker",
+        "label": "Heding font",
+        "id": "heading_font_handle",
+        "default": "playfair_display_n4"
+      },
+      {
+        "type": "text",
+        "id": "slider_heading_font_size",
+        "label": "Slider Heading Font Size",
+        "default": "95",
+        "info": "Defined in pixels. Do not add the 'px' unit."
+      },
+      {
+        "type":      "range",
+        "id":        "heading_line_height",
+        "min":       20,
+        "max":        150,
+        "step":       5,
+        "unit":       "px",
+        "label":     "Heading Line Height",
+        "default":   70
+      },
+      {
+        "type":      "range",
+        "id":        "header_font_top_margin_bottom",
+        "min":       0,
+        "max":        50,
+        "step":       1,
+        "unit":       "px",
+        "label":     "Top Heading margin Bottom",
+        "default":   10
+      },
+
+      {
+        "type": "color",
+        "id": "title1_color",
+        "label": "Title Color",
+        "default": "#1f2226"
+      },
+
+      {
+        "type": "header",
+        "content": "Slider Content"
+      },
+
+      {
+        "type": "textarea",
+        "id": "slider_content",
+        "label": "Slider Content",
+        "default": "A good looking, comfortable traditional collection"
+      },
+      {
+        "type": "font_picker",
+        "label": "Content font",
+        "id": "content_font_handle",
+        "default": "playfair_display_n4"
+      },
+      {
+        "type": "text",
+        "id": "slider_content_font_size",
+        "label": "Slider Content Font Size",
+        "default": "28",
+        "info": "Defined in pixels. Do not add the 'px' unit."
+      },
+        {
+          "type":      "range",
+          "id":        "des_line_height",
+          "min":       10,
+          "max":        50,
+          "step":       1,
+          "unit":       "px",
+          "label":     "Description Line Height",
+          "default":   27
+        },
+        {
+          "type":      "range",
+          "id":        "des_margin_bottom",
+          "min":       0,
+          "max":        80,
+          "step":       1,
+          "unit":       "px",
+          "label":     "Description margin Bottom",
+          "default":   20
+        },
+        {
+          "type": "color",
+          "id": "description_color",
+          "label": "Description Color",
+          "default": "#333"
+        },
+
+        {
+          "type": "header",
+          "content": "Button"
+        },
+        {
+          "type":      "range",
+          "id":        "button_margin_top",
+          "min":       0,
+          "max":        80,
+          "step":       1,
+          "unit":       "px",
+          "label":     "Button margin Top",
+          "default":   35
+        },
+        {
+          "type": "text",
+          "id": "slider_button",
+          "label": "Slider Button Name",
+          "default": "Button Name"
+        },
+        {
+          "type": "url",
+          "id": "slider_url",
+          "label": "Button URL"
+        },
+        {
+          "type": "text",
+          "id": "slider_button_font_size",
+          "label": "Slider Button Font Size",
+          "default": "14",
+          "info": "Defined in pixels. Do not add the 'px' unit."
+        },
+        {
+          "type": "font_picker",
+          "label": "Button font",
+          "id": "button_font_handle",
+          "default": "karla_n4"
+        },
+
+        {
+          "type": "range",
+          "id": "btn_border_radius",
+          "label": "Border Radius",
+          "max": 50,
+          "min": 0,
+          "step": 2,
+          "default": 0,
+		  "unit": "px"
+        },
+        {
+          "type": "color",
+          "id": "btn_color",
+          "label": "Text Color",
+          "default": "#1f2226"
+        },
+        {
+          "type": "color",
+          "id": "btn_bg_color",
+          "label": "BG Color",
+          "default": "transparent"
+        },
+        {
+          "type": "color",
+          "id": "btn_border_color",
+          "label": "Border Color",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "btn_hover_color",
+          "label": "Hover Text Color",
+          "default": "#fff"
+        },
+        {
+          "type": "color",
+          "id": "btn_hover_bg_color",
+          "label": "Hover BG Color",
+          "default": "#ff3535"
+        },
+        {
+          "type": "color",
+          "id": "btn_hover_border_color",
+          "label": "Hover Border Color",
+          "default": "#ff3535"
+        }
+
+
+    ],
+    "presets": [
+      {
+        "name": "Video Slider",
+        "category": "1. Slider"
+      }
+    ]
+  }
+
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

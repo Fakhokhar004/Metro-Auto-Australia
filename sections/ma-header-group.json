@@ -1,0 +1,11 @@
+{
+  "type": "header",
+  "name": "Metro header",
+  "sections": {
+    "header": {
+      "type": "ma-header",
+      "settings": {}
+    }
+  },
+  "order": ["header"]
+}

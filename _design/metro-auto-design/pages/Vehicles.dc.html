@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<title>Metro Auto shop by vehicle</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FFFFFF}
+a{color:#E1251B}a:hover{color:#B71C14}
+:focus-visible{outline:3px solid #2F6FD6;outline-offset:2px}
+.mx-wrap{max-width:1320px;margin:0 auto;padding:0 24px;box-sizing:border-box}
+.mx-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.mx-card{transition:transform .15s ease, box-shadow .15s ease}
+.mx-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(18,19,22,0.16)}
+.mx-make:hover{border-color:#E1251B !important;color:#E1251B !important}
+.mx-layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:24px;align-items:start}
+.mx-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.mx-filter-btn{display:none !important}
+.mx-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-top:6px}
+@media (prefers-reduced-motion:reduce){.mx-card{transition:none}.mx-card:hover{transform:none}}
+@media (max-width:1100px){.mx-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:900px){
+ .mx-layout{grid-template-columns:1fr}
+ .mx-filter-btn{display:inline-flex !important}
+ .mx-side-closed{display:none !important}
+}
+@media (max-width:640px){
+ .mx-wrap{padding:0 12px}
+ .mx-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .mx-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .mx-title{font-size:32px !important}
+ .mx-banner{padding-top:22px !important;padding-bottom:22px !important}
+ .mx-bcard{min-height:56px !important;padding:6px !important;justify-content:center !important;align-items:center;text-align:center}
+ .mx-bname{font-size:17px !important}
+ .mx-bsub,.mx-blogo{display:none !important}
+ .mx-make{min-height:56px !important;font-size:17px !important;border-width:1px !important;padding:0 4px !important}
+ .mx-stats dd{font-size:22px !important}
+ .mx-stats > div{padding:8px 10px !important}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto !important}}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #121316; background: #FFFFFF; min-height: 100vh">
+<dc-import name="Header" current="vehicles" hint-size="100%,210px"></dc-import>
+
+<section style="background: radial-gradient(circle at 85% 30%, rgba(225,37,27,0.3), rgba(225,37,27,0) 50%), #121316; color: #FFFFFF">
+ <sc-if value="{{isCards}}" hint-placeholder-val="{{ true }}">
+  <div class="mx-wrap mx-banner" style="padding-top: 36px; padding-bottom: 36px; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px 32px; flex-wrap: wrap">
+   <div style="display: flex; flex-direction: column; gap: 10px; max-width: 640px">
+    <nav aria-label="Breadcrumb" style="font-size: 13px; color: #B9BCC3; display: flex; gap: 8px"><a href="Main.dc.html" style="color: #B9BCC3">Home</a><span aria-hidden="true">/</span><span style="color: #FFFFFF">Shop by vehicle</span></nav>
+    <h1 class="mx-title" style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 56px; line-height: 0.95; text-transform: uppercase">Shop by vehicle</h1>
+    <p style="margin: 0; font-size: 16px; line-height: 1.55; color: #D4D6DB">Pick your car make to see the parts we carry for it, with prices and stock.</p>
+   </div>
+   <label style="display: flex; align-items: center; gap: 10px; border-radius: 6px; padding: 0 14px; min-height: 48px; background: #FFFFFF; flex: 0 1 340px">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#62666D" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+    <input value="{{filter}}" onChange="{{onFilter}}" aria-label="Find a make" placeholder="Find your make" style="border: 0; outline: none; font-family: inherit; font-size: 15px; flex: 1; min-width: 0; color: #121316">
+   </label>
+  </div>
+ </sc-if>
+ <sc-if value="{{isResults}}" hint-placeholder-val="{{ false }}">
+  <div class="mx-wrap mx-banner" style="padding-top: 32px; padding-bottom: 28px; display: flex; flex-direction: column; gap: 12px">
+   <nav aria-label="Breadcrumb" style="font-size: 13px; color: #B9BCC3; display: flex; gap: 8px; flex-wrap: wrap"><a href="Main.dc.html" style="color: #B9BCC3">Home</a><span aria-hidden="true">/</span><a href="Vehicles.dc.html" onClick="{{back}}" style="color: #B9BCC3">Shop by vehicle</a><span aria-hidden="true">/</span><span style="color: #FFFFFF">{{make}}</span></nav>
+   <h1 class="mx-title" style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 56px; line-height: 0.95; text-transform: uppercase">{{make}} parts</h1>
+   <p style="margin: 0; font-size: 16px; line-height: 1.55; color: #D4D6DB; max-width: 720px">{{makeBlurb}}</p>
+   <div class="mx-chips" role="group" aria-label="Filter by model">
+    <sc-for list="{{modelChips}}" as="m" hint-placeholder-count="4">
+     <button onClick="{{m.go}}" aria-pressed="{{m.on}}" style="flex: none; min-height: 38px; padding: 0 14px; border-radius: 99px; border: 1px solid {{m.border}}; background: {{m.bg}}; color: #FFFFFF; font-family: inherit; font-weight: 500; font-size: 14px; cursor: pointer">{{m.label}}</button>
+    </sc-for>
+   </div>
+  </div>
+ </sc-if>
+</section>
+
+<sc-if value="{{isCards}}" hint-placeholder-val="{{ true }}">
+ <div class="mx-wrap" style="padding-top: 32px; padding-bottom: 64px">
+  <div class="mx-cards">
+   <sc-for list="{{makes}}" as="m" hint-placeholder-count="20">
+    <button class="mx-make" onClick="{{m.go}}" aria-label="{{m.aria}}" style="min-height: 96px; border-radius: 10px; border: 2px solid #E4E4E7; background: #FFFFFF; color: #121316; cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 12px; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 28px; text-transform: uppercase; letter-spacing: 0.02em">{{m.label}}</button>
+   </sc-for>
+  </div>
+  <sc-if value="{{noneFound}}" hint-placeholder-val="{{ false }}">
+   <div style="border: 1px solid #E4E4E7; border-radius: 10px; padding: 28px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; background: #F4F4F5">
+    <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 28px; text-transform: uppercase">No make called "{{filter}}"</h2>
+    <p style="margin: 0; font-size: 15px; color: #3F4249">Send us your rego or VIN and we'll find the right part.</p>
+    <a href="Contact.dc.html" style="min-height: 44px; padding: 0 18px; border-radius: 6px; background: #E1251B; color: #FFFFFF; display: inline-flex; align-items: center; text-decoration: none; font-weight: 600; font-size: 14px">Contact us</a>
+   </div>
+  </sc-if>
+ </div>
+</sc-if>
+
+<sc-if value="{{isResults}}" hint-placeholder-val="{{ false }}">
+<div class="mx-wrap" style="padding-top: 24px; padding-bottom: 64px">
+ <div class="mx-layout">
+  <!-- Search & Discovery style filters (fed by Shopify filters on the live site) -->
+  <aside class="{{sideClass}}" aria-label="Filters" style="border: 1px solid #E4E4E7; border-radius: 8px; overflow: hidden; background: #FFFFFF">
+   <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #121316; color: #FFFFFF">
+    <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; text-transform: uppercase; letter-spacing: 0.03em">Filters</h2>
+    <button onClick="{{clearFilters}}" style="border: 0; background: transparent; color: #FF8A82; font-family: inherit; font-weight: 600; font-size: 13px; cursor: pointer; min-height: 32px">Clear all</button>
+   </div>
+   <sc-for list="{{facets}}" as="f" hint-placeholder-count="4">
+    <div style="border-bottom: 1px solid #F0F0F2">
+     <button onClick="{{f.toggle}}" aria-expanded="{{f.expanded}}" style="width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 48px; padding: 0 16px; border: 0; background: transparent; font-family: inherit; font-weight: 600; font-size: 15px; color: #121316; cursor: pointer; text-align: left">
+      <span style="display: inline-flex; align-items: center; gap: 8px">{{f.name}}<sc-if value="{{f.hasSel}}" hint-placeholder-val="{{ false }}"><span style="min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 99px; background: #E1251B; color: #FFFFFF; font-size: 12px; display: inline-grid; place-items: center">{{f.selCount}}</span></sc-if></span>
+      <span aria-hidden="true" style="font-size: 20px; color: #62666D; line-height: 1">{{f.sign}}</span>
+     </button>
+     <sc-if value="{{f.open}}" hint-placeholder-val="{{ true }}">
+      <div style="padding: 0 16px 14px; display: flex; flex-direction: column">
+       <sc-if value="{{f.isList}}" hint-placeholder-val="{{ true }}">
+        <sc-for list="{{f.opts}}" as="o" hint-placeholder-count="3">
+         <label style="display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 14px; cursor: pointer; color: {{o.color}}">
+          <input type="checkbox" checked="{{o.on}}" onChange="{{o.toggle}}" disabled="{{o.disabled}}" style="width: 17px; height: 17px; accent-color: #E1251B; margin: 0">
+          <span style="flex: 1">{{o.label}}</span><span style="font-size: 13px; color: #62666D">({{o.count}})</span>
+         </label>
+        </sc-for>
+       </sc-if>
+       <sc-if value="{{f.isPrice}}" hint-placeholder-val="{{ false }}">
+        <p style="margin: 0 0 10px; font-size: 13px; color: #62666D">The highest price is {{f.max}}</p>
+        <div style="display: flex; gap: 8px; align-items: center">
+         <label style="flex: 1; display: flex; align-items: center; gap: 4px; border: 1px solid #C9CBD0; border-radius: 6px; padding: 0 8px; min-height: 40px; font-size: 14px; color: #62666D">$<input inputmode="decimal" value="{{f.from}}" onChange="{{f.onFrom}}" aria-label="Price from" placeholder="From" style="border: 0; outline: none; width: 100%; min-width: 0; font-family: inherit; font-size: 14px; color: #121316"></label>
+         <span aria-hidden="true" style="color: #62666D">to</span>
+         <label style="flex: 1; display: flex; align-items: center; gap: 4px; border: 1px solid #C9CBD0; border-radius: 6px; padding: 0 8px; min-height: 40px; font-size: 14px; color: #62666D">$<input inputmode="decimal" value="{{f.to}}" onChange="{{f.onTo}}" aria-label="Price to" placeholder="To" style="border: 0; outline: none; width: 100%; min-width: 0; font-family: inherit; font-size: 14px; color: #121316"></label>
+        </div>
+       </sc-if>
+      </div>
+     </sc-if>
+    </div>
+   </sc-for>
+   <div style="padding: 14px 16px">
+    <button onClick="{{toggleSide}}" style="width: 100%; min-height: 44px; border-radius: 6px; border: 0; background: #E1251B; color: #FFFFFF; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer">Show {{count}} results</button>
+   </div>
+  </aside>
+
+  <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0">
+   <dl class="mx-stats" style="margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px">
+    <sc-for list="{{stats}}" as="s" hint-placeholder-count="4">
+     <div style="border: 1px solid #E4E4E7; border-radius: 8px; padding: 12px 14px; background: #FFFFFF; border-left: 4px solid {{s.accent}}">
+      <dt style="font-size: 13px; color: #62666D">{{s.label}}</dt>
+      <dd style="margin: 2px 0 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 28px; line-height: 1.05">{{s.value}}</dd>
+     </div>
+    </sc-for>
+   </dl>
+   <sc-if value="{{hasVehicle}}" hint-placeholder-val="{{ false }}">
+    <div style="background: {{fitBg}}; border: 1px solid {{fitBorder}}; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 10px 16px; flex-wrap: wrap">
+     <span style="flex: 1 1 280px; font-size: 14px">{{fitText}}</span>
+     <button role="switch" aria-checked="{{fitAria}}" onClick="{{toggleFit}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 42px; padding: 0 12px; border-radius: 6px; border: 1px solid #121316; background: #FFFFFF; color: #121316; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer">
+      <span style="width: 38px; height: 22px; border-radius: 99px; background: {{switchBg}}; position: relative; flex: none"><span style="position: absolute; top: 3px; left: {{knob}}; width: 16px; height: 16px; border-radius: 99px; background: #FFFFFF"></span></span>
+      Only parts that fit my {{model}}
+     </button>
+    </div>
+   </sc-if>
+   <sc-if value="{{hasNote}}" hint-placeholder-val="{{ false }}">
+    <div style="background: #F4F4F5; border: 1px solid #E4E4E7; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 10px 16px; flex-wrap: wrap">
+     <span style="flex: 1 1 280px; font-size: 14px; color: #3F4249">{{note}}</span>
+     <button onClick="{{openGarage}}" style="min-height: 42px; padding: 0 14px; border-radius: 6px; border: 1px solid #121316; background: #FFFFFF; color: #121316; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer">Add model and year</button>
+    </div>
+   </sc-if>
+   <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; border: 1px solid #E4E4E7; border-radius: 8px; padding: 10px 12px">
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+     <button onClick="{{back}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 42px; padding: 0 12px; border-radius: 6px; border: 1px solid #C9CBD0; background: #FFFFFF; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer; color: #121316"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>{{backLabel}}</button>
+     <button class="mx-filter-btn" onClick="{{toggleSide}}" style="align-items: center; min-height: 42px; padding: 0 14px; border-radius: 6px; border: 1px solid #121316; background: #FFFFFF; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer; color: #121316">{{sideLabel}}</button>
+     <span style="font-size: 14px; color: #3F4249">{{count}} {{countWord}}</span>
+     <sc-for list="{{chips}}" as="c" hint-placeholder-count="1">
+      <button onClick="{{c.remove}}" aria-label="Remove {{c.label}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px; border-radius: 99px; border: 1px solid #F5B4AF; background: #FFF6F5; font-family: inherit; font-size: 13px; cursor: pointer; color: #121316">{{c.label}} <span aria-hidden="true">×</span></button>
+     </sc-for>
+    </div>
+    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #62666D">Sort by
+     <select value="{{sort}}" onChange="{{onSort}}" style="min-height: 42px; border: 1px solid #C9CBD0; border-radius: 6px; padding: 0 10px; font-family: inherit; font-size: 14px; color: #121316; background: #FFFFFF">
+      <option value="best">Featured</option><option value="stock">In stock first</option><option value="low">Price, low to high</option><option value="high">Price, high to low</option><option value="az">Alphabetically, A to Z</option>
+     </select>
+    </label>
+   </div>
+   <sc-if value="{{hasItems}}" hint-placeholder-val="{{ true }}">
+    <div class="mx-grid">
+     <sc-for list="{{items}}" as="p" hint-placeholder-count="6">
+      <dc-import name="ProductCard" item="{{p}}" hint-size="100%,520px"></dc-import>
+     </sc-for>
+    </div>
+   </sc-if>
+   <sc-if value="{{noItems}}" hint-placeholder-val="{{ false }}">
+    <div style="border: 1px solid #E4E4E7; border-radius: 10px; padding: 32px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; background: #F4F4F5">
+     <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 28px; text-transform: uppercase">{{emptyTitle}}</h2>
+     <p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3F4249; max-width: 600px">{{emptyText}}</p>
+     <div style="display: flex; gap: 10px; flex-wrap: wrap">
+      <button onClick="{{back}}" style="min-height: 44px; padding: 0 18px; border-radius: 6px; border: 0; background: #121316; color: #FFFFFF; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer">{{backLabel}}</button>
+      <a href="Contact.dc.html" style="min-height: 44px; padding: 0 18px; border-radius: 6px; background: #E1251B; color: #FFFFFF; display: inline-flex; align-items: center; text-decoration: none; font-weight: 600; font-size: 14px">Ask us for a part</a>
+     </div>
+    </div>
+   </sc-if>
+  </div>
+ </div>
+</div>
+</sc-if>
+
+<dc-import name="Footer" hint-size="100%,500px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2600}}'>
+var MS={get:function(k,d){try{var v=window.localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set:function(k,v){try{window.localStorage.setItem(k,JSON.stringify(v));}catch(e){}MS.fire(k);},fire:function(k){try{window.dispatchEvent(new Event(k));}catch(e){}}};
+var MA_DV={make:"Toyota",model:"Corolla",year:"2019"};
+function vKey(v){return v?v.year+" "+v.make+" "+v.model:"";}
+function vTag(v){return v?(v.make+"-"+v.model+"-"+v.year).toLowerCase().replace(/[^a-z0-9]+/g,"-"):"";}
+function slug(s){return String(s).toLowerCase().replace(/[^a-z0-9]+/g,"-");}
+function gLoad(){var g=MS.get("ma-garage",null);return (g&&g.garage)?g:{vehicle:MA_DV,garage:[MA_DV,{make:"Mazda",model:"CX-5",year:"2017"}]};}
+var MA_STOCK={1:18,2:4,3:32,4:120,5:46,6:14,7:27,8:15,9:3,10:22,11:0,12:2,13:1,14:5,15:9,16:0,17:40,18:6,19:7}; /* units on hand; from Shopify inventory on the live site */
+var MA_P=[
+[1,"HiQ Front Brake Pads Set SP2174","HiQ","SP2174",65,0,"pad","#3B4654","brakes","Brake pads",["Front","Brake pads"],["toyota-corolla-2017","toyota-corolla-2018","toyota-corolla-2019","toyota-corolla-2020"],0],
+[2,"HiQ Front Brake Pads Set SP1253","HiQ","SP1253",52.92,0,"pad","#3B4654","brakes","Brake pads",["Front","Brake pads"],["mazda-cx-5-2016","mazda-cx-5-2017","mazda-cx-5-2018","ford-ranger-2018"],0],
+[3,"CRC 5080 De-Squeak 300g","CRC","5080",31.46,0,"can","#E1251B","brakes","Brake care",["Aerosol","Brake noise"],[],1],
+[4,"CRC 5.56 Multi-Purpose Lubricant Aerosol Spray 400g","CRC","5005",7.70,12.68,"can","#2F6FD6","care","Lubricants and aerosols",["Aerosol","Lubricant"],[],1],
+[5,"CRC 2016 Co Contact Cleaner 350g Precision Electronic Cleaning Solvent","CRC","2016",18.32,28.71,"can","#0E7C86","care","Cleaners",["Aerosol","Electrical","Cleaner"],[],1],
+[6,"CRC 3055 808 Silicone Spray 330g Aerosol","CRC","3055",13.83,19.94,"can","#5B2A86","care","Lubricants and aerosols",["Aerosol","Silicone"],[],1],
+[7,"CRC 5021 Gasket Stripper 300g","CRC","5021",14.69,23.80,"can","#B45309","care","Cleaners",["Aerosol","Gasket removal"],[],1],
+[8,"CRC 3071 So Easy Glass Cleaner 500ml Fast Acting","CRC","3071",13.66,0,"bottle","#0E7C86","care","Cleaners",["Glass","Cleaner"],[],1],
+[9,"CRC 3081 Belt Grip Aerosol Spray 400g","CRC","3081",26.51,0,"can","#3F4249","care","Lubricants and aerosols",["Aerosol","Belts"],[],1],
+[10,"CRC 1754520 TAC-2 Non-Flammable 400g Adhesive Lubricant","CRC","1754520",37.04,0,"can","#B45309","care","Lubricants and aerosols",["Aerosol","Adhesive lubricant"],[],1],
+[11,"CRC 5-56 Marine 300g","CRC","6006",15.59,0,"can","#1E3A5F","care","Lubricants and aerosols",["Aerosol","Marine"],[],1],
+[12,"Wheel Stud Tech Tray 030-612","Goss","030-612",390.99,0,"tray","#2F6FD6","workshop","Wheel nuts and studs",["Workshop tray","Assortment"],[],0],
+[13,"Wheel Nut Tech Tray 030-613","Goss","030-613",606.99,0,"tray","#2F6FD6","workshop","Wheel nuts and studs",["Workshop tray","Assortment"],[],0],
+[14,"Door Lock Rod Clip Tech Tray 030-209","Goss","030-209",242.99,0,"tray","#2F6FD6","body","Body clips and fasteners",["Workshop tray","Clips"],[],0],
+[15,"Body Retainer Tech Tray 030-720","Goss","030-720",137.99,0,"tray","#2F6FD6","body","Body clips and fasteners",["Workshop tray","Retainers"],[],0],
+[16,"Stone Tray / Mud Guard 030-212","Goss","030-212",165.99,0,"tray","#2F6FD6","body","Body and exterior parts",["Workshop tray","Mud guard"],[],0],
+[17,"Cable Lock Assortment 3336","Goss","3336",27.99,0,"clip","#3F4249","body","Body clips and fasteners",["Assortment","Cable locks"],[],0],
+[18,"Vacuum Tees and Connectors 030-496","Goss","030-496",162.99,0,"tray","#2F6FD6","engine","Vacuum and breather hose",["Workshop tray","Connectors"],[],0],
+[19,"Wiper Linkage Bushing Tech Tray 030-203","Goss","030-203",139.99,0,"tray","#2F6FD6","body","Wiper arms and parts",["Workshop tray","Wipers"],[],0]
+].map(function(a){return {id:a[0],title:a[1],vendor:a[2],sku:a[3],price:a[4],compare:a[5],kind:a[6],tint:a[7],dept:a[8],col:a[9],tags:a[10],fit:a[11],uni:!!a[12],onHand:MA_STOCK[a[0]],stock:MA_STOCK[a[0]]>0};});
+function deco(p,v){var ok=!!(v&&p.fit.indexOf(vTag(v))>-1);return Object.assign({},p,{fitLabel:ok?"Fits your "+v.model:(p.uni?"Suits any vehicle":""),fitOk:ok});}
+function money(n){return "$"+Number(n).toFixed(2);}
+var MA_DEPT={brakes:"Brakes and suspension",care:"Service and electrical",engine:"Performance and engine",body:"Body and accessories",workshop:"Workshop essentials"};
+function toTop(){try{window.scrollTo({top:0});}catch(e){}}
+/* Shared results logic: filters, chips, sort and stock stats. Same behaviour as the category and search pages. */
+function buildResults(cmp, base, defs){
+ var st = cmp.state, from = parseFloat(st.from), to = parseFloat(st.to);
+ var pass = (p, skip) => defs.every(d => d.id===skip || st.fs[d.id].length===0 || d.match(p, st.fs[d.id]));
+ var priceOk = p => (isNaN(from) || p.price >= from) && (isNaN(to) || p.price <= to);
+ var items = base.filter(p => pass(p) && priceOk(p));
+ if (st.sort==="stock") items = items.slice().sort((a,b) => (b.onHand>0)-(a.onHand>0) || b.onHand-a.onHand);
+ if (st.sort==="low") items = items.slice().sort((a,b) => a.price-b.price);
+ if (st.sort==="high") items = items.slice().sort((a,b) => b.price-a.price);
+ if (st.sort==="az") items = items.slice().sort((a,b) => a.title.localeCompare(b.title));
+ var toggleOpen = id => () => { var o = Object.assign({}, st.open); o[id] = !o[id]; cmp.setState({open:o}); };
+ var head = (id, name, n) => ({name:name, open: !!st.open[id], sign: st.open[id] ? "−" : "+", expanded: st.open[id] ? "true" : "false", toggle: toggleOpen(id), hasSel: n > 0, selCount: n});
+ var facets = defs.map(d => {
+  var counts = {}; base.filter(p => pass(p, d.id) && priceOk(p)).forEach(p => d.vals(p).forEach(k => { counts[k] = (counts[k]||0) + 1; }));
+  var all = {}; base.forEach(p => d.vals(p).forEach(k => { all[k] = 1; }));
+  var vals = d.order ? d.order.filter(k => all[k] || k==="Out of stock") : Object.keys(all).sort();
+  var cur = st.fs[d.id];
+  return Object.assign(head(d.id, d.name, cur.length), {isList:true, isPrice:false,
+   opts: vals.map(val => { var n = counts[val] || 0, on = cur.indexOf(val) > -1; return {label:val, count:n, on:on, disabled: n===0 && !on, color: n===0 && !on ? "#9A9EA6" : "#121316", toggle:() => cmp.toggleOpt(d.id, val)}; })});
+ });
+ var priceSel = (!isNaN(from) ? 1 : 0) + (!isNaN(to) ? 1 : 0);
+ facets.splice(1, 0, Object.assign(head("price", "Price", priceSel), {isList:false, isPrice:true,
+  max: money(base.reduce((m,p) => Math.max(m, p.price), 0)), from: st.from, to: st.to,
+  onFrom: e => cmp.setState({from: e.target.value.replace(/[^0-9.]/g,"")}), onTo: e => cmp.setState({to: e.target.value.replace(/[^0-9.]/g,"")})}));
+ var chips = [];
+ defs.forEach(d => st.fs[d.id].forEach(val => chips.push({label:val, remove:() => cmp.toggleOpt(d.id, val)})));
+ if (priceSel) chips.push({label:"Price " + (isNaN(from) ? "$0" : money(from)) + " to " + (isNaN(to) ? "any" : money(to)), remove:() => cmp.setState({from:"", to:""})});
+ var inStock = base.filter(p => p.onHand > 0), units = inStock.reduce((m,p) => m + p.onHand, 0);
+ var low = base.length ? base.reduce((m,p) => Math.min(m, p.price), Infinity) : 0;
+ return {
+  items: items, facets: facets, chips: chips,
+  hasItems: items.length > 0, noItems: items.length === 0, count: items.length, countWord: items.length===1 ? "product" : "products",
+  stats: [
+   {label:"Products", value:String(base.length), accent:"#121316"},
+   {label:"In stock now", value:inStock.length + " of " + base.length, accent:"#15803D"},
+   {label:"Units on hand", value:String(units), accent:"#2F6FD6"},
+   {label:"Prices from", value: base.length ? money(low) : "–", accent:"#E1251B"}
+  ],
+  clearFilters: () => cmp.setState({fs:cmp.emptySel(), from:"", to:""}),
+  sort: st.sort, onSort: e => cmp.setState({sort:e.target.value}),
+  sideClass: st.sideOpen ? "" : "mx-side-closed", sideLabel: st.sideOpen ? "Hide filters" : "Filters",
+  toggleSide: () => cmp.setState({sideOpen: !st.sideOpen})
+ };
+}
+var stockVal = p => [p.onHand > 0 ? "In stock" : "Out of stock"];
+var STOCK_DEF = {id:"stock", name:"Availability", order:["In stock","Out of stock"], vals:stockVal, match:(p,s) => s.indexOf(stockVal(p)[0]) > -1};
+function listDef(id, name, get){ return {id:id, name:name, vals:p => [get(p)], match:(p,s) => s.indexOf(get(p)) > -1}; }
+/* In Shopify the makes and models come from your fitment database, so new ones appear automatically. */
+var VM_MAKES=["Audi","BMW","Ford","Haval","Holden","Honda","Hyundai","Isuzu","Jeep","Kia","Land Rover","Lexus","Mazda","Mercedes-Benz","Mitsubishi","Nissan","Subaru","Suzuki","Toyota","Volkswagen"];
+var VM_MODELS={Ford:["Ranger","Everest","Focus","Mustang"],Mazda:["CX-5","CX-3","Mazda3","BT-50"],Toyota:["Corolla","Camry","HiLux","RAV4","LandCruiser"]};
+function modelName(make, s){ var l = VM_MODELS[make] || []; for (var i = 0; i < l.length; i++) if (slug(l[i])===s) return l[i]; return s.replace(/(^|-)([a-z])/g, (m,a,b) => (a ? " " : "") + b.toUpperCase()); }
+/* Fitment rows for one make, read from the product's fitment tags, e.g. toyota-corolla-2019 */
+function fitRows(p, make){
+ var pre = slug(make) + "-", rows = {};
+ p.fit.forEach(t => { if (t.indexOf(pre)!==0) return; var rest = t.slice(pre.length), m = rest.match(/^(.*)-(\d{4})$/); if (!m) return; var name = modelName(make, m[1]); (rows[name] = rows[name] || []).push(+m[2]); });
+ return rows;
+}
+function yearsText(y){ y = y.slice().sort(); return y[0]===y[y.length-1] ? String(y[0]) : y[0] + "–" + y[y.length-1]; }
+class Component extends DCLogic {
+ constructor(props){
+  super(props);
+  var pre = MS.get("ma-make", "");
+  this.state = Object.assign({filter:"", sort:"best", sideOpen:false, fs:this.emptySel(), from:"", to:"", open:{stock:true,price:true,fitment:true,model:true,vendor:true,col:false}}, VM_MAKES.indexOf(pre) > -1 ? {view:"make", make:pre} : {view:"cards", make:""});
+ }
+ emptySel(){ return {stock:[],fitment:[],model:[],vendor:[],col:[]}; }
+ componentDidMount(){
+  this.onM = () => { var m = MS.get("ma-make",""); this.setState(VM_MAKES.indexOf(m) > -1 ? {view:"make", make:m, fs:this.emptySel(), from:"", to:""} : {view:"cards"}); toTop(); };
+  window.addEventListener("ma-make", this.onM);
+ }
+ componentWillUnmount(){ window.removeEventListener("ma-make", this.onM); }
+ toggleOpt(key, val){ var s = Object.assign({}, this.state.fs), a = s[key].slice(), i = a.indexOf(val); if (i > -1) a.splice(i,1); else a.push(val); s[key] = a; this.setState({fs:s}); }
+ renderVals(){
+  var st = this.state, f = st.filter.trim().toLowerCase();
+  var makes = VM_MAKES.filter(m => !f || m.toLowerCase().indexOf(f) > -1);
+  var out = {
+   isCards: st.view==="cards", isResults: st.view==="make",
+   filter: st.filter, onFilter: e => this.setState({filter:e.target.value}), noneFound: makes.length===0,
+   makes: makes.map(m => ({label:m, aria:"View " + m + " parts", go:() => MS.set("ma-make", m)})),
+   back: () => MS.set("ma-make", ""), backLabel: "All makes",
+   hasVehicle: false, openGarage: () => MS.fire("ma-open-garage")
+  };
+  if (st.view !== "make") return Object.assign(out, {facets:[], chips:[], stats:[], items:[], modelChips:[]});
+  var make = st.make, fitWord = "Made for " + make, uniWord = "Suits any vehicle";
+  /* Parts tagged for this make, plus universal products */
+  var base = MA_P.map(p => { var rows = fitRows(p, make), models = Object.keys(rows); return models.length || p.uni ? Object.assign({}, p, {rows:rows, models:models}) : null; }).filter(Boolean);
+  var fitVal = p => [p.models.length ? fitWord : uniWord];
+  var defs = [STOCK_DEF,
+   {id:"fitment", name:"Fitment", order:[fitWord, uniWord], vals:fitVal, match:(p,s) => s.indexOf(fitVal(p)[0]) > -1},
+   {id:"model", name:make + " model", vals:p => p.models, match:(p,s) => p.models.length===0 || p.models.some(m => s.indexOf(m) > -1)},
+   listDef("vendor","Brand",p => p.vendor), listDef("col","Product type",p => p.col)];
+  var R = buildResults(this, base, defs);
+  var tagged = base.filter(p => p.models.length), modelsAll = {};
+  tagged.forEach(p => p.models.forEach(m => { modelsAll[m] = (modelsAll[m]||0) + 1; }));
+  var selModels = st.fs.model;
+  var setModel = m => () => { var s = Object.assign({}, st.fs); s.model = m ? [m] : []; this.setState({fs:s}); };
+  return Object.assign(out, R, {
+   make: make,
+   makeBlurb: tagged.length ? tagged.length + (tagged.length===1 ? " part is" : " parts are") + " tagged to fit " + make + " models, shown with products that suit any vehicle. Pick a model to narrow it down." : "We haven't tagged " + make + "-specific parts on the website yet. Below are products that suit any vehicle, or send us your rego and we'll find the part.",
+   modelChips: [{label:"All models", name:""}].concat(Object.keys(modelsAll).sort().map(m => ({label:m + " (" + modelsAll[m] + ")", name:m}))).map(c => { var on = c.name ? (selModels.length===1 && selModels[0]===c.name) : selModels.length===0; return {label:c.label, go:setModel(c.name), on: on ? "true" : "false", bg: on ? "#E1251B" : "#1F2125", border: on ? "#E1251B" : "#3A3D44"}; }),
+   items: R.items.map(p => { var ms = p.models.filter(m => selModels.length===0 || selModels.indexOf(m) > -1); return Object.assign({}, p, {fitOk: p.models.length > 0, fitLabel: p.models.length ? "Fits " + make + " " + ms.map(m => m + " " + yearsText(p.rows[m])).join(", ") : uniWord}); }),
+   hasNote: true, note: "Showing every " + make + " part. Add your exact model and year in My garage and we'll mark the ones that fit.",
+   emptyTitle: "Nothing matches these filters",
+   emptyText: "Clear a filter to see all " + make + " parts, or ask us and we'll check the warehouse for you."
+  });
+ }
+}
+</script>
+</body>
+</html>

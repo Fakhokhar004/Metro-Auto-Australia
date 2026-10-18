@@ -1,0 +1,110 @@
+{%- comment -%}
+  Metro Auto "Our trusted brands" page. Design reference: _design/metro-auto-design/pages/Brands.dc.html (cards view).
+  Brands come from Theme settings → Metro brands (snippets/ma-brand-rows). Each card opens the brand's
+  vendor page (/collections/vendors?q=Brand), which sections/ma-collection shows as a brand page.
+  Product counts load from sections/ma-brand-meta.
+{%- endcomment -%}
+{{ 'ma-pages.css' | asset_url | stylesheet_tag }}
+{%- capture rows -%}{%- render 'ma-brand-rows' -%}{%- endcapture -%}
+{%- assign rows = rows | split: ';;' -%}
+
+<div data-ma-brands>
+  <section class="ma-banner">
+    <div class="ma-wrap ma-banner__in ma-cats__banner">
+      <div class="ma-cats__copy">
+        <nav class="ma-banner__crumb" aria-label="Breadcrumb">
+          <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span><span aria-current="page">{{ section.settings.title | escape }}</span>
+        </nav>
+        <h1 class="ma-banner__title">{{ section.settings.title | escape }}</h1>
+        {%- if section.settings.text != blank -%}<p class="ma-banner__text">{{ section.settings.text | escape }}</p>{%- endif -%}
+      </div>
+      <label class="ma-cats__find ma-cats__find--brand">
+        {%- render 'ma-icon', name: 'search', size: 18, stroke: '#62666D', width: 2 -%}
+        <input type="search" placeholder="Find a brand" aria-label="Find a brand" autocomplete="off" data-ma-brands-input>
+      </label>
+    </div>
+  </section>
+
+  <div class="ma-wrap ma-bpage">
+    <div class="ma-bcards">
+      {%- for row in rows -%}
+        {%- liquid
+          assign cols = row | split: '|'
+          assign b_name = cols[0] | strip
+          if b_name == blank
+            continue
+          endif
+          assign b_bg = cols[1] | strip | default: '#121316'
+          assign b_fg = cols[2] | strip | default: '#FFFFFF'
+          assign b_covers = cols[3] | strip
+          assign b_live = false
+          if shop.vendors contains b_name
+            assign b_live = true
+          endif
+        -%}
+        <a class="ma-bcard" href="{% render 'ma-brand-url', name: b_name %}" style="background: {{ b_bg }}; color: {{ b_fg }};" aria-label="View {{ b_name | escape }} products"
+          data-ma-bcard data-name="{{ b_name | downcase | escape }}"{% if b_live %} data-vendor="{{ b_name | escape }}"{% endif %}>
+          <span class="ma-bcard__name">{{ b_name | escape }}</span>
+          <span class="ma-bcard__sub">
+            {%- if b_covers != blank -%}<span class="ma-bcard__covers">{{ b_covers | escape }}</span>{%- endif -%}
+            <span class="ma-bcard__foot">
+              <span data-ma-bcard-count>{% unless b_live %}Range coming soon{% endunless %}</span>
+              <span class="ma-bcard__cta">View products</span>
+            </span>
+          </span>
+        </a>
+      {%- endfor -%}
+    </div>
+
+    <div class="ma-empty-box" data-ma-brands-none hidden>
+      <h2>No brand called “<span data-ma-brands-q></span>”</h2>
+      <p>We stock over 100 brands. Ask us and we'll check if we can get it for you.</p>
+      <a class="ma-button ma-button--red" href="{{ section.settings.ask_url | default: '/pages/contact-us' }}">Contact us</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var root = document.querySelector('[data-ma-brands]');
+    if (!root) return;
+    var cards = Array.prototype.slice.call(root.querySelectorAll('[data-ma-bcard]'));
+    var input = root.querySelector('[data-ma-brands-input]');
+    var none = root.querySelector('[data-ma-brands-none]');
+    input.addEventListener('input', function () {
+      var f = input.value.trim().toLowerCase(), n = 0;
+      cards.forEach(function (c) { var on = !f || c.getAttribute('data-name').indexOf(f) > -1; c.hidden = !on; if (on) n++; });
+      none.hidden = n > 0;
+      root.querySelectorAll('[data-ma-brands-q]').forEach(function (s) { s.textContent = input.value.trim(); });
+    });
+    /* product counts */
+    cards.forEach(function (c) {
+      var v = c.getAttribute('data-vendor');
+      if (!v) return;
+      var href = c.getAttribute('href');
+      fetch(href + (href.indexOf('?') > -1 ? '&' : '?') + 'section_id=ma-brand-meta')
+        .then(function (r) { return r.text(); })
+        .then(function (html) {
+          var el = new DOMParser().parseFromString(html, 'text/html').querySelector('[data-ma-brand-meta]');
+          var m = el && JSON.parse(el.textContent);
+          if (!m) return;
+          c.querySelector('[data-ma-bcard-count]').textContent = m.count ? m.count.toLocaleString('en-AU') + (m.count === 1 ? ' product' : ' products') : 'Range coming soon';
+        }).catch(function () {});
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Metro brands",
+  "tag": "section",
+  "class": "ma-body",
+  "settings": [
+    { "type": "paragraph", "content": "Edit the brands, colours and descriptions in Theme settings → Metro brands." },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Our trusted brands" },
+    { "type": "textarea", "id": "text", "label": "Banner text", "default": "We buy direct from the makers, so every part carries the manufacturer's warranty. Pick a brand to see its products, prices and stock." },
+    { "type": "url", "id": "ask_url", "label": "Contact link", "info": "Defaults to /pages/contact-us" }
+  ],
+  "presets": [{ "name": "Metro brands" }]
+}
+{% endschema %}

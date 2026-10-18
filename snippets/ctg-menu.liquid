@@ -1,0 +1,80 @@
+<ul id="menu2">
+
+  {% assign ctg_menu = section.settings.ctg_menu_handle %}
+  {% for link in linklists[ctg_menu].links %}
+  {% assign child_list_handle = link.title | handleize %}
+  {% if linklists[child_list_handle].links != '' %}
+
+  <li class="common-top-class category-item-parent"><a href="{{ link.url }}">{{ link.title }}<span class="sli sli-arrow-right"></span></a>
+
+    <ul class="common-class">
+
+      {% for childlink in linklists[child_list_handle].links %}
+      {% assign grand_childlink_handle = childlink.title | handle %}
+
+
+      {% if linklists[child_list_handle] and linklists[child_list_handle].links.size >= 3 and linklists[grand_childlink_handle].links.size > 0 %}
+      <li class="mega-ctg-add-class">
+        <a href="{{ childlink.url }}" class="cat-mega-title">{{childlink.title}}</a>
+        <ul>                       
+          {% for grand_childlink_handle in linklists[grand_childlink_handle].links %}  
+          <li><a href="{{ grand_childlink_handle.url }}">{{ grand_childlink_handle.title }}</a></li>
+          {% endfor %} 
+        </ul>
+      </li>
+
+      {% elsif linklists[grand_childlink_handle] and linklists[grand_childlink_handle].links.size > 0 %}
+      <li class="sub-cat-drop-add-class">
+        <a href="{{ childlink.url }}">{{childlink.title}}<span class="sli sli-arrow-right"></span></a>
+        <ul class="cat-submenu">                      
+          {% for grand_childlink_handle in linklists[grand_childlink_handle].links %}  
+          <li><a href="{{ grand_childlink_handle.url }}">{{ grand_childlink_handle.title }}</a></li>
+          {% endfor %} 
+        </ul>
+      </li>
+
+
+      {% else %}
+      <li class="drop-common-ctg {% if childlink.active %}active{% endif %}"><a href="{{ childlink.url }}">{{childlink.title}}</a></li>
+      {% endif %}
+
+      {% endfor %}
+
+    </ul>
+
+  </li>
+
+  {% else %}
+  <li class="category-item-parent"><a href="{{link.url}}"><span>{{ link.title }}</span></a></li>
+  {% endif %}
+  {% endfor %} 
+
+  {% assign ctg_menu_limit = section.settings.menu_range %}
+  {% assign ctg_menu_limit_2 = section.settings.menu_range %}
+  {% assign ctg_menu_limit_2 = ctg_menu_limit | minus: 1 %}
+
+  {% if linklists[ctg_menu].links.size > ctg_menu_limit %}
+  <li><a class="more-btn" href="#">{{ section.settings.ctg_menu_more }}</a></li>
+  {% endif %}
+
+
+</ul>
+
+
+
+<script>
+
+  $('.mega-ctg-add-class').parent('ul').addClass('cat-submenu category-mega'); 
+  $('.drop-common-ctg').parents('.common-class').addClass('cat-submenu');
+  $('.sub-cat-drop-add-class').parents('.common-class').addClass('cat-submenu');
+
+  $( "#menu2 li.category-item-parent:gt({{ctg_menu_limit_2}})").addClass( "hidden" );
+
+
+
+</script>
+
+
+
+
+

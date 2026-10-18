@@ -1,0 +1,35 @@
+<div class="breadcrumb-area breadcrumbs-section">
+  <div class="breadcrumbs overlay-bg">
+    <div class="container">
+      <div class="breadcrumb-content text-center breadcrumbs-inner">
+        <nav>
+          <ul class="breadcrumb-list">
+            <li>
+              <a href="/" title="{{ 'general.breadcrumbs.home_link_title' | t }}">{{ 'general.breadcrumbs.home' | t }}</a>
+            </li>
+            <li>
+              {% if template contains 'product' %}
+              {{ product.title }}
+
+              {% elsif template contains 'collection' and collection.handle %}
+              {{ collection.title }}
+
+              {% elsif template == 'blog' %}
+              {{ blog.title }}
+
+              {% elsif template == 'article' %}
+              {{ article.title }}
+
+              {% elsif template contains 'page' %}
+              {{ page.title }}
+
+              {% else %}
+              {{ page_title }}
+              {% endif %}
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>

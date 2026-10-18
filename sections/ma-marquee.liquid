@@ -1,0 +1,21 @@
+{%- comment -%} Outlined scrolling text. Design reference: Main.dc.html (MARQUEE). {%- endcomment -%}
+<section class="ma-marquee" aria-label="{{ section.settings.label | escape }}">
+  <p class="ma-sr">{{ section.settings.text | escape }}</p>
+  <div class="ma-marquee__track" aria-hidden="true">
+    {%- for i in (1..2) -%}
+      <span class="ma-marquee__item">{{ section.settings.text | escape }}&nbsp;</span>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Metro marquee",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "text", "label": "Text", "default": "Fast shipping Australia-wide • Manufacturer warranty • Fitment guarantee • Australian owned •" },
+    { "type": "text", "id": "label", "label": "Accessible label", "default": "Why shop with Metro Auto" }
+  ],
+  "presets": [{ "name": "Metro marquee" }]
+}
+{% endschema %}

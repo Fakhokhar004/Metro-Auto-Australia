@@ -1,0 +1,16 @@
+{% assign entry = shop.metaobjects['test_sample']['test-sample-1'] %}
+{% assign product = entry.test_product_dynamic.value %}
+
+{% if product %}
+  <div class="dynamic-product">
+    <a href="{{ product.url }}">
+      {% if product.featured_image %}
+        {{ product.featured_image | image_url: width: 800 | image_tag: alt: product.title }}
+      {% endif %}
+      <h2>{{ product.title }}</h2>
+      <p>{{ product.price | money }}</p>
+    </a>
+  </div>
+{% else %}
+  <p>⚠️ No product selected in the metaobject entry.</p>
+{% endif %}

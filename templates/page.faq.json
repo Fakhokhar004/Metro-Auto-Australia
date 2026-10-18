@@ -1,0 +1,100 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "faq-template",
+      "blocks": {
+        "8adecf3e-6179-414f-ac08-90a809a11697": {
+          "type": "faq",
+          "settings": {
+            "accordion_title": "When will my order be dispatched?",
+            "accordion_content": "<p>We know you need to get back on the road quickly. Most orders placed before 2:00 PM (AEST) on business days are processed and dispatched from our Victorian hubs on the same day.</p>"
+          }
+        },
+        "df2045b6-2a57-4cd7-864a-d0e22f4ec397": {
+          "type": "faq",
+          "settings": {
+            "accordion_title": "How much is standard shipping for the rest of Australia?",
+            "accordion_content": "<p>Currently we are using Fix Rate at Checkouts for Standard shipping.</p>"
+          }
+        },
+        "f465c3d3-fbac-4729-a9b4-722d3196429d": {
+          "type": "faq",
+          "settings": {
+            "accordion_title": "Does my purchase come with a warranty?",
+            "accordion_content": "<p>Parts are covered under manufacturer warranty.  </p>"
+          }
+        },
+        "fd9f389a-d9c6-41df-8fc6-fbe4d325328b": {
+          "type": "faq",
+          "settings": {
+            "accordion_title": "What payment methods do you accept?",
+            "accordion_content": "<p>We accept all major credit cards (Visa, Mastercard, Amex), PayPal, and interest-free \"Buy Now, Pay Later\" options including Afterpay and Zip.</p>"
+          }
+        },
+        "76623e10-3194-42bc-857c-f0718e5675db": {
+          "type": "faq",
+          "settings": {
+            "accordion_title": "Need more help?",
+            "accordion_content": "<p>If your question isn't answered here, please visit our Contact Page or message us with your Vehicle Rego for immediate assistance.</p>"
+          }
+        },
+        "9b907940-4831-491d-9cd6-5f74a06dea2b": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 100,
+            "section_padding_bottom": 100,
+            "section_padding_top_md": 80,
+            "section_padding_bottom_md": 80,
+            "section_padding_top_xs": 60,
+            "section_padding_bottom_xs": 60
+          }
+        }
+      },
+      "block_order": [
+        "8adecf3e-6179-414f-ac08-90a809a11697",
+        "df2045b6-2a57-4cd7-864a-d0e22f4ec397",
+        "f465c3d3-fbac-4729-a9b4-722d3196429d",
+        "fd9f389a-d9c6-41df-8fc6-fbe4d325328b",
+        "76623e10-3194-42bc-857c-f0718e5675db",
+        "9b907940-4831-491d-9cd6-5f74a06dea2b"
+      ],
+      "settings": {
+        "section_width": "box_width",
+        "section_title_custom_color": true,
+        "section_title": "Frequently Asking Question",
+        "section_title_color": "#333333",
+        "section_title_font": "jost_n5",
+        "section_title_font_size": "46",
+        "section_title_line_height": 60,
+        "section_title_font_size_md": "30",
+        "section_title_line_height_md": 40,
+        "section_title_font_size_sm": "24",
+        "section_title_line_height_sm": 35,
+        "section_title_margin_bottom": 10,
+        "section_sub_title": "We’re constantly refining our product.",
+        "section_subtitle_color": "#5a5a5a",
+        "section_sub_title_font": "work_sans_n4",
+        "section_des_font_size": "18",
+        "section_sub_title_line_height": 30,
+        "section_des_font_size_md": "16",
+        "section_sub_title_line_height_md": 28,
+        "section_des_font_size_sm": "16",
+        "section_sub_title_line_height_sm": 24,
+        "section_sub_title_margin_bottom": 10,
+        "title_align": "text-center"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

@@ -1,0 +1,24 @@
+{%- comment -%}
+  JSON for sections/ma-fit-scan. Params: items (collection.products or search.results), paginate, all (true: list every product, not only ones with fitment keys).
+{%- endcomment -%}
+<script type="application/json" data-ma-fit-scan>
+  {
+    "page": {{ paginate.current_page }},
+    "pages": {{ paginate.pages }},
+    "size": {{ paginate.page_size }},
+    "total": {{ paginate.items }},
+    "items": [
+      {%- assign first = true -%}
+      {%- for product in items -%}
+        {%- if product.object_type and product.object_type != 'product' -%}{%- continue -%}{%- endif -%}
+        {%- capture k -%}{%- render 'ma-fit-keys', product: product -%}{%- endcapture -%}
+        {%- assign uni = false -%}
+        {%- for tag in product.tags -%}{%- assign th = tag | handleize -%}{%- if th == 'universal' -%}{%- assign uni = true -%}{%- endif -%}{%- endfor -%}
+        {%- if k != blank or uni or all -%}
+          {%- unless first -%},{%- endunless -%}{"h": {{ product.handle | json }}, "u": {{ uni }}, "k": {{ k | strip | json }}}
+          {%- assign first = false -%}
+        {%- endif -%}
+      {%- endfor -%}
+    ]
+  }
+</script>

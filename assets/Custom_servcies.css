@@ -1,0 +1,105 @@
+/* 1. SECTION CONTAINER */
+#shopify-section-template--19616879214779__service_4XLUF4 {
+    background-color: #ffffff !important;
+    padding: 60px 0 !important;
+    overflow: visible !important;
+}
+
+/* Force the parent container to allow wrapping so cards don't squash on mobile */
+#shopify-section-template--19616879214779__service_4XLUF4 .row,
+#shopify-section-template--19616879214779__service_4XLUF4 [class*="content"] {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+}
+
+/* 2. WEB VIEW CARD ADJUSTMENTS (Desktop) */
+@media (min-width: 992px) {
+    #section-template--19616879214779__service_4XLUF4 .single-feature.style_two {
+        min-height: 380px !important; 
+        width: 100% !important;
+        max-width: 380px !important;  
+        margin: 15px !important;      /* FIXED: Reduced from 30px to close up large desktop gaps */
+        padding: 50px 30px !important; 
+    }
+}
+
+/* 3. BASE CARD DESIGN */
+#section-template--19616879214779__service_4XLUF4 .single-feature.style_two {
+    background-color: #ffffff !important; 
+    border-radius: 60px !important; 
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08) !important;
+    transition: none !important;
+    transform: none !important;
+    box-sizing: border-box !important;
+}
+
+/* 4. HIDE THE MAGNIFIER ICON ONLY */
+#section-template--19616879214779__service_4XLUF4 .feature-icon .sli-magnifier,
+#section-template--19616879214779__service_4XLUF4 .feature-icon i {
+    display: none !important; /* Hides the search icon without breaking layout */
+}
+
+/* 5. FIX LAZYLOAD WRAPPER & IMAGE VISIBILITY */
+#section-template--19616879214779__service_4XLUF4 .feature-icon {
+    display: block !important;
+    margin-bottom: 20px !important;
+}
+
+#section-template--19616879214779__service_4XLUF4 .lazyload-wraper-position {
+    display: block !important;
+    position: relative !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+#section-template--19616879214779__service_4XLUF4 .single-feature.style_two img {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    max-width: 75px !important;    /* Adjust size of your custom icon here */
+    height: auto !important;
+    margin: 0 auto !important; 
+}
+
+/* 6. TEXT STYLING */
+#section-template--19616879214779__service_4XLUF4 .feature-content h3 {
+    color: #000000 !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    margin: 15px 0 10px !important;
+}
+
+#section-template--19616879214779__service_4XLUF4 .feature-content p {
+    color: #000000 !important;
+    font-size: 16px !important;
+    line-height: 1.4;
+    margin: 0 !important;
+}
+
+/* 7. MOBILE RESPONSIVENESS FIX */
+@media (max-width: 991px) {
+    #section-template--19616879214779__service_4XLUF4 .single-feature.style_two {
+        width: 100% !important;       /* Forces them to be full layout width */
+        max-width: 340px !important;  /* Prevents them from stretching infinitely wide */
+        min-height: 240px !important;
+        margin: 0 auto 20px auto !important; /* FIXED: Stacks cards cleanly with a 20px vertical gap */
+        padding: 40px 25px !important;
+        flex: 0 0 100% !important;    /* FIXED: Stops cards from shrinking/squishing horizontally */
+    }
+    
+    #section-template--19616879214779__service_4XLUF4 .single-feature.style_two img {
+        max-width: 65px !important;   /* Responsive scaling for the image icon on mobile */
+    }
+}
+
+/* 8. CLEANUP */
+#section-template--19616879214779__service_4XLUF4 .single-feature.style_two::before,
+#section-template--19616879214779__service_4XLUF4 .single-feature.style_two::after {
+    display: none !important;
+}

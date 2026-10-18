@@ -1,0 +1,1466 @@
+<div class="slider-area {% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}default {% endif %} slider_style_1" id="section-{{ section.id }}" data-section="heroOwlSlider">
+
+  {%- comment -%}
+    ===================================================================
+    SLIDER ENGINE — Owl config
+    This carousel configuration is 100% style-agnostic. It NEVER reads
+    section.settings.slider_option. Autoplay, loop, nav, dots, navText,
+    responsive and animation are driven only by their own dedicated
+    settings, so every slide style (One / Two / Three / future) inherits
+    identical behaviour.
+    ===================================================================
+  {%- endcomment -%}
+  <div class="slider-active-boxed owl-carousel dot-style-1 {{ section.settings.dot_style }} nav-style-{% if section.settings.nav_style == 'style_1' %}1{% elsif section.settings.nav_style == 'style_3' %}3{% elsif section.settings.nav_style == 'style_4' %}2 nav_2_left{% elsif section.settings.nav_style == 'style_6' %}6{% else %}2{% endif %}" data-owl-carousel='{
+
+      "loop": true,
+
+      {% if section.settings.dot_style == 'dot_hide' %}
+         "dots": false,
+      {% else %}
+         "dots": true,
+      {% endif %}
+
+      {% if section.settings.nav_style == 'style_5' %}
+          "nav": false,
+      {% else %}
+          "nav": true,
+      {% endif %}
+
+      {% if settings.rtl_enable %}
+      "rtl": true,
+      {% endif %}
+
+      {% if section.settings.autoplay %}
+      "autoplay": true,
+      "autoplayTimeout": {{ section.settings.autoplay_speed | times: 1000 }},
+      "autoplayHoverPause": false,
+      {% else %}
+      "autoplay": false,
+      {% endif %}
+
+      {%- if section.settings.nav_style == 'style_2' or section.settings.nav_style == 'style_4' -%}
+      "navText": ["<i class=&#x27;sli sli-arrow-up&#x27;></i>","<i class=&#x27;sli sli-arrow-down&#x27;></i>"],
+      {%- elsif section.settings.nav_style == 'style_3' -%}
+      "navText": ["<i class=&#x27;sli sli-arrow-up&#x27;></i><span>Prev</span>","<i class=&#x27;sli sli-arrow-down&#x27;></i><span>Next</span>"],
+      {%- else -%}
+      "navText": ["<i class=&#x27;sli sli-arrow-left&#x27;></i>","<i class=&#x27;sli sli-arrow-right&#x27;></i>"],
+      {%- endif -%}
+
+      {% unless section.settings.content_animation == 'none' %}
+      "animateOut": "fadeOut",
+      "animateIn": "fadeIn",
+      {% endunless %}
+      "item": 1,
+        "responsive": {
+            "0": { "items": 1 },
+            "768": { "items": 1 },
+            "1000": { "items": 1 }
+      }}'>
+
+      {%- comment -%}
+        ===============================================================
+        SLIDE TEMPLATES — presentation only
+        Each branch below outputs HTML/Liquid only: images, text,
+        buttons, layout. There is NO carousel logic here. The dispatch
+        is section-level (one style per section), matching the original
+        behaviour. To add "Style Four" later, add a branch here plus a
+        schema option and its CSS — no engine or JS change required.
+        ===============================================================
+      {%- endcomment -%}
+      {%- for block in section.blocks -%}
+      {%- case block.type -%}
+      {%- when 'slide' -%}
+
+      {% if section.settings.slider_option == 'style__one' %}
+
+      <div {{ block.shopify_attributes }} class="single-slider d-flex align-items-center style__option__one__wrap {% if section.settings.enable_responsive_style_2 %} slider__responsive__class{% endif %}">
+
+        <div class="slide__item__image">
+          {% if block.settings.slider_bg_img %}
+            <img loading="lazy" src="{{ block.settings.slider_bg_img | img_url: 'master' }}" alt="{{ block.settings.title1 | escape }}">
+          {% else %}
+            <img loading="lazy" src="https://via.placeholder.com/1920x700" alt="{{ block.settings.title1 | escape }}">
+          {% endif %}
+        </div>
+
+        {% if section.settings.gradient_enable %}
+          <div class="slide-gradient-overlay"></div>
+        {% endif %}
+
+        {% if section.settings.enable_responsive_style_2 %}
+          <div class="slider__responsive__image">
+            {% if block.settings.slider_responsive_img %}
+              <img loading="lazy" src="{{ block.settings.slider_responsive_img | img_url: 'master' }}" alt="{{ block.settings.title1 | escape }}">
+            {% elsif block.settings.slider_bg_img %}
+              <img loading="lazy" src="{{ block.settings.slider_bg_img | img_url: 'master' }}" alt="{{ block.settings.title1 | escape }}">
+            {% else %}
+              <img loading="lazy" src="https://via.placeholder.com/768x700" alt="{{ block.settings.title1 | escape }}">
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <div class="style__option__one__content {% if section.settings.content_width == 'full_width' %}container-fluid {% elsif section.settings.content_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.content_width == 'default' %}default container {% endif %}">
+          <div class="row align-items-left {% if block.settings.content_position == 'right' %} flex-row-reverse {% elsif block.settings.content_position == 'center' %}justify-content-center {% elsif block.settings.content_position == 'left' %} justify-content-left{% endif %}">
+
+            <div class="col-xl-{{ block.settings.slider_content_col }} col-md-{{ block.settings.slider_content_col_md }} col-sm-12 col-12">
+              <div class="slider-content slider-animated-1 text-{% if block.settings.content_align == 'center' %}center{% elsif block.settings.content_align == 'right' %}right{% else %}left{% endif %}">
+
+                {%- if block.settings.title_top != '' -%}
+                  <h3 class="animated">{{ block.settings.title_top }}</h3>
+                {%- endif -%}
+
+                {%- if block.settings.title1 != '' -%}
+                  <h1 class="animated">{{ block.settings.title1 }}</h1>
+                {%- endif -%}
+
+                {%- if block.settings.description != '' -%}
+                  <p class="animated">{{ block.settings.description }}</p>
+                {%- endif -%}
+
+                {%- if block.settings.show_animated_btn or block.settings.btn != '' -%}
+                <div class="slider__animated__btn__wrap">
+                  {%- if block.settings.btn != '' -%}
+                  <div class="slider-btn btn-hover">
+                    <a class="animated" href="{{ block.settings.btn_url }}">
+                      {{ block.settings.btn }}
+                      {% if block.settings.show_icon %}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><title>Arrow Redo</title><path d="M448 256L272 88v96C103.57 184 64 304.77 64 424c48.61-62.24 91.6-96 208-96v96z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="20"/></svg>
+                      {% endif %}
+                    </a>
+                  </div>
+                  {%- endif -%}
+
+                  {%- if block.settings.show_animated_btn -%}
+                  <div class="slider__animated__btn animated">
+                    <a class="video-popup magni_video_pop" href="{{ block.settings.animaet_btn_url }}">
+                      <i class="icofont-play"></i>
+                    </a>
+                    {%- if block.settings.btn_animated != '' -%}
+                      <span>{{ block.settings.btn_animated }}</span>
+                    {%- endif -%}
+                  </div>
+                  {%- endif -%}
+                </div>
+                {%- endif -%}
+
+              </div>
+            </div>
+
+            {%- if block.settings.slider_img_enable -%}
+            <div class="col-xl-{{ block.settings.slider_img_col }} col-md-{{ block.settings.slider_img_col_md }} col-sm-12 col-12">
+              <div class="slider-single-img slider-animated-1">
+                {%- if block.settings.slider_img -%}
+                  <img loading="lazy" class="animated" src="{{ block.settings.slider_img | img_url: 'master' }}" alt="{{ block.settings.title1 | escape }}">
+                {%- else -%}
+                  <img loading="lazy" class="animated" src="https://via.placeholder.com/620x877" alt="{{ block.settings.title1 | escape }}">
+                {%- endif -%}
+              </div>
+            </div>
+            {%- endif -%}
+
+          </div>
+        </div>
+      </div>
+
+      {% elsif section.settings.slider_option == 'style__two' %}
+
+      <div {{ block.shopify_attributes }} class="style__option__two__wrap single-slider d-flex align-items-center {% if section.settings.enable_responsive_style_2 %} slider__responsive__class{% endif %}"
+        style="background-color:{{ block.settings.sec_bg_color }};height: {% if section.settings.slider_height_opt == 'fixed_height' %}{{ section.settings.p_top }}px{% else %}100vh{% endif %};
+        {%- if block.settings.slider_bg_img -%}background-image:url('{{ block.settings.slider_bg_img | img_url: 'master' }}'){%- endif -%}">
+
+        {% if section.settings.gradient_enable %}
+          <div class="slide-gradient-overlay"></div>
+        {% endif %}
+
+        <div class="{% if section.settings.content_width == 'full_width' %}container-fluid {% elsif section.settings.content_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.content_width == 'default' %}default container {% endif %}">
+          <div class="row align-items-left {% if block.settings.content_position == 'right' %} flex-row-reverse {% elsif block.settings.content_position == 'center' %}justify-content-center {% elsif block.settings.content_position == 'left' %} justify-content-left{% endif %}">
+
+            {% if section.settings.enable_responsive_style_2 %}
+              <div class="col-12 slider__responsive__image">
+                {% if block.settings.slider_responsive_img %}
+                  <img loading="lazy" src="{{ block.settings.slider_responsive_img | img_url: 'master' }}" alt="{{ block.settings.title1 | escape }}">
+                {% elsif block.settings.slider_bg_img %}
+                  <img loading="lazy" src="{{ block.settings.slider_bg_img | img_url: 'master' }}" alt="{{ block.settings.title1 | escape }}">
+                {% else %}
+                  <img loading="lazy" src="https://via.placeholder.com/768x500" alt="{{ block.settings.title1 | escape }}">
+                {% endif %}
+              </div>
+            {% endif %}
+
+            <div class="col-xl-{{ block.settings.slider_content_col }} col-md-{{ block.settings.slider_content_col_md }} col-sm-12 col-12">
+              <div class="slider-content slider-animated-1 text-{% if block.settings.content_align == 'center' %}center{% elsif block.settings.content_align == 'right' %}right{% else %}left{% endif %}">
+
+                {%- if block.settings.title_top != '' -%}
+                  <h3 class="animated">{{ block.settings.title_top }}</h3>
+                {%- endif -%}
+
+                {%- if block.settings.title1 != '' -%}
+                  <h1 class="animated">{{ block.settings.title1 }}</h1>
+                {%- endif -%}
+
+                {%- if block.settings.description != '' -%}
+                  <p class="animated">{{ block.settings.description }}</p>
+                {%- endif -%}
+
+                {%- if block.settings.show_animated_btn or block.settings.btn != '' -%}
+                <div class="slider__animated__btn__wrap">
+                  {%- if block.settings.btn != '' -%}
+                  <div class="slider-btn btn-hover">
+                    <a class="animated" href="{{ block.settings.btn_url }}">
+                      {{ block.settings.btn }}
+                      {% if block.settings.show_icon %}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><title>Arrow Redo</title><path d="M448 256L272 88v96C103.57 184 64 304.77 64 424c48.61-62.24 91.6-96 208-96v96z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="20"/></svg>
+                      {% endif %}
+                    </a>
+                  </div>
+                  {%- endif -%}
+
+                  {%- if block.settings.show_animated_btn -%}
+                  <div class="slider__animated__btn animated">
+                    <a class="video-popup magni_video_pop" href="{{ block.settings.animaet_btn_url }}">
+                      <i class="icofont-play"></i>
+                    </a>
+                    {%- if block.settings.btn_animated != '' -%}
+                      <span>{{ block.settings.btn_animated }}</span>
+                    {%- endif -%}
+                  </div>
+                  {%- endif -%}
+                </div>
+                {%- endif -%}
+
+              </div>
+            </div>
+
+            {%- if block.settings.slider_img_enable -%}
+            <div class="col-xl-{{ block.settings.slider_img_col }} col-md-{{ block.settings.slider_img_col_md }} col-sm-12 col-12">
+              <div class="slider-single-img slider-animated-1">
+                {%- if block.settings.slider_img -%}
+                  <img loading="lazy" class="animated" src="{{ block.settings.slider_img | img_url: 'master' }}" alt="{{ block.settings.title1 | escape }}">
+                {%- else -%}
+                  <img loading="lazy" class="animated" src="https://via.placeholder.com/620x877" alt="{{ block.settings.title1 | escape }}">
+                {%- endif -%}
+              </div>
+            </div>
+            {%- endif -%}
+
+          </div>
+        </div>
+      </div>
+
+      {% elsif section.settings.slider_option == 'style__three' %}
+
+      {%- comment -%}
+        ===============================================================
+        STYLE THREE — Product-card hero (Metro Auto style).
+        Left = eyebrow / title / description / button (uses the same
+        global "Text" and "Button" settings as the other styles, so
+        every color/font/size is already under your control).
+        Right = up to 3 product cards, each with its own IMAGE, LABEL
+        and LINK — all editable per slide, nothing hardcoded.
+        NOTE: This is presentation only. The pause/play button, arrows
+        and dots are injected/handled by the global engine below.
+        ===============================================================
+      {%- endcomment -%}
+
+      <div {{ block.shopify_attributes }} class="single-slider style__option__three__wrap"
+        style="background-color: {{ block.settings.sec_bg_color }};">
+
+        <div class="mao-hero-inner">
+
+          <div class="mao-hero-left slider-content slider-animated-1 text-left">
+            {%- if block.settings.title_top != '' -%}
+              <h3 class="animated">{{ block.settings.title_top }}</h3>
+            {%- endif -%}
+
+            {%- if block.settings.title1 != '' -%}
+              <h1 class="animated">{{ block.settings.title1 }}</h1>
+            {%- endif -%}
+
+            {%- if block.settings.description != '' -%}
+              <p class="animated">{{ block.settings.description }}</p>
+            {%- endif -%}
+
+            {%- if block.settings.btn != '' -%}
+            <div class="slider__animated__btn__wrap">
+              <div class="slider-btn btn-hover">
+                <a class="animated" href="{{ block.settings.btn_url }}">
+                  {{ block.settings.btn }}
+                  {% if block.settings.show_icon %}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><title>Arrow Redo</title><path d="M448 256L272 88v96C103.57 184 64 304.77 64 424c48.61-62.24 91.6-96 208-96v96z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="20"/></svg>
+                  {% endif %}
+                </a>
+              </div>
+            </div>
+            {%- endif -%}
+          </div>
+
+          <div class="mao-hero-right">
+            <div class="mao-cards">
+              {%- for i in (1..3) -%}
+                {%- assign img_key   = 'card' | append: i | append: '_img'   -%}
+                {%- assign label_key = 'card' | append: i | append: '_label' -%}
+                {%- assign url_key   = 'card' | append: i | append: '_url'   -%}
+                {%- assign card_img   = block.settings[img_key]   -%}
+                {%- assign card_label = block.settings[label_key] -%}
+                {%- assign card_url   = block.settings[url_key]   -%}
+
+                {%- if card_img or card_label != '' -%}
+                <a class="mao-card" href="{{ card_url | default: '#' }}">
+                  <div class="mao-card-img">
+                    {%- if card_img -%}
+                      <img loading="lazy" src="{{ card_img | img_url: 'master' }}" alt="{{ card_label | escape }}">
+                    {%- endif -%}
+                  </div>
+                  <div class="mao-card-foot">
+                    <span class="mao-card-label">{{ card_label }}</span>
+                    <span class="mao-card-arrow" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>
+                    </span>
+                  </div>
+                </a>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {% endif %}
+
+      {%- endcase -%}
+      {%- endfor -%}
+
+    </div>
+  </div>
+
+{%- comment -%}
+  ===================================================================
+  SLIDER ENGINE — Pause / Play control (UNIVERSAL)
+  Runs for EVERY slide style — no slider_option gate. Owl Carousel
+  doesn't ship a pause button, so we inject one into .owl-nav next to
+  the prev/next arrows, reusing the SAME carousel instance. If this
+  section hides its navigation, a minimal container is created so the
+  pause button still has a home. Re-runs on Theme Editor section
+  reloads (shopify:section:load) and guards against duplicates.
+
+  This block never needs editing when you add a new slide style.
+  ===================================================================
+{%- endcomment -%}
+<script>
+(function(){
+  var SECTION_ID  = {{ section.id | json }};
+  var AUTOPLAY_ON = {{ section.settings.autoplay | json }};
+  var attempts = 0;
+
+  function svgPause(){ return '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>'; }
+  function svgPlay(){ return '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>'; }
+
+  function setup(){
+    attempts++;
+    if(attempts > 50){ return; }
+
+    var section = document.getElementById('section-' + SECTION_ID);
+    if(!section){ return; }
+
+    var owlEl = section.querySelector('.owl-carousel');
+    if(!owlEl){ return window.setTimeout(setup, 200); }
+    if(!owlEl.classList.contains('owl-loaded')){ return window.setTimeout(setup, 200); }
+
+    // Reuse the arrows' container. If navigation is hidden for this
+    // section, create a lightweight container so the pause button still
+    // appears. This is the only structural difference between styles and
+    // it is handled once, here — never inside a template.
+    var navEl = owlEl.querySelector('.owl-nav');
+    if(!navEl){
+      navEl = document.createElement('div');
+      navEl.className = 'owl-nav mao-controls-only';
+      owlEl.appendChild(navEl);
+    }
+
+    if(navEl.querySelector('.mao-pause')){ return; } // already added — no duplicates
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mao-pause';
+    navEl.appendChild(btn);
+
+    var playing = !!AUTOPLAY_ON;
+    function render(){
+      btn.innerHTML = playing ? svgPause() : svgPlay();
+      btn.setAttribute('aria-label', playing ? 'Pause slideshow' : 'Play slideshow');
+    }
+    render();
+
+    btn.addEventListener('click', function(){
+      var $ = window.jQuery;
+      if(!$){ return; }
+      var $owl = $(owlEl);
+      if(playing){ $owl.trigger('stop.owl.autoplay'); }
+      else { $owl.trigger('play.owl.autoplay'); }
+      playing = !playing;
+      render();
+    });
+  }
+
+  function boot(){ attempts = 0; window.setTimeout(setup, 300); }
+
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', boot); }
+  else { boot(); }
+
+  document.addEventListener('shopify:section:load', function(e){
+    if(e.detail && e.detail.sectionId === SECTION_ID){ boot(); }
+  });
+})();
+</script>
+
+<!--
+  ===================================================================
+  GLOBAL CONTENT STYLE
+  All slides share one style now (title/subtitle/description/button
+  colors, fonts, sizes). This is set once at the section level so
+  every slide looks consistent — no more per-slide custom CSS making
+  things uneven.
+  ===================================================================
+-->
+<style>
+  {{ section.settings.header_font_top | font_face }}
+  {{ section.settings.header_font_slider | font_face }}
+  {{ section.settings.paragraph_font_slider | font_face }}
+  {{ section.settings.button_font_slider | font_face }}
+  {{ section.settings.animate_button_font | font_face }}
+</style>
+
+<style>
+  #section-{{ section.id }}.slider-area .slider-content h3 {
+    font-family: {{ section.settings.header_font_top.family }}, {{ section.settings.header_font_top.fallback_families }};
+    font-style: {{ section.settings.header_font_top.style }};
+    font-weight: {{ section.settings.header_font_top.weight }};
+    color: {{ section.settings.header_top_color }};
+    font-size: clamp(13px, 3.2vw, {{ section.settings.header_font_top_size }}px) !important;
+    line-height: 1.3 !important;
+    margin-bottom: {{ section.settings.header_font_top_margin_bottom }}px;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  #section-{{ section.id }}.slider-area .slider-content h3 span { color: {{ settings.color_primary }}; }
+
+  #section-{{ section.id }}.slider-area .slider-content h1 {
+    font-family: {{ section.settings.header_font_slider.family }}, {{ section.settings.header_font_slider.fallback_families }};
+    font-style: {{ section.settings.header_font_slider.style }};
+    font-weight: {{ section.settings.header_font_slider.weight }};
+    color: {{ section.settings.title1_color }};
+    font-size: clamp(24px, 8vw, {{ section.settings.title1_font_size }}px) !important;
+    line-height: 1.15 !important;
+    margin-bottom: {{ section.settings.title_margin_bottom }}px;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    {% if section.settings.heading_bottom_border_line %}position: relative;{% endif %}
+  }
+  #section-{{ section.id }}.slider-area .slider-content h1 span { color: {{ settings.color_primary }}; }
+
+  {% if section.settings.heading_bottom_border_line %}
+  #section-{{ section.id }}.slider-area .slider-content h1::before {
+    position: absolute;
+    content: "";
+    background: {{ section.settings.heading_border_bottom_color }};
+    height: 5px;
+    width: 70px;
+    bottom: -{{ section.settings.border_top_spacing }}px;
+  }
+  {% endif %}
+
+  #section-{{ section.id }}.slider-area .slider-content p {
+    font-family: {{ section.settings.paragraph_font_slider.family }}, {{ section.settings.paragraph_font_slider.fallback_families }};
+    font-style: {{ section.settings.paragraph_font_slider.style }};
+    font-weight: {{ section.settings.paragraph_font_slider.weight }};
+    color: {{ section.settings.description_color }};
+    font-size: clamp(13px, 2.1vw, {{ section.settings.description_font_size }}px) !important;
+    line-height: 1.55 !important;
+    margin: 0 0 {{ section.settings.des_margin_bottom }}px;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  #section-{{ section.id }}.slider-area .slider-content p span { color: {{ settings.color_primary }}; }
+
+  /* ---- Button (hover only changes here — never on the slide itself) ---- */
+  #section-{{ section.id }}.slider-area .slider-content .slider__animated__btn__wrap {
+    margin-top: {{ section.settings.button_margin_top }}px;
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+  #section-{{ section.id }}.slider-area .slider-content .slider-btn a {
+    background-color: {{ section.settings.btn_bg_color }};
+    color: {{ section.settings.btn_color }};
+    border: 1px solid {{ section.settings.btn_border_color }};
+    border-radius: {{ section.settings.btn_border_radius }}px;
+    padding: clamp(8px, 1.5vw, {{ section.settings.button_padding_tb }}px) clamp(12px, 2.6vw, {{ section.settings.button_padding_lr }}px) !important;
+    text-transform: unset;
+    font-size: clamp(10px, 1.1vw, {{ section.settings.btn_font_size }}px) !important;
+    font-family: {{ section.settings.button_font_slider.family }}, {{ section.settings.button_font_slider.fallback_families }};
+    font-style: {{ section.settings.button_font_slider.style }};
+    font-weight: {{ section.settings.button_font_slider.weight }};
+    transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+    white-space: nowrap;
+  }
+  #section-{{ section.id }}.slider-area .slider-content .slider-btn a i {
+    color: {{ section.settings.btn_color }};
+    font-size: clamp(10px, 1.1vw, {{ section.settings.btn_font_size }}px) !important;
+  }
+  #section-{{ section.id }}.slider-area .slider-content .slider-btn a:hover {
+    background-color: {{ section.settings.btn_hover_bg_color }};
+    color: {{ section.settings.btn_hover_color }};
+    border: 1px solid {{ section.settings.btn_hover_border_color }};
+  }
+  #section-{{ section.id }}.slider-area .slider-content .slider-btn a:hover i {
+    color: {{ section.settings.btn_hover_color }};
+  }
+
+  /* ---- Round play/video button ---- */
+  #section-{{ section.id }}.slider-area .slider-content .slider__animated__btn a {
+    box-shadow: 0 4px 30px {{ section.settings.animated_btn_color | color_modify: 'alpha', 0.2 }};
+    color: {{ section.settings.animated_btn_color }};
+    border: 1px solid {{ section.settings.animated_btn_color }};
+    font-size: clamp(12px, 1.6vw, {{ section.settings.animate_btn_font_size }}px) !important;
+    height: clamp(38px, 6vw, {{ section.settings.animate_btn_size }}px) !important;
+    width: clamp(38px, 6vw, {{ section.settings.animate_btn_size }}px) !important;
+    line-height: clamp(38px, 6vw, {{ section.settings.animate_btn_size }}px) !important;
+    transition: box-shadow .25s ease, transform .25s ease;
+    flex: none;
+  }
+  #section-{{ section.id }}.slider-area .slider-content .slider__animated__btn a:hover {
+    box-shadow: 0 6px 36px {{ section.settings.animated_btn_color | color_modify: 'alpha', 0.35 }};
+    transform: scale(1.05);
+  }
+  #section-{{ section.id }}.slider-area .slider-content .slider__animated__btn span {
+    color: {{ section.settings.animated_btn_color }};
+    font-size: clamp(11px, 1.4vw, {{ section.settings.animate_btn_font_size }}px) !important;
+    font-family: {{ section.settings.animate_button_font.family }}, {{ section.settings.animate_button_font.fallback_families }};
+    font-style: {{ section.settings.animate_button_font.style }};
+    font-weight: {{ section.settings.animate_button_font.weight }};
+    white-space: nowrap;
+  }
+  #section-{{ section.id }}.slider-area .slider__animated__btn .magni_video_pop:before,
+  #section-{{ section.id }}.slider-area .slider__animated__btn .magni_video_pop:after {
+    box-shadow: 0 0 0 0 {{ section.settings.animated_btn_color }};
+    height: clamp(38px, 6vw, {{ section.settings.animate_btn_size }}px);
+    width: clamp(38px, 6vw, {{ section.settings.animate_btn_size }}px);
+  }
+
+  /* ===================================================================
+     SLIDER ENGINE — Pause / Play button base look (GLOBAL)
+     Applies to every slide style. The button sits inside .owl-nav and,
+     by default, inherits the same visual treatment as the arrows for
+     the active nav style (see the nav blocks below). This base rule
+     guarantees the button is never fully unstyled — even on a brand
+     new slide style that adds no CSS of its own.
+     =================================================================== */
+  #section-{{ section.id }}.slider-area .owl-nav .mao-pause {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    line-height: 1;
+  }
+  #section-{{ section.id }}.slider-area .owl-nav .mao-pause svg { display: block; }
+
+  /* Fallback container used only when nav is hidden but pause still shows */
+  #section-{{ section.id }}.slider-area .owl-nav.mao-controls-only {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    z-index: 8;
+  }
+
+  /* ---- Nav arrows + pause button share one treatment (hover only on the buttons) ---- */
+  {% if section.settings.nav_custom_style %}
+  #section-{{ section.id }}.slider-area .nav-style-1.owl-carousel .owl-nav div,
+  #section-{{ section.id }}.slider-area .nav-style-1.owl-carousel .owl-nav .mao-pause,
+  #section-{{ section.id }}.slider-area .nav-style-2 .owl-nav div,
+  #section-{{ section.id }}.slider-area .nav-style-2 .owl-nav .mao-pause,
+  #section-{{ section.id }}.slider-area .nav-style-3 .owl-nav div,
+  #section-{{ section.id }}.slider-area .nav-style-3 .owl-nav .mao-pause {
+    color: {{ section.settings.controlnav_color }};
+    background-color: {{ section.settings.controlnav_bg_color }};
+    border: 1px solid {{ section.settings.controlnav_border_color }};
+    border-radius: {{ section.settings.nav_border_radius }}px;
+    transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+  }
+  #section-{{ section.id }}.slider-area .nav-style-1.owl-carousel .owl-nav div:hover,
+  #section-{{ section.id }}.slider-area .nav-style-1.owl-carousel .owl-nav .mao-pause:hover,
+  #section-{{ section.id }}.slider-area .nav-style-2 .owl-nav div:hover,
+  #section-{{ section.id }}.slider-area .nav-style-2 .owl-nav .mao-pause:hover,
+  #section-{{ section.id }}.slider-area .nav-style-3 .owl-nav div:hover,
+  #section-{{ section.id }}.slider-area .nav-style-3 .owl-nav .mao-pause:hover {
+    color: {{ section.settings.hover_controlnav_color }};
+    background-color: {{ section.settings.hover_controlnav_bg_color }};
+    border: 1px solid {{ section.settings.hover_controlnav_border_color }};
+  }
+  {% endif %}
+
+  #section-{{ section.id }}.slider-area .nav-style-6.owl-carousel .owl-nav {
+    position: absolute;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 14px;
+    z-index: 10;
+  }
+  #section-{{ section.id }}.slider-area .nav-style-6.owl-carousel .owl-nav div,
+  #section-{{ section.id }}.slider-area .nav-style-6.owl-carousel .owl-nav .mao-pause {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: {{ section.settings.card_nav_color }};
+    box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+    color: #fff;
+    font-size: 18px;
+    transition: transform .25s ease, box-shadow .25s ease, background-color .25s ease;
+  }
+  #section-{{ section.id }}.slider-area .nav-style-6.owl-carousel .owl-nav div i { color: #fff; }
+  #section-{{ section.id }}.slider-area .nav-style-6.owl-carousel .owl-nav div:hover,
+  #section-{{ section.id }}.slider-area .nav-style-6.owl-carousel .owl-nav .mao-pause:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+    background: {{ section.settings.card_nav_hover_color }};
+  }
+  @media (max-width: 575px) {
+    #section-{{ section.id }}.slider-area .nav-style-6.owl-carousel .owl-nav div,
+    #section-{{ section.id }}.slider-area .nav-style-6.owl-carousel .owl-nav .mao-pause { width: 44px; height: 44px; border-radius: 13px; }
+    #section-{{ section.id }}.slider-area .nav-style-6.owl-carousel .owl-nav { bottom: 16px; gap: 10px; }
+  }
+
+  /* ---- Pagination dots: always compact & pinned to the bottom, never inline with the button ---- */
+  #section-{{ section.id }}.slider-area .owl-dots {
+    position: absolute !important;
+    top: auto !important;
+    bottom: 18px !important;
+    display: flex !important;
+    align-items: center;
+    gap: 8px !important;
+    z-index: 6;
+    {% case section.settings.dot_style %}
+      {% when 'dot_left' %}
+        left: 24px !important; right: auto !important; transform: none !important;
+      {% when 'dot_right' %}
+        right: 24px !important; left: auto !important; transform: none !important;
+      {% else %}
+        left: 50% !important; right: auto !important; transform: translateX(-50%) !important;
+    {% endcase %}
+  }
+  #section-{{ section.id }}.slider-area .owl-dots .owl-dot {
+    width: 9px !important;
+    height: 9px !important;
+    min-width: 9px !important;
+    max-width: 9px !important;
+    border-radius: 50% !important;
+    border: 1px solid {{ section.settings.dot_color }} !important;
+    outline: none !important;
+    background-color: transparent !important;
+    transition: width .3s ease, background-color .3s ease, border-color .3s ease;
+  }
+  #section-{{ section.id }}.slider-area .owl-dots .owl-dot span {
+    display: none !important;
+  }
+  #section-{{ section.id }}.slider-area .owl-dots .owl-dot.active {
+    width: 22px !important;
+    max-width: 22px !important;
+    border-radius: 5px !important;
+    background-color: {{ section.settings.dot_active_color }} !important;
+    border-color: {{ section.settings.dot_active_color }} !important;
+  }
+  @media (max-width: 575px) {
+    #section-{{ section.id }}.slider-area .owl-dots { bottom: 12px !important; gap: 6px !important; }
+    #section-{{ section.id }}.slider-area .owl-dots .owl-dot { width: 7px !important; height: 7px !important; min-width: 7px !important; max-width: 7px !important; }
+    #section-{{ section.id }}.slider-area .owl-dots .owl-dot.active { width: 18px !important; max-width: 18px !important; }
+  }
+
+  /* ===================================================================
+     CONTENT ANIMATION
+     Controls the text/button entrance. Default is "None" — everything
+     appears instantly, at the exact same moment the slide itself
+     becomes visible, with zero delay. This overrides any animation
+     the base theme CSS/JS might otherwise try to trigger on the
+     ".animated" class, so it's guaranteed to actually turn off.
+     =================================================================== */
+  {% if section.settings.content_animation == 'none' %}
+  #section-{{ section.id }}.slider-area .animated,
+  #section-{{ section.id }}.slider-area .slider-content h3,
+  #section-{{ section.id }}.slider-area .slider-content h1,
+  #section-{{ section.id }}.slider-area .slider-content p,
+  #section-{{ section.id }}.slider-area .slider-content .slider-btn a,
+  #section-{{ section.id }}.slider-area .slider-content .slider__animated__btn,
+  #section-{{ section.id }}.slider-area .slider-content .slider__animated__btn__wrap,
+  #section-{{ section.id }}.slider-area .slider-single-img .animated {
+    animation: none !important;
+    animation-delay: 0s !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: background-color .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease !important;
+  }
+  {% else %}
+  @keyframes heroContentFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes heroContentFadeInUp { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes heroContentFadeInDown { from { opacity: 0; transform: translateY(-26px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes heroContentFadeInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes heroContentFadeInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+
+  #section-{{ section.id }}.slider-area .owl-item:not(.active) .animated { opacity: 0; }
+  #section-{{ section.id }}.slider-area .owl-item.active .slider-content h3,
+  #section-{{ section.id }}.slider-area .owl-item.active .slider-content h1,
+  #section-{{ section.id }}.slider-area .owl-item.active .slider-content p,
+  #section-{{ section.id }}.slider-area .owl-item.active .slider-content .slider__animated__btn__wrap {
+    animation-duration: .6s;
+    animation-fill-mode: both;
+    animation-delay: 0s;
+    {% case section.settings.content_animation %}
+      {% when 'fadeIn' %} animation-name: heroContentFadeIn;
+      {% when 'fadeInUp' %} animation-name: heroContentFadeInUp;
+      {% when 'fadeInDown' %} animation-name: heroContentFadeInDown;
+      {% when 'fadeInLeft' %} animation-name: heroContentFadeInLeft;
+      {% when 'fadeInRight' %} animation-name: heroContentFadeInRight;
+    {% endcase %}
+  }
+  {% endif %}
+
+  /* ---- Gradient overlay on one side of the slide ---- */
+  {% if section.settings.gradient_enable %}
+  #section-{{ section.id }}.slider-area .single-slider { position: relative; }
+  #section-{{ section.id }}.slider-area .slide-gradient-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    {% case section.settings.gradient_position %}
+      {% when 'left' %}
+        background: linear-gradient(to right, {{ section.settings.gradient_color_1 }} 0%, {{ section.settings.gradient_color_2 }} 100%);
+      {% when 'right' %}
+        background: linear-gradient(to left, {{ section.settings.gradient_color_1 }} 0%, {{ section.settings.gradient_color_2 }} 100%);
+      {% when 'top' %}
+        background: linear-gradient(to bottom, {{ section.settings.gradient_color_1 }} 0%, {{ section.settings.gradient_color_2 }} 100%);
+      {% when 'bottom' %}
+        background: linear-gradient(to top, {{ section.settings.gradient_color_1 }} 0%, {{ section.settings.gradient_color_2 }} 100%);
+    {% endcase %}
+  }
+  #section-{{ section.id }}.slider-area .style__option__one__content,
+  #section-{{ section.id }}.slider-area .style__option__two__wrap > div {
+    position: relative;
+    z-index: 2;
+  }
+  {% endif %}
+
+  /* ===================================================================
+     BASE / LAYOUT
+     Corners are square (no border-radius) and Style One's image
+     fills its box edge-to-edge with zero gaps (see next block).
+     =================================================================== */
+  .slider__animated__btn__wrap { display: flex; }
+  .single-slider .slider-content .slider__animated__btn {
+    margin-left: 40px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+  }
+  .single-slider .slider-content .slider-btn.slider__animated__btn a { margin-right: 10px; }
+  .single-slider .slider-content .slider__animated__btn span { position: relative; left: 90px; }
+  .slider__animated__btn .magni_video_pop:before,
+  .slider__animated__btn .magni_video_pop:after {
+    position: absolute; top: 50%; left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    border-radius: 50%;
+    animation: ripple 3s infinite;
+  }
+  .slider__animated__btn .magni_video_pop:before { animation-delay: .9s; content: ""; position: absolute; }
+  .slider__animated__btn .magni_video_pop:after { animation-delay: .6s; content: ""; position: absolute; }
+  .single-slider .slider-content .slider-btn a { display: flex; align-items: center; }
+  .single-slider .slider-content .slider-btn svg { width: clamp(12px, 1.6vw, 20px); margin-left: clamp(6px, 1vw, 10px); }
+
+  /* Square corners (rounded corners removed) */
+  .slider-area.container-fluid .single-slider,
+  .slider-area.container-fluid .single-slider .slide__item__image img { border-radius: 0; }
+
+  @keyframes ripple {
+    70% { box-shadow: 0 0 0 20px rgba(255,255,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+  }
+
+  .slider__responsive__image { display: none; }
+
+  /* ---- Style One: fixed 1400:500 aspect-ratio box + full-bleed cropped image ----
+     The box now keeps a constant 1400:500 (2.8:1) shape at every screen
+     width — it's not a set pixel height, it scales with the container's
+     width so the same wide, cinematic look holds on desktop and mobile.
+     The image is absolutely positioned to fill the box completely (no
+     side/top/bottom gaps) and object-fit: cover crops it to match —
+     any image ratio, any size, same result. */
+  #section-{{ section.id }}.slider-area .style__option__one__wrap {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1400 / 500;
+    height: auto;
+  }
+  #section-{{ section.id }}.slider-area .style__option__one__wrap .slide__item__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+  #section-{{ section.id }}.slider-area .style__option__one__wrap .slide__item__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+  .style__option__one__content { position: absolute; left: 0; right: 0; }
+
+  @media (max-width: 991px) {
+    .style__option__two__wrap .slider__responsive__class { background-image: none !important; }
+    .style__option__two__wrap .slider__responsive__image { display: block; margin-top: 20px; margin-bottom: 30px; }
+    .style__option__two__wrap.slider__responsive__class .slide__item__image { display: none; }
+  }
+  @media (max-width: 767px) {
+    .style__option__one__wrap .slider__responsive__class { background-image: none !important; }
+    .style__option__one__wrap .slider__responsive__image { display: block; margin-top: 0; margin-bottom: 0; }
+    .style__option__one__wrap.slider__responsive__class .slide__item__image { display: none; }
+    .slider__responsive__class .style__option__one__content { top: 10%; }
+  }
+
+  /* ===================================================================
+     MOBILE CONTROLS — exact values from the settings above, not
+     automatic guesses. Change any of these in the theme editor
+     ("... (Mobile)" fields) and it updates here directly.
+     =================================================================== */
+  @media (max-width: 991px) {
+    #section-{{ section.id }}.slider-area .style__option__one__content,
+    #section-{{ section.id }}.slider-area .style__option__two__wrap > div {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    #section-{{ section.id }}.slider-area .slider-content h3 {
+      font-size: {{ section.settings.header_font_top_size_mobile }}px !important;
+      margin-bottom: {{ section.settings.header_font_top_margin_bottom_mobile }}px !important;
+    }
+    #section-{{ section.id }}.slider-area .slider-content h1 {
+      font-size: {{ section.settings.title1_font_size_mobile }}px !important;
+      margin-bottom: {{ section.settings.title_margin_bottom_mobile }}px !important;
+    }
+    #section-{{ section.id }}.slider-area .slider-content p {
+      font-size: {{ section.settings.description_font_size_mobile }}px !important;
+      margin-bottom: {{ section.settings.des_margin_bottom_mobile }}px !important;
+    }
+    #section-{{ section.id }}.slider-area .slider__animated__btn__wrap {
+      margin-top: {{ section.settings.button_margin_top_mobile }}px !important;
+    }
+    #section-{{ section.id }}.slider-area .slider-content .slider-btn a {
+      padding: {{ section.settings.button_padding_tb_mobile }}px {{ section.settings.button_padding_lr_mobile }}px !important;
+      font-size: {{ section.settings.btn_font_size_mobile }}px !important;
+    }
+    #section-{{ section.id }}.slider-area .slider-content .slider-btn a i {
+      font-size: {{ section.settings.btn_font_size_mobile }}px !important;
+    }
+    #section-{{ section.id }}.slider-area .slider-content .slider-btn svg {
+      width: {{ section.settings.btn_font_size_mobile | plus: 3 }}px !important;
+      margin-left: 6px !important;
+    }
+    #section-{{ section.id }}.slider-area .slider-content .slider__animated__btn {
+      margin-left: 16px;
+    }
+    #section-{{ section.id }}.slider-area .slider-content .slider__animated__btn a {
+      width: {{ section.settings.animate_btn_size_mobile }}px !important;
+      height: {{ section.settings.animate_btn_size_mobile }}px !important;
+      line-height: {{ section.settings.animate_btn_size_mobile }}px !important;
+      font-size: {{ section.settings.animate_btn_font_size_mobile }}px !important;
+    }
+    #section-{{ section.id }}.slider-area .slider-content .slider__animated__btn span {
+      left: {{ section.settings.animate_btn_size_mobile | plus: 18 }}px !important;
+      font-size: {{ section.settings.animate_btn_font_size_mobile }}px !important;
+    }
+    #section-{{ section.id }}.slider-area .style__option__one__content,
+    #section-{{ section.id }}.slider-area .style__option__two__wrap > div {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+    {% if section.settings.nav_custom_style %}
+    #section-{{ section.id }}.slider-area .nav-style-1.owl-carousel .owl-nav div,
+    #section-{{ section.id }}.slider-area .nav-style-1.owl-carousel .owl-nav .mao-pause,
+    #section-{{ section.id }}.slider-area .nav-style-2 .owl-nav div,
+    #section-{{ section.id }}.slider-area .nav-style-2 .owl-nav .mao-pause,
+    #section-{{ section.id }}.slider-area .nav-style-3 .owl-nav div,
+    #section-{{ section.id }}.slider-area .nav-style-3 .owl-nav .mao-pause {
+      width: 38px;
+      height: 38px;
+      line-height: 38px;
+      font-size: 13px;
+    }
+    {% endif %}
+  }
+
+  /* ===================================================================
+     SECTION PADDING & MARGIN — all four sides
+     Applied directly here (in addition to whatever 'section-style'
+     does) so left/right are guaranteed to work even if that snippet
+     only handles top/bottom.
+     =================================================================== */
+  #section-{{ section.id }}.slider-area {
+    padding-top: {{ section.settings.section_padding_top | default: 0 }}px;
+    padding-bottom: {{ section.settings.section_padding_bottom | default: 0 }}px;
+    padding-left: {{ section.settings.section_padding_left | default: 0 }}px;
+    padding-right: {{ section.settings.section_padding_right | default: 0 }}px;
+    margin-top: {{ section.settings.section_margin_top | default: 0 }}px;
+    margin-bottom: {{ section.settings.section_margin_bottom | default: 0 }}px;
+    margin-left: {{ section.settings.section_margin_left | default: 0 }}px;
+    margin-right: {{ section.settings.section_margin_right | default: 0 }}px;
+  }
+  @media (min-width: 768px) and (max-width: 991px) {
+    #section-{{ section.id }}.slider-area {
+      padding-top: {{ section.settings.section_padding_top_md | default: 0 }}px;
+      padding-bottom: {{ section.settings.section_padding_bottom_md | default: 0 }}px;
+      padding-left: {{ section.settings.section_padding_left_md | default: 0 }}px;
+      padding-right: {{ section.settings.section_padding_right_md | default: 0 }}px;
+      margin-top: {{ section.settings.section_margin_top_md | default: 0 }}px;
+      margin-bottom: {{ section.settings.section_margin_bottom_md | default: 0 }}px;
+      margin-left: {{ section.settings.section_margin_left_md | default: 0 }}px;
+      margin-right: {{ section.settings.section_margin_right_md | default: 0 }}px;
+    }
+  }
+  @media (max-width: 767px) {
+    #section-{{ section.id }}.slider-area {
+      padding-top: {{ section.settings.section_padding_top_xs | default: 0 }}px;
+      padding-bottom: {{ section.settings.section_padding_bottom_xs | default: 0 }}px;
+      padding-left: {{ section.settings.section_padding_left_xs | default: 0 }}px;
+      padding-right: {{ section.settings.section_padding_right_xs | default: 0 }}px;
+      margin-top: {{ section.settings.section_margin_top_xs | default: 0 }}px;
+      margin-bottom: {{ section.settings.section_margin_bottom_xs | default: 0 }}px;
+      margin-left: {{ section.settings.section_margin_left_xs | default: 0 }}px;
+      margin-right: {{ section.settings.section_margin_right_xs | default: 0 }}px;
+    }
+  }
+
+  /* ===================================================================
+     SLIDE MARGIN — top & bottom, on the slide itself
+     Separate from the Section Margin block above: this pushes the
+     actual slide box (image + content) up/down, e.g. to clear a
+     sticky header, independently of the outer section spacing.
+     =================================================================== */
+  #section-{{ section.id }}.slider-area .single-slider {
+    margin-top: {{ section.settings.slide_margin_top | default: 0 }}px;
+    margin-bottom: {{ section.settings.slide_margin_bottom | default: 0 }}px;
+  }
+  @media (max-width: 767px) {
+    #section-{{ section.id }}.slider-area .single-slider {
+      margin-top: {{ section.settings.slide_margin_top_mobile | default: 0 }}px;
+      margin-bottom: {{ section.settings.slide_margin_bottom_mobile | default: 0 }}px;
+    }
+  }
+
+  {% if section.settings.enable_custom_res_height %}
+  @media (min-width: 1171px) and (max-width: 1366px) { #section-{{ section.id }} .single-slider { height: {{ section.settings.slider_height_1366 }}px !important; } }
+  @media (min-width: 992px) and (max-width: 1170px) { #section-{{ section.id }} .single-slider { height: {{ section.settings.slider_height_1170 }}px !important; } }
+  @media (min-width: 768px) and (max-width: 991px) { #section-{{ section.id }} .single-slider { height: {{ section.settings.slider_height_991 }}px !important; } }
+  @media (min-width: 576px) and (max-width: 767px) { #section-{{ section.id }} .single-slider { height: {{ section.settings.slider_height_767 }}px !important; } }
+  @media (max-width: 575px) { #section-{{ section.id }} .single-slider { height: {{ section.settings.slider_height_575 }}px !important; } }
+  {% endif %}
+
+  /* ===================================================================
+     STYLE THREE — Product-card hero (Metro Auto) — APPEARANCE ONLY.
+     Placed AFTER the shared rules above so its dot/nav positioning
+     wins. This block is gated by slider_option because it is purely
+     visual (layout + positioning of the shared controls). The engine
+     (autoplay, prev/next, pause/play, dots) is global and does NOT
+     live here. Everything colour-related is a theme-editor setting.
+     The left text/button reuses ".slider-content" so your existing
+     Text + Button colour/font settings apply to it.
+     =================================================================== */
+  {% if section.settings.slider_option == 'style__three' %}
+
+  /* Rounded dark container — the slide itself is the card */
+  #section-{{ section.id }}.slider-area .style__option__three__wrap {
+    position: relative;
+    border-radius: {{ section.settings.card3_radius | default: 24 }}px;
+    overflow: hidden;
+    padding: clamp(24px, 4vw, 48px);
+    padding-bottom: clamp(74px, 8vw, 100px); /* room for the dots + nav row */
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+  }
+
+  #section-{{ section.id }}.slider-area .style__option__three__wrap .mao-hero-inner {
+    display: flex;
+    align-items: center;
+    gap: clamp(20px, 4vw, 48px);
+    width: 100%;
+  }
+
+  #section-{{ section.id }}.slider-area .mao-hero-left  { flex: 0 0 38%; max-width: 38%; }
+  #section-{{ section.id }}.slider-area .mao-hero-right { flex: 1 1 auto; min-width: 0; }
+
+  /* Cards */
+  #section-{{ section.id }}.slider-area .mao-cards {
+    display: flex;
+    gap: clamp(12px, 1.6vw, 20px);
+  }
+  #section-{{ section.id }}.slider-area .mao-card {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: {{ section.settings.card3_bg | default: '#f3f4f6' }};
+    border-radius: {{ section.settings.card3_inner_radius | default: 16 }}px;
+    padding: clamp(12px, 1.4vw, 18px);
+    text-decoration: none;
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  #section-{{ section.id }}.slider-area .mao-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0,0,0,.22);
+  }
+  #section-{{ section.id }}.slider-area .mao-card-img {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+  #section-{{ section.id }}.slider-area .mao-card-img img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+  #section-{{ section.id }}.slider-area .mao-card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: auto;
+  }
+  #section-{{ section.id }}.slider-area .mao-card-label {
+    font-weight: 700;
+    font-size: clamp(14px, 1.2vw, 18px);
+    line-height: 1.25;
+    color: {{ section.settings.card3_label_color | default: '#1f2226' }};
+  }
+  #section-{{ section.id }}.slider-area .mao-card-arrow {
+    flex: none;
+    display: inline-flex;
+    color: {{ section.settings.card3_arrow_color | default: '#1f2226' }};
+  }
+
+  /* Dots — centered along the bottom for this style */
+  #section-{{ section.id }}.slider-area .owl-dots {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    bottom: 28px !important;
+  }
+
+  /* Prev / Next / Pause — round buttons, bottom-right.
+     Note .mao-pause is the SAME injected button used by every other
+     style; here it just gets Style Three's round-button appearance. */
+  #section-{{ section.id }}.slider-area .owl-nav {
+    position: absolute !important;
+    right: clamp(20px, 3vw, 40px) !important;
+    bottom: 22px !important;
+    left: auto !important;
+    top: auto !important;
+    margin: 0 !important;
+    display: flex !important;
+    gap: 12px !important;
+    z-index: 8 !important;
+    transform: none !important;
+  }
+  #section-{{ section.id }}.slider-area .owl-nav .owl-prev,
+  #section-{{ section.id }}.slider-area .owl-nav .owl-next,
+  #section-{{ section.id }}.slider-area .owl-nav .mao-pause {
+    width: 52px !important;
+    height: 52px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 50% !important;
+    background: {{ section.settings.card3_navbtn_bg | default: '#ffffff' }} !important;
+    color: {{ section.settings.card3_navbtn_color | default: '#ff5a1f' }} !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,.18);
+    transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease;
+  }
+  #section-{{ section.id }}.slider-area .owl-nav .owl-prev:hover,
+  #section-{{ section.id }}.slider-area .owl-nav .owl-next:hover,
+  #section-{{ section.id }}.slider-area .owl-nav .mao-pause:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(0,0,0,.28);
+    background: {{ section.settings.card3_navbtn_bg | default: '#ffffff' }} !important;
+  }
+  #section-{{ section.id }}.slider-area .owl-nav .owl-prev i,
+  #section-{{ section.id }}.slider-area .owl-nav .owl-next i {
+    color: inherit !important;
+    font-size: 18px;
+    line-height: 1;
+  }
+  #section-{{ section.id }}.slider-area .owl-nav .mao-pause svg { display: block; }
+
+  /* Mobile — stack, cards scroll sideways */
+  @media (max-width: 767px) {
+    #section-{{ section.id }}.slider-area .style__option__three__wrap {
+      padding: 20px 16px;
+      padding-bottom: 84px;
+      border-radius: {{ section.settings.card3_radius | default: 24 }}px;
+    }
+    #section-{{ section.id }}.slider-area .style__option__three__wrap .mao-hero-inner {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+    }
+    #section-{{ section.id }}.slider-area .mao-hero-left {
+      flex: none;
+      max-width: 100%;
+    }
+    #section-{{ section.id }}.slider-area .mao-cards {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+    }
+    #section-{{ section.id }}.slider-area .mao-card {
+      flex: 0 0 46%;
+      min-width: 46%;
+    }
+    #section-{{ section.id }}.slider-area .owl-nav .owl-prev,
+    #section-{{ section.id }}.slider-area .owl-nav .owl-next,
+    #section-{{ section.id }}.slider-area .owl-nav .mao-pause {
+      width: 42px !important;
+      height: 42px !important;
+    }
+    #section-{{ section.id }}.slider-area .owl-nav { bottom: 16px !important; gap: 9px !important; }
+    #section-{{ section.id }}.slider-area .owl-dots { bottom: 22px !important; }
+  }
+  {% endif %}
+</style>
+
+{%- render 'section-style' -%}
+
+{% schema %}
+{
+  "name": "Slider",
+  "settings": [
+    { "type": "select", "id": "section_width", "label": "Section Width", "options": [
+      { "label": "Full Width", "value": "full_width" },
+      { "label": "Box Width", "value": "box_width" },
+      { "label": "Default Width", "value": "default" }
+    ], "default": "default" },
+    { "type": "select", "id": "content_width", "label": "Content Width", "options": [
+      { "label": "Full Width", "value": "full_width" },
+      { "label": "Box Width", "value": "box_width" },
+      { "label": "Default Width", "value": "default" }
+    ], "default": "default" },
+    { "type": "select", "id": "slider_height_opt", "label": "Slider Height Style (Main Screen)", "options": [
+      { "label": "Fixed Height", "value": "fixed_height" },
+      { "label": "Full Height", "value": "full_height" }
+    ], "default": "fixed_height" },
+    { "type": "select", "id": "slider_option", "label": "Slider Option", "options": [
+      { "label": "Style One (Image)", "value": "style__one" },
+      { "label": "Style Two (Bg Image)", "value": "style__two" },
+      { "label": "Style Three (Product Cards)", "value": "style__three" }
+    ], "default": "style__two" },
+    { "type": "checkbox", "id": "enable_responsive_style_2", "label": "Enable Responsive Style 2", "default": false, "info": "Work Only Responsive Screen" },
+    { "type": "text", "id": "p_top", "label": "Slider Height (Main Screen)", "default": "840", "info": "Don't add 'px' unit. Just put number." },
+    { "type": "checkbox", "id": "enable_custom_res_height", "label": "Enable Custom Responsive Height", "default": false, "info": "Leave OFF for Style Three (Product Cards)." },
+    { "type": "range", "id": "slider_height_1366", "label": "Slider Height (XL)", "max": 1000, "min": 100, "step": 10, "default": 700, "unit": "px", "info": "Screen Size (1171-1366)" },
+    { "type": "range", "id": "slider_height_1170", "label": "Slider Height (LG)", "max": 1000, "min": 100, "step": 10, "default": 600, "unit": "px", "info": "Screen Size (992-1170)" },
+    { "type": "range", "id": "slider_height_991", "label": "Slider Height (MD)", "max": 1000, "min": 100, "step": 10, "default": 500, "unit": "px", "info": "Screen Size (768-991)" },
+    { "type": "range", "id": "slider_height_767", "label": "Slider Height (SM)", "max": 1000, "min": 100, "step": 10, "default": 450, "unit": "px", "info": "Screen Size (576-767)" },
+    { "type": "range", "id": "slider_height_575", "label": "Slider Height (XS)", "max": 1000, "min": 100, "step": 10, "default": 400, "unit": "px", "info": "Screen Size (Max 575)" },
+
+    { "type": "header", "content": "Slide Margin (top/bottom of the slide itself)" },
+    { "type": "range", "id": "slide_margin_top", "label": "Margin Top (Desktop)", "min": 0, "max": 200, "step": 5, "unit": "px", "default": 0, "info": "Push the slide down from whatever is above it (e.g. a sticky header)." },
+    { "type": "range", "id": "slide_margin_bottom", "label": "Margin Bottom (Desktop)", "min": 0, "max": 200, "step": 5, "unit": "px", "default": 0 },
+    { "type": "range", "id": "slide_margin_top_mobile", "label": "Margin Top (Mobile)", "min": 0, "max": 150, "step": 5, "unit": "px", "default": 0 },
+    { "type": "range", "id": "slide_margin_bottom_mobile", "label": "Margin Bottom (Mobile)", "min": 0, "max": 150, "step": 5, "unit": "px", "default": 0 },
+
+    { "type": "header", "content": "Content Animation" },
+    { "type": "select", "id": "content_animation", "label": "Text/Button Entrance Animation", "options": [
+      { "label": "None — show instantly with the slide (no delay)", "value": "none" },
+      { "label": "Fade In", "value": "fadeIn" },
+      { "label": "Fade In Up", "value": "fadeInUp" },
+      { "label": "Fade In Down", "value": "fadeInDown" },
+      { "label": "Fade In Left", "value": "fadeInLeft" },
+      { "label": "Fade In Right", "value": "fadeInRight" }
+    ], "default": "none" },
+
+    { "type": "header", "content": "Autoplay" },
+    { "type": "checkbox", "id": "autoplay", "label": "Enable Autoplay (advance to next slide automatically)", "default": true },
+    { "type": "range", "id": "autoplay_speed", "label": "Autoplay Delay", "min": 1, "max": 6, "step": 1, "unit": "s", "default": 3, "info": "How long each slide stays before moving to the next one. 1s fastest, 6s slowest." },
+
+    { "type": "header", "content": "Navigation" },
+    { "type": "select", "id": "nav_style", "label": "Nav Style", "options": [
+      { "label": "Style 1", "value": "style_1" },
+      { "label": "Style 2", "value": "style_2" },
+      { "label": "Style 3", "value": "style_3" },
+      { "label": "Style 4", "value": "style_4" },
+      { "label": "Style 6 - Horizontal Card", "value": "style_6" },
+      { "label": "Hide Nav", "value": "style_5" }
+    ], "default": "style_1", "info": "Style Three (Product Cards) uses its own round Prev/Next/Pause buttons automatically." },
+    { "type": "checkbox", "id": "nav_custom_style", "label": "Nav Custom Style Enable", "default": false },
+    { "type": "range", "id": "nav_border_radius", "label": "Nav Border Radius", "max": 50, "min": 0, "step": 1, "default": 30, "unit": "px" },
+    { "type": "color", "id": "controlnav_color", "label": "Color", "default": "#1f2226" },
+    { "type": "color", "id": "controlnav_bg_color", "label": "BG Color", "default": "#fff" },
+    { "type": "color", "id": "controlnav_border_color", "label": "Border Color", "default": "#e1e2e2" },
+    { "type": "color", "id": "hover_controlnav_color", "label": "Hover Color", "default": "#fff" },
+    { "type": "color", "id": "hover_controlnav_bg_color", "label": "Hover BG Color", "default": "#ff3535" },
+    { "type": "color", "id": "hover_controlnav_border_color", "label": "Hover Border Color", "default": "#ff3535" },
+    { "type": "header", "content": "Nav Style 6 - Card Colors" },
+    { "type": "color", "id": "card_nav_color", "label": "Card BG Color", "default": "#E8241B" },
+    { "type": "color", "id": "card_nav_hover_color", "label": "Card Hover BG Color", "default": "#c81811" },
+
+    { "type": "header", "content": "Dots" },
+    { "type": "select", "id": "dot_style", "label": "Dot Position", "options": [
+      { "label": "Left", "value": "dot_left" },
+      { "label": "Bottom", "value": "dot_bottom" },
+      { "label": "Right", "value": "dot_right" },
+      { "label": "Hide Dot", "value": "dot_hide" }
+    ], "default": "dot_left" },
+    { "type": "color", "id": "dot_color", "label": "Color", "default": "#96bf48" },
+    { "type": "color", "id": "dot_active_color", "label": "Dot Active Color", "default": "#96bf48" },
+
+    { "type": "header", "content": "Product Cards (Style Three)" },
+    { "type": "paragraph", "content": "Colors for the 3 product cards + the round Prev/Next/Pause buttons. The card images, labels and links are set inside each Slide block below." },
+    { "type": "range", "id": "card3_radius", "label": "Slide Corner Roundness", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 24 },
+    { "type": "range", "id": "card3_inner_radius", "label": "Card Corner Roundness", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 16 },
+    { "type": "color", "id": "card3_bg", "label": "Card Background", "default": "#f3f4f6" },
+    { "type": "color", "id": "card3_label_color", "label": "Card Label Color", "default": "#1f2226" },
+    { "type": "color", "id": "card3_arrow_color", "label": "Card Arrow Color", "default": "#1f2226" },
+    { "type": "color", "id": "card3_navbtn_bg", "label": "Prev/Next/Pause Button Background", "default": "#ffffff" },
+    { "type": "color", "id": "card3_navbtn_color", "label": "Prev/Next/Pause Icon Color", "default": "#ff5a1f" },
+
+    { "type": "header", "content": "Gradient Overlay" },
+    { "type": "checkbox", "id": "gradient_enable", "label": "Enable Gradient Overlay", "default": false },
+    { "type": "select", "id": "gradient_position", "label": "Gradient Side", "options": [
+      { "label": "Left", "value": "left" },
+      { "label": "Right", "value": "right" },
+      { "label": "Top", "value": "top" },
+      { "label": "Bottom", "value": "bottom" }
+    ], "default": "left" },
+    { "type": "color", "id": "gradient_color_1", "label": "Gradient Color 1 (solid side)", "default": "#000000cc" },
+    { "type": "color", "id": "gradient_color_2", "label": "Gradient Color 2 (fades to)", "default": "#00000000" },
+
+    { "type": "header", "content": "Heading Top (all slides)" },
+    { "type": "color", "id": "header_top_color", "label": "Color", "default": "#1f2226" },
+    { "type": "font_picker", "id": "header_font_top", "label": "Font", "default": "poppins_n6" },
+    { "type": "range", "id": "header_font_top_size", "label": "Font Size (Desktop)", "min": 10, "max": 60, "step": 1, "unit": "px", "default": 30 },
+    { "type": "range", "id": "header_font_top_size_mobile", "label": "Font Size (Mobile)", "min": 8, "max": 40, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "header_font_top_line_height", "min": 20, "max": 150, "step": 5, "unit": "px", "label": "Line Height (Desktop)", "default": 30 },
+    { "type": "range", "id": "header_font_top_margin_bottom", "min": 0, "max": 50, "step": 1, "unit": "px", "label": "Margin Bottom (Desktop)", "default": 10 },
+    { "type": "range", "id": "header_font_top_margin_bottom_mobile", "min": 0, "max": 40, "step": 1, "unit": "px", "label": "Margin Bottom (Mobile)", "default": 6 },
+
+    { "type": "header", "content": "Title (all slides)" },
+    { "type": "color", "id": "title1_color", "label": "Color", "default": "#1f2226" },
+    { "type": "font_picker", "id": "header_font_slider", "label": "Font", "default": "poppins_n6" },
+    { "type": "range", "id": "title1_font_size", "label": "Font Size (Desktop)", "min": 20, "max": 120, "step": 1, "unit": "px", "default": 80 },
+    { "type": "range", "id": "title1_font_size_mobile", "label": "Font Size (Mobile)", "min": 16, "max": 70, "step": 1, "unit": "px", "default": 32 },
+    { "type": "range", "id": "heading_line_height", "min": 20, "max": 150, "step": 5, "unit": "px", "label": "Line Height (Desktop)", "default": 70 },
+    { "type": "range", "id": "title_margin_bottom", "min": 0, "max": 50, "step": 1, "unit": "px", "label": "Margin Bottom (Desktop)", "default": 10 },
+    { "type": "range", "id": "title_margin_bottom_mobile", "min": 0, "max": 40, "step": 1, "unit": "px", "label": "Margin Bottom (Mobile)", "default": 8 },
+    { "type": "checkbox", "id": "heading_bottom_border_line", "label": "Heading Bottom Border Enable", "default": false },
+    { "type": "color", "id": "heading_border_bottom_color", "label": "Bottom Border Color", "default": "#333" },
+    { "type": "range", "id": "border_top_spacing", "min": 0, "max": 50, "step": 1, "unit": "px", "label": "Border Spacing", "default": 20 },
+
+    { "type": "header", "content": "Description / Subtitle (all slides)" },
+    { "type": "color", "id": "description_color", "label": "Color", "default": "#333" },
+    { "type": "font_picker", "id": "paragraph_font_slider", "label": "Font", "default": "poppins_n4" },
+    { "type": "range", "id": "description_font_size", "label": "Font Size (Desktop)", "min": 10, "max": 30, "step": 1, "unit": "px", "default": 16 },
+    { "type": "range", "id": "description_font_size_mobile", "label": "Font Size (Mobile)", "min": 8, "max": 24, "step": 1, "unit": "px", "default": 13 },
+    { "type": "range", "id": "des_line_height", "min": 10, "max": 50, "step": 1, "unit": "px", "label": "Line Height (Desktop)", "default": 27 },
+    { "type": "range", "id": "des_margin_bottom", "min": 0, "max": 80, "step": 1, "unit": "px", "label": "Margin Bottom (Desktop)", "default": 20 },
+    { "type": "range", "id": "des_margin_bottom_mobile", "min": 0, "max": 60, "step": 1, "unit": "px", "label": "Margin Bottom (Mobile)", "default": 14 },
+
+    { "type": "header", "content": "Button (all slides)" },
+    { "type": "font_picker", "id": "button_font_slider", "label": "Font", "default": "poppins_n4" },
+    { "type": "range", "id": "button_margin_top", "min": 0, "max": 80, "step": 1, "unit": "px", "label": "Margin Top (Desktop)", "default": 35 },
+    { "type": "range", "id": "button_margin_top_mobile", "min": 0, "max": 60, "step": 1, "unit": "px", "label": "Margin Top (Mobile)", "default": 18 },
+    { "type": "range", "id": "btn_border_radius", "label": "Border Radius", "max": 50, "min": 0, "step": 5, "default": 0, "unit": "px" },
+    { "type": "range", "id": "button_padding_tb", "min": 0, "max": 50, "step": 1, "label": "Padding Top/Bottom (Desktop)", "unit": "px", "default": 15 },
+    { "type": "range", "id": "button_padding_tb_mobile", "min": 0, "max": 30, "step": 1, "label": "Padding Top/Bottom (Mobile)", "unit": "px", "default": 10 },
+    { "type": "range", "id": "button_padding_lr", "min": 0, "max": 100, "step": 1, "label": "Padding Left/Right (Desktop)", "unit": "px", "default": 30 },
+    { "type": "range", "id": "button_padding_lr_mobile", "min": 0, "max": 60, "step": 1, "label": "Padding Left/Right (Mobile)", "unit": "px", "default": 18 },
+    { "type": "range", "id": "btn_font_size", "label": "Font Size (Desktop)", "min": 10, "max": 30, "step": 1, "unit": "px", "default": 13 },
+    { "type": "range", "id": "btn_font_size_mobile", "label": "Font Size (Mobile)", "min": 8, "max": 20, "step": 1, "unit": "px", "default": 11 },
+    { "type": "color", "id": "btn_color", "label": "Text Color", "default": "#1f2226" },
+    { "type": "color", "id": "btn_bg_color", "label": "BG Color", "default": "#00000000" },
+    { "type": "color", "id": "btn_border_color", "label": "Border Color", "default": "#000" },
+    { "type": "color", "id": "btn_hover_color", "label": "Hover Text Color", "default": "#fff" },
+    { "type": "color", "id": "btn_hover_bg_color", "label": "Hover BG Color", "default": "#ff3535" },
+    { "type": "color", "id": "btn_hover_border_color", "label": "Hover Border Color", "default": "#ff3535" },
+
+    { "type": "header", "content": "Animated / Video Button (all slides)" },
+    { "type": "font_picker", "id": "animate_button_font", "label": "Font", "default": "poppins_n4" },
+    { "type": "range", "id": "animate_btn_font_size", "label": "Font Size (Desktop)", "min": 10, "max": 30, "step": 1, "unit": "px", "default": 20 },
+    { "type": "range", "id": "animate_btn_font_size_mobile", "label": "Font Size (Mobile)", "min": 8, "max": 20, "step": 1, "unit": "px", "default": 12 },
+    { "type": "range", "id": "animate_btn_size", "label": "Height/Width (Desktop)", "max": 100, "min": 20, "step": 1, "default": 65, "unit": "px" },
+    { "type": "range", "id": "animate_btn_size_mobile", "label": "Height/Width (Mobile)", "max": 70, "min": 20, "step": 1, "default": 38, "unit": "px" },
+    { "type": "color", "id": "animated_btn_color", "label": "Color", "default": "#222" }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        { "type": "image_picker", "id": "slider_bg_img", "label": "Slide Image", "info": "Recommended size: 1920x650" },
+        { "type": "image_picker", "id": "slider_responsive_img", "label": "Mobile Image (optional)" },
+        { "type": "color", "id": "sec_bg_color", "label": "Slide BG Color (Style Two & Three)", "default": "#effafa", "info": "For Style Three (Product Cards) set this to a dark color, e.g. #24272b." },
+
+        { "type": "select", "id": "content_position", "label": "Content Position", "options": [
+          { "label": "Left", "value": "left" },
+          { "label": "Center", "value": "center" },
+          { "label": "Right", "value": "right" }
+        ], "default": "left" },
+        { "type": "select", "id": "content_align", "label": "Text Alignment", "options": [
+          { "label": "Left", "value": "left" },
+          { "label": "Center", "value": "center" },
+          { "label": "Right", "value": "right" }
+        ], "default": "left" },
+
+        { "type": "select", "id": "slider_content_col", "label": "Content Column (Desktop)", "options": [
+          { "label": "1/12", "value": "1" }, { "label": "2/12", "value": "2" }, { "label": "3/12", "value": "3" },
+          { "label": "4/12", "value": "4" }, { "label": "5/12", "value": "5" }, { "label": "6/12", "value": "6" },
+          { "label": "7/12", "value": "7" }, { "label": "8/12", "value": "8" }, { "label": "9/12", "value": "9" },
+          { "label": "10/12", "value": "10" }, { "label": "11/12", "value": "11" }, { "label": "12/12", "value": "12" }
+        ], "default": "6" },
+        { "type": "select", "id": "slider_content_col_md", "label": "Content Column (Tablet)", "options": [
+          { "label": "1/12", "value": "1" }, { "label": "2/12", "value": "2" }, { "label": "3/12", "value": "3" },
+          { "label": "4/12", "value": "4" }, { "label": "5/12", "value": "5" }, { "label": "6/12", "value": "6" },
+          { "label": "7/12", "value": "7" }, { "label": "8/12", "value": "8" }, { "label": "9/12", "value": "9" },
+          { "label": "10/12", "value": "10" }, { "label": "11/12", "value": "11" }, { "label": "12/12", "value": "12" }
+        ], "default": "7" },
+
+        { "type": "checkbox", "id": "slider_img_enable", "label": "Show Extra Front Image", "default": false },
+        { "type": "image_picker", "id": "slider_img", "label": "Front Image" },
+        { "type": "select", "id": "slider_img_col", "label": "Image Column (Desktop)", "options": [
+          { "label": "1/12", "value": "1" }, { "label": "2/12", "value": "2" }, { "label": "3/12", "value": "3" },
+          { "label": "4/12", "value": "4" }, { "label": "5/12", "value": "5" }, { "label": "6/12", "value": "6" },
+          { "label": "7/12", "value": "7" }, { "label": "8/12", "value": "8" }, { "label": "9/12", "value": "9" },
+          { "label": "10/12", "value": "10" }, { "label": "11/12", "value": "11" }, { "label": "12/12", "value": "12" }
+        ], "default": "6" },
+        { "type": "select", "id": "slider_img_col_md", "label": "Image Column (Tablet)", "options": [
+          { "label": "1/12", "value": "1" }, { "label": "2/12", "value": "2" }, { "label": "3/12", "value": "3" },
+          { "label": "4/12", "value": "4" }, { "label": "5/12", "value": "5" }, { "label": "6/12", "value": "6" },
+          { "label": "7/12", "value": "7" }, { "label": "8/12", "value": "8" }, { "label": "9/12", "value": "9" },
+          { "label": "10/12", "value": "10" }, { "label": "11/12", "value": "11" }, { "label": "12/12", "value": "12" }
+        ], "default": "5" },
+
+        { "type": "header", "content": "Text" },
+        { "type": "text", "id": "title_top", "label": "Heading Top / Eyebrow", "default": "Upto 30% Off" },
+        { "type": "text", "id": "title1", "label": "Title", "default": "Wooden Craft" },
+        { "type": "textarea", "id": "description", "label": "Subtitle / Description", "default": "Lorem Ipsum is simply dummy text of the printing and typesetting industry." },
+
+        { "type": "header", "content": "Button" },
+        { "type": "text", "id": "btn", "label": "Button Text", "default": "SHOP NOW" },
+        { "type": "checkbox", "id": "show_icon", "label": "Show icon on button", "default": true },
+        { "type": "url", "id": "btn_url", "label": "Button URL", "default": "/collections/all" },
+
+        { "type": "header", "content": "Product Cards (Style Three only)" },
+        { "type": "paragraph", "content": "Fill in up to 3 cards. Any card left with no image AND no label is skipped. Each card links to its own URL." },
+
+        { "type": "image_picker", "id": "card1_img", "label": "Card 1 Image" },
+        { "type": "text", "id": "card1_label", "label": "Card 1 Label", "default": "Bosch (battery)" },
+        { "type": "url", "id": "card1_url", "label": "Card 1 Link" },
+
+        { "type": "image_picker", "id": "card2_img", "label": "Card 2 Image" },
+        { "type": "text", "id": "card2_label", "label": "Card 2 Label", "default": "NGK (spark plugs)" },
+        { "type": "url", "id": "card2_url", "label": "Card 2 Link" },
+
+        { "type": "image_picker", "id": "card3_img", "label": "Card 3 Image" },
+        { "type": "text", "id": "card3_label", "label": "Card 3 Label", "default": "Toyota (genuine parts)" },
+        { "type": "url", "id": "card3_url", "label": "Card 3 Link" },
+
+        { "type": "header", "content": "Video / Animated Button" },
+        { "type": "checkbox", "id": "show_animated_btn", "label": "Show Animated Button", "default": false },
+        { "type": "text", "id": "btn_animated", "label": "Label", "default": "View Video" },
+        { "type": "video_url", "id": "animaet_btn_url", "label": "Video URL", "accept": ["youtube"], "default": "https://www.youtube.com/watch?v=_9VUPq3SxOc" }
+      ]
+    },
+    {
+      "type": "section_padding",
+      "name": "Section Padding",
+      "limit": 1,
+      "settings": [
+        { "type": "header", "content": "Desktop" },
+        { "type": "range", "id": "section_padding_top", "min": 0, "max": 150, "step": 5, "label": "Padding Top", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_padding_bottom", "min": 0, "max": 150, "step": 5, "label": "Padding Bottom", "unit": "px", "default": 100 },
+        { "type": "range", "id": "section_padding_left", "min": 0, "max": 150, "step": 5, "label": "Padding Left", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_padding_right", "min": 0, "max": 150, "step": 5, "label": "Padding Right", "unit": "px", "default": 0 },
+        { "type": "header", "content": "Tablet" },
+        { "type": "range", "id": "section_padding_top_md", "min": 0, "max": 150, "step": 5, "label": "Padding Top", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_padding_bottom_md", "min": 0, "max": 150, "step": 5, "label": "Padding Bottom", "unit": "px", "default": 80 },
+        { "type": "range", "id": "section_padding_left_md", "min": 0, "max": 150, "step": 5, "label": "Padding Left", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_padding_right_md", "min": 0, "max": 150, "step": 5, "label": "Padding Right", "unit": "px", "default": 0 },
+        { "type": "header", "content": "Mobile" },
+        { "type": "range", "id": "section_padding_top_xs", "min": 0, "max": 150, "step": 5, "label": "Padding Top", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_padding_bottom_xs", "min": 0, "max": 150, "step": 5, "label": "Padding Bottom", "unit": "px", "default": 60 },
+        { "type": "range", "id": "section_padding_left_xs", "min": 0, "max": 100, "step": 5, "label": "Padding Left", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_padding_right_xs", "min": 0, "max": 100, "step": 5, "label": "Padding Right", "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "section_margin",
+      "name": "Section Margin",
+      "limit": 1,
+      "settings": [
+        { "type": "header", "content": "Desktop" },
+        { "type": "range", "id": "section_margin_top", "min": 0, "max": 150, "step": 5, "label": "Margin Top", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_margin_bottom", "min": 0, "max": 150, "step": 5, "label": "Margin Bottom", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_margin_left", "min": 0, "max": 150, "step": 5, "label": "Margin Left", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_margin_right", "min": 0, "max": 150, "step": 5, "label": "Margin Right", "unit": "px", "default": 0 },
+        { "type": "header", "content": "Tablet" },
+        { "type": "range", "id": "section_margin_top_md", "min": 0, "max": 150, "step": 5, "label": "Margin Top", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_margin_bottom_md", "min": 0, "max": 150, "step": 5, "label": "Margin Bottom", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_margin_left_md", "min": 0, "max": 150, "step": 5, "label": "Margin Left", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_margin_right_md", "min": 0, "max": 150, "step": 5, "label": "Margin Right", "unit": "px", "default": 0 },
+        { "type": "header", "content": "Mobile" },
+        { "type": "range", "id": "section_margin_top_xs", "min": 0, "max": 150, "step": 5, "label": "Margin Top", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_margin_bottom_xs", "min": 0, "max": 150, "step": 5, "label": "Margin Bottom", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_margin_left_xs", "min": 0, "max": 100, "step": 5, "label": "Margin Left", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_margin_right_xs", "min": 0, "max": 100, "step": 5, "label": "Margin Right", "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "section_background",
+      "name": "Section Background",
+      "limit": 1,
+      "settings": [
+        { "type": "image_picker", "id": "section_bg_image", "label": "BG Image" },
+        { "type": "color", "id": "section_bg_color", "label": "BG Color", "default": "#ffffff" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Slider", "category": "1. Slider", "blocks": [ { "type": "slide" }, { "type": "slide" } ] }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

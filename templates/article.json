@@ -1,0 +1,71 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "article-template",
+      "blocks": {
+        "205dea5b-f5ce-4fa4-ae2c-42e90f9dadef": {
+          "type": "search",
+          "settings": {
+            "widget_title": "Search"
+          }
+        },
+        "6aab1976-2599-4ffc-886d-30acfbbb1989": {
+          "type": "archive",
+          "settings": {
+            "archive_title": "Archive"
+          }
+        },
+        "4fd89779-045b-49e9-b664-34f34e93d3ab": {
+          "type": "recent_post",
+          "settings": {
+            "recent_post_title": "Recent Post",
+            "recent_post_limit_handle": 3
+          }
+        },
+        "2f7be3a3-2107-4c47-b900-90eb34d270b1": {
+          "type": "tag",
+          "settings": {
+            "blog_tags_title": "Tags",
+            "blog_tags_list_limit_handle": 10
+          }
+        },
+        "39f1f2c8-aae3-4ab1-ad1d-c0c7a6fe66e7": {
+          "type": "menu",
+          "settings": {
+            "menu_title": "Custom Menu",
+            "menu_handle": "main-menu"
+          }
+        }
+      },
+      "block_order": [
+        "205dea5b-f5ce-4fa4-ae2c-42e90f9dadef",
+        "6aab1976-2599-4ffc-886d-30acfbbb1989",
+        "4fd89779-045b-49e9-b664-34f34e93d3ab",
+        "2f7be3a3-2107-4c47-b900-90eb34d270b1",
+        "39f1f2c8-aae3-4ab1-ad1d-c0c7a6fe66e7"
+      ],
+      "settings": {
+        "blog_image_enable": true,
+        "blog_meta_enable": true,
+        "blog_content_enable": true,
+        "blog_share_enable": true,
+        "blog_next_prev_enable": true,
+        "sidebar_handle": "left_sidebar_handle",
+        "social_share_title": "Share:",
+        "comment_post_limit_handle": 5
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

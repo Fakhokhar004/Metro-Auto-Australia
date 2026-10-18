@@ -1,0 +1,990 @@
+{{ 'Custom_Deal_collection.css' | asset_url | stylesheet_tag }}
+
+{%- comment -%}
+  ============================================================
+  METRO AUTO — Deal Collection
+  Cards are the SAME ma-* cards as the Search page:
+  same shadow card, same 4:3 media, same title / price scale,
+  same .ma-wish heart (native wishlist, key 'shopify-wishlist').
+
+  NEW: card footer with a quantity stepper + Add to cart, so a
+  shopper can add straight from the row. Toggle both on/off.
+  Layout = Carousel (arrows) or Grid.
+  ============================================================
+{%- endcomment -%}
+
+{%- liquid
+  assign sid = section.id
+
+  # ---------- blocks ----------
+  assign banner_block = blank
+  assign prod_block = blank
+  for b in section.blocks
+    if b.type == 'banner'
+      assign banner_block = b
+    endif
+    if b.type == 'feature-product'
+      assign prod_block = b
+    endif
+  endfor
+
+  # ---------- layout ----------
+  assign is_carousel = false
+  if section.settings.layout == 'carousel'
+    assign is_carousel = true
+  endif
+
+  assign cols_d = section.settings.grid_columns | default: 4
+  assign cols_t = section.settings.grid_columns_tablet | default: 3
+  assign cols_m = section.settings.grid_columns_mobile | default: 2
+
+  # ---------- card scale follows the desktop column count (same table as Search) ----------
+  if cols_d >= 6
+    assign t_size = 14
+    assign p_size = 15
+    assign ty_size = 11
+    assign c_pad = 8
+    assign c_radius = 12
+  elsif cols_d == 5
+    assign t_size = 15
+    assign p_size = 17
+    assign ty_size = 12
+    assign c_pad = 10
+    assign c_radius = 14
+  elsif cols_d == 4
+    assign t_size = 17
+    assign p_size = 19
+    assign ty_size = 13
+    assign c_pad = 12
+    assign c_radius = 14
+  elsif cols_d == 2
+    assign t_size = 21
+    assign p_size = 23
+    assign ty_size = 15
+    assign c_pad = 16
+    assign c_radius = 18
+  elsif cols_d == 1
+    assign t_size = 22
+    assign p_size = 24
+    assign ty_size = 15
+    assign c_pad = 18
+    assign c_radius = 18
+  else
+    assign t_size = 19
+    assign p_size = 21
+    assign ty_size = 14
+    assign c_pad = 14
+    assign c_radius = 16
+  endif
+
+  # ---------- card scale follows the mobile column count ----------
+  if cols_m >= 3
+    assign t_size_m = 13
+    assign p_size_m = 14
+    assign ty_size_m = 11
+    assign c_pad_m = 6
+  elsif cols_m == 1
+    assign t_size_m = 18
+    assign p_size_m = 20
+    assign ty_size_m = 13
+    assign c_pad_m = 12
+  else
+    assign t_size_m = 15
+    assign p_size_m = 16
+    assign ty_size_m = 12
+    assign c_pad_m = 8
+  endif
+
+  # ---------- cart state, rendered server side (no flash) ----------
+  assign cart_ids = cart.items | map: 'variant_id' | join: ','
+  assign cart_ids_padded = ',' | append: cart_ids | append: ','
+-%}
+
+<div
+  class="product-area feature_deal_collection ma-deal"
+  id="section-{{ sid }}"
+  data-section="Feature_Collection"
+  data-section-id="{{ sid }}"
+>
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid{% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% else %}container default{% endif %}">
+    {% if section.settings.section_title != '' or section.settings.section_sub_title != '' %}
+      <div class="section-title {{ section.settings.title_align }} pb-30 {% if settings.section__animation__enable %}scroll-zoom{% endif %}">
+        {% if section.settings.section_title != '' %}
+          <h2>{{ section.settings.section_title }}</h2>
+        {% endif %}
+        {% if section.settings.section_sub_title != '' %}
+          <p>{{ section.settings.section_sub_title }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if section.settings.offer_date != '' %}
+      <div class="row {% if settings.section__animation__enable %}scroll-zoom{% endif %}">
+        <div class="col-lg-8 col-md-10 col-12 ml-auto mr-auto">
+          <div class="deal_count_area_wrap">
+            <div class="theme-product-countdown-wrap countdown-inner">
+              <div class="count-box">
+                <div class="theme-product-countdown" data-countdown="{{ section.settings.offer_date }}"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="ma-deal-layout row {% if settings.section__animation__enable %}scroll-zoom{% endif %}">
+      {%- if banner_block != blank -%}
+        {%- liquid
+          assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+          assign fetch_priority = 'auto'
+          if section.index == 1
+            assign fetch_priority = 'high'
+          endif
+        -%}
+        <div class="col-md-{{ banner_block.settings.banner_column_handle }} ma-deal-banner-col" {{ banner_block.shopify_attributes }}>
+          <div class="single-banner featured_banner border__radius">
+            <a
+              href="{{ banner_block.settings.featured_banner_url | default: '/collections/all' }}"
+              class="lazyload-wraper-position"
+              style="padding-top:{{ 1 | divided_by: banner_block.settings.featured_banner.aspect_ratio | times: 100 }}%;"
+            >
+              {%- if banner_block.settings.featured_banner -%}
+                {%- assign image_height = banner_block.settings.featured_banner.width
+                  | divided_by: banner_block.settings.featured_banner.aspect_ratio
+                -%}
+                {{
+                  banner_block.settings.featured_banner
+                  | image_url: width: 3840
+                  | image_tag:
+                    width: banner_block.settings.featured_banner.width,
+                    height: image_height,
+                    widths: widths,
+                    fetchpriority: fetch_priority,
+                    class: 'lazyload-main-image animated responsive-image__image',
+                    loading: 'lazy',
+                    alt: banner_block.settings.featured_banner.alt
+                }}
+              {%- else -%}
+                <img loading="lazy" class="animated" src="https://via.placeholder.com/270x450" alt="">
+              {%- endif -%}
+            </a>
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- if prod_block != blank -%}
+        {%- liquid
+          assign col_width = prod_block.settings.feature_column_handle
+          if banner_block != blank
+            assign col_width = 12 | minus: banner_block.settings.banner_column_handle
+          endif
+          assign deal_collection = collections[prod_block.settings.featured_product_handle]
+          assign product_limit = prod_block.settings.product_limit_handle
+        -%}
+
+        <div class="col-md-{{ col_width }} ma-deal-products-col" {{ prod_block.shopify_attributes }}>
+          <div
+            class="ma-slider{% if is_carousel %} ma-slider--on{% endif %}{% if section.settings.arrow_position == 'outside' %} ma-slider--outside{% endif %}"
+            data-ma-slider
+            data-step="{{ section.settings.carousel_step }}"
+            data-loop="{{ section.settings.carousel_loop }}"
+          >
+            {%- if is_carousel and section.settings.show_arrows -%}
+              <button type="button" class="ma-nav ma-nav--prev" data-ma-prev aria-label="Previous products">
+                <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+            {%- endif -%}
+
+            {%- if deal_collection == empty or deal_collection.products.size == 0 -%}
+              <div class="ma-results ma-results--grid">
+                {%- for i in (1..product_limit) -%}
+                  {% capture ph %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+                  <div class="ma-card-wrap">
+                    <div class="ma-card">
+                      <span class="ma-card__link">
+                        <div class="ma-card__media">{{ 'product-' | append: ph | placeholder_svg_tag: 'ma-card__img' }}</div>
+                        <div class="ma-card__body">
+                          <h3 class="ma-card__title">Product title</h3>
+                          <span class="ma-card__price">$99.99</span>
+                        </div>
+                      </span>
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- else -%}
+              <div class="ma-results ma-results--grid" data-results>
+                {%- for product in deal_collection.products limit: product_limit -%}
+                  {%- liquid
+                    assign v = product.selected_or_first_available_variant
+                    assign single_variant = false
+                    if product.variants.size == 1
+                      assign single_variant = true
+                    endif
+                    capture needle
+                      echo ',' | append: v.id | append: ','
+                    endcapture
+                    assign in_cart = false
+                    if cart_ids_padded contains needle
+                      assign in_cart = true
+                    endif
+                  -%}
+
+                  <div class="ma-card-wrap" data-wish-id="{{ product.id }}">
+                    {%- if section.settings.wishlist_card_enable and product.handle != blank -%}
+                      <a href="javascript:void(0)" role="button" class="ma-wish" button-wishlist data-product-handle="{{ product.handle }}" aria-label="Add to wishlist">
+                        <span class="ma-wish__icon add-wishlist"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21s-7.5-4.9-10-9.2C.5 8.6 2 5 5.5 5 8 5 9.5 6.8 12 9c2.5-2.2 4-4 6.5-4C22 5 23.5 8.6 22 11.8 19.5 16.1 12 21 12 21z"/></svg></span>
+                        <span class="ma-wish__icon loading-wishlist"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21s-7.5-4.9-10-9.2C.5 8.6 2 5 5.5 5 8 5 9.5 6.8 12 9c2.5-2.2 4-4 6.5-4C22 5 23.5 8.6 22 11.8 19.5 16.1 12 21 12 21z"/></svg></span>
+                        <span class="ma-wish__icon remove-wishlist"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21s-7.5-4.9-10-9.2C.5 8.6 2 5 5.5 5 8 5 9.5 6.8 12 9c2.5-2.2 4-4 6.5-4C22 5 23.5 8.6 22 11.8 19.5 16.1 12 21 12 21z"/></svg></span>
+                      </a>
+                    {%- endif -%}
+
+                    <div class="ma-card">
+                      <a href="{{ product.url }}" class="ma-card__link">
+                        <div class="ma-card__media">
+                          {%- if product.featured_media -%}
+                            {{ product.featured_media | image_url: width: 480 | image_tag: loading: 'lazy', class: 'ma-card__img', alt: product.featured_media.alt | default: product.title | escape }}
+                          {%- else -%}
+                            <div class="ma-card__placeholder"></div>
+                          {%- endif -%}
+                        </div>
+                        <div class="ma-card__body">
+                          {%- if section.settings.show_type and product.type != blank -%}
+                            <span class="ma-card__type">&mdash; {{ product.type }}</span>
+                          {%- endif -%}
+                          <h3 class="ma-card__title">{{ product.title }}</h3>
+                          <span class="ma-card__price">
+                            {{ product.price | money }}
+                            {%- if product.compare_at_price > product.price -%}
+                              <s class="ma-card__was">{{ product.compare_at_price | money }}</s>
+                            {%- endif -%}
+                          </span>
+                        </div>
+                      </a>
+
+                      {%- if section.settings.show_atc -%}
+                        <div class="ma-card__foot">
+                          {%- if product.available and single_variant and section.settings.show_qty -%}
+                            <div class="ma-qty">
+                              <button type="button" class="ma-qty__btn" data-qty="-1" aria-label="Decrease">&minus;</button>
+                              <input type="number" value="1" min="1" class="ma-qty__input" aria-label="Quantity">
+                              <button type="button" class="ma-qty__btn" data-qty="1" aria-label="Increase">+</button>
+                            </div>
+                          {%- endif -%}
+
+                          {%- if product.available == false -%}
+                            <button type="button" class="ma-card__add" disabled>{{ section.settings.soldout_text }}</button>
+                          {%- elsif single_variant -%}
+                            <button
+                              type="button"
+                              class="ma-card__add{% if in_cart %} is-added{% endif %}"
+                              data-add-to-cart
+                              data-variant-id="{{ v.id }}"
+                              data-default-text="{{ section.settings.atc_text | escape }}"
+                              data-added-text="{{ section.settings.atc_added_text | escape }}"
+                              {% if in_cart %}
+                                disabled
+                              {% endif %}
+                            >
+                              <span class="ma-add-text">
+                                {%- if in_cart -%}{{ section.settings.atc_added_text }}{%- else -%}{{ section.settings.atc_text }}{%- endif -%}
+                              </span>
+                            </button>
+                          {%- else -%}
+                            <a href="{{ product.url }}" class="ma-card__add ma-card__add--link">{{ section.settings.choose_text }}</a>
+                          {%- endif -%}
+                        </div>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+
+            {%- if is_carousel and section.settings.show_arrows -%}
+              <button type="button" class="ma-nav ma-nav--next" data-ma-next aria-label="Next products">
+                <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            {%- endif -%}
+            {%- if is_carousel and section.settings.show_dots -%}
+              <div class="ma-dots" data-ma-dots></div>
+            {%- endif -%}
+          </div>
+
+          {%- if prod_block.settings.button_title != '' -%}
+            <div class="show-more-btn text-center mt-10 toggle-btn ma-more">
+              <a class="loadMore" href="{{ prod_block.settings.button_url }}">{{ prod_block.settings.button_title }}</a>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{%- render 'section-style' -%}
+
+<style>
+  /* METRO AUTO — deal cards, same visual language as the Search page */
+  #section-{{ sid }}{
+    --ma-red:{{ section.settings.accent_color | default: '#B91C1C' }};
+    --ma-red-dark:{{ section.settings.accent_hover_color | default: '#991b1b' }};
+    --ma-ink:#111827;--ma-muted:#6b7280;
+    --ma-line:#e5e7eb;--ma-placeholder:#ffffff;
+    --ma-card-shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.06);
+
+    --ma-cols-d:{{ cols_d }};
+    --ma-cols-t:{{ cols_t }};
+    --ma-cols-m:{{ cols_m }};
+    --ma-gap-d:{{ section.settings.grid_gap | default: 22 }}px;
+    --ma-gap-m:{{ section.settings.grid_gap_mobile | default: 14 }}px;
+    --ma-card-pad:{{ c_pad }}px;
+    --ma-card-radius:{{ c_radius }}px;
+    --ma-card-title:{{ t_size }}px;
+    --ma-card-price:{{ p_size }}px;
+    --ma-card-type:{{ ty_size }}px;
+    --ma-card-ratio:{{ section.settings.card_image_ratio | default: '4 / 3' }};
+    --ma-card-fit:{{ section.settings.card_image_fit | default: 'cover' }};
+    --ma-arrow:{{ section.settings.arrow_size }}px;
+  }
+
+  /* ---------- Grid ---------- */
+  #section-{{ sid }} .ma-results--grid{display:grid;grid-template-columns:repeat(var(--ma-cols-d),minmax(0,1fr));gap:var(--ma-gap-d);}
+  #section-{{ sid }} .ma-card-wrap{position:relative;display:flex;}
+  #section-{{ sid }} .ma-card{display:flex;flex-direction:column;width:100%;background:#fff;border-radius:var(--ma-card-radius);border:none;box-shadow:var(--ma-card-shadow);padding:var(--ma-card-pad);transition:transform .15s,box-shadow .15s;height:100%;}
+  #section-{{ sid }} .ma-card:hover{transform:translateY(-3px);box-shadow:0 6px 14px rgba(0,0,0,.08),0 16px 40px rgba(0,0,0,.08);}
+  #section-{{ sid }} .ma-card__link{display:flex;flex-direction:column;flex:1 1 auto;text-decoration:none;color:inherit;}
+  #section-{{ sid }} .ma-card__media{border-radius:10px;overflow:hidden;background:var(--ma-placeholder);aspect-ratio:var(--ma-card-ratio);}
+  #section-{{ sid }} .ma-card__img{width:100%;height:100%;object-fit:var(--ma-card-fit);display:block;}
+  #section-{{ sid }} .ma-card__placeholder{width:100%;height:100%;background:var(--ma-placeholder);border-radius:10px;}
+  #section-{{ sid }} .ma-card__body{padding:calc(var(--ma-card-pad) * .8) 4px 6px;}
+  #section-{{ sid }} .ma-card__type{display:block;font-size:var(--ma-card-type);color:var(--ma-muted);margin-bottom:6px;}
+  #section-{{ sid }} .ma-card__title{font-size:var(--ma-card-title);font-weight:800;color:var(--ma-ink);line-height:1.25;margin:0 0 10px;display:-webkit-box;-webkit-line-clamp:{{ section.settings.card_title_lines | default: 2 }};-webkit-box-orient:vertical;overflow:hidden;min-height:2.5em;}
+  #section-{{ sid }} .ma-card__price{font-size:var(--ma-card-price);font-weight:800;color:var(--ma-red);}
+  #section-{{ sid }} .ma-card__was{font-size:.78em;font-weight:600;color:var(--ma-muted);margin-left:6px;}
+
+  /* ---------- Card footer: quantity + add to cart ---------- */
+  #section-{{ sid }} .ma-card__foot{display:flex;align-items:center;gap:{{ section.settings.foot_gap }}px;margin-top:auto;padding:{{ section.settings.foot_gap }}px 4px 2px;}
+  #section-{{ sid }} .ma-qty{display:flex;align-items:center;border:1px solid var(--ma-line);border-radius:10px;overflow:hidden;flex:0 0 auto;}
+  #section-{{ sid }} .ma-qty__btn{width:{{ section.settings.qty_btn_width }}px;height:{{ section.settings.control_height }}px;border:none;background:#f9fafb;font-size:16px;line-height:1;cursor:pointer;color:var(--ma-ink);padding:0;}
+  #section-{{ sid }} .ma-qty__btn:hover{background:#f3f4f6;}
+  #section-{{ sid }} .ma-qty__input{width:{{ section.settings.qty_input_width }}px;height:{{ section.settings.control_height }}px;border:none;text-align:center;font-size:14px;-moz-appearance:textfield;background:#fff;color:var(--ma-ink);}
+  #section-{{ sid }} .ma-qty__input::-webkit-outer-spin-button,
+  #section-{{ sid }} .ma-qty__input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  #section-{{ sid }} .ma-card__add{flex:1 1 auto;min-width:0;display:inline-flex;align-items:center;justify-content:center;height:{{ section.settings.control_height }}px;background:var(--ma-red);color:#fff;font-weight:700;font-size:{{ section.settings.atc_font_size }}px;border:none;border-radius:10px;padding:0 10px;cursor:pointer;text-align:center;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:.15s;}
+  #section-{{ sid }} .ma-card__add:hover{background:var(--ma-red-dark);color:#fff;}
+  #section-{{ sid }} .ma-card__add:disabled{background:#d1d5db;cursor:not-allowed;}
+  #section-{{ sid }} .ma-card__add.is-added,
+  #section-{{ sid }} .ma-card__add.is-added:hover{background:{{ section.settings.atc_added_bg | default: '#9e9e9e' }} !important;color:{{ section.settings.atc_added_color | default: '#ffffff' }} !important;cursor:not-allowed;opacity:1;}
+  #section-{{ sid }} .ma-card__add.is-loading{opacity:.7;cursor:progress;}
+
+  /* ---------- Wishlist heart (identical to the Search page) ---------- */
+  #section-{{ sid }} .ma-wish{position:absolute;top:{{ section.settings.wishlist_offset }}px;right:{{ section.settings.wishlist_offset }}px;z-index:3;
+    width:{{ section.settings.wishlist_btn_size | default: 38 }}px;height:{{ section.settings.wishlist_btn_size | default: 38 }}px;
+    display:flex;align-items:center;justify-content:center;padding:0;
+    background:{{ section.settings.wishlist_btn_bg | default: '#ffffff' }};
+    border:1px solid rgba(0,0,0,.08);
+    border-radius:{{ section.settings.wishlist_btn_radius | default: 50 }}px;
+    box-shadow:0 1px 5px rgba(0,0,0,.14);cursor:pointer;transition:transform .18s,box-shadow .18s;}
+  #section-{{ sid }} .ma-wish:hover{transform:scale(1.08);}
+  #section-{{ sid }} .ma-wish__icon{display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
+  #section-{{ sid }} .ma-wish svg{width:56%;height:56%;display:block;pointer-events:none;}
+  #section-{{ sid }} .ma-wish svg path{fill:none;stroke:{{ section.settings.wishlist_icon_color | default: '#9ca3af' }};stroke-width:2;transition:.2s;}
+  #section-{{ sid }} .ma-wish .loading-wishlist,
+  #section-{{ sid }} .ma-wish .remove-wishlist{display:none;}
+  #section-{{ sid }} .ma-wish.active .add-wishlist,
+  #section-{{ sid }} .ma-wish.is-wishlisted .add-wishlist{display:none;}
+  #section-{{ sid }} .ma-wish.active .remove-wishlist,
+  #section-{{ sid }} .ma-wish.is-wishlisted .remove-wishlist{display:flex;}
+  #section-{{ sid }} .ma-wish.active svg path,
+  #section-{{ sid }} .ma-wish.is-wishlisted svg path{fill:{{ section.settings.wishlist_active_color | default: '#e60023' }};stroke:{{ section.settings.wishlist_active_color | default: '#e60023' }};}
+  #section-{{ sid }} .ma-wish.active,
+  #section-{{ sid }} .ma-wish.is-wishlisted{box-shadow:0 0 0 2px {{ section.settings.wishlist_active_color | default: '#e60023' }}22,0 2px 8px rgba(0,0,0,.16);animation:maWishPulse .45s ease;}
+  @keyframes maWishPulse{0%{transform:scale(1);}40%{transform:scale(1.25);}100%{transform:scale(1);}}
+
+  /* ---------- Carousel ---------- */
+  #section-{{ sid }} .ma-slider{position:relative;}
+  {% if section.settings.arrow_position == 'outside' %}
+    #section-{{ sid }} .ma-slider--outside{padding:0 calc(var(--ma-arrow) + {{ section.settings.arrow_offset }}px);}
+  {% endif %}
+  #section-{{ sid }} .ma-slider--on .ma-results--grid{
+    grid-template-columns:none;
+    grid-auto-flow:column;
+    grid-template-rows:repeat({{ section.settings.carousel_rows }},auto);
+    grid-auto-columns:calc((100% - (var(--ma-cols-d) - 1) * var(--ma-gap-d)) / var(--ma-cols-d));
+    overflow-x:auto;overscroll-behavior-x:contain;
+    scroll-snap-type:x mandatory;scroll-behavior:smooth;
+    scrollbar-width:none;-ms-overflow-style:none;padding:4px 2px 6px;
+  }
+  #section-{{ sid }} .ma-slider--on .ma-results--grid::-webkit-scrollbar{display:none;}
+  #section-{{ sid }} .ma-slider--on .ma-card-wrap{scroll-snap-align:start;}
+  #section-{{ sid }} .ma-nav{position:absolute;top:{{ section.settings.arrow_vertical }}%;transform:translateY(-50%);z-index:6;
+    width:var(--ma-arrow);height:var(--ma-arrow);padding:calc(var(--ma-arrow) * .24);
+    display:inline-flex;align-items:center;justify-content:center;border:0;cursor:pointer;
+    background:{{ section.settings.arrow_bg }};color:{{ section.settings.arrow_color }};
+    border-radius:{{ section.settings.arrow_radius }}px;
+    {% if section.settings.arrow_shadow %}box-shadow:0 2px 10px rgba(0,0,0,.15);{% endif %}
+    transition:background .2s,color .2s,opacity .2s;}
+  #section-{{ sid }} .ma-nav:hover{background:{{ section.settings.arrow_hover_bg }};color:{{ section.settings.arrow_hover_color }};}
+  #section-{{ sid }} .ma-nav[hidden]{display:none;}
+  #section-{{ sid }} .ma-nav.is-disabled{opacity:.35;cursor:default;}
+  {% if section.settings.arrow_position == 'outside' %}
+    #section-{{ sid }} .ma-nav--prev{left:0;}
+    #section-{{ sid }} .ma-nav--next{right:0;}
+  {% else %}
+    #section-{{ sid }} .ma-nav--prev{left:{{ section.settings.arrow_offset }}px;}
+    #section-{{ sid }} .ma-nav--next{right:{{ section.settings.arrow_offset }}px;}
+  {% endif %}
+  #section-{{ sid }} .ma-dots{display:flex;justify-content:center;gap:{{ section.settings.dot_gap }}px;margin-top:{{ section.settings.dot_margin_top }}px;}
+  #section-{{ sid }} .ma-dots button{border:0;padding:0;cursor:pointer;width:{{ section.settings.dot_size }}px;height:{{ section.settings.dot_size }}px;border-radius:50%;background:{{ section.settings.dot_color }};transition:background .2s,transform .2s;}
+  #section-{{ sid }} .ma-dots button.is-active{background:{{ section.settings.dot_active_color }};transform:scale(1.25);}
+
+  /* ---------- Tablet ---------- */
+  @media (max-width:1024px){
+    #section-{{ sid }} .ma-results--grid{grid-template-columns:repeat(var(--ma-cols-t),minmax(0,1fr));}
+    #section-{{ sid }} .ma-slider--on .ma-results--grid{
+      grid-template-columns:none;
+      grid-auto-columns:calc((100% - (var(--ma-cols-t) - 1) * var(--ma-gap-d)) / var(--ma-cols-t));
+    }
+  }
+
+  /* ---------- Phone ---------- */
+  @media (max-width:767px){
+    #section-{{ sid }}{
+      --ma-card-pad:{{ c_pad_m }}px;
+      --ma-card-title:{{ t_size_m }}px;
+      --ma-card-price:{{ p_size_m }}px;
+      --ma-card-type:{{ ty_size_m }}px;
+      --ma-arrow:{{ section.settings.arrow_size_mobile }}px;
+    }
+    #section-{{ sid }} .ma-results--grid{grid-template-columns:repeat(var(--ma-cols-m),minmax(0,1fr));gap:var(--ma-gap-m);}
+    #section-{{ sid }} .ma-slider--on .ma-results--grid{
+      grid-template-columns:none;
+      grid-auto-columns:calc((100% - (var(--ma-cols-m) - 1) * var(--ma-gap-m)) / var(--ma-cols-m));
+    }
+    #section-{{ sid }} .ma-card{border-radius:calc(var(--ma-card-radius) - 2px);}
+    #section-{{ sid }} .ma-card__body{padding:calc(var(--ma-card-pad) * .9) 2px 4px;}
+    #section-{{ sid }} .ma-card__title{margin-bottom:6px;min-height:2.4em;}
+    #section-{{ sid }} .ma-card__foot{gap:6px;}
+    #section-{{ sid }} .ma-card__add{font-size:{{ section.settings.atc_font_size_mobile }}px;height:{{ section.settings.control_height_mobile }}px;padding:0 6px;}
+    #section-{{ sid }} .ma-qty__btn{width:{{ section.settings.qty_btn_width | times: 0.8 | round }}px;height:{{ section.settings.control_height_mobile }}px;}
+    #section-{{ sid }} .ma-qty__input{width:{{ section.settings.qty_input_width | times: 0.72 | round }}px;height:{{ section.settings.control_height_mobile }}px;font-size:13px;}
+    {% unless section.settings.show_qty_mobile %}
+      #section-{{ sid }} .ma-card__foot .ma-qty{display:none;}
+    {% endunless %}
+    #section-{{ sid }} .ma-wish{width:{{ section.settings.wishlist_btn_size | times: 0.85 | round }}px;height:{{ section.settings.wishlist_btn_size | times: 0.85 | round }}px;top:8px;right:8px;}
+    {% unless section.settings.arrows_mobile %}
+      #section-{{ sid }} .ma-nav{display:none !important;}
+      #section-{{ sid }} .ma-slider--outside{padding:0;}
+    {% endunless %}
+    {% if section.settings.stack_banner_mobile %}
+      #section-{{ sid }} .ma-deal-banner-col{margin-bottom:20px;}
+    {% endif %}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    #section-{{ sid }} .ma-card,
+    #section-{{ sid }} .ma-wish{transition:none !important;animation:none !important;}
+    #section-{{ sid }} .ma-slider--on .ma-results--grid{scroll-behavior:auto;}
+  }
+</style>
+
+{% if section.settings.section_title_custom_color %}
+  <style>
+    {%- assign section_title_font = section.settings.section_title_font -%}
+    {%- assign section_sub_title_font = section.settings.section_sub_title_font -%}
+    {{ section_title_font | font_face }}
+    {{ section_sub_title_font | font_face }}
+
+    #section-{{ sid }} .section-title h2{
+      font-family: {{ section_title_font.family }}, {{ section_title_font.fallback_families }};
+      font-style: {{ section_title_font.style }};
+      font-weight: {{ section_title_font.weight }};
+      color: {{ section.settings.section_title_color }};
+      font-size:{{ section.settings.section_title_font_size }}px;
+      line-height: {{ section.settings.section_title_line_height }}px;
+      margin-bottom: {{ section.settings.section_title_margin_bottom }}px;
+    }
+    #section-{{ sid }} .section-title p{
+      font-family: {{ section_sub_title_font.family }}, {{ section_sub_title_font.fallback_families }};
+      font-style: {{ section_sub_title_font.style }};
+      font-weight: {{ section_sub_title_font.weight }};
+      color: {{ section.settings.section_subtitle_color }};
+      font-size:{{ section.settings.section_des_font_size }}px;
+      line-height: {{ section.settings.section_sub_title_line_height }}px;
+      margin-bottom: {{ section.settings.section_sub_title_margin_bottom }}px;
+    }
+    @media (min-width: 768px) and (max-width: 1200px) {
+      #section-{{ sid }} .section-title h2{
+        font-size:{{ section.settings.section_title_font_size_md }}px;
+        line-height: {{ section.settings.section_title_line_height_md }}px;
+      }
+      #section-{{ sid }} .section-title p{
+        font-size:{{ section.settings.section_des_font_size_md }}px;
+        line-height: {{ section.settings.section_sub_title_line_height_md }}px;
+      }
+    }
+    @media (min-width: 300px) and (max-width: 767px) {
+      #section-{{ sid }} .section-title h2{
+        font-size:{{ section.settings.section_title_font_size_sm }}px;
+        line-height: {{ section.settings.section_title_line_height_sm }}px;
+      }
+      #section-{{ sid }} .section-title p{
+        font-size:{{ section.settings.section_des_font_size_sm }}px;
+        line-height: {{ section.settings.section_sub_title_line_height_sm }}px;
+      }
+    }
+  </style>
+{% endif %}
+
+<script>
+(function () {
+  var root = document.getElementById('section-{{ sid }}');
+  if (!root) return;
+
+  /* ---------- Quantity steppers ---------- */
+  root.querySelectorAll('[data-qty]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var input = btn.parentNode.querySelector('.ma-qty__input');
+      if (!input) return;
+      var next = (parseInt(input.value, 10) || 1) + parseInt(btn.getAttribute('data-qty'), 10);
+      input.value = next < 1 ? 1 : next;
+    });
+  });
+  root.querySelectorAll('.ma-qty__input').forEach(function (input) {
+    input.addEventListener('change', function () {
+      var v = parseInt(input.value, 10);
+      if (!v || v < 1) input.value = 1;
+    });
+  });
+
+  /* ---------- Add to cart: AJAX + grey "added" state ---------- */
+  function qtyFor(btn) {
+    var foot = btn.closest('.ma-card__foot');
+    var input = foot ? foot.querySelector('.ma-qty__input') : null;
+    var v = input ? parseInt(input.value, 10) : 1;
+    return (v && v > 0) ? v : 1;
+  }
+  function labelEl(btn) { return btn.querySelector('.ma-add-text') || btn; }
+  function markAdded(btn, line_item) {
+    labelEl(btn).textContent = btn.getAttribute('data-added-text') || 'Added to cart';
+    btn.classList.remove('is-loading');
+    btn.classList.add('is-added');
+    btn.disabled = true;
+    if (window.Shopify && typeof window.Shopify.onItemAdded === 'function' && line_item) {
+      try { window.Shopify.onItemAdded(line_item); } catch (err) {}
+    }
+  }
+  function clearAdded(btn) {
+    labelEl(btn).textContent = btn.getAttribute('data-default-text') || 'Add to cart';
+    btn.classList.remove('is-added', 'is-loading');
+    btn.disabled = false;
+  }
+
+  root.querySelectorAll('[data-add-to-cart]').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (btn.disabled || btn.classList.contains('is-added')) return;
+      var id = btn.getAttribute('data-variant-id');
+      if (!id) return;
+      var qty = qtyFor(btn);
+      btn.classList.add('is-loading');
+      if (window.Shopify && typeof window.Shopify.addItem === 'function') {
+        window.Shopify.addItem(id, qty, function (li) { markAdded(btn, li); });
+      } else {
+        fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: id, quantity: qty }), credentials: 'same-origin' })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (li) { btn.classList.remove('is-loading'); if (li) markAdded(btn, li); })
+          .catch(function () { btn.classList.remove('is-loading'); });
+      }
+    });
+  });
+
+  /* keeps the buttons honest: re-reads the real cart on load and on return */
+  function syncFromCart() {
+    fetch('/cart.js', { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (c) {
+        if (!c || !c.items) return;
+        var ids = {};
+        c.items.forEach(function (i) { ids[String(i.variant_id)] = true; });
+        root.querySelectorAll('[data-add-to-cart]').forEach(function (b) {
+          if (ids[String(b.getAttribute('data-variant-id'))]) { markAdded(b); } else { clearAdded(b); }
+        });
+      })
+      .catch(function () {});
+  }
+
+  /* ---------- Wishlist: native theme wishlist (key 'shopify-wishlist', handles) ---------- */
+  var WKEY = 'shopify-wishlist';
+  function wRead() {
+    var raw = '';
+    try { raw = localStorage.getItem(WKEY) || ''; } catch (e) {}
+    return raw.split(',').filter(function (h) { return h && h.trim() !== ''; });
+  }
+  function wWrite(list) { try { localStorage.setItem(WKEY, list.join(',')); } catch (e) {} }
+  function wSync() {
+    var list = wRead();
+    root.querySelectorAll('[button-wishlist]').forEach(function (btn) {
+      btn.classList.toggle('active', list.indexOf(btn.getAttribute('data-product-handle')) > -1);
+    });
+  }
+  root.querySelectorAll('[button-wishlist]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (window.ThemeWishlist || typeof window.updateWishlist === 'function') {
+        setTimeout(wSync, 60);   // let the native script write, then re-sync every heart
+        return;
+      }
+      var h = btn.getAttribute('data-product-handle');
+      if (!h) return;
+      var list = wRead();
+      var i = list.indexOf(h);
+      if (i > -1) { list.splice(i, 1); } else { list.push(h); }
+      wWrite(list);
+      wSync();
+    });
+  });
+  window.addEventListener('storage', function (e) { if (e.key === WKEY) wSync(); });
+  window.addEventListener('pageshow', function (e) { if (e.persisted) { wSync(); syncFromCart(); } });
+
+  /* ---------- Carousel ---------- */
+  (function initSlider() {
+    var slider = root.querySelector('[data-ma-slider]');
+    if (!slider || !slider.classList.contains('ma-slider--on')) return;
+    var track = slider.querySelector('.ma-results--grid');
+    if (!track) return;
+
+    var prev = slider.querySelector('[data-ma-prev]');
+    var next = slider.querySelector('[data-ma-next]');
+    var dots = slider.querySelector('[data-ma-dots]');
+    var loop = slider.getAttribute('data-loop') === 'true';
+    var byPage = slider.getAttribute('data-step') === 'page';
+
+    function stepSize() {
+      if (byPage) return track.clientWidth;
+      var card = track.querySelector('.ma-card-wrap');
+      if (!card) return track.clientWidth;
+      var cs = getComputedStyle(track);
+      var gap = parseFloat(cs.columnGap || cs.gap || '0') || 0;
+      return card.getBoundingClientRect().width + gap;
+    }
+    function maxScroll() { return track.scrollWidth - track.clientWidth; }
+
+    function go(dir) {
+      var max = maxScroll();
+      var target = track.scrollLeft + dir * stepSize();
+      if (loop) {
+        if (dir > 0 && track.scrollLeft >= max - 2) target = 0;
+        if (dir < 0 && track.scrollLeft <= 2) target = max;
+      }
+      track.scrollTo({ left: Math.max(0, Math.min(target, max)), behavior: 'smooth' });
+    }
+    function buildDots() {
+      if (!dots) return;
+      var pages = Math.max(1, Math.ceil(track.scrollWidth / Math.max(1, track.clientWidth)));
+      if (dots.childElementCount === pages) return;
+      dots.innerHTML = '';
+      for (var i = 0; i < pages; i++) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('aria-label', 'Go to page ' + (i + 1));
+        b.dataset.page = i;
+        dots.appendChild(b);
+      }
+    }
+    function update() {
+      var can = maxScroll() > 2;
+      if (prev) prev.hidden = !can;
+      if (next) next.hidden = !can;
+      if (dots) dots.hidden = !can;
+      if (!can) return;
+      var max = maxScroll();
+      if (!loop) {
+        if (prev) prev.classList.toggle('is-disabled', track.scrollLeft <= 2);
+        if (next) next.classList.toggle('is-disabled', track.scrollLeft >= max - 2);
+      }
+      buildDots();
+      if (dots && dots.children.length) {
+        var active = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+        Array.prototype.forEach.call(dots.children, function (d, i) { d.classList.toggle('is-active', i === active); });
+      }
+    }
+
+    if (prev) prev.addEventListener('click', function () { go(-1); });
+    if (next) next.addEventListener('click', function () { go(1); });
+    if (dots) dots.addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-page]');
+      if (b) track.scrollTo({ left: b.dataset.page * track.clientWidth, behavior: 'smooth' });
+    });
+
+    var ticking = false;
+    track.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () { update(); ticking = false; });
+    });
+    if (window.ResizeObserver) { new ResizeObserver(update).observe(track); }
+    else { window.addEventListener('resize', update); }
+
+    update();
+    setTimeout(update, 300);
+  })();
+
+  wSync();
+  syncFromCart();
+
+  if (window.Shopify && Shopify.designMode) {
+    document.addEventListener('shopify:section:load', function (e) {
+      if (e.detail && e.detail.sectionId === '{{ sid }}') { wSync(); syncFromCart(); }
+    });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Deal Collection",
+  "settings": [
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section Width",
+      "options": [
+        { "label": "Full Width", "value": "full_width" },
+        { "label": "Box Width", "value": "box_width" },
+        { "label": "Default Width", "value": "default" }
+      ],
+      "default": "default"
+    },
+    { "type": "header", "content": "Section Title" },
+    { "type": "checkbox", "id": "section_title_custom_color", "label": "Section Title Custom Style Enable", "default": false },
+    { "type": "text", "id": "section_title", "label": "Title", "default": "Deal of the day" },
+    { "type": "color", "id": "section_title_color", "label": "Title Color", "default": "#1f2226" },
+    { "type": "font_picker", "id": "section_title_font", "label": "Font Family: Section Title Font", "default": "poppins_n6" },
+    { "type": "text", "id": "section_title_font_size", "label": "Font Size", "default": "30" },
+    { "type": "range", "id": "section_title_line_height", "min": 20, "max": 150, "step": 5, "unit": "px", "label": "Section Title Line Height", "default": 40 },
+    { "type": "text", "id": "section_title_font_size_md", "label": "Font Size (MD)", "default": "24" },
+    { "type": "range", "id": "section_title_line_height_md", "min": 20, "max": 150, "step": 5, "unit": "px", "label": "Section Title Line Height (MD)", "default": 35 },
+    { "type": "text", "id": "section_title_font_size_sm", "label": "Font Size (SM)", "default": "20" },
+    { "type": "range", "id": "section_title_line_height_sm", "min": 20, "max": 150, "step": 5, "unit": "px", "label": "Section Title Line Height (SM)", "default": 30 },
+    { "type": "range", "id": "section_title_margin_bottom", "min": 0, "max": 50, "step": 1, "unit": "px", "label": "Section Title margin Bottom", "default": 10 },
+    { "type": "textarea", "id": "section_sub_title", "label": "Subtitle", "default": "Grab these before the timer runs out." },
+    { "type": "color", "id": "section_subtitle_color", "label": "Subtitle Color", "default": "#5a5a5a" },
+    { "type": "font_picker", "id": "section_sub_title_font", "label": "Font Family: Section Sub Title Font", "default": "poppins_n6" },
+    { "type": "text", "id": "section_des_font_size", "label": "Subtitle Font Size", "default": "14" },
+    { "type": "range", "id": "section_sub_title_line_height", "min": 20, "max": 100, "step": 1, "unit": "px", "label": "Subtitle Line Height", "default": 24 },
+    { "type": "text", "id": "section_des_font_size_md", "label": "Subtitle Font Size (MD)", "default": "14" },
+    { "type": "range", "id": "section_sub_title_line_height_md", "min": 20, "max": 100, "step": 1, "unit": "px", "label": "Subtitle Line Height (MD)", "default": 24 },
+    { "type": "text", "id": "section_des_font_size_sm", "label": "Subtitle Font Size (SM)", "default": "14" },
+    { "type": "range", "id": "section_sub_title_line_height_sm", "min": 20, "max": 100, "step": 1, "unit": "px", "label": "Subtitle Line Height (SM)", "default": 24 },
+    { "type": "range", "id": "section_sub_title_margin_bottom", "min": 0, "max": 50, "step": 1, "unit": "px", "label": "Subtitle margin Bottom", "default": 10 },
+    {
+      "type": "select",
+      "id": "title_align",
+      "label": "Title Align",
+      "options": [
+        { "label": "Text Left", "value": "text-left" },
+        { "label": "Text Center", "value": "text-center" },
+        { "label": "Text Right", "value": "text-right" }
+      ],
+      "default": "text-center"
+    },
+    { "type": "text", "id": "offer_date", "label": "Offer Duration Date", "default": "2026/12/31", "info": "Example: Year/Month/Day. Leave blank to hide the countdown." },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "How products are shown",
+      "options": [
+        { "label": "Carousel (arrows to see more)", "value": "carousel" },
+        { "label": "Grid (all products at once)", "value": "grid" }
+      ],
+      "default": "carousel"
+    },
+    { "type": "range", "id": "carousel_rows", "min": 1, "max": 3, "step": 1, "label": "Rows in the carousel", "default": 1 },
+    {
+      "type": "select",
+      "id": "carousel_step",
+      "label": "Arrow moves by",
+      "options": [
+        { "label": "One product", "value": "card" },
+        { "label": "A full row", "value": "page" }
+      ],
+      "default": "card"
+    },
+    { "type": "checkbox", "id": "carousel_loop", "label": "Wrap around at the ends", "default": true },
+    { "type": "checkbox", "id": "stack_banner_mobile", "label": "Space below banner on mobile", "default": true },
+
+    { "type": "header", "content": "Product grid" },
+    { "type": "range", "id": "grid_columns", "min": 1, "max": 6, "step": 1, "label": "Cards per row — desktop", "default": 4, "info": "Card padding, title and price sizes scale automatically with this number, exactly like the Search page." },
+    { "type": "range", "id": "grid_columns_tablet", "min": 1, "max": 4, "step": 1, "label": "Cards per row — tablet", "default": 3 },
+    { "type": "range", "id": "grid_columns_mobile", "min": 1, "max": 3, "step": 1, "label": "Cards per row — mobile", "default": 2 },
+    { "type": "range", "id": "grid_gap", "min": 4, "max": 48, "step": 2, "unit": "px", "label": "Gap between cards — desktop", "default": 22 },
+    { "type": "range", "id": "grid_gap_mobile", "min": 4, "max": 32, "step": 2, "unit": "px", "label": "Gap between cards — mobile", "default": 14 },
+    { "type": "range", "id": "card_title_lines", "min": 1, "max": 4, "step": 1, "label": "Title lines before trimming", "default": 2 },
+    { "type": "checkbox", "id": "show_type", "label": "Show product type above the title", "default": true },
+    {
+      "type": "select",
+      "id": "card_image_ratio",
+      "label": "Card image shape",
+      "default": "4 / 3",
+      "options": [
+        { "value": "1 / 1", "label": "Square" },
+        { "value": "4 / 3", "label": "Landscape 4:3" },
+        { "value": "3 / 2", "label": "Landscape 3:2" },
+        { "value": "16 / 9", "label": "Wide 16:9" },
+        { "value": "3 / 4", "label": "Portrait 3:4" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "card_image_fit",
+      "label": "Card image fit",
+      "default": "cover",
+      "options": [
+        { "value": "cover", "label": "Fill (crop)" },
+        { "value": "contain", "label": "Fit whole image" }
+      ]
+    },
+
+    { "type": "header", "content": "Accent colour" },
+    { "type": "color", "id": "accent_color", "label": "Accent (price, add to cart)", "default": "#B91C1C" },
+    { "type": "color", "id": "accent_hover_color", "label": "Accent hover", "default": "#991b1b" },
+
+    { "type": "header", "content": "Add to cart + quantity" },
+    { "type": "checkbox", "id": "show_atc", "label": "Show Add to cart at the end of the card", "default": true },
+    { "type": "checkbox", "id": "show_qty", "label": "Show quantity stepper next to it", "default": true },
+    { "type": "checkbox", "id": "show_qty_mobile", "label": "Show quantity stepper on mobile", "default": false, "info": "Off by default — two small cards per row leave little room." },
+    { "type": "text", "id": "atc_text", "label": "Button label", "default": "Add to Cart" },
+    { "type": "text", "id": "atc_added_text", "label": "Added label", "default": "Added to cart" },
+    { "type": "text", "id": "choose_text", "label": "Label for products with options", "default": "Choose options" },
+    { "type": "text", "id": "soldout_text", "label": "Sold out label", "default": "Sold out" },
+    { "type": "color", "id": "atc_added_bg", "label": "Added background", "default": "#9e9e9e" },
+    { "type": "color", "id": "atc_added_color", "label": "Added text colour", "default": "#ffffff" },
+    { "type": "range", "id": "control_height", "min": 30, "max": 56, "step": 2, "unit": "px", "label": "Button / stepper height — desktop", "default": 38 },
+    { "type": "range", "id": "control_height_mobile", "min": 26, "max": 48, "step": 2, "unit": "px", "label": "Button / stepper height — mobile", "default": 34 },
+    { "type": "range", "id": "atc_font_size", "min": 11, "max": 20, "step": 1, "unit": "px", "label": "Button font size — desktop", "default": 14 },
+    { "type": "range", "id": "atc_font_size_mobile", "min": 10, "max": 18, "step": 1, "unit": "px", "label": "Button font size — mobile", "default": 12 },
+    { "type": "range", "id": "qty_btn_width", "min": 22, "max": 44, "step": 2, "unit": "px", "label": "Stepper +/- width", "default": 28 },
+    { "type": "range", "id": "qty_input_width", "min": 26, "max": 60, "step": 2, "unit": "px", "label": "Stepper number width", "default": 36 },
+    { "type": "range", "id": "foot_gap", "min": 4, "max": 20, "step": 1, "unit": "px", "label": "Gap between stepper and button", "default": 8 },
+
+    { "type": "header", "content": "Wishlist Heart" },
+    { "type": "checkbox", "id": "wishlist_card_enable", "label": "Show wishlist heart on cards", "default": true },
+    { "type": "color", "id": "wishlist_icon_color", "label": "Heart color (idle)", "default": "#9ca3af" },
+    { "type": "color", "id": "wishlist_active_color", "label": "Heart color (saved)", "default": "#e60023" },
+    { "type": "color", "id": "wishlist_btn_bg", "label": "Button background", "default": "#ffffff" },
+    { "type": "range", "id": "wishlist_btn_size", "min": 28, "max": 56, "step": 2, "unit": "px", "label": "Button size", "default": 38 },
+    { "type": "range", "id": "wishlist_btn_radius", "min": 0, "max": 50, "step": 1, "unit": "px", "label": "Button roundness", "default": 50, "info": "50 ≈ a full circle at the default button size." },
+    { "type": "range", "id": "wishlist_offset", "min": 0, "max": 30, "step": 1, "unit": "px", "label": "Distance from the card corner", "default": 12 },
+
+    { "type": "header", "content": "Carousel arrows" },
+    { "type": "checkbox", "id": "show_arrows", "label": "Show arrows", "default": true },
+    { "type": "checkbox", "id": "arrows_mobile", "label": "Show arrows on mobile", "default": false },
+    {
+      "type": "select",
+      "id": "arrow_position",
+      "label": "Arrow position",
+      "options": [
+        { "label": "Over the cards", "value": "inside" },
+        { "label": "Outside the row", "value": "outside" }
+      ],
+      "default": "inside"
+    },
+    { "type": "range", "id": "arrow_size", "min": 26, "max": 64, "step": 2, "unit": "px", "label": "Arrow size", "default": 40 },
+    { "type": "range", "id": "arrow_size_mobile", "min": 22, "max": 52, "step": 2, "unit": "px", "label": "Arrow size (mobile)", "default": 32 },
+    { "type": "range", "id": "arrow_radius", "min": 0, "max": 40, "step": 1, "unit": "px", "label": "Arrow corner radius", "default": 40 },
+    { "type": "range", "id": "arrow_offset", "min": 0, "max": 40, "step": 1, "unit": "px", "label": "Arrow distance from edge", "default": 6 },
+    { "type": "range", "id": "arrow_vertical", "min": 10, "max": 90, "step": 1, "unit": "%", "label": "Arrow vertical position", "default": 40 },
+    { "type": "color", "id": "arrow_bg", "label": "Arrow background", "default": "#ffffff" },
+    { "type": "color", "id": "arrow_color", "label": "Arrow icon colour", "default": "#111827" },
+    { "type": "color", "id": "arrow_hover_bg", "label": "Arrow hover background", "default": "#B91C1C" },
+    { "type": "color", "id": "arrow_hover_color", "label": "Arrow hover icon colour", "default": "#ffffff" },
+    { "type": "checkbox", "id": "arrow_shadow", "label": "Arrow shadow", "default": true },
+
+    { "type": "header", "content": "Carousel dots" },
+    { "type": "checkbox", "id": "show_dots", "label": "Show dots", "default": false },
+    { "type": "range", "id": "dot_size", "min": 4, "max": 16, "step": 1, "unit": "px", "label": "Dot size", "default": 8 },
+    { "type": "range", "id": "dot_gap", "min": 2, "max": 20, "step": 1, "unit": "px", "label": "Space between dots", "default": 8 },
+    { "type": "range", "id": "dot_margin_top", "min": 0, "max": 40, "step": 1, "unit": "px", "label": "Space above dots", "default": 16 },
+    { "type": "color", "id": "dot_color", "label": "Dot colour", "default": "#d6d6d6" },
+    { "type": "color", "id": "dot_active_color", "label": "Active dot colour", "default": "#B91C1C" }
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "Banner",
+      "limit": 1,
+      "settings": [
+        { "type": "range", "id": "banner_column_handle", "label": "Banner Column", "min": 2, "max": 12, "step": 1, "default": 3, "unit": "/12" },
+        { "type": "header", "content": "Banner Area" },
+        { "type": "image_picker", "id": "featured_banner", "label": "Banner Image" },
+        { "type": "url", "id": "featured_banner_url", "label": "URL", "default": "\/collections\/all" }
+      ]
+    },
+    {
+      "type": "feature-product",
+      "name": "Feature Products",
+      "limit": 1,
+      "settings": [
+        { "type": "header", "content": "Collection Area" },
+        { "type": "range", "id": "feature_column_handle", "label": "Products Column", "min": 2, "max": 12, "step": 1, "default": 12, "unit": "/12", "info": "Ignored when a Banner block is added (the products fill the remaining width)." },
+        { "type": "collection", "id": "featured_product_handle", "label": "Select Collection" },
+        { "type": "range", "id": "product_limit_handle", "min": 2, "max": 50, "step": 1, "label": "Number of products", "default": 8 },
+        { "type": "header", "content": "View More Button" },
+        { "type": "text", "id": "button_title", "label": "Button Title", "default": "View More Products" },
+        { "type": "url", "id": "button_url", "label": "URL", "default": "\/collections\/all" }
+      ]
+    },
+    {
+      "type": "section_padding",
+      "name": "Section Padding",
+      "limit": 1,
+      "settings": [
+        { "type": "header", "content": "Large/Desktop Device" },
+        { "type": "range", "id": "section_padding_top", "min": 0, "max": 150, "step": 5, "label": "Padding Top", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_padding_bottom", "min": 0, "max": 150, "step": 5, "label": "Padding Bottom", "unit": "px", "default": 100 },
+        { "type": "header", "content": "Tablet Device" },
+        { "type": "range", "id": "section_padding_top_md", "min": 0, "max": 150, "step": 5, "label": "Padding Top", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_padding_bottom_md", "min": 0, "max": 150, "step": 5, "label": "Padding Bottom", "unit": "px", "default": 80 },
+        { "type": "header", "content": "Mobile Device" },
+        { "type": "range", "id": "section_padding_top_xs", "min": 0, "max": 150, "step": 5, "label": "Padding Top", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_padding_bottom_xs", "min": 0, "max": 150, "step": 5, "label": "Padding Bottom", "unit": "px", "default": 60 }
+      ]
+    },
+    {
+      "type": "section_margin",
+      "name": "Section Margin",
+      "limit": 1,
+      "settings": [
+        { "type": "header", "content": "Large/Desktop Device" },
+        { "type": "range", "id": "section_margin_top", "min": 0, "max": 150, "step": 5, "label": "Margin Top", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_margin_bottom", "min": 0, "max": 150, "step": 5, "label": "Margin Bottom", "unit": "px", "default": 0 },
+        { "type": "header", "content": "Tablet Device" },
+        { "type": "range", "id": "section_margin_top_md", "min": 0, "max": 150, "step": 5, "label": "Margin Top", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_margin_bottom_md", "min": 0, "max": 150, "step": 5, "label": "Margin Bottom", "unit": "px", "default": 0 },
+        { "type": "header", "content": "Mobile Device" },
+        { "type": "range", "id": "section_margin_top_xs", "min": 0, "max": 150, "step": 5, "label": "Margin Top", "unit": "px", "default": 0 },
+        { "type": "range", "id": "section_margin_bottom_xs", "min": 0, "max": 150, "step": 5, "label": "Margin Bottom", "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "section_background",
+      "name": "Section Background",
+      "limit": 1,
+      "settings": [
+        { "type": "image_picker", "id": "section_bg_image", "label": "BG Image" },
+        { "type": "color", "id": "section_bg_color", "label": "BG Color", "default": "#ffffff" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Deal Collection",
+      "category": "3. collections",
+      "blocks": [{ "type": "section_padding" }, { "type": "feature-product" }]
+    }
+  ]
+}
+{% endschema %}

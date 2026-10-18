@@ -1,0 +1,484 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "16424002725adda8ce": {
+      "type": "promotion-banner",
+      "blocks": {
+        "16424002714d6c0c62-0": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 100,
+            "section_padding_bottom": 100,
+            "section_padding_top_md": 80,
+            "section_padding_bottom_md": 80,
+            "section_padding_top_xs": 50,
+            "section_padding_bottom_xs": 50
+          }
+        },
+        "c086d50e-88d7-4d41-a081-90668f44ab2e": {
+          "type": "promoton-content",
+          "settings": {
+            "content_product_column_handle": "5",
+            "content_product_column_handle_md": "6",
+            "content_custom_color": true,
+            "t1": "Live out your life.",
+            "title_1_gradient_style": false,
+            "bottom_title": "work_sans_n4",
+            "bottom_title_font_size": "24",
+            "bottom_title_font_line_height": "28",
+            "bottom_title_font_size_md": "24",
+            "bottom_title_font_line_height_md": "28",
+            "bottom_title_font_size_sm": "24",
+            "bottom_title_font_line_height_sm": "28",
+            "t1_color": "#fdb819",
+            "bottom_title_margin": 20,
+            "t2": "The happiness ofcrafting nice artworks",
+            "top_title": "playfair_display_n4",
+            "top_title_font_size": "46",
+            "top_title_font_line_height": "60",
+            "top_title_font_size_md": "30",
+            "top_title_font_line_height_md": "40",
+            "top_title_font_size_sm": "24",
+            "top_title_font_line_height_sm": "30",
+            "t2_color": "#333333",
+            "top_title_margin": 20,
+            "heading_bottom_border_line": false,
+            "heading_border_bottom_color": "#fdb819",
+            "border_top_spacing": 20,
+            "des_text": "It’s all about the joy when finally you have done something beautiful on your own and observe it with quite a great deal of proud & successful feeling your own and observe.",
+            "des_text_font": "work_sans_n4",
+            "des_text_color": "#1f2226",
+            "des_text_font_size": "18",
+            "des_text_font_line_height": "28",
+            "des_text_font_size_md": "16",
+            "des_text_font_line_height_md": "26",
+            "des_text_font_size_sm": "14",
+            "des_text_font_line_height_sm": "24",
+            "des_text_font_margin": 15,
+            "countdown_date": "",
+            "count_border_disable": false,
+            "border_radius_count": 10,
+            "btn1": "Learn More",
+            "btn1_url": "shopify://collections/all",
+            "button_title": "work_sans_n5",
+            "button_title_font_size": "18",
+            "button_title_margin": 30,
+            "button_style": "banner_style_2",
+            "button_border_radius": 36,
+            "button_padding_tb": 15,
+            "button_padding_lr": 30,
+            "btn1_color": "#1f2226",
+            "btn1_hover_color": "#fdb819",
+            "btn1_bg_color": "#ffffff",
+            "btn1_bg_hover_color": "#000000",
+            "btn1_border_color": "#333333",
+            "btn1_border_hover_color": "#000000"
+          }
+        },
+        "22fc24ab-501c-4c9a-9b71-d78735a406b6": {
+          "type": "promoton-img",
+          "settings": {
+            "promotion_img_enable": true,
+            "img_product_column_handle": "5",
+            "img_product_column_handle_md": "6",
+            "video_btn_enable": false,
+            "video_btn_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc"
+          }
+        }
+      },
+      "block_order": [
+        "16424002714d6c0c62-0",
+        "c086d50e-88d7-4d41-a081-90668f44ab2e",
+        "22fc24ab-501c-4c9a-9b71-d78735a406b6"
+      ],
+      "disabled": true,
+      "custom_css": [
+        ".align-items-center {justify-content: center;}",
+        ".banner-area .banner-img-2 {text-align: center;}"
+      ],
+      "settings": {
+        "section_width": "default",
+        "section_title_custom_color": true,
+        "section_title": "",
+        "section_title_color": "#1f2226",
+        "section_title_font": "poppins_n6",
+        "section_title_font_size": "30",
+        "section_title_line_height": 40,
+        "section_title_font_size_md": "24",
+        "section_title_line_height_md": 35,
+        "section_title_font_size_sm": "20",
+        "section_title_line_height_sm": 30,
+        "section_title_margin_bottom": 10,
+        "section_sub_title": "",
+        "section_subtitle_color": "#5a5a5a",
+        "section_sub_title_font": "poppins_n6",
+        "section_des_font_size": "14",
+        "section_sub_title_line_height": 24,
+        "section_des_font_size_md": "14",
+        "section_sub_title_line_height_md": 24,
+        "section_des_font_size_sm": "14",
+        "section_sub_title_line_height_sm": 24,
+        "section_sub_title_margin_bottom": 10,
+        "title_align": "text-center",
+        "content_position": "left-def",
+        "content_align": "text-left",
+        "section__inner__bg__enable": false,
+        "section__inner__bg__color": "#eeeeee"
+      }
+    },
+    "main": {
+      "type": "about-template",
+      "blocks": {
+        "668e5031-1167-45d4-a9a5-6b4f4d84555a": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 100,
+            "section_padding_bottom": 65,
+            "section_padding_top_md": 80,
+            "section_padding_bottom_md": 45,
+            "section_padding_top_xs": 50,
+            "section_padding_bottom_xs": 30
+          }
+        },
+        "70485c63-c752-45dd-8458-10fe7a0f9726": {
+          "type": "content",
+          "settings": {
+            "title": "The Metro Advantage",
+            "subtitle": "We understand that getting the right part the first time is critical for keeping your vehicle on the road. Our operations are built on three core commitments:"
+          }
+        },
+        "content_XzpzDe": {
+          "type": "content",
+          "settings": {
+            "title": "",
+            "subtitle": "We understand that getting the right part the first time is critical for keeping your vehicle on the road. Our operations are built on three core commitments:"
+          }
+        }
+      },
+      "block_order": [
+        "668e5031-1167-45d4-a9a5-6b4f4d84555a",
+        "70485c63-c752-45dd-8458-10fe7a0f9726",
+        "content_XzpzDe"
+      ],
+      "disabled": true,
+      "settings": {
+        "show_about_section": true,
+        "page_content": "page",
+        "show_image": false,
+        "image_position": "left",
+        "show_content": true,
+        "title": "About Us: Your Trusted Parts Partner",
+        "subtitle": "Welcome to Metro Auto Online, your premier destination for high-quality automotive components. With a massive catalog of products, we specialize in providing reliable parts for a wide range of vehicles, from daily commuters to heavy-duty 4WDs."
+      }
+    },
+    "about_hero_DnXpdr": {
+      "type": "about-hero",
+      "name": "About Hero",
+      "settings": {
+        "hero_image": "shopify://shop_images/Gemini_Generated_Image_k84jnhk84jnhk84j.png",
+        "overlay_color": "#000000",
+        "overlay_opacity": 80,
+        "heading": "Fueling Australia's Automotive Passion",
+        "description": "<p>Professional grade automotive parts, genuine quality, and expert knowledge for the true enthusiast and professional mechanic.</p>",
+        "content_alignment": "center",
+        "vertical_alignment": "center",
+        "content_max_width": 800,
+        "heading_color": "#ffffff",
+        "description_color": "#ffffff",
+        "heading_size": 44,
+        "description_size": 16,
+        "heading_size_mobile": 28,
+        "description_size_mobile": 14,
+        "button_label": "",
+        "button_link": "",
+        "button_bg_color": "#dd0000",
+        "button_text_color": "#ffffff",
+        "button_radius": 4,
+        "section_height": 620,
+        "section_padding_top": 80,
+        "section_padding_bottom": 80,
+        "section_height_mobile": 480,
+        "section_padding_top_mobile": 50,
+        "section_padding_bottom_mobile": 50
+      }
+    },
+    "custom_content_iAHfAp": {
+      "type": "custom-content",
+      "blocks": {
+        "html_content_cUhnXF": {
+          "type": "html_content",
+          "settings": {
+            "content_column": 6,
+            "content_column_md": 6,
+            "html_content": "<div class=\"html-content-class\">\n<h2>About US</h2>\n<p>\n\nMetroAuto is an Australia-based automotive parts and accessories company, specializing in high-quality aftermarket products as well as selected genuine OEM parts. We are committed to providing reliable and affordable solutions for vehicle owners, workshops, and automotive enthusiasts across the country.\n<br><br>\nWe proudly operate within Australia and offer delivery exclusively across Australia, ensuring fast, reliable, and secure shipping to our customers nationwide. Our product range covers a wide selection of parts designed for maintenance, replacement, and performance upgrades.\n<br><br>\nAt MetroAuto, our focus is on quality products, competitive pricing, and dependable service—making it easier for Australians to keep their vehicles running at their best.\n</p>\n</div>",
+            "html_content_css": ".html-content-class{color: #fffff; margin-top: 100px;}.html-content-class h2{margin-bottom: 20px;}"
+          }
+        },
+        "image_content_q4yVqt": {
+          "type": "image_content",
+          "settings": {
+            "content_column": 6,
+            "content_column_md": 9,
+            "image_content_image": "shopify://shop_images/erik-mclean-za3ADPq8mpo-unsplash.jpg",
+            "image_content_image_url": ""
+          }
+        },
+        "section_padding_ANQMQc": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 50,
+            "section_padding_bottom": 100,
+            "section_padding_top_md": 0,
+            "section_padding_bottom_md": 80,
+            "section_padding_top_xs": 0,
+            "section_padding_bottom_xs": 60
+          }
+        }
+      },
+      "block_order": [
+        "html_content_cUhnXF",
+        "image_content_q4yVqt",
+        "section_padding_ANQMQc"
+      ],
+      "disabled": true,
+      "name": "Custom Content",
+      "settings": {
+        "section_width": "default",
+        "section_title_custom_color": true,
+        "section_title": "Who are we",
+        "section_title_color": "#1f2226",
+        "section_title_font": "poppins_n6",
+        "section_title_font_size": "30",
+        "section_title_line_height": 40,
+        "section_title_font_size_md": "24",
+        "section_title_line_height_md": 35,
+        "section_title_font_size_sm": "20",
+        "section_title_line_height_sm": 30,
+        "section_title_margin_bottom": 10,
+        "section_sub_title": "",
+        "section_subtitle_color": "#5a5a5a",
+        "section_sub_title_font": "poppins_n6",
+        "section_des_font_size": "14",
+        "section_sub_title_line_height": 24,
+        "section_des_font_size_md": "14",
+        "section_sub_title_line_height_md": 24,
+        "section_des_font_size_sm": "14",
+        "section_sub_title_line_height_sm": 24,
+        "section_sub_title_margin_bottom": 10,
+        "title_align": "text-center"
+      }
+    },
+    "custom_page_gnhLzk": {
+      "type": "custom-page",
+      "blocks": {
+        "section_padding_fT64UY": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 0,
+            "section_padding_bottom": 100,
+            "section_padding_top_md": 0,
+            "section_padding_bottom_md": 80,
+            "section_padding_top_xs": 0,
+            "section_padding_bottom_xs": 60
+          }
+        }
+      },
+      "block_order": [
+        "section_padding_fT64UY"
+      ],
+      "name": "Custom Page",
+      "settings": {
+        "section_width": "default",
+        "section_title_custom_color": false,
+        "section_title": "",
+        "section_title_color": "#1f2226",
+        "section_title_font": "poppins_n6",
+        "section_title_font_size": "30",
+        "section_title_line_height": 40,
+        "section_title_font_size_md": "24",
+        "section_title_line_height_md": 35,
+        "section_title_font_size_sm": "20",
+        "section_title_line_height_sm": 30,
+        "section_title_margin_bottom": 10,
+        "section_sub_title": "",
+        "section_subtitle_color": "#5a5a5a",
+        "section_sub_title_font": "poppins_n6",
+        "section_des_font_size": "14",
+        "section_sub_title_line_height": 24,
+        "section_des_font_size_md": "14",
+        "section_sub_title_line_height_md": 24,
+        "section_des_font_size_sm": "14",
+        "section_sub_title_line_height_sm": 24,
+        "section_sub_title_margin_bottom": 10,
+        "title_align": "text-center",
+        "custom_page": "about-us"
+      }
+    },
+    "about_img_with_text_agqweQ": {
+      "type": "about-img-with-text",
+      "name": "About Image with Text",
+      "settings": {
+        "content_image": "shopify://shop_images/Gemini_Generated_Image_vmjlsrvmjlsrvmjl.png",
+        "image_position": "left",
+        "image_radius": 4,
+        "image_width": 50,
+        "content_width": 45,
+        "column_gap": 60,
+        "show_badge": true,
+        "badge_number": "",
+        "badge_label": "",
+        "badge_bg_color": "#dd0000",
+        "badge_text_color": "#ffffff",
+        "badge_size": 110,
+        "badge_size_mobile": 90,
+        "badge_offset": 20,
+        "badge_offset_mobile": 10,
+        "badge_border_radius": 12,
+        "badge_number_size": 24,
+        "badge_label_size": 11,
+        "eyebrow_text": "Our Story",
+        "eyebrow_color": "#dd0000",
+        "eyebrow_size": 13,
+        "heading": "Trusted by Professionals. Built by Enthusiasts.",
+        "heading_color": "#1a1a1a",
+        "heading_size": 34,
+        "heading_size_mobile": 26,
+        "description": "<p>Founded on a genuine passion for automotive excellence, Metro Auto Australia has grown from a humble local supplier into a leading destination for professional-grade car care and genuine OEM parts. We understand that precision matters, whether you're building a track car or maintaining a daily driver.</p><p>As a family-owned business, we bridge the gap between heavy-duty commercial supply and the dedicated enthusiast market. Our commitment is simple: supply the right part, the first time, with the expertise to back it up.</p><p></p><p></p>",
+        "description_color": "#5f6b7a",
+        "description_size": 16,
+        "description_size_mobile": 14,
+        "link_label": "Read More History",
+        "link_url": "",
+        "link_color": "#dd0000",
+        "link_size": 13,
+        "section_bg_color": "#ffffff",
+        "section_padding_top": 80,
+        "section_padding_bottom": 80,
+        "section_padding_top_mobile": 50,
+        "section_padding_bottom_mobile": 50
+      }
+    },
+    "feature_highlights_xWHdhm": {
+      "type": "feature-highlights",
+      "blocks": {
+        "feature_UjPRQx": {
+          "type": "feature",
+          "settings": {
+            "preset_icon": "shield",
+            "title": "OEM Quality",
+            "description": "<p>We stock genuine and rigorous quality-checked aftermarket parts. We refuse to sell components we wouldn't install on our own high-performance vehicles.</p>"
+          }
+        },
+        "feature_bpfEdE": {
+          "type": "feature",
+          "settings": {
+            "preset_icon": "shield",
+            "title": "Direct Sourcing",
+            "description": "<p>By working directly with major automotive manufacturers globally, we ensure authenticity and competitive pricing, cutting out unnecessary middlemen.</p>"
+          }
+        },
+        "feature_WkkKdb": {
+          "type": "feature",
+          "settings": {
+            "preset_icon": "shield",
+            "title": "Expert Knowledge",
+            "description": "<p>Our staff aren't just salespeople; they are industry veterans and mechanics with decades of hands-on experience ready to provide technical support.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "feature_UjPRQx",
+        "feature_bpfEdE",
+        "feature_WkkKdb"
+      ],
+      "name": "Feature Highlights",
+      "settings": {
+        "heading": "The Metro Auto Standard",
+        "subheading": "<p>We don't compromise on quality. Every product we stock must meet our rigorous professional grade requirements.</p>",
+        "header_alignment": "center",
+        "header_max_width": 780,
+        "header_bottom_spacing": 50,
+        "heading_color": "#1a1a1a",
+        "heading_size": 32,
+        "heading_size_mobile": 24,
+        "subheading_color": "#5f6b7a",
+        "subheading_size": 16,
+        "columns_desktop": 3,
+        "columns_tablet": 2,
+        "columns_mobile": 1,
+        "card_gap": 30,
+        "card_bg_color": "#ffffff",
+        "card_radius": 4,
+        "card_padding": 40,
+        "card_content_alignment": "left",
+        "icon_box_bg_color": "#ffffff",
+        "icon_box_size": 48,
+        "icon_box_radius": 8,
+        "icon_size": 36,
+        "icon_color": "#dd0000",
+        "card_title_color": "#1a1a1a",
+        "card_title_size": 19,
+        "card_description_color": "#5f6b7a",
+        "card_description_size": 15,
+        "section_bg_color": "#f4f4f4",
+        "section_padding_top": 80,
+        "section_padding_bottom": 80,
+        "section_padding_top_mobile": 50,
+        "section_padding_bottom_mobile": 50
+      }
+    },
+    "newsletter_area_nAThGL": {
+      "type": "newsletter-area",
+      "custom_css": [
+        ".newsletter-area {padding: 50px;}",
+        ".newsletter-form .subscribe-form button {background: #db1d1d;}",
+        ".newsletter-form .subscribe-form button:hover {background: #f53737; cursor: pointer;}"
+      ],
+      "name": "Newsletter Area",
+      "settings": {
+        "subscribe_area_enable": true,
+        "section_width": "default",
+        "section_title_custom_color": false,
+        "section_title": "New Arrivals",
+        "section_title_color": "#1f2226",
+        "section_title_font": "poppins_n6",
+        "section_title_font_size": "30",
+        "section_title_line_height": 40,
+        "section_title_font_size_md": "24",
+        "section_title_line_height_md": 35,
+        "section_title_font_size_sm": "20",
+        "section_title_line_height_sm": 35,
+        "section_title_margin_bottom": 10,
+        "section_sub_title": "Be the first to know when new parts and products land  subscribe for early access and exclusive updates.",
+        "section_subtitle_color": "#5a5a5a",
+        "section_sub_title_font": "poppins_n6",
+        "section_des_font_size": "14",
+        "section_sub_title_line_height": 24,
+        "section_des_font_size_md": "14",
+        "section_sub_title_line_height_md": 24,
+        "section_des_font_size_sm": "14",
+        "section_sub_title_line_height_sm": 24,
+        "section_sub_title_margin_bottom": 10,
+        "title_align": "text-center"
+      }
+    }
+  },
+  "order": [
+    "16424002725adda8ce",
+    "main",
+    "about_hero_DnXpdr",
+    "custom_content_iAHfAp",
+    "custom_page_gnhLzk",
+    "about_img_with_text_agqweQ",
+    "feature_highlights_xWHdhm",
+    "newsletter_area_nAThGL"
+  ]
+}

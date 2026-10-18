@@ -1,0 +1,7 @@
+{
+  "layout": "metro",
+  "sections": {
+    "main": { "type": "ma-contact", "settings": {} }
+  },
+  "order": ["main"]
+}

@@ -1,0 +1,53 @@
+{%- if settings.newsletter_system == 'by_mailchimp' -%}
+<form action="{% if settings.newsletter_action != '' %}{{ settings.newsletter_action }}{% else %}#{% endif %}" 
+      method="post" 
+      id="mc-embedded-subscribe-form" 
+      name="mc-embedded-subscribe-form" 
+      target="_blank" class="validate subscribe-form-style" novalidate>
+  <div id="mc_embed_signup_scroll" class="mc-form">
+    <input class="email" 
+           type="email" 
+           placeholder="{{ 'general.newsletter_form.newsletter_email'| t }}" 
+           name="EMAIL" 
+           value="{% if customer %}{{ customer.email }}{% endif %}">
+    <div class="mc-news" aria-hidden="true">
+      <input type="text" value="" tabindex="-1" name="b_6bbb9b6f5827bd842d9640c82_05d85f18ef">
+    </div>
+    <div class="clear">
+      <input id="mc-embedded-subscribe" class="button" type="submit" name="subscribe" value="">
+    </div>
+  </div>
+</form>
+
+{%- elsif settings.newsletter_system == 'by_shopify_form' -%}
+{%- assign formId = 'Contact_' | append: section.id -%}
+{%- form 'customer', id: formId -%}
+{%- if form.posted_successfully? -%}
+<p class="form-message form-message--success form-success">{{ 'general.newsletter_form.confirmation'| t }} <button class="success-form-close-btn">X</button></p>
+{%- else -%}
+
+{%- if form.errors -%}
+<div class="form-message form-message--error">
+  {{ form.errors | default_errors }}
+</div>
+{%- endif -%}
+<div id="mc_embed_signup_scroll" class="mc-form">
+  <input type="hidden" name="contact[tags]" value="newsletter">
+  <input class="form-control subscribe-form-input email" 
+         type="email" 
+         name="contact[email]" 
+         id="Email" 
+         value="{% if customer %}{{ customer.email }}{% endif %}"
+         placeholder="{{ 'general.newsletter_form.newsletter_email'| t }}" 
+         aria-label="{{ 'general.newsletter_form.newsletter_email'| t }}" 
+         {% if form.errors %}aria-invalid="true"{% endif %} 
+         autocorrect="off" 
+         autocapitalize="off">
+
+  <div class="sbs_btn">
+    <input id="mc-embedded-subscribe newsletter-btn" class="button" type="submit" name="subscribe" value="Subscribe" id="Subscribe">
+  </div>
+</div>
+{%- endif -%}
+{%- endform -%}
+{%- endif -%}

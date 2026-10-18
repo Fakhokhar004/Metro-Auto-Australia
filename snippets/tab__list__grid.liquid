@@ -1,0 +1,101 @@
+{%- assign on_sale = false -%}{%- if product.variants.first.compare_at_price > product.variants.first.price -%}{%- assign on_sale = true -%}{%- endif -%}
+{%- assign sold_out = true -%}{%- if product.available -%}{%- assign sold_out = false -%}{%- endif -%}
+{%- assign variant = product.selected_or_first_available_variant -%}
+{%- if product.available -%}{%- assign func = "Shopify.addItem(" | append: variant.id | append: ", 1)" -%}{%- endif -%}
+
+
+<div class="group-slide-item tab__list__grid__style  product-wrapper-class {{ variant.id }}">
+  <div class="group-item">
+    <div class="group-item-thumb">
+      <a href="{{ product.url | within: collection }}">
+        <img loading="lazy" src="{{ product.featured_image.src | img_url: 'master' }}" alt="{{ product.featured_image.alt }}" >
+      </a>
+    </div>
+    
+    <div class="group-item-desc">
+      
+      <div class="group-item-desc-inner">
+          <h5 class="group-product-name">
+            <a href="{{ product.url | within: collection }}">{{ product.title }}</a>
+          </h5>
+          <div class="price-box">
+            <span class="price-regular">{{ product.variants.first.price | money }}</span>
+            {%- if product.variants.first.compare_at_price > product.variants.first.price -%}
+              <span class="price-old"
+                ><del>{{ product.variants.first.compare_at_price | money }}</del></span
+              >
+            {%- endif -%}
+          </div>
+          {% if section.settings.grid__inventory %}
+            {% render 'grid_inventory' , product: product %}
+          {% endif %}
+         </div>
+      
+
+
+
+
+        {%- unless product.description contains '[affiliate_link]' -%}
+            <div class="tab__list__action">
+          {%- if product.available -%}  
+          
+          {%- if settings.product_cart_type == 'ajax_spin_cart' -%}
+          <a href="javascript:void(0);" onclick="{{ func }}; return false;" class="ajax-spin-cart theme-product-action-btn">
+            <span class="cart-title">
+              <i class="sli sli-bag"></i><span class="theme-product-action-tooltip"></span>
+            </span>
+      
+            <span class="cart-loading">
+              <i class="sli sli-reload rotate-inifinite"></i><span class="theme-product-action-tooltip"></span>
+            </span>
+      
+            <span class="cart-added">
+              <i class="sli sli-check"></i><span class="theme-product-action-tooltip"></span>
+            </span>
+      
+            <span class="cart-unavailable">
+              <i class="sli sli-check"></i><span class="theme-product-action-tooltip"></span>
+            </span>        
+          </a>
+
+          {%- elsif settings.product_cart_type == 'ajax_cart_drawer' -%}
+          <a href="javascript:void(0);" onclick="{{ func }}; return false;" class="theme-product-action-btn ajax-spin-cart-drawer">
+            <i class="sli sli-bag"></i><span class="theme-product-action-tooltip"></span>
+          </a>
+            
+          {%- elsif settings.product_cart_type == 'ajax_popup_cart' -%}
+          <a href="javascript:void(0);" onclick="{{ func }}; return false;" class="theme-product-action-btn">
+            <i class="sli sli-bag"></i><span class="theme-product-action-tooltip"></span>
+          </a>
+          
+          {%- elsif settings.product_cart_type == 'without_ajax_cart' -%}
+          <form action="/cart/add" method="post" enctype="multipart/form-data">
+            <select name="id" style="display:none;">
+              {% for variant in product.variants %}
+              <option value="{{ variant.id }}">{{ variant.title | escape }} - {{ variant.price | money }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="theme-product-action-btn">
+              <i class="sli sli-bag"></i><span class="theme-product-action-tooltip"></span>
+            </button>        
+          </form>
+          {%- endif -%}
+          
+          {%- else -%}
+          <a class="cart-disable remove_href">
+            <i class="sli sli-bag"></i><span class="theme-product-action-tooltip"></span>
+          </a>
+          {%- endif -%}
+          
+        </div>
+        {%- endunless -%}
+
+
+
+      
+      
+    </div>
+
+    
+  </div>
+</div>

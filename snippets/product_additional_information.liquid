@@ -1,0 +1,22 @@
+{%- if block.settings.size_guide_enable or block.settings.shipping_guide_enable or block.settings.ask_product_enable -%}
+<div class="product_additional_information">
+  {%- if block.settings.size_guide_enable -%}
+  <button type="button" data-toggle="modal" data-target="#size_guide">
+    <i class="sli sli-equalizer"></i> {{ block.settings.size_guide | default: 'Size Guide' }}
+  </button>
+  {%- endif -%}
+
+  {%- if block.settings.shipping_guide_enable -%}
+  <button type="button" data-toggle="modal" data-target="#shipping_policy">
+    <i class="sli sli-plane"></i> {{ block.settings.shipping_guide | default: 'Shipping' }}
+  </button>
+  {%- endif -%}
+
+  {%- if block.settings.ask_product_enable -%}
+  <button type="button" data-toggle="modal" data-target="#ask_about_product">
+    <i class="sli sli-envelope"></i>{{ block.settings.ask_about_product | default: 'Ask About This product' }}
+  </button>
+  {%- endif -%}
+</div>
+{%- endif -%}
+

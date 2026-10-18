@@ -1,0 +1,193 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "caaa8274-487a-4948-9e63-6cb48b550fef": {
+      "type": "collection-description",
+      "blocks": {
+        "template--15513976471597__caaa8274-487a-4948-9e63-6cb48b550fef-1688903131798f8976-0": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 0,
+            "section_padding_bottom": 0,
+            "section_padding_top_md": 0,
+            "section_padding_bottom_md": 0,
+            "section_padding_top_xs": 0,
+            "section_padding_bottom_xs": 0
+          }
+        },
+        "3f8f6d27-cca9-4e01-b27f-c67849d9bc8b": {
+          "type": "section_background",
+          "disabled": true,
+          "settings": {
+            "section_bg_color": "#4e2f2f"
+          }
+        }
+      },
+      "block_order": [
+        "template--15513976471597__caaa8274-487a-4948-9e63-6cb48b550fef-1688903131798f8976-0",
+        "3f8f6d27-cca9-4e01-b27f-c67849d9bc8b"
+      ],
+      "disabled": true,
+      "settings": {
+        "section_width": "default",
+        "cd_bg_color": "#fcfcfc",
+        "collection__title": true,
+        "collection__bcrumb": true,
+        "collection__desc": true,
+        "cd__collection__img": true
+      }
+    },
+    "main": {
+      "type": "collection-template",
+      "blocks": {
+        "3f73b03a-e467-4012-b797-6ba878b9ed63": {
+          "type": "category",
+          "settings": {
+            "widget_title": "Categories",
+            "categories_list_limit_hanlde": 5
+          }
+        }
+      },
+      "block_order": [
+        "3f73b03a-e467-4012-b797-6ba878b9ed63"
+      ],
+      "settings": {
+        "full_width": "def",
+        "products_limit_handle": 12,
+        "product_column": "4",
+        "product_column_lg": "6",
+        "product_column_md": "6",
+        "product_column_sm": "6",
+        "product_column_xs": "6",
+        "tab_bar_enable": true,
+        "grid_list_pos": "right_pos",
+        "showing_product_counter_enable": true,
+        "showing_title_handle": "Showing | of | result",
+        "short_by_enable": true,
+        "show_ajax_paginate": true,
+        "sidebar_handle": "without_sidebar",
+        "collection_filtering_handle": "tag_filtering",
+        "pagination_custom_style": true,
+        "pagination_color": "#000000",
+        "pagination_bg_color": "#e1e2e2",
+        "pagination_hover_color": "#ffffff",
+        "pagination_bg_hover_color": "#fdb819",
+        "pagination_active_color": "#ffffff",
+        "pagination_active_bg_color": "#fdb819",
+        "pagination_border_radius": 6
+      }
+    },
+    "7e783abf-6538-474f-aaa9-3357fd29b1a2": {
+      "type": "service",
+      "blocks": {
+        "template--15513976471597__7e783abf-6538-474f-aaa9-3357fd29b1a2-1685522140d5bebd05-0": {
+          "type": "service",
+          "settings": {
+            "show_service_img": true,
+            "service_icon": "",
+            "service_img": "shopify://shop_images/fast-delivery.png",
+            "title": "Free Shipping",
+            "content": "Order over amount $200",
+            "service_bg_color": "#ffffff",
+            "ft_title_color": "#333333",
+            "ft_content_color": "#333333"
+          }
+        },
+        "template--15513976471597__7e783abf-6538-474f-aaa9-3357fd29b1a2-1685522140d5bebd05-1": {
+          "type": "service",
+          "settings": {
+            "show_service_img": true,
+            "service_icon": "",
+            "service_img": "shopify://shop_images/return-box.png",
+            "title": "Easy Return",
+            "content": "Within 30 Days returns",
+            "service_bg_color": "#ffffff",
+            "ft_title_color": "#242424",
+            "ft_content_color": "#757575"
+          }
+        },
+        "template--15513976471597__7e783abf-6538-474f-aaa9-3357fd29b1a2-1685522140d5bebd05-2": {
+          "type": "service",
+          "settings": {
+            "show_service_img": true,
+            "service_icon": "",
+            "service_img": "shopify://shop_images/payment-method.png",
+            "title": "Secure Payment",
+            "content": "100% Secure Payment",
+            "service_bg_color": "#ffffff",
+            "ft_title_color": "#242424",
+            "ft_content_color": "#757575"
+          }
+        },
+        "7cec0e2b-3f1a-45a8-ae71-b332dd642a65": {
+          "type": "service",
+          "settings": {
+            "show_service_img": true,
+            "service_icon": "",
+            "service_img": "shopify://shop_images/best-price.png",
+            "title": "Best Price",
+            "content": "Guaranteed Low Cost",
+            "service_bg_color": "#ffffff",
+            "ft_title_color": "#242424",
+            "ft_content_color": "#757575"
+          }
+        },
+        "d3045ee9-8e22-464b-a052-b27cc9763300": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 80,
+            "section_padding_bottom": 40,
+            "section_padding_top_md": 60,
+            "section_padding_bottom_md": 30,
+            "section_padding_top_xs": 50,
+            "section_padding_bottom_xs": 20
+          }
+        },
+        "b756c9d4-a54e-43b4-b48b-26458aca2c36": {
+          "type": "section_background",
+          "settings": {
+            "section_bg_color": "#fcf9f9"
+          }
+        },
+        "e2e876d2-61c7-411f-8356-3ba8f15a7ebd": {
+          "type": "section_margin",
+          "settings": {
+            "section_margin_top": 0,
+            "section_margin_bottom": 80,
+            "section_margin_top_md": 0,
+            "section_margin_bottom_md": 60,
+            "section_margin_top_xs": 0,
+            "section_margin_bottom_xs": 50
+          }
+        }
+      },
+      "block_order": [
+        "template--15513976471597__7e783abf-6538-474f-aaa9-3357fd29b1a2-1685522140d5bebd05-0",
+        "template--15513976471597__7e783abf-6538-474f-aaa9-3357fd29b1a2-1685522140d5bebd05-1",
+        "template--15513976471597__7e783abf-6538-474f-aaa9-3357fd29b1a2-1685522140d5bebd05-2",
+        "7cec0e2b-3f1a-45a8-ae71-b332dd642a65",
+        "d3045ee9-8e22-464b-a052-b27cc9763300",
+        "b756c9d4-a54e-43b4-b48b-26458aca2c36",
+        "e2e876d2-61c7-411f-8356-3ba8f15a7ebd"
+      ],
+      "settings": {
+        "section_width": "box_width",
+        "service_style": "style_three",
+        "service_col": "3"
+      }
+    }
+  },
+  "order": [
+    "caaa8274-487a-4948-9e63-6cb48b550fef",
+    "main",
+    "7e783abf-6538-474f-aaa9-3357fd29b1a2"
+  ]
+}

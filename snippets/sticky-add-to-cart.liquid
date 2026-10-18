@@ -1,0 +1,80 @@
+<div class="pro_sticky_atc d-none d-sm-block">
+  <div class="container">
+    {% form 'product', product, id: "sticky_add_to_cart", novalidate: 'novalidate' %}
+    {% assign variantCount = product.variants | size %}
+
+    <div class="row align-items-center justify-content-center {% unless variantCount > 1 and product.available %} no_sticky_pro_variant{% endunless %}">
+      <div class="{% if variantCount > 1 and product.available %} col-lg-4 col-md-4 col-sm-2 {% else %} col-sm-6 {% endif %}">
+        <div class="sticky_img__box">
+          <div class="sticky_pro_img_inner">
+            <div class="sticky_pro_img">
+              <img loading="lazy"  src="{{ product.featured_image.src  | product_img_url: 'compact' }}" alt="">
+            </div>
+            <div class="pro__title">
+              {{ product.title }}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% if variantCount > 1 and product.available %}
+      <div class="col-lg-4 col-md-3 col-sm-5">
+        <div class="sticky_pro__variant">       
+
+          <div class="pro_variant__options">
+            <a href="javascript:void(0)" class="Pro_variant__active" data-value="{{ product.variants[0].id }}">
+              {{ product.variants[0].title }} - {{ product.variants[0].price | money }}
+            </a>
+
+            <ul>
+              {% for variant in product.variants %}
+              {% assign value = variant.options[option_index] %}
+              <li>
+                <a {% if variant.image != null %} data-img="{{ variant.image.src | product_img_url: 'compact' }}"{% else %} data-img="{{ product.featured_image.src | product_img_url: 'compact' }}"{% endif %} data-value="{{ variant.id }}" data-quantity="{{ variant.inventory_quantity }}" class="pro_variant_swatch {% if variant.available == false %}sold-out{% endif %}" {% if variant.available == false %}disabled="disabled"{% endif %} href="javascript:void(0)">
+                  {{ variant.title }} - {{ variant.price | money }}
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+
+        </div>
+      </div>
+      {% endif %}  
+      <div class="{% if variantCount > 1 and product.available %} col-lg-4 col-md-5 col-sm-5 {%- else -%} col-sm-6{%endif%}">
+        <div class="pro__action__flex">
+          
+          {%- unless product.description contains '[affiliate_link]' -%}
+          {% if product.available %}
+          <div class="sticky__qty">
+            <div class="quantity_inner">
+              <span class="dec_btn">-</span>
+              <input type="text" name="quantity" value="1" totalqty="5">
+              <span class="inc_btn">+</span>
+            </div>
+          </div>
+          {% endif %}
+          {%- endunless -%}
+
+          <div class="sticky__pro_add_cart">
+            {%- if product.description contains '[affiliate_link]' -%}
+            <div class="affiliate_btn ">
+              {%- render 'affiliate-product-cart-action' -%}
+            </div>
+            {%- else -%}
+              {% if product.selected_or_first_available_variant.available %}
+              <input type="hidden" name="id" value="{{ product.variants[0].id }}" /> 
+              <input type="submit" name="add" class="sticky_pro__cart" value="{{ settings.cart_button_title }}">          
+
+              {% else %} 
+              <input type="submit" name="add" class="sticky_pro__cart" disabled value="{{ settings.soldout_button_title }}">          
+              {% endif %}
+            {%- endif -%}
+           
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endform %}
+
+  </div>
+</div>

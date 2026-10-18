@@ -1,0 +1,130 @@
+<header class="header-area {% if section.settings.sticky__bar %} sticky-bar {% endif %} header_style_5 {% if template == 'index' %} {{ section.settings.enable_hea_transprant}} {%- endif -%} {{ section.settings.menu_position}}">
+  <div class="top_logo_area">
+  	<div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+   
+      <div class="row header_custom_row">        
+        <div class="col-xl-2 col-md-3">          
+          <div class="logo {{ section.settings.logo_position }}">
+            {%- render 'header-logo' -%}
+          </div>
+        </div>
+        
+        <div class="col-xl-8 col-md-6">  
+          {% if section.settings.show_search %}
+
+        <div class="sidebar-search-input">
+          <div class="header-search-container form-search">
+              <predictive-search id="predictive-search-toggle" search-open="false">
+                <form action="{{ routes.search_url }}" method="get" role="search" class="header-search-box">
+                  <input
+                         id="Search"
+                         type="search"
+                         name="q"
+                         value="{{ search.terms | escape }}"
+                         {%- if settings.predictive_search_enabled -%}
+                         role="combobox"
+                         aria-expanded="false"
+                         aria-owns="predictive-search-results-list"
+                         aria-controls="predictive-search-results-list"
+                         aria-haspopup="listbox"
+                         aria-autocomplete="list"
+                         autocorrect="off"
+                         autocomplete="off"
+                         autocapitalize="off"
+                         spellcheck="false"
+                         {%- endif -%}
+                         class="header-search-field input-text"
+                         placeholder="Search our store">
+                      <button type="submit" class="header_5_btn">
+                        Search
+                    </button>
+                  <input name="options[prefix]" type="hidden" value="last">
+
+                  {%- if settings.predictive_search_enabled -%}
+                  <div id="predictive-search" tabindex="-1"></div>
+                  {%- endif -%}
+                </form>
+              </predictive-search>
+            </div>
+          </div>
+
+          
+          {% endif %}
+        </div>
+                
+        <div class="col-xl-2 col-md-3">
+          <div class="header-right-wrap">
+
+            {%- if settings.google_translate_enable -%}            
+              {%- render 'language__translate' -%}
+            {%- endif -%}
+
+            <div class="cart-wrap">
+              {%- render 'mini-cart' -%}
+            </div>
+
+            {%- if section.settings.currency_enable or section.settings.show_user_menu -%}
+            <div class="setting-wrap">
+              {%- render 'currency-usermenu' -%}
+            </div>
+            {%- endif -%}
+            
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  <div class="main-header-wrap bottom_area">
+  	<div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+      <div class="row header_custom_row"> 
+        
+        <div class="col-xl-2 col-lg-2 sti_logo_area">          
+          <div class="logo pt-40 {{ section.settings.logo_position }}">
+            {%- render 'header-logo' -%}
+          </div>
+        </div>
+        
+        
+        <div class="col-xl-9 col-lg-9 sti_menu_area">
+          <div class="main-menu">
+            {%- render 'main-menu' -%}
+          </div>
+        </div>
+        
+        {% if section.settings.show_header_contact %}
+        <div class="col-xl-3 col-lg-3 sti_contact_area">          
+          <div class="header_contact_info">
+            <a href="tel:{{ section.settings.header_contact_title }}">
+              
+              {{section.settings.header_contact_icon}}
+              
+              {{ section.settings.header_contact_title }}
+            </a> 
+          </div>
+        </div>
+        {% endif %}
+        
+        <div class="col-xl-2 col-lg-2 sti_right_area">
+          <div class="header-right-wrap">
+            
+            <div class="cart-wrap">
+              {%- render 'mini-cart' -%}
+            </div>
+
+            {%- if section.settings.currency_enable or section.settings.show_user_menu -%}
+            <div class="setting-wrap">
+              {%- render 'currency-usermenu' -%}
+            </div>
+            {%- endif -%}
+            
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  {%- render 'mobile-header' -%}
+</header>
+
+{%- render 'header-extend' -%}

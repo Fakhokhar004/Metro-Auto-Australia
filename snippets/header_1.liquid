@@ -1,0 +1,53 @@
+<header class="header-area {% if section.settings.sticky__bar %} sticky-bar {% endif %} {% if template == 'index' %} {{ section.settings.enable_hea_transprant}} {%- endif -%} {{ section.settings.menu_position}}">
+  <div class="main-header-wrap">
+    
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+   
+      <div class="row header_custom_row">   
+        
+        <div class="col-xl-2 col-lg-2">          
+          <div class="logo {{ section.settings.logo_position }}">
+            {%- render 'header-logo' -%}
+          </div>
+        </div>
+        
+        <div class="col-xl-8 col-lg-7 ">
+          <div class="main-menu">
+            {%- render 'main-menu' -%}
+          </div>
+        </div>
+        
+        <div class="col-xl-2 col-lg-3">
+          <div class="header-right-wrap">
+
+            {%- if settings.google_translate_enable -%}            
+              {%- render 'language__translate' -%}
+            {%- endif -%}
+
+            {%- if section.settings.show_search -%}
+            	{%- render 'search-bar' -%}
+            {%- endif -%}
+
+            <div class="cart-wrap">
+              {%- render 'mini-cart' -%}
+            </div>
+
+            {%- if section.settings.currency_enable or section.settings.show_user_menu -%}
+            <div class="setting-wrap">
+              {%- render 'currency-usermenu' -%}
+            </div>
+            {%- endif -%}
+            
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    
+  </div>
+  {%- render 'mobile-header' -%}
+  
+</header>
+
+{%- render 'header-extend' -%}

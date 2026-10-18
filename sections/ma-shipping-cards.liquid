@@ -1,0 +1,46 @@
+{%- comment -%} Shipping cards. Design reference: Main.dc.html (SHIPPING CARDS). {%- endcomment -%}
+<section class="ma-ship-sec">
+  <div class="ma-wrap">
+    <div class="ma-ship">
+      {%- for block in section.blocks -%}
+        <div class="ma-ship__card" {{ block.shopify_attributes }}>
+          <span class="ma-ship__icon">{%- render 'ma-icon', name: block.settings.icon, size: 24, stroke: '#E1251B' -%}</span>
+          <strong>{{ block.settings.title | escape }}</strong>
+          <span class="ma-ship__text">{{ block.settings.text | escape }}</span>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Metro shipping cards",
+  "tag": "div",
+  "max_blocks": 3,
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Icon", "default": "truck", "options": [
+          { "value": "truck", "label": "Truck" }, { "value": "clock", "label": "Clock" }, { "value": "returns", "label": "Returns" },
+          { "value": "shield", "label": "Shield" }, { "value": "shield-check", "label": "Shield with tick" }, { "value": "pin", "label": "Location" }
+        ] },
+        { "type": "text", "id": "title", "label": "Title", "default": "Free shipping over $200" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Australia-wide delivery" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Metro shipping cards",
+      "blocks": [
+        { "type": "card", "settings": { "icon": "truck", "title": "Free shipping over $200", "text": "Australia-wide delivery" } },
+        { "type": "card", "settings": { "icon": "clock", "title": "Same-day dispatch", "text": "Order before 2PM on working days" } },
+        { "type": "card", "settings": { "icon": "returns", "title": "30-day returns", "text": "Easy returns on unused parts" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,79 @@
+<div class="cart-tax">
+    <h3 class="cart-bottom-title section-bg-gray">{{ section.settings.shipping_calculator_heading }}</h3>
+  <div class="tax-wrapper">
+    {%- if  section.settings.shipping_calculator_subheading != '' -%}
+    <p>{{ section.settings.shipping_calculator_subheading }}</p>
+    {%- endif -%}    
+    <div class="culculate-shipping tax-select-wrapper" id="shipping-calculator">
+      <div class="field tax-select">
+        <label for="address_country">{{ section.settings.country }}</label>
+        <select class="email s-email s-wid"
+                id="address_country" 
+                name="address[country]" 
+                data-default="{% if shop.customer_accounts_enabled and customer %}{{ customer.default_address.country }}
+                              {% elsif settings.shipping_calculator_default_country != '' %}{{ settings.shipping_calculator_default_country }}{% endif %}">
+          {{ country_option_tags }}
+        </select>
+      </div>
+      <div class="field tax-select" id="address_province_container" style="display:none;">
+        <label for="address_province" id="address_province_label">{{ section.settings.state }}</label>
+        <select class="email s-email s-wid" 
+                id="address_province" 
+                name="address[province]" 
+                data-default="{% if shop.customer_accounts_enabled and customer and customer.default_address.province != '' %}{{ customer.default_address.province }}
+                              {% endif %}">
+        </select>
+      </div>  
+      <div class="field cpn-code tax-select">
+        <label for="address_zip">{{ section.settings.zip }}</label>
+        <input type="text" 
+               placeholder="Zip/Postal Code" 
+               id="address_zip" 
+               name="address[zip]"
+               {% if shop.customer_accounts_enabled and customer %} value="{{ customer.default_address.zip }}"{% endif %} />
+      </div>
+      <button type="button" class="cart-btn-2 get-rates">{{ section.settings.shipping_calculator_button_title | default: 'Calculate shipping' }}</button>
+    </div>
+    <div id="wrapper-response" class="mt-20"></div>
+  </div>
+</div>
+
+
+<script id="shipping-calculator-response-template" type="text/template">
+  <p id="shipping-rates-feedback" <% if (success) { %> class="success" <% } else { %> class="error" <% } %>>
+  <% if (success) { %>
+    <% if (rates.length > 1) { %> 
+    There are <%= rates.length %> shipping rates available for <%= address %>, starting at <%= rates[0].price %>.
+    <% } else if (rates.length == 1) { %>
+    There is one shipping rate available for <%= address %>.
+    <% } else { %>
+    We do not ship to this destination.
+    <% } %>
+  <% } else { %>
+    <%= errorFeedback %>
+  <% } %>
+  </p>
+  <ul id="shipping-rates">
+    <% for (var i=0; i<rates.length; i++) { %>
+    <li><%= rates[i].name %> at <%= rates[i].price %></li>
+    <% } %>
+  </ul> 
+</script>
+
+<!--[if lte IE 8]> 
+<style> #shipping-calculator { display: none; } </style> 
+<![endif]--> 
+
+{{ '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js' | script_tag }}
+{{ '/services/javascripts/countries.js' | script_tag }}
+{% comment %}Here include must be shopify common js. but if already has your ( theme.liquid ) it don't need here. {% endcomment %}
+{{ 'cart-shipping-calculator.min.js' | asset_url | script_tag }}
+
+<script>
+  Shopify.Cart.ShippingCalculator.show( {
+    submitButton: "{{ settings.shipping_calculator_submit_button_label | default: 'Calculate shipping' }}", 
+    submitButtonDisabled: "{{ settings.shipping_calculator_submit_button_label_disabled | default: 'Calculating...' }}"{% if shop.customer_accounts_enabled and customer %},
+    customerIsLoggedIn: true{% endif %},
+    moneyFormat: {{ shop.money_with_currency_format | json }}
+  } );
+</script>

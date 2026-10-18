@@ -1,0 +1,597 @@
+{{ 'Custom_Content.css' | asset_url | stylesheet_tag }}
+
+<div class="custom-content" id="section-{{ section.id }}">
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+    {% if section.settings.section_title != '' or section.settings.section_sub_title != '' %}
+      <div class="section-title {{ section.settings.title_align }} pb-60 {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+        {% if section.settings.section_title != '' %}
+          <h2>{{ section.settings.section_title }}</h2>
+        {% endif %}
+
+        {% if section.settings.section_sub_title != '' %}
+          <p>{{ section.settings.section_sub_title }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="row custom-content-align {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'html_content' %}
+            <div
+              class="col-lg-{{ block.settings.content_column }} col-md-{{ block.settings.content_column_md }} col-xs-12"
+              {{ block.shopify_attributes }}
+            >
+              <div class="html-content">
+                {{ block.settings.html_content }}
+              </div>
+            </div>
+            {%- if block.settings.html_content_css != '' -%}
+              <style>
+                {{ block.settings.html_content_css }}
+              </style>
+            {%- endif -%}
+          {% when 'image_content' %}
+
+
+              {%- liquid
+                assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+                assign fetch_priority = 'auto'
+                if section.index == 1
+                  assign fetch_priority = 'high'
+                endif
+                assign image_class = 'lazyload-main-image animated responsive-image__image'
+                assign lazy_load = 'lazy'
+              -%}
+          
+            <div class="col-lg-{{ block.settings.content_column }} col-md-{{ block.settings.content_column_md }} col-xs-12"
+              {{ block.shopify_attributes }} >
+              <div class="image-content">
+                {% if block.settings.image_content_image != blank and block.settings.image_content_image_url != blank %}
+
+                <a href="{{ block.settings.image_content_image_url }}" class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.image_content_image.aspect_ratio | times: 100}}%;">
+                  {% assign image_height = block.settings.image_content_image.width | divided_by: block.settings.image_content_image.aspect_ratio %}
+                  {{ block.settings.image_content_image | image_url: width: 3840 | image_tag: width: block.settings.image_content_image.width, height: image_height, 
+                  widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt}}
+                </a>
+                  
+                {% elsif block.settings.image_content_image != blank %}
+                  <a href="{{ block.settings.image_content_image_url }}" class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.image_content_image.aspect_ratio | times: 100}}%;">
+                    {% assign image_height = block.settings.image_content_image.width | divided_by: block.settings.image_content_image.aspect_ratio %}
+                    {{ block.settings.image_content_image | image_url: width: 3840 | image_tag: width: block.settings.image_content_image.width, height: image_height, 
+                    widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt}}
+                  </a>
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag: 'custom-svg-image' }}
+                {% endif %}
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{%- render 'section-style' -%}
+
+{%- render 'heading-style' -%}
+
+{% schema %}
+ {
+   "name": "Custom Content",
+   "settings": [
+             {
+               "type": "select",
+               "id": "section_width",
+               "label": "Section Width",
+               "options":[
+                     {
+                         "label": "Full Width",
+                         "value": "full_width"
+                     },
+                     {
+                         "label": "Box Width",
+                         "value": "box_width"
+                     },
+                     {
+                         "label": "Default Width",
+                         "value": "default"
+                     }
+                 ],
+                 "default": "default"
+             },
+
+	{
+		"type": "header",
+           "content": "Section Title"
+       },
+
+       {
+         "type": "checkbox",
+         "id": "section_title_custom_color",
+         "label": "Section Title Custom Style Enable",
+         "default": false
+       },
+
+	{
+           "type": "text",
+           "id": "section_title",
+           "label": "Title",
+           "default": "New Arrivals"
+       },
+
+       {
+         "type": "color",
+         "id": "section_title_color",
+         "label": "Title Color",
+         "default": "#1f2226"
+       },
+         {
+           "type": "font_picker",
+           "id": "section_title_font",
+           "label": "Font Family: Section Title Font",
+           "default": "poppins_n6"
+         },
+         {
+             "type": "header",
+             "content": "Main Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_title_font_size",
+           "label": "Font Size: Font Size",
+           "default": "30",
+           "info": "Section Title Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_line_height",
+           "min":       20,
+           "max":        150,
+           "step":       5,
+           "unit":       "px",
+           "label":     "Section Title Line Height",
+           "default":   40
+         },
+         {
+             "type": "header",
+             "content": "Medium Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_title_font_size_md",
+           "label": "Font Size: Font Size (MD)",
+           "default": "24",
+           "info": "Section Title Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_line_height_md",
+           "min":       20,
+           "max":        150,
+           "step":       5,
+           "unit":       "px",
+           "label":     "Section Title Line Height (MD)",
+           "default":   35
+         },
+         {
+             "type": "header",
+             "content": "Small Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_title_font_size_sm",
+           "label": "Font Size: Font Size (SM)",
+           "default": "20",
+           "info": "Section Title Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_line_height_sm",
+           "min":       20,
+           "max":        150,
+           "step":       5,
+           "unit":       "px",
+           "label":     "Section Title Line Height (SM)",
+           "default":   30
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_margin_bottom",
+           "min":       0,
+           "max":        50,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Title margin Bottom",
+           "default":   10
+         },
+
+
+	{
+           "type": "textarea",
+           "id": "section_sub_title",
+           "label": "Subtitle",
+           "default": "Contrary to popular belief, Lorem Ipsum is not simply random text."
+       },
+
+       {
+         "type": "color",
+         "id": "section_subtitle_color",
+         "label": "Subtitle Color",
+         "default": "#5a5a5a"
+       },
+         {
+           "type": "font_picker",
+           "id": "section_sub_title_font",
+           "label": "Font Family: Section Sub Title Font",
+           "default": "poppins_n6"
+         },
+         {
+             "type": "header",
+             "content": "Main Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_des_font_size",
+           "label": "Font Size: Font Size",
+           "default": "14",
+           "info": "Section Description Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_line_height",
+           "min":       20,
+           "max":        100,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title Line Height",
+           "default":   24
+         },
+         {
+             "type": "header",
+             "content": "Medium Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_des_font_size_md",
+           "label": "Font Size: Font Size (MD)",
+           "default": "14",
+           "info": "Section Description Font Size (MD)"
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_line_height_md",
+           "min":       20,
+           "max":        100,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title Line Height (MD)",
+           "default":   24
+         },
+
+         {
+             "type": "header",
+             "content": "Small Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_des_font_size_sm",
+           "label": "Font Size: Font Size (SM)",
+           "default": "14",
+           "info": "Section Description Font Size (SM)"
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_line_height_sm",
+           "min":       20,
+           "max":        100,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title Line Height (SM)",
+           "default":   24
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_margin_bottom",
+           "min":       0,
+           "max":        50,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title margin Bottom",
+           "default":   10
+         },
+
+	{
+               "type": "select",
+               "id": "title_align",
+               "label": "Title Align",
+               "options":[
+                     {
+                         "label": "Text Left",
+                         "value": "text-left"
+                     },
+                     {
+                         "label": "Text Center",
+                         "value": "text-center"
+                     },
+                     {
+                         "label": "Text Right",
+                         "value": "text-right"
+                     }
+                 ],
+                 "default": "text-center"
+             }
+
+
+],
+"blocks":[
+	{
+         "type": "html_content",
+         "name": "HTML Content",
+         "settings": [
+		{
+		  "type": "range",
+		  "id": "content_column",
+		  "min": 1,
+		  "max": 12,
+		  "step": 1,
+		  "label": "Content Column",
+		  "unit": "/12",
+		  "default": 6
+		},
+		{
+		  "type": "range",
+		  "id": "content_column_md",
+		  "min": 1,
+		  "max": 12,
+		  "step": 1,
+		  "label": "Tablet Content Column",
+		  "unit": "/12",
+		  "default": 6
+		},
+           {
+		  "type": "html",
+		  "id": "html_content",
+		  "label": "HTML Content",
+		  "default": "<div class='html-content-class'><h2>Custom Content Title</h2><p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.</p></div>"
+		},
+		{
+		  "type": "html",
+		  "id": "html_content_css",
+		  "label": "HTML Content CSS",
+		  "default": ".html-content-class{color: #666; margin-top: 100px;}.html-content-class h2{margin-bottom: 20px;}"
+		}
+         ]
+      },
+   {
+         "type": "image_content",
+         "name": "Image Content",
+         "settings": [
+		{
+		  "type": "range",
+		  "id": "content_column",
+		  "min": 1,
+		  "max": 12,
+		  "step": 1,
+		  "label": "Content Column",
+		  "unit": "/12",
+		  "default": 6
+		},
+		{
+		  "type": "range",
+		  "id": "content_column_md",
+		  "min": 1,
+		  "max": 12,
+		  "step": 1,
+		  "label": "Tablet Content Column",
+		  "unit": "/12",
+		  "default": 6
+		},
+           {
+		  "type": "image_picker",
+		  "id": "image_content_image",
+		  "label": "Image"
+		},
+           {
+		  "type": "url",
+		  "id": "image_content_image_url",
+		  "label": "URL"
+		}
+         ]
+      },
+   {
+         "type": "section_padding",
+         "name": "Section Padding",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "header",
+		  "content": "Large/Desktop Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 100
+		},
+		{
+		  "type": "header",
+		  "content": "Tablet Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 80
+		},
+		{
+		  "type": "header",
+		  "content": "Mobile Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 60
+		}
+         ]
+      },
+   {
+         "type": "section_margin",
+         "name": "Section Margin",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "header",
+		  "content": "Large/Desktop Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "header",
+		  "content": "Tablet Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "header",
+		  "content": "Mobile Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		}
+         ]
+      },
+   {
+         "type": "section_background",
+         "name": "Section Background",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "image_picker",
+		  "id": "section_bg_image",
+		  "label": "BG Image"
+		},
+		{
+		  "type": "color",
+		  "id": "section_bg_color",
+		  "label": "BG Color",
+		  "default": "#ffffff"
+		}
+         ]
+      }
+],
+"presets": [
+	{
+	  "name": "Custom Content",
+	  "category": "others",
+	  "blocks":[
+			{
+				"type": "html_content"
+			},
+			{
+				"type": "image_content"
+			},
+			{
+				"type": "section_padding"
+			}
+		]
+	}
+]
+ }
+{% endschema %}

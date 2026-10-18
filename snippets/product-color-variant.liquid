@@ -1,0 +1,34 @@
+{% if variant.image != null %}
+<ul class="color-categories theme-product-cus-tab-links">
+  {% for option in product.options %}
+  {% if option == 'Color' %}
+  {% assign index = forloop.index0 %}
+  {% assign colorlist = '' %}
+  {% assign color = '' %}
+  {% for variant in product.variants limit: 3 %}
+  {% capture color %}
+  {{ variant.options[index] }}
+  {% endcapture %}
+  {% unless colorlist contains color %}
+  {% assign text = color | handleize %}
+
+  <li class="img_variant {% if forloop.first == true %} p_select{% endif %}">
+    <div class="variant_img">
+      <a href="{{ variant.image.src | product_img_url: 'large' }}">
+        <img loading="lazy"  src="{{ variant.image.src | product_img_url: 'large' }}" alt="{{ variant.image.alt }}">
+      </a>
+    </div>
+  </li>
+
+  {% capture tempList %}
+  {{ colorlist | append: color | append: ' ' }}
+  {% endcapture %}
+
+  {% assign colorlist = tempList %}
+  {% endunless %}
+
+  {% endfor %}
+  {% endif %}
+  {% endfor %}
+</ul>
+{% endif %}

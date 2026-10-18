@@ -1,0 +1,85 @@
+/* 1. SECTION CONTAINERS */
+/* Applied to both service sections to ensure white background and no scroll issues */
+#shopify-section-template--19616879214779__service_4XLUF4,
+#shopify-section-template--19616879214779__service_M8yzPK {
+    background-color: #ffffff !important;
+    padding: 80px 0 !important;
+    overflow: visible !important;
+}
+
+/* 2. WEB VIEW CARD ADJUSTMENTS (Desktop) */
+@media (min-width: 992px) {
+    #section-template--19616879214779__service_4XLUF4 .single-feature.style_two,
+    #section-template--19616879214779__service_M8yzPK .single-feature.style_two {
+        min-height: 400px !important;
+        max-width: 450px !important;
+        margin: 30px !important;
+        padding: 70px 40px !important;
+    }
+    
+    #section-template--19616879214779__service_4XLUF4 .feature-icon i,
+    #section-template--19616879214779__service_M8yzPK .feature-icon i {
+        font-size: 70px !important;
+    }
+}
+
+/* 3. BASE CARD DESIGN (Rounded, Glow, No-Hover) */
+#section-template--19616879214779__service_4XLUF4 .single-feature.style_two,
+#section-template--19616879214779__service_M8yzPK .single-feature.style_two {
+    background-color: #ffffff !important; 
+    border-radius: 60px !important; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    
+    /* The Glow Effect */
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08) !important;
+    
+    /* Strict no-hover */
+    transition: none !important;
+    transform: none !important;
+}
+
+/* 4. BLACK COLOR SCHEME & TEXT */
+#section-template--19616879214779__service_4XLUF4 .feature-icon i,
+#section-template--19616879214779__service_M8yzPK .feature-icon i,
+#section-template--19616879214779__service_4XLUF4 .feature-content h3,
+#section-template--19616879214779__service_M8yzPK .feature-content h3,
+#section-template--19616879214779__service_4XLUF4 .feature-content p,
+#section-template--19616879214779__service_M8yzPK .feature-content p {
+    color: #000000 !important;
+}
+
+#section-template--19616879214779__service_4XLUF4 .feature-content h3,
+#section-template--19616879214779__service_M8yzPK .feature-content h3 {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    margin: 20px 0 10px !important;
+}
+
+#section-template--19616879214779__service_4XLUF4 .feature-content p,
+#section-template--19616879214779__service_M8yzPK .feature-content p {
+    font-size: 18px !important;
+    line-height: 1.5;
+}
+
+/* 5. MOBILE VIEW */
+@media (max-width: 991px) {
+    #section-template--19616879214779__service_4XLUF4 .single-feature.style_two,
+    #section-template--19616879214779__service_M8yzPK .single-feature.style_two {
+        min-height: 280px;
+        margin: 15px auto;
+        max-width: 90%;
+        padding: 40px 20px;
+    }
+}
+
+/* 6. CLEANUP HOVER ELEMENTS */
+#section-template--19616879214779__service_4XLUF4 .single-feature.style_two::before,
+#section-template--19616879214779__service_4XLUF4 .single-feature.style_two::after,
+#section-template--19616879214779__service_M8yzPK .single-feature.style_two::before,
+#section-template--19616879214779__service_M8yzPK .single-feature.style_two::after {
+    display: none !important;
+}

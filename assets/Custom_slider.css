@@ -1,0 +1,177 @@
+/* ==========================================================================
+   FINAL FIXED SLIDER DESIGN (16:7 RATIO + FIXED BUTTON BORDER & ANIMATION)
+   Targeting Section: #shopify-section-template--19616879214779__slider_3GHFyC
+   ========================================================================== */
+
+/* 1. Clean Layout Base */
+#shopify-section-template--19616879214779__slider_3GHFyC,
+#shopify-section-template--19616879214779__slider_3GHFyC .section-padding-1 {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* 2. Strict 16:7 Cinematic Aspect Ratio */
+#shopify-section-template--19616879214779__slider_3GHFyC .single-slider {
+  aspect-ratio: 16 / 7 !important;
+  height: auto !important;
+  min-height: 420px;
+  border-radius: 0px !important;
+  overflow: hidden !important;
+}
+
+/* Background Image Adjustments */
+#shopify-section-template--19616879214779__slider_3GHFyC .slide__item__image {
+  border-radius: 0px !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Hide Foreground Image Element */
+#shopify-section-template--19616879214779__slider_3GHFyC .slider-single-img {
+  display: none !important;
+}
+
+/* 3. Disable All Typography Entry Animations */
+#shopify-section-template--19616879214779__slider_3GHFyC .slider-content h3,
+#shopify-section-template--19616879214779__slider_3GHFyC .slider-content h1,
+#shopify-section-template--19616879214779__slider_3GHFyC .slider-content p {
+  animation: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}
+
+/* 4. Text Alignment & Styling */
+#shopify-section-template--19616879214779__slider_3GHFyC .slider-content {
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif !important;
+  text-align: left !important;
+  padding-left: 6% !important;
+}
+
+#shopify-section-template--19616879214779__slider_3GHFyC .slider-content h3 {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 2px !important;
+  margin-bottom: 8px !important;
+}
+
+#shopify-section-template--19616879214779__slider_3GHFyC .slider-content h1 {
+  font-size: 3.4rem !important;
+  font-weight: 800 !important;
+  line-height: 1.15 !important;
+  margin-bottom: 18px !important;
+  background: linear-gradient(to right, #FFFFFF 40%, #FF9F43 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  display: inline-block;
+}
+
+#shopify-section-template--19616879214779__slider_3GHFyC .slider-content p {
+  color: #FFFFFF !important;
+  font-size: 1.15rem !important;
+  line-height: 1.5 !important;
+  margin-bottom: 25px !important;
+  max-width: 520px !important;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================================================
+   5. COMPLETE BUTTON FIX (NO ANIMATION, NO BORDER GLITCHES, FULLY CLICKABLE)
+   ========================================================================== */
+
+/* Nuclear option to strip borders, outlines, shadows, and entry animations from all button layers */
+#shopify-section-template--19616879214779__slider_3GHFyC .slider__animated__btn__wrap,
+#shopify-section-template--19616879214779__slider_3GHFyC .slider-btn,
+#shopify-section-template--19616879214779__slider_3GHFyC .slider-btn *,
+#shopify-section-template--19616879214779__slider_3GHFyC .btn-hover,
+#shopify-section-template--19616879214779__slider_3GHFyC .btn-hover::before,
+#shopify-section-template--19616879214779__slider_3GHFyC .btn-hover::after {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  animation: none !important;
+  animation-delay: 0s !important;
+  animation-duration: 0s !important;
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Apply your precise styles cleanly directly onto the main functional button wrapper */
+#shopify-section-template--19616879214779__slider_3GHFyC .slider-btn {
+  background-color: #FF0000 !important; /* Bright Solid Red */
+  color: #FFFFFF !important;
+  border-radius: 50px !important;       /* Perfectly Rounded Pill Style */
+  padding: 14px 38px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;            /* Ensures it acts as a link */
+  z-index: 10 !important;
+  transition: background-color 0.2s ease, transform 0.2s ease !important; /* Gentle hover effect only */
+}
+
+/* Force text inside the button to look consistent and white */
+#shopify-section-template--19616879214779__slider_3GHFyC .slider-btn a,
+#shopify-section-template--19616879214779__slider_3GHFyC .slider-btn span {
+  color: #FFFFFF !important;
+  text-decoration: none !important;
+}
+
+#shopify-section-template--19616879214779__slider_3GHFyC .slider-btn:hover {
+  background-color: #D60000 !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Kill Ionicon Arrows completely */
+#shopify-section-template--19616879214779__slider_3GHFyC .ionicon,
+#shopify-section-template--19616879214779__slider_3GHFyC .slider-btn i {
+  display: none !important;
+}
+
+/* Custom Navigation Dots */
+#shopify-section-template--19616879214779__slider_3GHFyC .owl-dot span {
+  background: rgba(255, 255, 255, 0.4) !important;
+}
+#shopify-section-template--19616879214779__slider_3GHFyC .owl-dot.active span {
+  background: #FF0000 !important;
+}
+
+/* ==========================================================================
+   6. MOBILE RESPONSIVE OPTIMIZATION
+   ========================================================================== */
+@media (max-width: 768px) {
+  #shopify-section-template--19616879214779__slider_3GHFyC .single-slider {
+    aspect-ratio: 4 / 5 !important; 
+    min-height: 450px !important;
+  }
+
+  #shopify-section-template--19616879214779__slider_3GHFyC .slider-content {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  #shopify-section-template--19616879214779__slider_3GHFyC .slider-content h1 {
+    font-size: 2.2rem !important;
+    line-height: 1.2 !important;
+  }
+
+  #shopify-section-template--19616879214779__slider_3GHFyC .slider-content p {
+    font-size: 1rem !important;
+    max-width: 100% !important;
+    margin-bottom: 20px !important;
+  }
+
+  #shopify-section-template--19616879214779__slider_3GHFyC .slider-btn {
+    padding: 12px 30px !important;
+    font-size: 0.9rem !important;
+  }
+}

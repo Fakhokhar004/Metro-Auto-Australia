@@ -1,0 +1,659 @@
+{%- if section.settings.collection_filtering_handle == 'tag_filtering' -%}
+
+<div class="shop-sidebar sidebar-style">
+  {% for block in section.blocks %}
+  {% case block.type %}
+
+  {% when 'search' %}
+  <div class="sidebar-widget">
+    {%- if block.settings.widget_title != '' -%}
+    <h4 class="pro-sidebar-title">{{ block.settings.widget_title }}</h4>
+    {%- endif -%}
+    <div class="pro-sidebar-search mb-50 mt-25">
+      <form class="pro-sidebar-search-form" action="/search" method="get" role="search">
+        <input type="hidden" name="type" value="product">
+        <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'general.search.placeholder' | t }}" aria-label="{{ 'general.search.placeholder' | t }}">
+        <button type="submit">
+          <i class="sli sli-magnifier"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {% when 'category' %}
+  <div class="sidebar-widget">
+    {%- if block.settings.widget_title != '' -%}
+    <h4 class="pro-sidebar-title">{{ block.settings.widget_title }}</h4>
+    {%- endif -%}
+    <div class="sidebar-widget-list mb-50 mt-25">
+      <ul>
+        {% assign categories_list_limit = block.settings.categories_list_limit_hanlde %}
+        {% for c in collections limit: categories_list_limit %}
+        <li {% if collection and collection.handle == c.handle %}class="active"{% endif %} >
+          <div class="sidebar-widget-list-left">
+            <input type="checkbox"{% if collection and collection.handle == c.handle %} checked{% endif %}> <a href="{{ c.url }}">{{ c.title }} <span>{{ c.products_count }}</span></a>
+            <span class="checkmark"></span>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  {% when 'vendor' %}
+  <div class="sidebar-widget">
+    {%- if block.settings.widget_title != '' -%}
+    <h4 class="pro-sidebar-title">{{ block.settings.widget_title }}</h4>
+    {%- endif -%}
+    <div class="sidebar-widget-list mt-20">
+      <ul>
+        {% assign vendors_list_limit = block.settings.vendors_list_limit_hanlde %}
+        {% for product_vendor in collection.all_vendors limit: vendors_list_limit %}
+        
+        <li {% if collection.current_vendor %} class="active"{% endif %} >
+          <div class="sidebar-widget-list-left">
+            <input type="checkbox"{% if collection.current_vendor %} checked{% endif %}> <a href="{{ product_vendor | url_for_vendor }} ">{{ product_vendor }}</a>
+            <span class="checkmark"></span>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  {% when 'type' %}
+  <div class="sidebar-widget">
+    {%- if block.settings.widget_title != '' -%}
+    <h4 class="pro-sidebar-title">{{ block.settings.widget_title }}</h4>
+    {%- endif -%}
+    <div class="sidebar-widget-list mt-20">
+      <ul>
+        {% assign types_list_limit = block.settings.types_list_limit_hanlde %}
+        {% for type in shop.types limit: types_list_limit %}  
+          {%- if type != '' -%}
+            <li {% if collection.current_type == type %} class="active" {% endif %}>
+              <div class="sidebar-widget-list-left">
+                <input type="checkbox"{% if collection.current_type %} checked{% endif %}> <a href="{{ product_type | url_for_type }}">{{ product_type }}</a>
+                <span class="checkmark"></span>
+              </div>
+            </li>
+          {%- endif -%}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  {% when 'color' %}
+  <div class="sidebar-widget">
+    {%- if block.settings.widget_title != '' -%}
+    <h4 class="pro-sidebar-title">{{ block.settings.widget_title }}</h4>
+    {%- endif -%}
+    <div class="sidebar-widget-list mt-20">
+      
+      <ul>
+        {% assign tags = block.settings.color_picker | replace: ', ', ',' | replace: ' ,', ',' | split: ',' %}
+        {% assign colors_list_limit = block.settings.colors_list_limit_hanlde %}
+
+        {% for t in tags limit: colors_list_limit %}
+        {% assign tag = t | strip %}
+        {%- if current_tags contains tag -%}
+        <li class="active">
+          <div class="sidebar-widget-list-left">
+            <input type="checkbox" checked> {{ tag | link_to_remove_tag: tag }}
+            <span class="checkmark"></span> 
+          </div>
+        </li>
+        {%- elsif collection.all_tags contains tag -%}
+        <li>
+          <div class="sidebar-widget-list-left">
+            <input type="checkbox"> {{ tag | link_to_add_tag: tag }}
+            <span class="checkmark"></span>
+          </div>
+        </li>
+        {%- endif -%}
+        {% endfor %}
+      </ul>
+      
+  
+
+      
+      
+    </div>
+  </div>
+
+  {% when 'size' %}
+  <div class="sidebar-widget">
+    {%- if block.settings.widget_title != '' -%}
+    <h4 class="pro-sidebar-title">{{ block.settings.widget_title }}</h4>
+    {%- endif -%}
+    <div class="sidebar-widget-list mt-20">
+      <ul>
+        {% assign tags = block.settings.size_picker | replace: ', ', ',' | replace: ' ,', ',' | split: ',' %}
+        {% assign size_list_limit = block.settings.size_list_limit_hanlde %}
+
+        {% for t in tags limit: size_list_limit %}
+        {% assign tag = t | strip %}
+        {%- if current_tags contains tag -%}
+        <li class="active">
+          <div class="sidebar-widget-list-left">
+            <input type="checkbox" checked> {{ tag | link_to_remove_tag: tag }}
+            <span class="checkmark"></span>
+          </div>
+        </li>
+        {%- elsif collection.all_tags contains tag -%}
+        <li>
+          <div class="sidebar-widget-list-left">
+            <input type="checkbox"> {{ tag | link_to_add_tag: tag }}
+            <span class="checkmark"></span>
+          </div>
+        </li>
+        {%- endif -%}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  {% when 'tag' %}
+  <div class="sidebar-widget">
+    {%- if block.settings.widget_title != '' -%}
+    <h4 class="pro-sidebar-title">{{ block.settings.widget_title }}</h4>
+    {%- endif -%}
+    <div class="sidebar-widget-tag mt-25">
+      <ul>
+        {% assign tags_list_limit = block.settings.tags_list_limit_hanlde %}
+        {% for tag in collection.all_tags limit: tags_list_limit %}
+        {%- if current_tags contains tag -%}
+        <li class="active">{{ tag | link_to_remove_tag: tag }}</li>
+        {%- else -%}
+        <li>{{ tag | link_to_add_tag: tag }}</li>
+        {%- endif -%}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  
+  {% when 'recent-view' %}
+  
+  {% render 'recent-view', product: product, block: block %}
+
+  
+
+  {% when 'menu' %}
+  <div class="sidebar-widget">
+    {%- if block.settings.widget_title != '' -%}
+    <h4 class="pro-sidebar-title">{{ block.settings.widget_title }}</h4>
+    {%- endif -%}
+    <div class="sidebar-widget-list mt-20 category-sub-menu">
+      <ul>
+        {% assign menu = block.settings.menu_handle %}
+        {% for link in linklists[menu].links %}
+        {% assign childlink_handle = link.title | handle %}
+        {% if linklists[childlink_handle] and linklists[childlink_handle].links.size > 0 %}
+        <li class="has-sub {% if link.active %}active{% endif %}"><a href="{{ link.url }}">{{ link.title }}</a>
+          <ul>
+            {% for childlink in linklists[childlink_handle].links %}
+            <li><a href="{{ childlink.url }}">{{ childlink.title }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% else %}
+        <li class="{% if link.active %}active{% endif %}"><a href="{{ link.url }}">{{ link.title }}</a></li>
+        {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  {% when 'banner' %}
+  {% capture i %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+  <div class="sidebar-widget">
+    {%- if block.settings.widget_title != '' -%}
+    <h4 class="pro-sidebar-title">{{ block.settings.widget_title }}</h4>
+    {%- endif -%}
+    <div class="sidebar-widget mt-20">
+
+      {%- liquid
+        assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+        assign fetch_priority = 'auto'
+        if section.index == 1
+          assign fetch_priority = 'high'
+        endif
+        assign image_class = 'lazyload-main-image animated responsive-image__image'
+        assign lazy_load = 'lazy'
+      -%}
+
+      
+      {% if block.settings.banner_image != blank and block.settings.banner_image_url != blank %}
+      <a href="{{ block.settings.btn1_url}}" class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.banner_image.aspect_ratio | times: 100}}%;">
+
+        {% assign image_height = block.settings.banner_image.width | divided_by: block.settings.banner_image.aspect_ratio %}
+        {{ block.settings.banner_image | image_url: width: 3840 | image_tag: width: block.settings.banner_image.width, height: image_height, 
+        widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt}}
+        
+      </a>
+      {% elsif block.settings.banner_image != blank %}
+        <div class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.banner_image.aspect_ratio | times: 100}}%;">
+          {% assign image_height = block.settings.banner_image.width | divided_by: block.settings.banner_image.aspect_ratio %}
+          {{ block.settings.banner_image | image_url: width: 3840 | image_tag: width: block.settings.banner_image.width, height: image_height, 
+          widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt}}
+        </div>
+      {% else %}
+      {{ 'collection-' | append: i | placeholder_svg_tag: 'banner-svg-image' }}
+      {% endif %}
+    </div>
+  </div>
+  {% endcase %}{% endfor %}
+</div>
+
+<script>
+  
+  $(".sidebar-widget ul li.active a").removeAttr("href");
+
+  $('.category-sub-menu li.has-sub > a').on('click', function () {
+    $(this).removeAttr('href');
+    var element = $(this).parent('li');
+    if (element.hasClass('open')) {
+      element.removeClass('open');
+      element.find('li').removeClass('open');
+      element.find('ul').slideUp();
+    } else {
+      element.addClass('open');
+      element.children('ul').slideDown();
+      element.siblings('li').children('ul').slideUp();
+      element.siblings('li').removeClass('open');
+      element.siblings('li').find('li').removeClass('open');
+      element.siblings('li').find('ul').slideUp();
+    }
+  }); 
+
+  $(document).ready(function(){
+    $(".sidebar-widget-list ul li input[type='checkbox']").change(function(){
+      var item=$(this);    
+      if(item.is(":checked"))
+      {
+        location.href = item.siblings('a').attr('href');
+      }    
+    }); 
+  });
+</script>
+
+
+{%- elsif section.settings.collection_filtering_handle == 'storefront_filtering' -%}
+
+<div class="sidebar-wrapper shop-sidebar storefront-filter icofont"> 
+  <form class="filter-form" name="testform" id="myform">
+    <div class="blog-sidebar sidebar-single selected-filter-value">
+      <ul class="blog-tags">
+        {%- for filter in collection.filters -%}
+        {% if filter.type == "price_range"  %}
+        {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+        <li>
+          <a class="active-filter-data-remove" href="{{ filter.url_to_remove }}">
+            {%- assign min_value = filter.min_value.value | default: 0 -%}
+            {%- assign max_value = filter.max_value.value | default: filter.range_max -%}
+            {{ min_value | money }} - {{ max_value | money }} <i class="pe-7s-close"></i>
+          </a>
+        </li>
+        {%- endif -%}
+        {% endif %}
+        {%- for filter_value in filter.active_values -%}
+        <li>
+          <a class="active-filter-data-remove" href="{{ filter_value.url_to_remove }}">
+            {{ filter_value.label }} <i class="pe-7s-close"></i>
+          </a>
+        </li>
+        {%- endfor -%}
+        {%- endfor -%}
+        <li class="active">
+          <a href="{{ collection.url }}" class="active-filters-clear">Clear all</a>
+        </li>
+      </ul>
+    </div>
+    
+    {%- for filter in collection.filters -%}
+    {%- case filter.type -%}
+    {%- when 'list' -%}
+    <div class="blog-sidebar sidebar-single widget-collapse sidebar-widget">
+      <h5 class="title widget-collapse-show">
+        {{ filter.label }}
+      </h5>
+      <div class="sidebar-body widget-collapse-hide" style="display: none;">
+        <div class="filter-value-counter">
+          <span class="filter-value-selected">{{ filter.active_values.size }} selected</span>
+          {%- if filter.active_values.size > 0 -%}
+          <a href="{{ filter.url_to_remove }}" class="filter-reset-selected-value">Reset</a>
+          {%- endif -%}
+        </div>
+        <ul class="checkbox-container categories-list">
+          {%- for filter_value in filter.values -%}
+          <li>
+            <div class="custom-control custom-checkbox">
+
+              
+              <input type="checkbox"
+                     name="{{ filter_value.param_name }}"
+                     value="{{ filter_value.value }}"
+                     id="Filter-{{ filter.label | handle }}-{{ forloop.index }}"
+                     {% if filter_value.active -%}checked{%- endif %}
+                    {% if filter_value.count == 0 and filter_value.active == false %}disabled{% endif %}
+                     class="custom-control-input"
+                     >
+              <label for="Filter-{{ filter.label | handle }}-{{ forloop.index }}" class="custom-control-label">{{ filter_value.label | escape }} <span class="count_value"> ({{ filter_value.count }})</span></label>
+                          
+              <span class="checkmark"></span>
+            
+            </div>
+          </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    </div>
+    
+    {%- when 'price_range' -%}
+    <div class="blog-sidebar sidebar-single widget-collapse sidebar-widget">
+      <h5 class="title">
+        {{ filter.label }}
+      </h5>
+      <div class="sidebar-body widget-collapse-hide">
+        <div class="filter-value-counter">
+          {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+          <span class="filter-value-selected">
+            {%- assign min_value = filter.min_value.value | default: 0 -%}
+            {%- assign max_value = filter.max_value.value | default: filter.range_max -%}
+            Price: {{ min_value | money }} - {{ max_value | money }}
+          </span>
+          <a href="{{ filter.url_to_remove }}" class="filter-reset-selected-value">Reset</a>
+          {%- else -%}
+          <span class="filter-value-selected">{{ filter.active_values.size }} selected</span>
+          {%- endif -%}
+        </div>
+        <div class="checkbox-container categories-list sidebar-price-filter">
+          
+          <div class="filter-range-from">
+            <span>{{ cart.currency.symbol }}</span>
+            <input name="{{ filter.min_value.param_name }}"
+                   id="Filter-{{ filter.label | handle }}-{{ forloop.index }}"
+                   {% if filter.min_value.value -%}
+                   value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
+                   {%- endif %}
+                  type="number"
+                   placeholder="0"
+                   min="0"
+                   max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                   >
+            <label for="Filter-{{ filter.label | handle }}-{{ forloop.index }}">From</label>
+          </div>
+          <div class="filter-price-range-to">
+            <span>{{ cart.currency.symbol }}</span>
+            <input name="{{ filter.max_value.param_name }}"
+                   id="Filter-{{ filter.label | handle }}-{{ forloop.index }}"
+                   {% if filter.max_value.value -%}
+                   value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
+                   {%- endif %}
+                  type="number"
+                   placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                   min="0"
+                   max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                   >
+            <label for="Filter-{{ filter.label | handle }}-{{ forloop.index }}">To</label>
+          </div>
+          
+        </div>
+        <input class="mt-20 theme-default-button" type="submit" value="Filter">
+      </div>
+    </div>
+    {%- endcase -%}
+    {%- endfor -%}
+  </form>
+</div>
+
+<script>  
+  /* Slidebar collapse */ 
+  $('.widget-collapse h5').on("click", function(){
+    $(this).siblings('.widget-collapse-hide').slideToggle();
+    $(this).toggleClass('widget-collapse-show');
+  });
+
+  $('input[type="checkbox"]').click(function() {
+    setTimeout(function() {
+      $('form[name="testform"]').submit();
+    }, 500);
+  });
+
+</script>
+
+<style>
+  
+
+  @media (min-width: 992px){
+    .sidebar__filter__responsive {
+        position: relative;
+    }
+    .sidebar-collapse-hide {
+        position: sticky;
+        top: 100px;
+    }
+  }
+  
+  
+  .widget-collapse {
+    position: relative;
+  }
+  .widget-collapse .widget-collapse-hide {
+    display: block;
+    padding-top: 20px;
+  }
+  .widget-collapse h5:after {
+      position: absolute;
+      content: "\ef9a";
+      left: auto;
+      right: 0;
+      top: 0;
+      font-family: 'IcoFont';
+      font-size: 10px;
+      line-height: 24px;
+  }
+  .widget-collapse h5.widget-collapse-show:after {
+    content: "\efc2";
+  }
+  .storefront-filter .custom-control-input {
+    height: 25px;
+  }
+  .blog-sidebar.sidebar-single.widget-collapse.sidebar-widget {
+    margin-bottom: 0;
+  }
+  .blog-sidebar.widget-collapse .title {
+    cursor: pointer;
+    padding-bottom: 20px;
+    position: relative;
+    font-size:20px;
+    font-weight:500;
+  }
+  .storefront-filter .custom-checkbox {
+    display: flex;
+  }
+  .storefront-filter .custom-control-label {
+    width: 100%;
+    transition: .3s;
+  }
+  .storefront-filter .count_value {
+    float: right;
+  }
+  .blog-sidebar.widget-collapse .title:before {
+    bottom: 4px;
+  }
+  .blog-sidebar .title:before {
+    width: 100%;
+    height: 1px;
+    bottom: -10px;
+    left: 0;
+    background-color: {{ settings.content_color | color_modify: 'alpha', 0.05 }};
+    content: "";
+    position: absolute;
+  }
+
+
+  .storefront-filter .sidebar-widget .custom-checkbox {
+    position: relative;
+  }
+  .storefront-filter .sidebar-widget .custom-checkbox .checkmark {
+    position: absolute;
+    top: 5px;
+    left: 0;
+    height: 15px;
+    width: 15px;
+    background-color:{{ settings.body_bg_color }};
+    border: 2px solid {{ settings.content_color | color_modify: 'alpha', 0.7 }};
+    border-radius: 3px;
+  }
+
+  .storefront-filter .sidebar-widget .custom-checkbox .checkmark::after {
+    left: 3px;
+    top: 0;
+    width: 5px;
+    height: 8px;
+    border: solid {{ settings.body_bg_color }};
+    border-top-width: medium;
+    border-right-width: medium;
+    border-bottom-width: medium;
+    border-left-width: medium;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+    position:absolute;
+    content:"";
+  }
+
+  .storefront-filter .sidebar-widget .custom-checkbox input:checked ~ .checkmark, 
+  .storefront-filter .sidebar-widget .custom-checkbox:hover input:not([disabled]) ~ .checkmark {
+    background-color: {{ settings.color_primary }};
+    border: 2px solid {{ settings.color_primary }};
+  }
+  
+  .storefront-filter .sidebar-widget .custom-checkbox input:disabled ~ .custom-control-label,
+  .storefront-filter .sidebar-widget .custom-checkbox input:disabled ~ .checkmark{
+    opacity: .7;
+  }
+
+  .sidebar-wrapper.storefront-filter {
+    padding-top: 10px;
+  }
+
+  .storefront-filter .sidebar-widget .custom-checkbox:hover input:not([disabled]) ~ .custom-control-label {
+    color: {{ settings.color_primary }};
+  }
+  .selected-filter-value .blog-tags li {
+    display: inline-block;
+    margin-right: 5px;
+    margin-bottom: 5px;
+  }
+
+
+  /* Collection Filter */
+  .custom-control-input {
+    position: absolute;
+    z-index: 1;
+    opacity: 0;
+    left: 0;
+  }
+  .storefront-filter .widget-collapse .widget-collapse-hide {
+    padding-top: 10px;
+  }
+  .filter-value-counter {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+  }
+  .shop-sidebar .blog-sidebar {
+    padding-bottom: 40px;
+  }
+  .sidebar-price-filter {
+    display: flex;
+    justify-content: space-between;
+  }
+.sidebar-price-filter input {
+    width: 80px;
+    padding: 10px;
+    border: 1px solid {{ settings.content_color | color_modify: 'alpha', 0.1 }};
+    background: transparent;
+}
+  input.mt-20.theme-default-button {
+    margin-top: 20px;
+  }
+  .shopify-app-block {
+    margin-bottom: 10px;
+  }
+  span.filter-value-selected {
+    border: 1px dashed {{ settings.content_color | color_modify: 'alpha', 0.1 }};
+    padding: 2px 10px;
+    border-radius: 30px;
+  }
+  .selected-filter-value ul li.active {
+    padding-bottom: 40px;
+  }
+  .selected-filter-value ul li:only-child {
+    display: none;
+  }
+  .shop-sidebar .blog-sidebar.selected-filter-value {
+    padding-bottom: 0;
+  }
+  a.filter-reset-selected-value {
+    text-decoration: underline;
+  }
+  .blog-sidebar.selected-filter-value .blog-tags li.active a {
+    border: none;
+    background: transparent;
+    color: {{ settings.color_primary }};
+    text-decoration: underline;
+  }
+  .blog-sidebar.selected-filter-value .blog-tags li a {
+    border: 1px dashed {{ settings.content_color | color_modify: 'alpha', 0.1 }};
+    padding: 2px 7px;
+    border-radius: 30px;
+  }
+  .blog-sidebar.selected-filter-value .blog-tags li a:hover {
+    background: transparent;
+    color: {{ settings.content_color }};
+  }
+
+  .checkbox-container.categories-list {
+    max-height: 250px;
+    overflow: auto;
+}
+
+
+.sidebar__filter__responsive .theme-default-button.sidebar-collapse-btn {
+	width: 100%;
+	font-size: 18px;
+	justify-content: center;
+	font-weight: 700;
+	height: 50px;
+	align-items: center;
+    border-radius: 10px;
+    margin-bottom:20px;
+    background-color:{{ settings.color_primary }};
+    border:1px solid {{ settings.color_primary }};
+    display:none;
+    color: {{ settings.content_color }};
+}
+.sidebar__filter__responsive .theme-default-button.sidebar-collapse-btn:hover {
+    background-color:transparent;
+    color:{{ settings.color_primary }};
+  
+}
+.sidebar__filter__responsive .theme-default-button svg{
+  margin-right:10px;
+  fill:#fff;
+  transition: .3s;
+}
+.sidebar__filter__responsive .theme-default-button:hover svg{
+  fill:{{ settings.color_primary }};
+}
+
+  
+
+</style>
+
+
+{%- endif -%}

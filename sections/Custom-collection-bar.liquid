@@ -1,0 +1,196 @@
+{%- comment -%}
+  ============================================================
+  COLLECTION BAR SECTION
+  - Horizontal pill-style links, sits below the header
+  - Add / remove / reorder links as blocks in the theme editor
+  - Each block: label + URL, fully editable
+  - Color settings included
+  ============================================================
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign sid = section.id
+-%}
+
+<style>
+  #shopify-section-{{ sid }} .collection-bar {
+    background: {{ s.bg_color }};
+    border-bottom: 1px solid {{ s.border_color }};
+  }
+  #shopify-section-{{ sid }} .collection-bar-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: {{ s.alignment }};
+    gap: 8px;
+    padding: 14px 24px;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  #shopify-section-{{ sid }} .collection-bar-inner::-webkit-scrollbar { display: none; }
+
+  #shopify-section-{{ sid }} .collection-pill {
+    flex-shrink: 0;
+    display: inline-block;
+    padding: 8px 18px;
+    color: {{ s.text_color }};
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    white-space: nowrap;
+    border-radius: 999px;
+    transition: color .2s ease, background .2s ease;
+  }
+
+  /* Underline style (matches reference image) */
+  #shopify-section-{{ sid }} .collection-bar.style-underline .collection-pill {
+    border-radius: 0;
+    padding: 8px 12px;
+    border-bottom: 2px solid transparent;
+  }
+  #shopify-section-{{ sid }} .collection-bar.style-underline .collection-pill:hover,
+  #shopify-section-{{ sid }} .collection-bar.style-underline .collection-pill.is-active {
+    color: {{ s.hover_color }};
+    border-bottom-color: {{ s.hover_color }};
+  }
+
+  /* Pill style */
+  #shopify-section-{{ sid }} .collection-bar.style-pill .collection-pill {
+    background: {{ s.pill_bg_color }};
+  }
+  #shopify-section-{{ sid }} .collection-bar.style-pill .collection-pill:hover,
+  #shopify-section-{{ sid }} .collection-bar.style-pill .collection-pill.is-active {
+    color: {{ s.pill_active_text_color }};
+    background: {{ s.hover_color }};
+  }
+
+  @media (max-width: 700px) {
+    #shopify-section-{{ sid }} .collection-bar-inner { justify-content: flex-start; padding: 12px 16px; }
+  }
+</style>
+
+<div class="collection-bar style-{{ s.link_style }}">
+  <div class="collection-bar-inner">
+    {%- for block in section.blocks -%}
+      <a
+        href="{{ block.settings.url }}"
+        class="collection-pill{% if block.settings.mark_active and request.path == block.settings.url %} is-active{% endif %}"
+        {{ block.shopify_attributes }}
+      >
+        {{ block.settings.label | default: 'Collection' }}
+      </a>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Collection Bar",
+  "settings": [
+    {
+      "type": "select",
+      "id": "link_style",
+      "label": "Link style",
+      "options": [
+        { "label": "Underline (default)", "value": "underline" },
+        { "label": "Pill background", "value": "pill" }
+      ],
+      "default": "underline"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "label": "Left", "value": "flex-start" },
+        { "label": "Center", "value": "center" },
+        { "label": "Right", "value": "flex-end" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Bar background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Bottom border",
+      "default": "#ececec"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Link text color",
+      "default": "#111827"
+    },
+    {
+      "type": "color",
+      "id": "hover_color",
+      "label": "Hover / active color",
+      "default": "#d10000"
+    },
+    {
+      "type": "color",
+      "id": "pill_bg_color",
+      "label": "Pill background (pill style only)",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "pill_active_text_color",
+      "label": "Pill active text color (pill style only)",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "Collection Link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "New Arrivals"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        },
+        {
+          "type": "checkbox",
+          "id": "mark_active",
+          "label": "Highlight when this is the current page",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Bar",
+      "blocks": [
+        { "type": "link", "settings": { "label": "New Arrivals" } },
+        { "type": "link", "settings": { "label": "Women's Clothing" } },
+        { "type": "link", "settings": { "label": "Men's Apparel" } },
+        { "type": "link", "settings": { "label": "Accessories" } },
+        { "type": "link", "settings": { "label": "Home & Living" } },
+        { "type": "link", "settings": { "label": "Sale" } },
+        { "type": "link", "settings": { "label": "Gift Ideas" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

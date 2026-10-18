@@ -1,0 +1,420 @@
+{% doc %}
+  @prompt
+    Refined version: bordered card grid (up to 6 columns, 3+ rows), logo/image
+    centered and fully visible inside each card (contain-fit, adjustable),
+    title shown as a plain label below the image (always visible, no overlay),
+    whole card links out, one shared color/radius system for the whole block.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-collage-{{ ai_gen_id }} {
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+    background-color: {{ block.settings.section_bg_color }};
+    padding: {{ block.settings.section_padding }}px;
+    border-radius: {{ block.settings.section_border_radius }}px;
+  }
+
+  .ai-collage__grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.columns_desktop }}, 1fr);
+    gap: {{ block.settings.grid_gap }}px;
+    width: 100%;
+  }
+
+  /* ---- Card (shared color + radius system) ---- */
+  .ai-collage__item-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    background-color: {{ block.settings.card_bg_color }};
+    border: {{ block.settings.card_border_width }}px solid {{ block.settings.card_border_color }};
+    border-radius: {{ block.settings.card_border_radius }}px;
+    padding: {{ block.settings.card_padding }}px;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  .ai-collage__item-no-link-{{ ai_gen_id }} {
+    cursor: default;
+  }
+
+  .ai-collage__item-{{ ai_gen_id }}:hover {
+    transform: translateY({{ block.settings.hover_lift }}px);
+    box-shadow: 0 8px 24px {{ block.settings.card_hover_shadow_color }};
+    border-color: {{ block.settings.card_hover_border_color }};
+  }
+
+  /* ---- Image area (this is what controls "fit") ---- */
+  .ai-collage__image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    height: {{ block.settings.image_area_height }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: {{ block.settings.image_padding }}px;
+    box-sizing: border-box;
+  }
+
+  .ai-collage__image-{{ ai_gen_id }} {
+    max-width: {{ block.settings.image_max_width_percent }}%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: {{ block.settings.image_fit_mode }};
+  }
+
+  .ai-collage__placeholder-{{ ai_gen_id }} {
+    width: 60%;
+    height: 60%;
+    opacity: 0.25;
+  }
+
+  /* ---- Optional badge logo (shows on hover, top right) ---- */
+  .ai-collage__badge-{{ ai_gen_id }} {
+    position: absolute;
+    top: {{ block.settings.logo_position_top }}px;
+    right: {{ block.settings.logo_position_right }}px;
+    width: {{ block.settings.logo_size }}px;
+    height: {{ block.settings.logo_size }}px;
+    border-radius: {{ block.settings.logo_border_radius }}px;
+    overflow: hidden;
+    background-color: {{ block.settings.logo_bg_color }};
+    padding: {{ block.settings.logo_padding }}px;
+    box-shadow: 0 2px 10px {{ block.settings.logo_shadow_color }};
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    box-sizing: border-box;
+  }
+
+  .ai-collage__item-{{ ai_gen_id }}:hover .ai-collage__badge-{{ ai_gen_id }} {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .ai-collage__badge-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* ---- Title / description (always visible, plain label) ---- */
+  .ai-collage__title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    font-weight: {{ block.settings.title_weight }};
+    color: {{ block.settings.title_color }};
+    text-transform: {{ block.settings.title_transform }};
+    letter-spacing: {{ block.settings.title_letter_spacing }}px;
+    margin: {{ block.settings.title_margin_top }}px 0 0;
+    line-height: 1.3;
+  }
+
+  .ai-collage__description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.description_size }}px;
+    color: {{ block.settings.description_color }};
+    margin: 4px 0 0;
+    line-height: 1.5;
+  }
+
+  .ai-collage__empty-{{ ai_gen_id }} {
+    font-size: 11px;
+    color: #999;
+    margin-top: 6px;
+  }
+
+  @media screen and (max-width: 768px) {
+    .ai-collage__grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat({{ block.settings.columns_mobile }}, 1fr);
+      gap: {{ block.settings.grid_gap | times: 0.6 }}px;
+    }
+    .ai-collage__image-wrapper-{{ ai_gen_id }} {
+      height: {{ block.settings.image_area_height | times: 0.75 }}px;
+    }
+    .ai-collage__title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size | times: 0.9 }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-collage-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-collage__grid-{{ ai_gen_id }}">
+    {% for i in (1..18) %}
+      {% liquid
+        assign image_key = 'image_' | append: i
+        assign logo_key = 'logo_' | append: i
+        assign title_key = 'title_' | append: i
+        assign description_key = 'description_' | append: i
+        assign link_key = 'link_' | append: i
+
+        assign item_image = block.settings[image_key]
+        assign item_logo = block.settings[logo_key]
+        assign item_title = block.settings[title_key]
+        assign item_description = block.settings[description_key]
+        assign item_link = block.settings[link_key]
+
+        assign has_content = false
+        if item_image != blank or item_title != blank
+          assign has_content = true
+        endif
+      %}
+
+      {% if has_content %}
+        {% if item_link != blank %}
+          <a href="{{ item_link }}" class="ai-collage__item-{{ ai_gen_id }}">
+        {% else %}
+          <div class="ai-collage__item-{{ ai_gen_id }} ai-collage__item-no-link-{{ ai_gen_id }}">
+        {% endif %}
+
+          <div class="ai-collage__image-wrapper-{{ ai_gen_id }}">
+            {% if item_image %}
+              <img
+                src="{{ item_image | image_url: width: 400 }}"
+                alt="{{ item_title | escape }}"
+                loading="lazy"
+                width="400"
+                height="300"
+                class="ai-collage__image-{{ ai_gen_id }}"
+              >
+            {% else %}
+              {{ 'image' | placeholder_svg_tag: 'ai-collage__placeholder-' | append: ai_gen_id }}
+            {% endif %}
+
+            {% if item_logo %}
+              <div class="ai-collage__badge-{{ ai_gen_id }}">
+                <img
+                  src="{{ item_logo | image_url: width: 200 }}"
+                  alt="{{ item_title | escape }}"
+                  loading="lazy"
+                  width="200"
+                  height="200"
+                >
+              </div>
+            {% endif %}
+          </div>
+
+          {% if item_title != blank %}
+            <p class="ai-collage__title-{{ ai_gen_id }}">{{ item_title }}</p>
+          {% endif %}
+
+          {% if item_description != blank %}
+            <p class="ai-collage__description-{{ ai_gen_id }}">{{ item_description }}</p>
+          {% endif %}
+
+          {% if item_image == blank %}
+            <span class="ai-collage__empty-{{ ai_gen_id }}">Add image {{ i }}</span>
+          {% endif %}
+
+        {% if item_link != blank %}
+          </a>
+        {% else %}
+          </div>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Brand / image collage",
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "desktop_width_percent", "label": "Desktop width", "min": 50, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "columns_desktop", "label": "Columns on desktop", "min": 2, "max": 6, "step": 1, "default": 6 },
+    { "type": "select", "id": "columns_mobile", "label": "Columns on mobile", "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" }
+      ], "default": "2" },
+    { "type": "range", "id": "grid_gap", "label": "Gap between cards", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 16 },
+    { "type": "range", "id": "card_padding", "label": "Card padding", "min": 8, "max": 40, "step": 2, "unit": "px", "default": 20 },
+
+    { "type": "header", "content": "Section background" },
+    { "type": "color", "id": "section_bg_color", "label": "Background", "default": "#ffffff" },
+    { "type": "range", "id": "section_padding", "label": "Padding", "min": 0, "max": 50, "step": 5, "unit": "px", "default": 0 },
+    { "type": "range", "id": "section_border_radius", "label": "Border radius", "min": 0, "max": 30, "step": 2, "unit": "px", "default": 0 },
+
+    { "type": "header", "content": "Card style (applies to every card)" },
+    { "type": "color", "id": "card_bg_color", "label": "Background", "default": "#ffffff" },
+    { "type": "range", "id": "card_border_radius", "label": "Border radius", "min": 0, "max": 30, "step": 1, "default": 10 },
+    { "type": "range", "id": "card_border_width", "label": "Border width", "min": 0, "max": 5, "step": 1, "unit": "px", "default": 1 },
+    { "type": "color", "id": "card_border_color", "label": "Border color", "default": "#e5e5e5" },
+    { "type": "color", "id": "card_hover_border_color", "label": "Border color on hover", "default": "#cccccc" },
+    { "type": "color", "id": "card_hover_shadow_color", "label": "Shadow color on hover", "default": "rgba(0,0,0,0.08)" },
+    { "type": "range", "id": "hover_lift", "label": "Hover lift", "min": -10, "max": 0, "step": 1, "unit": "px", "default": -4 },
+
+    { "type": "header", "content": "Image fit (size logos inside card)" },
+    { "type": "range", "id": "image_area_height", "label": "Image area height", "min": 60, "max": 260, "step": 10, "unit": "px", "default": 120 },
+    { "type": "range", "id": "image_padding", "label": "Inner padding around image", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 10 },
+    { "type": "range", "id": "image_max_width_percent", "label": "Max image width", "min": 30, "max": 100, "step": 5, "unit": "%", "default": 80 },
+    { "type": "select", "id": "image_fit_mode", "label": "Fit mode", "options": [
+        { "value": "contain", "label": "Contain (show whole logo, no crop)" },
+        { "value": "cover", "label": "Cover (fill area, may crop)" }
+      ], "default": "contain" },
+
+    { "type": "header", "content": "Title" },
+    { "type": "color", "id": "title_color", "label": "Color", "default": "#1a1a1a" },
+    { "type": "range", "id": "title_size", "label": "Size", "min": 10, "max": 24, "step": 1, "unit": "px", "default": 13 },
+    { "type": "select", "id": "title_weight", "label": "Weight", "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ], "default": "700" },
+    { "type": "select", "id": "title_transform", "label": "Case", "options": [
+        { "value": "none", "label": "As typed" },
+        { "value": "uppercase", "label": "UPPERCASE" }
+      ], "default": "uppercase" },
+    { "type": "range", "id": "title_letter_spacing", "label": "Letter spacing", "min": 0, "max": 3, "step": 0.5, "unit": "px", "default": 0.5 },
+    { "type": "range", "id": "title_margin_top", "label": "Space above title", "min": 0, "max": 30, "step": 2, "unit": "px", "default": 8 },
+
+    { "type": "header", "content": "Description (optional, hidden if empty)" },
+    { "type": "color", "id": "description_color", "label": "Color", "default": "#666666" },
+    { "type": "range", "id": "description_size", "label": "Size", "min": 10, "max": 18, "step": 1, "unit": "px", "default": 12 },
+
+    { "type": "header", "content": "Hover badge logo (optional)" },
+    { "type": "range", "id": "logo_size", "label": "Size", "min": 30, "max": 90, "step": 5, "unit": "px", "default": 45 },
+    { "type": "range", "id": "logo_position_top", "label": "Position from top", "min": 5, "max": 40, "step": 1, "unit": "px", "default": 10 },
+    { "type": "range", "id": "logo_position_right", "label": "Position from right", "min": 5, "max": 40, "step": 1, "unit": "px", "default": 10 },
+    { "type": "range", "id": "logo_padding", "label": "Padding", "min": 2, "max": 16, "step": 1, "unit": "px", "default": 6 },
+    { "type": "range", "id": "logo_border_radius", "label": "Border radius", "min": 0, "max": 50, "step": 5, "default": 50 },
+    { "type": "color", "id": "logo_bg_color", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "logo_shadow_color", "label": "Shadow color", "default": "rgba(0,0,0,0.15)" },
+
+    { "type": "header", "content": "Item 1" },
+    { "type": "image_picker", "id": "image_1", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_1", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_1", "label": "Title" },
+    { "type": "textarea", "id": "description_1", "label": "Description" },
+    { "type": "url", "id": "link_1", "label": "Link" },
+
+    { "type": "header", "content": "Item 2" },
+    { "type": "image_picker", "id": "image_2", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_2", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_2", "label": "Title" },
+    { "type": "textarea", "id": "description_2", "label": "Description" },
+    { "type": "url", "id": "link_2", "label": "Link" },
+
+    { "type": "header", "content": "Item 3" },
+    { "type": "image_picker", "id": "image_3", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_3", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_3", "label": "Title" },
+    { "type": "textarea", "id": "description_3", "label": "Description" },
+    { "type": "url", "id": "link_3", "label": "Link" },
+
+    { "type": "header", "content": "Item 4" },
+    { "type": "image_picker", "id": "image_4", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_4", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_4", "label": "Title" },
+    { "type": "textarea", "id": "description_4", "label": "Description" },
+    { "type": "url", "id": "link_4", "label": "Link" },
+
+    { "type": "header", "content": "Item 5" },
+    { "type": "image_picker", "id": "image_5", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_5", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_5", "label": "Title" },
+    { "type": "textarea", "id": "description_5", "label": "Description" },
+    { "type": "url", "id": "link_5", "label": "Link" },
+
+    { "type": "header", "content": "Item 6" },
+    { "type": "image_picker", "id": "image_6", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_6", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_6", "label": "Title" },
+    { "type": "textarea", "id": "description_6", "label": "Description" },
+    { "type": "url", "id": "link_6", "label": "Link" },
+
+    { "type": "header", "content": "Item 7" },
+    { "type": "image_picker", "id": "image_7", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_7", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_7", "label": "Title" },
+    { "type": "textarea", "id": "description_7", "label": "Description" },
+    { "type": "url", "id": "link_7", "label": "Link" },
+
+    { "type": "header", "content": "Item 8" },
+    { "type": "image_picker", "id": "image_8", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_8", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_8", "label": "Title" },
+    { "type": "textarea", "id": "description_8", "label": "Description" },
+    { "type": "url", "id": "link_8", "label": "Link" },
+
+    { "type": "header", "content": "Item 9" },
+    { "type": "image_picker", "id": "image_9", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_9", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_9", "label": "Title" },
+    { "type": "textarea", "id": "description_9", "label": "Description" },
+    { "type": "url", "id": "link_9", "label": "Link" },
+
+    { "type": "header", "content": "Item 10" },
+    { "type": "image_picker", "id": "image_10", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_10", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_10", "label": "Title" },
+    { "type": "textarea", "id": "description_10", "label": "Description" },
+    { "type": "url", "id": "link_10", "label": "Link" },
+
+    { "type": "header", "content": "Item 11" },
+    { "type": "image_picker", "id": "image_11", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_11", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_11", "label": "Title" },
+    { "type": "textarea", "id": "description_11", "label": "Description" },
+    { "type": "url", "id": "link_11", "label": "Link" },
+
+    { "type": "header", "content": "Item 12" },
+    { "type": "image_picker", "id": "image_12", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_12", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_12", "label": "Title" },
+    { "type": "textarea", "id": "description_12", "label": "Description" },
+    { "type": "url", "id": "link_12", "label": "Link" },
+
+    { "type": "header", "content": "Item 13" },
+    { "type": "image_picker", "id": "image_13", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_13", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_13", "label": "Title" },
+    { "type": "textarea", "id": "description_13", "label": "Description" },
+    { "type": "url", "id": "link_13", "label": "Link" },
+
+    { "type": "header", "content": "Item 14" },
+    { "type": "image_picker", "id": "image_14", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_14", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_14", "label": "Title" },
+    { "type": "textarea", "id": "description_14", "label": "Description" },
+    { "type": "url", "id": "link_14", "label": "Link" },
+
+    { "type": "header", "content": "Item 15" },
+    { "type": "image_picker", "id": "image_15", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_15", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_15", "label": "Title" },
+    { "type": "textarea", "id": "description_15", "label": "Description" },
+    { "type": "url", "id": "link_15", "label": "Link" },
+
+    { "type": "header", "content": "Item 16" },
+    { "type": "image_picker", "id": "image_16", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_16", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_16", "label": "Title" },
+    { "type": "textarea", "id": "description_16", "label": "Description" },
+    { "type": "url", "id": "link_16", "label": "Link" },
+
+    { "type": "header", "content": "Item 17" },
+    { "type": "image_picker", "id": "image_17", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_17", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_17", "label": "Title" },
+    { "type": "textarea", "id": "description_17", "label": "Description" },
+    { "type": "url", "id": "link_17", "label": "Link" },
+
+    { "type": "header", "content": "Item 18" },
+    { "type": "image_picker", "id": "image_18", "label": "Image / logo" },
+    { "type": "image_picker", "id": "logo_18", "label": "Hover badge logo (optional)" },
+    { "type": "text", "id": "title_18", "label": "Title" },
+    { "type": "textarea", "id": "description_18", "label": "Description" },
+    { "type": "url", "id": "link_18", "label": "Link" }
+  ],
+  "presets": [
+    { "name": "Brand / image collage" }
+  ]
+}
+{% endschema %}

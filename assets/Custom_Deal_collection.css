@@ -1,0 +1,556 @@
+/* =========================================================
+   PREMIUM WHITE DEAL COLLECTION (APPLIES TO BOTH SECTIONS)
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 55px 0 !important;
+  background: #ffffff !important;
+  overflow: hidden !important;
+}
+
+/* REMOVE GRADIENT / BLOBS */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK::before,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq::before,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK::after,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* =========================================================
+   FULL WIDTH CONTAINER
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .container,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .container,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .container-fluid,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .container-fluid,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .default,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .default {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-left: 35px !important;
+  padding-right: 35px !important;
+  margin: 0 auto !important;
+  background: transparent !important;
+}
+
+/* =========================================================
+   REMOVE TIMER
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .countdown-inner,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .countdown-inner,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .count-box,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .count-box,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-countdown,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-countdown,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK [class*="countdown"],
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq [class*="countdown"] {
+  display: none !important;
+}
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .section-title,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .section-title {
+  text-align: center !important;
+  margin-bottom: 40px !important;
+}
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .section-title h2,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .section-title h2 {
+  font-size: 44px !important;
+  line-height: 1.2 !important;
+  font-weight: 900 !important;
+  color: #111111 !important;
+  margin-bottom: 10px !important;
+  letter-spacing: -1px !important;
+}
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .section-title p,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .section-title p {
+  color: #666666 !important;
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+}
+
+/* =========================================================
+   GRID SPACING
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .row,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .row,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .product-menu-banner-wrapper,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .product-menu-banner-wrapper {
+  margin-left: -10px !important;
+  margin-right: -10px !important;
+}
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .col-xl-3,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .col-xl-3,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .col-lg-3,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .col-lg-3,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .col-md-6,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .col-md-6,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .slick-slide,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .slick-slide {
+  padding: 10px !important;
+}
+
+/* =========================================================
+   PRODUCT CARD
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product {
+  position: relative !important;
+  background: #ffffff !important;
+  border-radius: 10px !important;
+  border: 1px solid #ededed !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  /* transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease !important; */
+  /* box-shadow: 0 6px 20px rgba(0,0,0,0.05) !important; */
+}
+
+/* CARD HOVER */
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product:hover,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product:hover {
+  transform: translateY(-2px) !important;
+  /* border-color: #d10000 !important; */
+  /* box-shadow: 0 20px 5px rgba(0,0,0,0.12) !important; */
+  z-index: 10 !important;
+}
+
+/* =========================================================
+   INNER
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-inner,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-inner {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+}
+
+/* =========================================================
+   IMAGE AREA
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-image-wrap,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-image-wrap {
+  position: relative !important;
+  height: 320px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #fafafa !important;
+  overflow: hidden !important;
+  padding: 20px !important;
+}
+
+/* PRODUCT IMAGE */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-image-wrap img,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-image-wrap img,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-image-wrap .lazyload-main-image,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-image-wrap .lazyload-main-image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  transition: transform .45s ease !important;
+}
+
+/* IMAGE HOVER */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product:hover .theme-product-image-wrap img,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product:hover .theme-product-image-wrap img {
+  /* transform: scale(1.08) !important; */
+}
+
+/* =========================================================
+   HIDE ACTION UL
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-products .theme-product.theme-product-action-style-2 .theme-product-inner .theme-product-image-wrap .theme-product-action ul,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-products .theme-product.theme-product-action-style-2 .theme-product-inner .theme-product-image-wrap .theme-product-action ul {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  /* transform: translateY(20px) scale(.92) !important; */
+  transition: opacity .35s ease, transform .35s ease, visibility .35s ease !important;
+  pointer-events: none !important;
+}
+
+/* SHOW ACTION UL ON HOVER */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-products .theme-product.theme-product-action-style-2:hover .theme-product-inner .theme-product-image-wrap .theme-product-action ul,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-products .theme-product.theme-product-action-style-2:hover .theme-product-inner .theme-product-image-wrap .theme-product-action ul {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) scale(1) !important;
+  pointer-events: auto !important;
+}
+
+/* =========================================================
+   ACTION ICON STYLE
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-action ul li,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-action ul li {
+  margin: 5px !important;
+}
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-action ul li a,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-action ul li a {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+  border: 1px solid #eeeeee !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background .3s ease, color .3s ease, transform .3s ease, border-color .3s ease !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08) !important;
+}
+
+/* ICON HOVER */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-action ul li a:hover,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-action ul li a:hover {
+  background: #d10000 !important;
+  color: #ffffff !important;
+  border-color: #d10000 !important;
+  transform: translateY(-3px) !important;
+}
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-content,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-content,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-content-inner,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-content-inner {
+  padding: 24px !important;
+  background: #ffffff !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+}
+
+/* =========================================================
+   CATEGORY
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-categories,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-categories {
+  margin-bottom: 10px !important;
+}
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-categories a,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-categories a {
+  color: #d10000 !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  text-decoration: none !important;
+}
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-title,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-title {
+  margin-bottom: 12px !important;
+}
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-title a,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-title a,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-title h3,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-title h3 {
+  color: #111111 !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  line-height: 1.5 !important;
+  text-decoration: none !important;
+  transition: color .3s ease !important;
+}
+
+/* TITLE HOVER */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product:hover .theme-product-title a,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product:hover .theme-product-title a {
+  color: #d10000 !important;
+}
+
+/* =========================================================
+   PRICE
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-price,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-price {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-bottom: 16px !important;
+  flex-wrap: wrap !important;
+}
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-price .price,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-price .price,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-price .new,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-price .new,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-price .amount,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-price .amount {
+  color: #d10000 !important;
+  font-size: 24px !important;
+  font-weight: 900 !important;
+}
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-price del,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-price del,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-price .old,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-price .old {
+  color: #999999 !important;
+  font-size: 14px !important;
+  text-decoration: line-through !important;
+}
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-action,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-action {
+  margin-top: auto !important;
+}
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-action button,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-action button,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-action .btn-cart,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-action .btn-cart,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-action a.btn,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-action a.btn {
+  width: 100% !important;
+  height: 52px !important;
+  border: none !important;
+  border-radius: 16px !important;
+  background: #d10000 !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  letter-spacing: .3px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background .3s ease, transform .3s ease, box-shadow .3s ease !important;
+  box-shadow: 0 10px 20px rgba(209,0,0,0.18) !important;
+}
+
+/* BUTTON HOVER */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-action button:hover,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-action button:hover,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-action .btn-cart:hover,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-action .btn-cart:hover,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-action a.btn:hover,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-action a.btn:hover {
+  background: #111111 !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 16px 30px rgba(0,0,0,0.16) !important;
+}
+
+/* =========================================================
+   SHOW SLIDER ARROWS / CURSORS
+========================================================= */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .slick-prev,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .slick-prev,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .slick-next,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .slick-next,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .product-dec-prev,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .product-dec-prev,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .product-dec-next,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .product-dec-next {
+  position: absolute !important;
+  top: 45% !important;
+  transform: translateY(-50%) !important;
+  width: 54px !important;
+  height: 54px !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  border: 1px solid #ececec !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  z-index: 99 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.10) !important;
+  transition: all .3s ease !important;
+}
+
+/* LEFT */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .slick-prev,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .slick-prev,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .product-dec-prev,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .product-dec-prev {
+  left: -10px !important;
+}
+
+/* RIGHT */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .slick-next,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .slick-next,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .product-dec-next,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .product-dec-next {
+  right: -10px !important;
+}
+
+/* HOVER EFFECT */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .slick-prev:hover,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .slick-prev:hover,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .slick-next:hover,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .slick-next:hover,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .product-dec-prev:hover,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .product-dec-prev:hover,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .product-dec-next:hover,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .product-dec-next:hover {
+  background: #d10000 !important;
+  border-color: #d10000 !important;
+  transform: translateY(-50%) scale(1.08) !important;
+  box-shadow: 0 14px 30px rgba(209,0,0,0.25) !important;
+}
+
+/* ICONS */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .slick-prev::before,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .slick-prev::before,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .slick-next::before,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .slick-next::before,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .product-dec-prev i,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .product-dec-prev i,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .product-dec-next i,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .product-dec-next i {
+  color: #111111 !important;
+  font-size: 18px !important;
+  opacity: 1 !important;
+  transition: color .3s ease !important;
+}
+
+/* ICON HOVER */
+
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .slick-prev:hover::before,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .slick-prev:hover::before,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .slick-next:hover::before,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .slick-next:hover::before,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .product-dec-prev:hover i,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .product-dec-prev:hover i,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .product-dec-next:hover i,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .product-dec-next:hover i {
+  color: #ffffff !important;
+}
+/* =========================================================
+   LINE CLAMP FOR PRODUCT TITLE
+========================================================= */
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-title a,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-title a,
+#shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-title h3,
+#shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-title h3 {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important; /* Change to 3 if you prefer 3 lines */
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  
+  /* Optional: Ensures a stable card grid layout by giving titles a fixed minimum height */
+  min-height: 44px !important; 
+}
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .slick-prev,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .slick-prev,
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .slick-next,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .slick-next,
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .product-dec-prev,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .product-dec-prev,
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .product-dec-next,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .product-dec-next {
+    width: 42px !important;
+    height: 42px !important;
+  }
+
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .slick-prev,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .slick-prev,
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .product-dec-prev,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .product-dec-prev {
+    left: 0 !important;
+  }
+
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .slick-next,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .slick-next,
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .product-dec-next,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .product-dec-next {
+    right: 0 !important;
+  }
+
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq {
+    padding: 40px 0 !important;
+  }
+
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .container,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .container,
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .container-fluid,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .container-fluid,
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .default,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .default {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .section-title h2,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .section-title h2 {
+    font-size: 30px !important;
+  }
+
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-image-wrap,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-image-wrap {
+    height: 240px !important;
+  }
+
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-content,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-content {
+    padding: 18px !important;
+  }
+
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-price .price,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-price .price {
+    font-size: 20px !important;
+  }
+
+  #shopify-section-template--19616879214779__deal_collections_ApfbJK .theme-product-title a,
+  #shopify-section-template--19616878788795__deal_collections_hLJ6jq .theme-product-title a {
+    font-size: 15px !important;
+  }
+}

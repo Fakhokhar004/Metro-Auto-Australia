@@ -1,0 +1,35 @@
+{%- comment -%}
+  Not for the theme editor. Fetched by ma-theme.js through the Section Rendering API, e.g.
+  /collections/all/toyota-corolla-2019?section_id=ma-card-results
+  /search?q=Toyota%20AND%20Corolla%20AND%202019&type=product&section_id=ma-card-results
+  Returns product cards for the current collection or search.
+{%- endcomment -%}
+<div class="ma-pgrid">
+  {%- if template.name == 'product' and product -%}
+    {%- comment -%} /products/<handle>?section_id=ma-card-results: one card (used by the collection fit filter) {%- endcomment -%}
+    {%- render 'ma-product-card', product: product -%}
+  {%- elsif recommendations.performed -%}
+    {%- for product in recommendations.products -%}
+      {%- render 'ma-product-card', product: product -%}
+    {%- endfor -%}
+  {%- elsif search.performed -%}
+    {%- for item in search.results limit: 8 -%}
+      {%- if item.object_type == 'product' -%}
+        {%- render 'ma-product-card', product: item -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- elsif collection -%}
+    {%- paginate collection.products by 8 -%}
+      {%- for product in collection.products -%}
+        {%- render 'ma-product-card', product: product -%}
+      {%- endfor -%}
+    {%- endpaginate -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Metro card results",
+  "settings": []
+}
+{% endschema %}

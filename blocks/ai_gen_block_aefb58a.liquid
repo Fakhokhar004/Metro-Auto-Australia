@@ -1,0 +1,704 @@
+{% doc %}
+  @prompt
+    create a section in which table is created but in single row with divider being short and 0.5 pexel then in that i can attach a logo on the left corner with those settings and then also title and description with color control as well like this and there  is should be margin contorl as well so it looks good, what i have told uo that you can make the logo inside the section and then create 1 row with 4 max coloms with adjustable inside it and there should be no gaps inbetween them and logo inside of all the sections of the table
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-table-section-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    margin-top: {{ block.settings.margin_top }}px;
+    margin-bottom: {{ block.settings.margin_bottom }}px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Single layer, no overflow:hidden. The container has generous
+     padding around the row, so cells never reach the rounded corners —
+     nothing needs clipping. overflow:hidden + border-radius on a large
+     flex box is what was causing the black corner artifact (a known
+     Chrome GPU-compositing rendering bug), so we simply don't use it. */
+  .ai-table-outer-{{ ai_gen_id }} {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: {{ block.settings.container_bg_color }};
+    border-radius: {{ block.settings.container_border_radius }}px;
+    {% if block.settings.container_border_enabled %}
+      border: {{ block.settings.container_border_width }}px solid {{ block.settings.container_border_color }};
+    {% endif %}
+    padding: {{ block.settings.container_padding_vertical }}px {{ block.settings.container_padding_horizontal }}px;
+  }
+
+  .ai-table-row-{{ ai_gen_id }} {
+    display: flex;
+    width: 100%;
+  }
+
+  .ai-table-cell-{{ ai_gen_id }} {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: {{ block.settings.cell_padding_vertical }}px {{ block.settings.cell_padding_horizontal }}px;
+    border-right: {{ block.settings.divider_width }}px solid {{ block.settings.divider_color }};
+    display: flex;
+    flex-direction: column;
+    align-items: {{ block.settings.content_alignment }};
+    text-align: {% if block.settings.content_alignment == 'flex-start' %}left{% elsif block.settings.content_alignment == 'flex-end' %}right{% else %}center{% endif %};
+  }
+
+  .ai-table-cell-{{ ai_gen_id }}:first-child {
+    padding-left: 0;
+  }
+
+  .ai-table-cell-{{ ai_gen_id }}:last-child {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  /* Logo — small mark, sits at the top of the cell (top-left once
+     content_alignment is left, which is now the default). */
+  .ai-table-logo-{{ ai_gen_id }} {
+    margin-bottom: {{ block.settings.logo_spacing }}px;
+  }
+
+  .ai-table-logo-{{ ai_gen_id }} img {
+    width: {{ block.settings.logo_width }}px;
+    height: auto;
+    display: block;
+  }
+
+  .ai-table-logo-placeholder-{{ ai_gen_id }} {
+    width: {{ block.settings.logo_width }}px;
+    height: {{ block.settings.logo_width | times: 0.6 }}px;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+  }
+
+  .ai-table-logo-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  .ai-table-title-{{ ai_gen_id }} {
+    margin: 0 0 {{ block.settings.title_spacing }}px 0;
+    font-size: {{ block.settings.title_font_size }}px;
+    font-weight: {{ block.settings.title_font_weight }};
+    color: {{ block.settings.title_color }};
+    line-height: 1.3;
+  }
+
+  .ai-table-description-{{ ai_gen_id }} {
+    margin: 0;
+    font-size: {{ block.settings.description_font_size }}px;
+    color: {{ block.settings.description_color }};
+    line-height: 1.5;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-table-section-{{ ai_gen_id }} {
+      margin-top: {{ block.settings.margin_top_mobile }}px;
+      margin-bottom: {{ block.settings.margin_bottom_mobile }}px;
+    }
+
+    .ai-table-outer-{{ ai_gen_id }} {
+      border-radius: {{ block.settings.container_border_radius_mobile }}px;
+      padding: {{ block.settings.container_padding_vertical_mobile }}px {{ block.settings.container_padding_horizontal_mobile }}px;
+    }
+
+    .ai-table-row-{{ ai_gen_id }} {
+      flex-direction: column;
+    }
+
+    .ai-table-cell-{{ ai_gen_id }} {
+      border-right: none;
+      border-bottom: {{ block.settings.divider_width }}px solid {{ block.settings.divider_color }};
+      padding: {{ block.settings.cell_padding_vertical_mobile }}px {{ block.settings.cell_padding_horizontal_mobile }}px;
+    }
+
+    .ai-table-cell-{{ ai_gen_id }}:first-child {
+      padding-top: 0;
+    }
+
+    .ai-table-cell-{{ ai_gen_id }}:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .ai-table-logo-{{ ai_gen_id }} {
+      margin-bottom: {{ block.settings.logo_spacing_mobile }}px;
+    }
+
+    .ai-table-logo-{{ ai_gen_id }} img {
+      width: {{ block.settings.logo_width_mobile }}px;
+    }
+
+    .ai-table-logo-placeholder-{{ ai_gen_id }} {
+      width: {{ block.settings.logo_width_mobile }}px;
+      height: {{ block.settings.logo_width_mobile | times: 0.6 }}px;
+    }
+
+    .ai-table-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_font_size_mobile }}px;
+      margin-bottom: {{ block.settings.title_spacing_mobile }}px;
+    }
+
+    .ai-table-description-{{ ai_gen_id }} {
+      font-size: {{ block.settings.description_font_size_mobile }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-table-section-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-table-outer-{{ ai_gen_id }}">
+    <div class="ai-table-row-{{ ai_gen_id }}">
+      {% for i in (1..4) %}
+        {% liquid
+          assign column_enabled_key = 'column_' | append: i | append: '_enabled'
+          assign logo_key = 'column_' | append: i | append: '_logo'
+          assign title_key = 'column_' | append: i | append: '_title'
+          assign description_key = 'column_' | append: i | append: '_description'
+
+          assign column_enabled = block.settings[column_enabled_key]
+          assign logo = block.settings[logo_key]
+          assign title = block.settings[title_key]
+          assign description = block.settings[description_key]
+        %}
+
+        {% if column_enabled %}
+          <div class="ai-table-cell-{{ ai_gen_id }}">
+            <div class="ai-table-logo-{{ ai_gen_id }}">
+              {% if logo %}
+                <img
+                  src="{{ logo | image_url: width: 400 }}"
+                  alt="{{ logo.alt | escape }}"
+                  loading="lazy"
+                  width="{{ block.settings.logo_width }}"
+                  height="auto"
+                >
+              {% else %}
+                <div class="ai-table-logo-placeholder-{{ ai_gen_id }}">
+                  {{ 'image' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+            </div>
+            {% if title != blank %}
+              <h3 class="ai-table-title-{{ ai_gen_id }}">{{ title }}</h3>
+            {% endif %}
+            {% if description != blank %}
+              <div class="ai-table-description-{{ ai_gen_id }}">{{ description }}</div>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Table with columns",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Column 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "column_1_enabled",
+      "label": "Enable column 1",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "column_1_logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "column_1_title",
+      "label": "Title",
+      "default": "7,600+"
+    },
+    {
+      "type": "textarea",
+      "id": "column_1_description",
+      "label": "Description",
+      "default": "Products Available"
+    },
+    {
+      "type": "header",
+      "content": "Column 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "column_2_enabled",
+      "label": "Enable column 2",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "column_2_logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "column_2_title",
+      "label": "Title",
+      "default": "70+"
+    },
+    {
+      "type": "textarea",
+      "id": "column_2_description",
+      "label": "Description",
+      "default": "Car Brands Supported"
+    },
+    {
+      "type": "header",
+      "content": "Column 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "column_3_enabled",
+      "label": "Enable column 3",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "column_3_logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "column_3_title",
+      "label": "Title",
+      "default": "200+"
+    },
+    {
+      "type": "textarea",
+      "id": "column_3_description",
+      "label": "Description",
+      "default": "Cities Delivered"
+    },
+    {
+      "type": "header",
+      "content": "Column 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "column_4_enabled",
+      "label": "Enable column 4",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "column_4_logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "column_4_title",
+      "label": "Title",
+      "default": "50+"
+    },
+    {
+      "type": "textarea",
+      "id": "column_4_description",
+      "label": "Description",
+      "default": "Premium Brands"
+    },
+    {
+      "type": "header",
+      "content": "Container (outer box)"
+    },
+    {
+      "type": "color",
+      "id": "container_bg_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "container_border_enabled",
+      "label": "Show outer border",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "container_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "container_border_color",
+      "label": "Border color",
+      "default": "#2a2a2a"
+    },
+    {
+      "type": "range",
+      "id": "container_border_radius",
+      "label": "Corner radius (desktop)",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "container_border_radius_mobile",
+      "label": "Corner radius (mobile)",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "container_padding_vertical",
+      "label": "Inner padding, vertical (desktop)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "container_padding_horizontal",
+      "label": "Inner padding, horizontal (desktop)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "container_padding_vertical_mobile",
+      "label": "Inner padding, vertical (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "container_padding_horizontal_mobile",
+      "label": "Inner padding, horizontal (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Divider"
+    },
+    {
+      "type": "range",
+      "id": "divider_width",
+      "label": "Divider width",
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0.5
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider color",
+      "default": "#3a3a3a"
+    },
+    {
+      "type": "header",
+      "content": "Logo style"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Width (desktop)",
+      "min": 8,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "logo_width_mobile",
+      "label": "Width (mobile)",
+      "min": 8,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "logo_spacing",
+      "label": "Spacing below (desktop)",
+      "min": 0,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "logo_spacing_mobile",
+      "label": "Spacing below (mobile)",
+      "min": 0,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Title style"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "Font size (desktop)",
+      "min": 14,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "title_font_size_mobile",
+      "label": "Font size (mobile)",
+      "min": 12,
+      "max": 36,
+      "step": 2,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color",
+      "default": "#ff4d1c"
+    },
+    {
+      "type": "range",
+      "id": "title_spacing",
+      "label": "Spacing below (desktop)",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "title_spacing_mobile",
+      "label": "Spacing below (mobile)",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Description style"
+    },
+    {
+      "type": "range",
+      "id": "description_font_size",
+      "label": "Font size (desktop)",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "description_font_size_mobile",
+      "label": "Font size (mobile)",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Color",
+      "default": "#9a9a9a"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "flex-end",
+          "label": "Right"
+        }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "header",
+      "content": "Cell padding"
+    },
+    {
+      "type": "range",
+      "id": "cell_padding_vertical",
+      "label": "Vertical (desktop)",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "cell_padding_horizontal",
+      "label": "Horizontal (desktop)",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "cell_padding_vertical_mobile",
+      "label": "Vertical (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "cell_padding_horizontal_mobile",
+      "label": "Horizontal (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section margins"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Bottom (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Top (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Bottom (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    }
+  ],
+  "presets": [
+    {
+      "name": "Table with columns"
+    }
+  ]
+}
+{% endschema %}

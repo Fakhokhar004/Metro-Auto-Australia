@@ -1,0 +1,158 @@
+{%- comment -%}
+  Metro Auto wishlist page (/pages/wishlist-page). Hearts on product cards save handles in this browser
+  (localStorage "shopify-wishlist", assets/ma-theme.js); this page loads those products as cards.
+  Removing a heart here takes the card away. ?items=handle1,handle2 opens a shared list and offers to save it.
+{%- endcomment -%}
+{{ 'ma-listing.css' | asset_url | stylesheet_tag }}
+{{ 'ma-pages.css' | asset_url | stylesheet_tag }}
+
+<div data-ma-wishlist>
+  <section class="ma-sbanner">
+    <div class="ma-wrap ma-sbanner__in">
+      <div class="ma-sbanner__copy">
+        <nav class="ma-sbanner__crumb" aria-label="Breadcrumb">
+          <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span><span aria-current="page">{{ section.settings.title | escape }}</span>
+        </nav>
+        <h1 class="ma-cartpage__h1">{{ section.settings.title | escape }}</h1>
+        <p class="ma-sbanner__sub" data-ma-wish-sub>{{ section.settings.text | escape }}</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ma-wrap ma-wish">
+    <div class="ma-wish__bar" data-ma-wish-bar hidden>
+      <span class="ma-wish__count" data-ma-wish-count></span>
+      <div class="ma-wish__actions">
+        <button type="button" data-ma-wish-share>Copy link to this list</button>
+        <button type="button" data-ma-wish-clear>Clear list</button>
+        <button type="button" class="is-red" data-ma-wish-addall>Add all to cart</button>
+      </div>
+    </div>
+    <p class="ma-wish__status" data-ma-wish-status role="status">Loading your saved parts…</p>
+    <div class="ma-pgrid" data-ma-wish-grid></div>
+    <div class="ma-wish__empty" data-ma-wish-empty hidden>
+      <h2>{{ section.settings.empty_title | escape }}</h2>
+      <p>{{ section.settings.empty_text | escape }}</p>
+      <a class="ma-button ma-button--red" href="{{ routes.collections_url }}">Browse categories</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var root = document.querySelector('[data-ma-wishlist]');
+    if (!root || root._ma) return;
+    root._ma = true;
+    var grid = root.querySelector('[data-ma-wish-grid]');
+    var bar = root.querySelector('[data-ma-wish-bar]');
+    var status = root.querySelector('[data-ma-wish-status]');
+    var empty = root.querySelector('[data-ma-wish-empty]');
+    var countEl = root.querySelector('[data-ma-wish-count]');
+    var sub = root.querySelector('[data-ma-wish-sub]');
+    var HANDLE_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/i;
+
+    function cards() { return Array.prototype.slice.call(grid.querySelectorAll('[data-ma-card]')); }
+    function paint() {
+      var n = cards().length;
+      bar.hidden = n === 0;
+      empty.hidden = n > 0;
+      countEl.textContent = n + (n === 1 ? ' saved part' : ' saved parts');
+      var avail = grid.querySelectorAll('[data-ma-atc]:not([disabled])').length;
+      var add = root.querySelector('[data-ma-wish-addall]');
+      add.disabled = avail === 0;
+      add.textContent = avail ? 'Add ' + (avail === n ? 'all' : avail + ' in stock') + ' to cart' : 'Nothing in stock to add';
+    }
+
+    function start() {
+      var MA = window.MA;
+      var params = new URLSearchParams(window.location.search);
+      var shared = (params.get('items') || '').split(',').filter(function (h) { return HANDLE_RE.test(h); });
+      var mine = MA.readWishlist();
+      var list = shared.length ? shared : mine;
+      if (shared.length) {
+        sub.textContent = 'A list someone shared with you. Tap the heart on a part to save it to your own list.';
+      }
+      if (!list.length) { status.hidden = true; paint(); return; }
+      MA.loadCards(list, grid).then(function (n) {
+        status.hidden = true;
+        /* drop saved handles that no longer exist in the store */
+        if (!shared.length && n < list.length) {
+          var have = cards().map(function (c) { var h = c.querySelector('[data-ma-wish]'); return h && h.getAttribute('data-ma-wish'); });
+          MA.writeWishlist(mine.filter(function (h) { return have.indexOf(h) > -1; }));
+        }
+        paint();
+      });
+
+      /* heart removed on this page: take the card away (own list only) */
+      document.addEventListener('ma:wishlist', function (e) {
+        if (shared.length) return;
+        var h = e.detail && e.detail.handle;
+        if (!h || (e.detail.list || []).indexOf(h) > -1) return;
+        cards().forEach(function (c) {
+          var b = c.querySelector('[data-ma-wish]');
+          if (b && b.getAttribute('data-ma-wish') === h) {
+            c.classList.add('is-leaving');
+            setTimeout(function () { c.remove(); paint(); }, 260);
+          }
+        });
+      });
+
+      root.querySelector('[data-ma-wish-clear]').addEventListener('click', function () {
+        if (!window.confirm('Remove every part from your wishlist?')) return;
+        if (!shared.length) MA.writeWishlist([]);
+        grid.innerHTML = '';
+        if (MA.paintWishlist) MA.paintWishlist();
+        paint();
+      });
+
+      root.querySelector('[data-ma-wish-share]').addEventListener('click', function (e) {
+        var handles = cards().map(function (c) { var b = c.querySelector('[data-ma-wish]'); return b && b.getAttribute('data-ma-wish'); }).filter(Boolean);
+        var url = window.location.origin + window.location.pathname + '?items=' + handles.join(',');
+        var btn = e.currentTarget, label = btn.textContent;
+        var done = function () { btn.textContent = 'Link copied'; setTimeout(function () { btn.textContent = label; }, 2000); };
+        if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, function () { window.prompt('Copy this link', url); });
+        else window.prompt('Copy this link', url);
+      });
+
+      root.querySelector('[data-ma-wish-addall]').addEventListener('click', function (e) {
+        var btn = e.currentTarget;
+        var items = Array.prototype.map.call(grid.querySelectorAll('[data-ma-atc]:not([disabled])'), function (b) {
+          var c = b.closest('[data-ma-card]');
+          var q = c.querySelector('[data-ma-qty-input]');
+          return { id: +c.getAttribute('data-variant-id'), quantity: Math.max(1, parseInt(q && q.value, 10) || 1) };
+        }).filter(function (i) { return i.id; });
+        if (!items.length) return;
+        btn.disabled = true;
+        btn.textContent = 'Adding…';
+        fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ items: items }) })
+          .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw j; return j; }); })
+          .then(function () {
+            btn.textContent = 'Added to cart';
+            if (MA.refreshCart) MA.refreshCart();
+            setTimeout(paint, 2000);
+          })
+          .catch(function (err) {
+            btn.textContent = (err && err.description) ? 'Some parts couldn’t be added' : 'Couldn’t add, try again';
+            setTimeout(paint, 2500);
+          })
+          .finally(function () { btn.disabled = false; });
+      });
+    }
+    if (window.MA && window.MA.loadCards && window.MA.readWishlist) start();
+    else document.addEventListener('DOMContentLoaded', start);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Metro wishlist",
+  "tag": "section",
+  "class": "ma-body",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Heading", "default": "Your wishlist" },
+    { "type": "textarea", "id": "text", "label": "Banner text", "default": "Parts you've saved with the heart. Your list is kept on this device." },
+    { "type": "text", "id": "empty_title", "label": "Empty heading", "default": "Your wishlist is empty" },
+    { "type": "textarea", "id": "empty_text", "label": "Empty text", "default": "Tap the heart on any part to save it here for later." }
+  ]
+}
+{% endschema %}

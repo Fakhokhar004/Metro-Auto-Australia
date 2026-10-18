@@ -1,0 +1,91 @@
+{%- comment -%}
+  Outputs a product's fitment keys as a comma list, e.g. ",hyundai-tucson-2015,hyundai-tucson-2016,"
+  (same format as the garage's vehicle tag: make-model-year, lower case, hyphens).
+  Sources, all merged:
+    1. tags like toyota-corolla-2019
+    2. a "Compatible Vehicles" list in the description (one vehicle per line: "Hyundai Tucson 2015 TL,TLE 2.0 …")
+    3. the custom.fitment metaobject list (make, model, years like "2015-2019")
+  Used by the product card (fit badges) and sections/ma-fit-scan (collection "Only parts that fit my car").
+  Usage: {%- capture keys -%}{%- render 'ma-fit-keys', product: product -%}{%- endcapture -%}
+{%- endcomment -%}
+{%- liquid
+  assign keys = ','
+
+  for tag in product.tags
+    assign t = tag | handleize
+    assign parts = t | split: '-'
+    assign y = parts | last
+    assign yn = y | plus: 0
+    if parts.size >= 3 and y.size == 4 and yn >= 1900 and yn <= 2100
+      assign needle = ',' | append: t | append: ','
+      unless keys contains needle
+        assign keys = keys | append: t | append: ','
+      endunless
+    endif
+  endfor
+
+  assign desc = product.description
+  if desc contains 'ompatible ' and desc contains '</ul>'
+    assign markers = '<h3>Compatible Vehicles</h3>|<h2>Compatible Vehicles</h2>|<h4>Compatible Vehicles</h4>|<h3>Compatible Vehicles:</h3>|<h3>Compatible vehicles</h3>|<p><strong>Compatible Vehicles</strong></p>|<p><strong>Compatible Vehicles:</strong></p>' | split: '|'
+    for m in markers
+      unless desc contains m
+        continue
+      endunless
+      assign after = desc | split: m | last
+      assign list_html = after | split: '</ul>' | first
+      assign items = list_html | split: '<li'
+      for it in items offset: 1
+        assign line = '<li' | append: it | strip_html | strip_newlines | strip
+        assign words = line | split: ' '
+        assign head = ''
+        assign year = ''
+        for w in words
+          assign wn = w | plus: 0
+          if w.size == 4 and wn >= 1900 and wn <= 2100
+            assign year = w
+            break
+          endif
+          assign head = head | append: w | append: ' '
+        endfor
+        if year != '' and head != ''
+          assign k = head | append: year | handleize
+          assign needle = ',' | append: k | append: ','
+          unless keys contains needle
+            assign keys = keys | append: k | append: ','
+          endunless
+        endif
+      endfor
+      break
+    endfor
+  endif
+
+  assign fit_field = product.metafields.custom.fitment
+  if fit_field.type contains 'list'
+    for mo in fit_field.value
+      assign ys = mo.years.value | append: '' | replace: '–', '-' | replace: ' to ', '-' | split: '-'
+      assign lo = ys.first | strip | slice: 0, 4 | plus: 0
+      assign hi = ys.last | strip | slice: 0, 4 | plus: 0
+      if hi < lo
+        assign hi = lo
+      endif
+      if lo < 1900
+        continue
+      endif
+      assign span = hi | minus: lo
+      if span > 40
+        assign hi = lo | plus: 40
+      endif
+      for yr in (lo..hi)
+        assign k = mo.make.value | append: ' ' | append: mo.model.value | append: ' ' | append: yr | handleize
+        assign needle = ',' | append: k | append: ','
+        unless keys contains needle
+          assign keys = keys | append: k | append: ','
+        endunless
+      endfor
+    endfor
+  endif
+
+  if keys != ','
+    echo keys
+  endif
+-%}

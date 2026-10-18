@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<title>Contact Metro Auto</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FFFFFF}
+a{color:#E1251B}a:hover{color:#B71C14}
+:focus-visible{outline:3px solid #2F6FD6;outline-offset:2px}
+.mx-wrap{max-width:1320px;margin:0 auto;padding:0 24px;box-sizing:border-box}
+.mx-contact{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:960px){.mx-contact{grid-template-columns:1fr}}
+@media (max-width:640px){.mx-wrap{padding:0 16px}.mx-title{font-size:40px !important}}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #121316; background: #FFFFFF; min-height: 100vh">
+<dc-import name="Header" current="contact" hint-size="100%,210px"></dc-import>
+
+<section style="background: radial-gradient(circle at 85% 30%, rgba(225,37,27,0.3), rgba(225,37,27,0) 50%), #121316; color: #FFFFFF">
+ <div class="mx-wrap" style="padding-top: 36px; padding-bottom: 36px; display: flex; flex-direction: column; gap: 10px">
+  <nav aria-label="Breadcrumb" style="font-size: 13px; color: #B9BCC3; display: flex; gap: 8px"><a href="Main.dc.html" style="color: #B9BCC3">Home</a><span aria-hidden="true">/</span><span style="color: #FFFFFF">Contact us</span></nav>
+  <h1 class="mx-title" style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 56px; line-height: 0.95; text-transform: uppercase">Contact us</h1>
+  <p style="margin: 0; font-size: 16px; line-height: 1.55; color: #D4D6DB; max-width: 640px">Not sure which part fits? Send us your VIN or rego with your message and our team will find the right part for you.</p>
+ </div>
+</section>
+
+<div class="mx-wrap" style="padding-top: 32px; padding-bottom: 64px">
+ <div class="mx-contact">
+  <section aria-labelledby="mx-form-title" style="border: 1px solid #E4E4E7; border-radius: 10px; padding: 28px">
+   <h2 id="mx-form-title" style="margin: 0 0 20px; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 32px; text-transform: uppercase; line-height: 1">Send us a message</h2>
+   <dc-import name="ContactForm" hint-size="100%,760px"></dc-import>
+  </section>
+
+  <aside style="display: flex; flex-direction: column; gap: 16px">
+   <div style="background: #121316; color: #FFFFFF; border-radius: 10px; overflow: hidden">
+    <h2 style="margin: 0; padding: 14px 22px; background: #E1251B; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 24px; text-transform: uppercase">Get in touch</h2>
+    <dl style="margin: 0; padding: 22px; display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 14px 12px; font-size: 15px">
+     <dt style="color: #B9BCC3">Warehouse</dt><dd style="margin: 0">Melbourne, Victoria<br>[Street address]</dd>
+     <dt style="color: #B9BCC3">Phone</dt><dd style="margin: 0">[Phone number]</dd>
+     <dt style="color: #B9BCC3">Email</dt><dd style="margin: 0">[Email address]</dd>
+     <dt style="color: #B9BCC3">Hours</dt><dd style="margin: 0">[Opening hours]</dd>
+    </dl>
+    <div style="padding: 0 22px 22px">
+     <a href="https://www.facebook.com/profile.php?id=61578663545876" style="min-height: 44px; padding: 0 16px; border-radius: 6px; border: 1px solid #5A5E66; color: #FFFFFF; display: inline-flex; align-items: center; text-decoration: none; font-weight: 600; font-size: 14px">Message us on Facebook</a>
+    </div>
+   </div>
+   <div style="border: 1px solid #E4E4E7; border-radius: 10px; padding: 22px; display: flex; flex-direction: column; gap: 10px">
+    <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 22px; text-transform: uppercase">Help us find your part faster</h2>
+    <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 1.5; color: #3F4249">
+     <li>Add your VIN or registration number and state.</li>
+     <li>Tell us the part you need and which side or axle, if it matters.</li>
+     <li>Include the part number from the old part if you have it.</li>
+    </ul>
+   </div>
+   <div style="border: 1px solid #E4E4E7; border-radius: 10px; padding: 22px; display: flex; flex-direction: column; gap: 8px">
+    <h2 style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 22px; text-transform: uppercase">Orders and returns</h2>
+    <p style="margin: 0; font-size: 15px; line-height: 1.5; color: #3F4249">Same-day dispatch when you order before 2PM on a working day. Free delivery on orders over $200. Returns within 30 days on unused parts.</p>
+    <a href="About.dc.html" style="font-weight: 600; font-size: 15px">Read common questions</a>
+   </div>
+  </aside>
+ </div>
+</div>
+
+<dc-import name="Footer" hint-size="100%,500px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2000}}'>
+class Component extends DCLogic {
+ renderVals(){ return {}; }
+}
+</script>
+</body>
+</html>

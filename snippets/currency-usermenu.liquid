@@ -1,0 +1,99 @@
+<button class="setting-active">  
+{{section.settings.user_menu_icon}}
+</button>
+
+<div class="setting-content shopify__default__currency__wrap">
+  <ul>
+
+      {%- if section.settings.currency_enable -%} 
+      {%- if section.settings.currency_handle == 'shopify_currency' -%}
+      {%- if localization.available_countries.size > 1 -%}
+      <li class="curreny-wrap currency">
+        <localization-form>
+          {% form 'localization' %}
+          <div class="disclosure">
+            <button type="button" class="disclosure__button" aria-expanded="false" aria-controls="CountryList">
+              {{ localization.country.name }} ({{ localization.country.currency.iso_code }} {{ localization.country.currency.symbol }})
+            </button>
+
+            <ul id="CountryList" role="list" class="dropdown-list curreny-list disclosure__list">
+              {% for country in localization.available_countries %}
+              <li class="disclosure__item" tabindex="-1">
+                <a href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code }}">
+                  {{ country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol }})
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+
+            <input type="hidden" name="country_code" value="{{ localization.country.iso_code }}">
+          </div>
+          {% endform %}
+        </localization-form>
+      </li>
+      {%- endif -%}
+      {%- elsif section.settings.currency_handle == 'ajax_currency' -%}
+        <li>
+          {%- render 'currency-picker' -%}
+        </li>
+        {%- endif -%}
+      {%- endif -%}
+
+
+
+    {%- if section.settings.show_user_menu -%}
+    <li>
+      {%- if section.settings.account_menu_t != '' -%}
+      <h4>{{ section.settings.account_menu_t }}</h4>
+      {%- endif -%}
+      <ul>
+        {%- assign user_menu = section.settings.user_menu_handle -%}
+
+        {%- if customer and shop.customer_accounts_enabled -%}
+        <li><a href="{{ routes.account_url }}">{{ section.settings.account_title }}</a></li>
+        <li><a href="{{ routes.account_logout_url }}">{{ section.settings.logout_title }}</a></li>
+        {%- else -%}
+        <li><a href="{{ routes.account_login_url }}">{{ section.settings.login_title }}</a></li>
+        <li><a href="{{ routes.account_register_url }}">{{ section.settings.register_title }}</a></li>
+        {%- endif -%}
+
+        {%- for link in linklists[user_menu].links -%}
+        <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+        {%- endfor -%}
+      </ul>
+    </li>
+    {%- endif -%}
+  </ul>
+</div>
+
+
+
+<style>
+  .setting-wrap .shopify__default__currency__wrap .disclosure__list {
+    position: unset;
+    box-shadow: none;
+    max-height: 250px;
+    overflow: auto;
+}
+
+.setting-wrap .shopify__default__currency__wrap.setting-content {
+    padding: 15px;
+}
+
+.setting-wrap .shopify__default__currency__wrap .disclosure__list li {
+    padding-bottom: 15px !important;
+    padding-left: 0;
+}
+.setting-wrap .shopify__default__currency__wrap .disclosure .disclosure__button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+    font-size: 18px;
+    color: {{ settings.content_color }}; 
+    font-weight: 500;
+    padding-left: 5px;
+}
+  
+</style>

@@ -1,0 +1,30 @@
+{% capture p_content_align %}{% if settings.p_content_alignment == 'left' %}text-left justify-content-start{% elsif settings.p_content_alignment == 'right' %}text-right justify-content-end{% elsif settings.p_content_alignment == 'center' %}text-center justify-content-center{% endif %}{% endcapture %}
+
+
+{%- if settings.p_grid == 'grid_1' -%}
+{% render 'product-grid-item-1', product: product -%}
+{%- elsif settings.p_grid == 'grid_2' -%}
+{% render 'product-grid-item-2', product: product -%}
+{%- elsif settings.p_grid == 'grid_3' -%}
+{% render 'product-grid-item-3', product: product -%}
+{%- elsif settings.p_grid == 'grid_4' -%}
+{% render 'product-grid-item-4', product: product -%}
+{%- elsif settings.p_grid == 'grid_5' -%}
+{% render 'product-grid-item-5', product: product -%}
+{%- elsif settings.p_grid == 'grid_6' -%}
+{% render 'product-grid-item-6', product: product -%}
+{%- elsif settings.p_grid == 'grid_7' -%}
+{% render 'product-grid-item-7', product: product -%}
+{%- elsif settings.p_grid == 'grid_8' -%}
+{% render 'product-grid-item-8', product: product -%}
+{%- elsif settings.p_grid == 'grid_9' -%}
+{% render 'product-grid-item-9', product: product -%}
+{%- elsif settings.p_grid == 'grid_10' -%}
+{% render 'product-grid-item-10', product: product -%}
+{%- endif -%}
+
+
+
+
+                
+                

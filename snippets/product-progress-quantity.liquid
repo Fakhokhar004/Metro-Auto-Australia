@@ -1,0 +1,19 @@
+{% if section.settings.progress_quantity_enable %}
+  {%- assign sold_count = product.metafields.sold_count -%}
+  {%- assign key = 'sold' -%}    
+  {%- assign available_count = product.metafields.available_count -%}
+  {%- assign key = 'available' -%}
+  {%- assign sale_percent_count = 100 | times: sold_count.sold | divided_by: available_count.available -%}
+
+  {%- if sold_count != empty and available_count != empty -%}
+  <div class="progress-quantity">
+    <div class="progress-title">
+      <p class="product-sold">{{ section.settings.sold_title }} <span>{{ sold_count.sold }}</span></p>
+      <p class="product-available">{{ section.settings.available_title }} <span>{{ available_count.available }}</span></p>
+    </div>
+    <div class="progress">
+      <div class="progress-bar" role="progressbar" style="width: {{ sale_percent_count }}%" aria-valuenow="{{ sale_percent_count }}" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+  </div>
+  {%- endif -%}
+{%- endif -%}

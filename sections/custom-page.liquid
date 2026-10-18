@@ -1,0 +1,539 @@
+<div class="custom-page" id="section-{{ section.id }}">
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+   
+    {% if section.settings.section_title != '' or section.settings.section_sub_title != '' %}
+    <div class="section-title {{ section.settings.title_align }} pb-60 {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+      {% if section.settings.section_title != '' %}
+      <h2>{{ section.settings.section_title }}</h2>
+      {% endif %}
+
+      {% if section.settings.section_sub_title != '' %}
+      <p>{{ section.settings.section_sub_title }}</p>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="row">
+      <div class="col-12">
+        <div class="custom-html-content {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+          {{ pages[section.settings.custom_page].content }}
+        </div>
+      </div>
+    </div>	
+  </div>
+</div>
+
+{%- render 'section-style' -%}
+
+
+
+{% if section.settings.section_title_custom_color %}
+<style>
+  
+  {%- assign section_title_font = section.settings.section_title_font -%}
+  {%- assign section_sub_title_font = section.settings.section_sub_title_font -%}
+  {{ section_title_font | font_face }}
+  {{ section_sub_title_font | font_face }}
+  
+  
+  #section-{{ section.id }} .section-title h2{
+    font-family: {{ section_title_font.family }}, {{ section_title_font.fallback_families }};
+    font-style: {{ section_title_font.style }};
+    font-weight: {{ section_title_font.weight }};
+    color: {{ section.settings.section_title_color }};
+    font-size:{{ section.settings.section_title_font_size }}px;
+    line-height: {{section.settings.section_title_line_height}}px;
+    margin-bottom: {{section.settings.section_title_margin_bottom}}px;
+  }
+  
+  #section-{{ section.id }} .section-title p{
+    font-family: {{ section_sub_title_font.family }}, {{ section_sub_title_font.fallback_families }};
+    font-style: {{ section_sub_title_font.style }};
+    font-weight: {{ section_sub_title_font.weight }};
+    color: {{ section.settings.section_subtitle_color }};
+    font-size:{{ section.settings.section_des_font_size }}px;
+    line-height: {{section.settings.section_sub_title_line_height}}px;
+    margin-bottom: {{section.settings.section_sub_title_margin_bottom}}px;
+  }
+  
+  
+  @media (min-width: 768px) and (max-width: 1200px) {
+
+    #section-{{ section.id }} .section-title h2{
+      font-size:{{ section.settings.section_title_font_size_md }}px;
+      line-height: {{section.settings.section_title_line_height_md}}px;
+    }
+    #section-{{ section.id }} .section-title p{
+      font-size:{{ section.settings.section_des_font_size_md }}px;
+      line-height: {{section.settings.section_sub_title_line_height_md}}px;
+    }
+  }
+
+  @media (min-width: 300px) and (max-width: 767px) {    
+    
+    #section-{{ section.id }} .section-title h2{
+      font-size:{{ section.settings.section_title_font_size_sm }}px;
+      line-height: {{section.settings.section_title_line_height_sm}}px;
+    }
+    #section-{{ section.id }} .section-title p{
+      font-size:{{ section.settings.section_des_font_size_sm }}px;
+      line-height: {{section.settings.section_sub_title_line_height_sm}}px;
+    }
+  }
+
+</style>
+{% endif %}
+
+
+
+{% schema %}
+  {
+    "name": "Custom Page",
+    "settings": [
+              {
+                "type": "select",
+                "id": "section_width",
+                "label": "Section Width",
+                "options":[
+                      {
+                          "label": "Full Width",
+                          "value": "full_width"
+                      },
+                      {
+                          "label": "Box Width",
+                          "value": "box_width"
+                      },
+                      {
+                          "label": "Default Width",
+                          "value": "default"
+                      }
+                  ],
+                  "default": "default"
+              },
+
+		{
+			"type": "header",
+            "content": "Section Title"
+        },
+
+        {
+          "type": "checkbox",
+          "id": "section_title_custom_color",
+          "label": "Section Title Custom Style Enable",
+          "default": false
+        },
+
+		{
+            "type": "text",
+            "id": "section_title",
+            "label": "Title",
+            "default": "New Arrivals"
+        },
+
+        {
+          "type": "color",
+          "id": "section_title_color",
+          "label": "Title Color",
+          "default": "#1f2226"
+        },
+          {
+            "type": "font_picker",
+            "id": "section_title_font",
+            "label": "Font Family: Section Title Font",
+            "default": "poppins_n6"
+          },
+          {
+              "type": "header",
+              "content": "Main Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_title_font_size",
+            "label": "Font Size: Font Size",
+            "default": "30",
+            "info": "Section Title Font Size"
+          }, 
+          {
+            "type":      "range",
+            "id":        "section_title_line_height",
+            "min":       20,
+            "max":        150,
+            "step":       5,
+            "unit":       "px",
+            "label":     "Section Title Line Height",
+            "default":   40
+          },
+          {
+              "type": "header",
+              "content": "Medium Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_title_font_size_md",
+            "label": "Font Size: Font Size (MD)",
+            "default": "24",
+            "info": "Section Title Font Size"
+          }, 
+          {
+            "type":      "range",
+            "id":        "section_title_line_height_md",
+            "min":       20,
+            "max":        150,
+            "step":       5,
+            "unit":       "px",
+            "label":     "Section Title Line Height (MD)",
+            "default":   35
+          },
+          {
+              "type": "header",
+              "content": "Small Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_title_font_size_sm",
+            "label": "Font Size: Font Size (SM)",
+            "default": "20",
+            "info": "Section Title Font Size"
+          }, 
+          {
+            "type":      "range",
+            "id":        "section_title_line_height_sm",
+            "min":       20,
+            "max":        150,
+            "step":       5,
+            "unit":       "px",
+            "label":     "Section Title Line Height (SM)",
+            "default":   30
+          },
+          {
+            "type":      "range",
+            "id":        "section_title_margin_bottom",
+            "min":       0,
+            "max":        50,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Title margin Bottom",
+            "default":   10
+          },
+
+
+		{
+            "type": "textarea",
+            "id": "section_sub_title",
+            "label": "Subtitle",
+            "default": "Contrary to popular belief, Lorem Ipsum is not simply random text."
+        },
+
+        {
+          "type": "color",
+          "id": "section_subtitle_color",
+          "label": "Subtitle Color",
+          "default": "#5a5a5a"
+        },	
+          {
+            "type": "font_picker",
+            "id": "section_sub_title_font",
+            "label": "Font Family: Section Sub Title Font",
+            "default": "poppins_n6"
+          },
+          {
+              "type": "header",
+              "content": "Main Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_des_font_size",
+            "label": "Font Size: Font Size",
+            "default": "14",
+            "info": "Section Description Font Size"
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_line_height",
+            "min":       20,
+            "max":        100,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title Line Height",
+            "default":   24
+          },
+          {
+              "type": "header",
+              "content": "Medium Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_des_font_size_md",
+            "label": "Font Size: Font Size (MD)",
+            "default": "14",
+            "info": "Section Description Font Size (MD)"
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_line_height_md",
+            "min":       20,
+            "max":        100,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title Line Height (MD)",
+            "default":   24
+          },
+
+          {
+              "type": "header",
+              "content": "Small Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_des_font_size_sm",
+            "label": "Font Size: Font Size (SM)",
+            "default": "14",
+            "info": "Section Description Font Size (SM)"
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_line_height_sm",
+            "min":       20,
+            "max":        100,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title Line Height (SM)",
+            "default":   24
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_margin_bottom",
+            "min":       0,
+            "max":        50,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title margin Bottom",
+            "default":   10
+          },
+
+		{
+                "type": "select",
+                "id": "title_align",
+                "label": "Title Align",
+                "options":[
+                      {
+                          "label": "Text Left",
+                          "value": "text-left"
+                      },
+                      {
+                          "label": "Text Center",
+                          "value": "text-center"
+                      },
+                      {
+                          "label": "Text Right",
+                          "value": "text-right"
+                      }
+                  ],
+                  "default": "text-center"
+              },        
+             
+
+
+		{
+		  "type": "header",
+          "content": "Custom Page"
+        },
+		{
+          "type": "page",
+          "id": "custom_page",
+          "label": "Select Page",
+          "info": "[Create a page](\/admin\/pages\/new)"
+        }
+	],
+	"blocks":[
+	   {
+          "type": "section_padding",
+          "name": "Section Padding",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 100
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 80
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 60
+			}
+          ]
+       },
+	   {
+          "type": "section_margin",
+          "name": "Section Margin",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			}
+          ]
+       },
+	   {
+          "type": "section_background",
+          "name": "Section Background",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "image_picker",
+			  "id": "section_bg_image",
+			  "label": "BG Image"
+			},
+			{
+			  "type": "color",
+			  "id": "section_bg_color",
+			  "label": "BG Color",
+			  "default": "#ffffff"
+			}
+          ]
+       }
+	],
+	"presets": [
+		{
+		  "name": "Custom Page",
+		  "category": "others",
+		  "blocks":[
+				{
+					"type": "section_padding"
+				}
+			]
+		}
+	]
+  }
+{% endschema %}
+

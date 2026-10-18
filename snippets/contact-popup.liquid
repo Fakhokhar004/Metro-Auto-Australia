@@ -1,0 +1,43 @@
+<!-- Modal -->
+<div class="modal fade bd-example-modal-md contact-popup" id="ask_about_product" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">{{ block.settings.ask_about_prod_title }}</h5>
+        <button type="button" data-dismiss="modal" aria-label="Close"><i class="sli sli-close"></i> </button>
+      </div>
+      <div class="modal-body">
+        {% form 'contact', class: 'ask_about_product' %}
+        <div class="row">
+          <div class="col-12">
+            {% if form.posted_successfully? %}
+            <p class="note form-success">{{ 'contact.form.post_success' | t }}</p>
+            {% endif %}
+            {{ form.errors | default_errors }}
+          </div>
+          <div class="col-md-6 mb-40">
+            <input type="text" required placeholder="{{ block.settings.name_placeholder }}" class="{% if form.errors contains 'name' %}error{% endif %}" name="contact[name]" id="ContactFormName" value="{% if form.name %}{{ form.name }}{% elsif customer.name %}{{ customer.name }}{% endif %}">
+          </div>
+          <div class="col-md-6 mb-40">
+            <input type="email" required placeholder="{{ block.settings.email_placeholder }}" class="{% if form.errors contains 'email' %}error{% endif %}" name="contact[email]" id="ContactFormEmail" value="{% if form.email %}{{ form.email }}{% elsif customer.email %}{{ customer.email }}{% endif %}">
+          </div>
+          <div class="col-lg-12 mb-40">
+            <input type="text" name="contact[phone]" placeholder="{{ block.settings.phone_placeholder }}" value="{{ form.phone }}">
+          </div>
+          <div class="col-lg-12 mb-40">
+            <input type="text" required name="contact[productURL]" placeholder="{{ block.settings.prod_url_placeholder }}" value="{{ shop.url }}{{ product.url }}">
+          </div>
+
+          <div class="col-lg-12 mb-40">
+            <textarea placeholder="{{ block.settings.body_placholder }}" class="custom-textarea" name="contact[body]" id="ContactFormMessage">{% if form.body %}{{ form.body }}{% endif %}</textarea>
+          </div>
+          <div class="col-lg-12 text-center">
+            <button type="submit" value="submit" class="button">{{ block.settings.send_btn_text }}</button>
+          </div>
+        </div>
+        {% endform %}
+        
+      </div>
+    </div>
+  </div>
+</div>

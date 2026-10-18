@@ -1,0 +1,58 @@
+{%- if section.settings.showing_product_counter_enable -%}
+{%- assign paginate_checker = paginate.current_page | times: products_limit -%}
+{%- if paginate.items > paginate_checker -%}
+{%- assign paginate_final = paginate_checker -%}
+{%- else -%}
+{%- assign paginate_final = paginate.items -%}
+{%- endif -%}
+
+{%- endif -%}
+
+
+{% if paginate.pages > 1 %}
+<ul class="theme_pagination">
+  {% if paginate.previous %}
+  <li>
+    <a class="prev" href="{{ paginate.previous.url }}">
+      <i class="sli sli-arrow-{% if settings.rtl_enable %}right{% else %}left{% endif %}"></i>
+    </a>
+  </li>
+  {% else %}
+  <li class="disabled">
+    <a class="prev" href="{{ paginate.previous.url }}">
+      <i class="sli sli-arrow-{% if settings.rtl_enable %}right{% else %}left{% endif %}"></i>
+    </a>
+  </li>
+  {% endif %}
+
+  {% for part in paginate.parts %}
+  {% if part.is_link %}
+  <li><a href="{{ part.url }}">{{ part.title }}</a></li>
+  {% else %}
+  {% if part.title == paginate.current_page %}
+  <li><a class="active" href="">{{ part.title }}</a></li>
+  {% else %}
+  <li><a href="#">{{ part.title }}</a></li>
+  {% endif %}
+  {% endif %}
+  {% endfor %}
+  {% if paginate.next %}
+  <li>
+    <a class="next" href="{{ paginate.next.url }}">
+      <i class="sli sli-arrow-{% if settings.rtl_enable %}left{% else %}right{% endif %}"></i>
+    </a>
+  </li>
+  {% else %}
+  <li class="disabled">
+    <a class="next" href="#">
+      <i class="sli sli-arrow-{% if settings.rtl_enable %}left{% else %}right{% endif %}"></i>
+    </a>
+  </li>
+  {% endif %}
+</ul>
+{% endif %}
+
+<script>
+  $(".theme_pagination .disabled a").removeAttr("href");
+  $(".theme_pagination li a.active").removeAttr("href");
+</script>

@@ -1,0 +1,39 @@
+/* Breadcrumb: plain text on ALL templates — no banner image, no overlay */
+.breadcrumbs-section .breadcrumbs {
+  padding: 15px 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  background: none !important;      /* kills every per-template banner image */
+  display: block !important;
+}
+
+/* No dark readability overlay */
+.breadcrumbs-section .breadcrumbs.overlay-bg::before {
+  display: none !important;
+}
+
+/* Left-aligned, compact */
+.breadcrumbs-section .breadcrumb-content {
+  text-align: left !important;
+  align-items: flex-start !important;
+}
+
+.breadcrumbs-section .breadcrumb-list {
+  justify-content: flex-start !important;
+  margin: 0 !important;
+}
+
+/* Colours: grey "Home", green current page, red on hover */
+.breadcrumbs-section .breadcrumb-list,
+.breadcrumbs-section .breadcrumb-list li,
+.breadcrumbs-section .breadcrumb-list a {
+  color: #6e6e6e !important;
+}
+
+.breadcrumbs-section .breadcrumb-list li:last-child {
+  color: #c53022ff !important;        /* the green "Engine" */
+}
+
+.breadcrumbs-section .breadcrumb-list a:hover {
+  color: #e02020 !important;
+}

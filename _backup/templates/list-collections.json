@@ -1,0 +1,125 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "list-collection-template",
+      "blocks": {
+        "c6ebff7d-0360-4f38-9f75-d78ed3c4514c": {
+          "type": "custom_collection",
+          "disabled": true,
+          "settings": {
+            "featured_product_handle": "",
+            "custom_collection_title": "Collection Title"
+          }
+        }
+      },
+      "block_order": [
+        "c6ebff7d-0360-4f38-9f75-d78ed3c4514c"
+      ],
+      "settings": {
+        "collection_source": "all",
+        "collections_limit": 90,
+        "hide_empty": true,
+        "show_sort": true,
+        "show_search": true,
+        "show_alpha": false,
+        "alpha_hide_mobile": true,
+        "show_result_count": true,
+        "default_sort": "alpha_asc",
+        "sort_show_count": true,
+        "sort_show_manual": false,
+        "search_placeholder": "Search collections",
+        "sort_label": "Sort collections",
+        "label_alpha_asc": "Name: A–Z",
+        "label_alpha_desc": "Name: Z–A",
+        "label_count_desc": "Most products",
+        "label_count_asc": "Fewest products",
+        "label_manual": "Featured",
+        "alpha_all_label": "All",
+        "count_singular": "collection",
+        "count_plural": "collections",
+        "empty_text": "No collections match your search.",
+        "toolbar_align": "split",
+        "toolbar_divider": false,
+        "toolbar_accent": "#d80c0c",
+        "toolbar_height": 34,
+        "toolbar_radius": 4,
+        "toolbar_font_size": 13,
+        "search_width": 200,
+        "toolbar_margin_bottom": 18,
+        "image_fallback": "featured",
+        "debug_image_source": false,
+        "heading": "",
+        "subheading": "",
+        "text_align": "center",
+        "heading_color": "#1a1a1a",
+        "subheading_color": "#6b6b6b",
+        "heading_size": 30,
+        "heading_size_mobile": 22,
+        "subheading_size": 14,
+        "heading_margin_bottom": 40,
+        "grid_mode": "fixed",
+        "grid_align": "start",
+        "card_min_width": 180,
+        "card_max_width": 220,
+        "card_min_width_mobile": 140,
+        "card_max_width_mobile": 0,
+        "grid_gap": 24,
+        "grid_gap_mobile": 12,
+        "card_bg": "#ffffff",
+        "card_bg_hover": "#ffffff",
+        "border_width": 1,
+        "border_color": "#e6e6e6",
+        "border_color_hover": "#d84040",
+        "card_radius": 7,
+        "card_shadow_hover": false,
+        "card_raise": true,
+        "card_text_align": "center",
+        "image_bg_mode": "card",
+        "image_bg": "#f7f7f7",
+        "image_ratio": 85,
+        "image_fit": "contain",
+        "image_padding": 10,
+        "image_zoom": false,
+        "hover_effect": "lift_and_fade",
+        "hover_lift_title": 8,
+        "hover_lift_cta": 8,
+        "hover_lift_mobile": 0,
+        "transition_speed": 200,
+        "cta_always_visible": false,
+        "mobile_show_cta": true,
+        "title_color": "#1a1a1a",
+        "title_hover_color_enable": true,
+        "title_hover_color": "#000000",
+        "title_size": 14,
+        "title_size_mobile": 12,
+        "title_weight": "600",
+        "title_line_height": 1.4,
+        "title_uppercase": false,
+        "title_lines": 2,
+        "cta_text": "Shop now →",
+        "cta_color": "#d80c0c",
+        "cta_size": 12,
+        "cta_size_mobile": 11,
+        "cta_weight": "500",
+        "cta_gap": 4,
+        "body_padding_top": 14,
+        "body_padding_bottom": 16,
+        "body_padding_top_mobile": 10,
+        "body_padding_bottom_mobile": 12,
+        "body_padding_side": 10
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

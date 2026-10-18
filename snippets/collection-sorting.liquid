@@ -1,0 +1,115 @@
+
+<div class="select-shoing-wrap">
+  {%- if section.settings.short_by_enable -%}
+  <div class="shop-select d-flex">
+    <label for="SortBy">{{ 'collections.sorting.title' | t }} :</label>
+    <select name="SortBy" id="SortBy">
+      <option value="manual">{{ 'collections.sorting.featured' | t }}</option>
+      <option value="best-selling">{{ 'collections.sorting.best_selling' | t }}</option>
+      <option value="title-ascending">{{ 'collections.sorting.az' | t }}</option>
+      <option value="title-descending">{{ 'collections.sorting.za' | t }}</option>
+      <option value="price-ascending">{{ 'collections.sorting.price_ascending' | t }}</option>
+      <option value="price-descending">{{ 'collections.sorting.price_descending' | t }}</option>
+      <option value="created-descending">{{ 'collections.sorting.date_descending' | t }}</option>
+      <option value="created-ascending">{{ 'collections.sorting.date_ascending' | t }}</option>
+    </select>
+  </div>
+  {%- endif -%}
+
+  {%- if section.settings.showing_product_counter_enable -%}
+  {%- assign paginate_checker = paginate.current_page | times: products_limit -%}
+  {%- if paginate.items > paginate_checker -%}
+  {%- assign paginate_final = paginate_checker -%}
+  {%- else -%}
+  {%- assign paginate_final = paginate.items -%}
+  {%- endif -%}
+
+  {% assign showing_title = section.settings.showing_title_handle | split: "|" %}
+  <p>{{ showing_title | slice: 0 }} 
+    {{ paginate.current_offset | plus: 1 }} - {{ paginate_final }} 
+    {{ showing_title | slice: 1 }} 
+    {{ paginate.items }} 
+    {{ showing_title | slice: 2 }} 
+  </p>
+  {%- endif -%}
+</div>
+
+
+
+
+{%- if section.settings.show_ajax_paginate -%}
+{% assign ajax_show_title = section.settings.ajax_show_title_handle %}
+<div class="show_product_count">
+
+  <span class="select-title">Show :{{ ajax_show_title }}</span>
+  <select name="paginateBy" id="paginateBy" class="collection-sort__input">
+    {% for i in (3..50) %}
+    {% assign v = i | append:'' %}
+    <option value="{{ v }}"
+            {% if cart.attributes.pagination != blank and cart.attributes.pagination %}
+            {% if cart.attributes.pagination == v %} selected{% endif %}
+            {% else %}
+            {% if i == products_limit %} selected{% endif %}
+            {% endif %}>
+      {{ i }} 
+    </option>
+    {% endfor %}
+  </select>    
+</div>
+{%- endif -%}
+
+
+
+
+{%- if section.settings.tab_bar_enable -%}
+<div class="shop-tab nav {{ section.settings.grid_list_pos }}">
+  <a class="change-view{% unless template contains 'list' %} active{% endunless %}" data-view="grid">
+    <i class="sli sli-grid"></i>
+  </a>
+  <a class="change-view{% if template contains 'list' %} active{% endif %}" data-view="list">
+    <i class="sli sli-menu"></i>
+  </a>
+</div>
+{%- endif -%}
+
+
+
+<script>
+  Shopify.queryParams = {};
+  if (location.search.length) {
+    for (var aKeyValue, i = 0, aCouples = location.search.substr(1).split('&'); i < aCouples.length; i++) {
+      aKeyValue = aCouples[i].split('=');
+      if (aKeyValue.length > 1) {
+        Shopify.queryParams[decodeURIComponent(aKeyValue[0])] = decodeURIComponent(aKeyValue[1]);
+      }
+    }
+  }
+
+  $(function() {
+    $('#SortBy')
+    .val('{{ collection.sort_by | default: collection.default_sort_by }}')
+         .bind('change', function() {
+      Shopify.queryParams.sort_by = jQuery(this).val();
+      location.search = jQuery.param(Shopify.queryParams);
+    }
+    );
+  });
+  
+  
+  {% if section.settings.show_ajax_paginate %}
+  $('#paginateBy').on('change', function(){
+    var val = $(this).val();
+    $.ajax({
+      type: "POST",
+      url: '/cart.js',
+      data: {"attributes[pagination]": val},
+      success: function(d){
+        window.location.reload();
+      },
+      dataType: 'json'
+    });
+  });
+  {% endif %}
+  
+  
+</script>

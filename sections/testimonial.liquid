@@ -1,0 +1,906 @@
+<div class="testimonial-area" id="section-{{ section.id }}" data-section="heroOwlSlider">
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+    
+    {% if section.settings.section_title != '' or section.settings.section_sub_title != '' %}
+    <div class="section-title {{ section.settings.title_align }} pb-60 {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+      {% if section.settings.section_title != '' %}
+      <h2>{{ section.settings.section_title }}</h2>
+      {% endif %}
+
+      {% if section.settings.section_sub_title != '' %}
+      <p>{{ section.settings.section_sub_title }}</p>
+      {% endif %}
+    </div>
+    {% endif %}
+    
+    
+    <div class="row {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+      <div class="col-sm-{{section.settings.testi_col_content}} ml-auto mr-auto">
+        <div class="testimonial-active-test owl-carousel {% if section.settings.shadow_enable %} shadow_enable {% endif %} dot-style-1 {{section.settings.dot_style}} nav-style-{% if section.settings.nav_style == 'style_1' %}1{% elsif section.settings.nav_style == 'style_4' %}2 nav_2_left{% else %}2{% endif %}" data-owl-carousel='{ 
+             
+              "loop": true,
+              {% if settings.rtl_enable %}
+              "rtl": true,
+              {% endif %}
+
+              {% if section.settings.nav_style == 'style_5' %}
+              "nav": false,
+              {% else %}
+              "nav": true,
+              {% endif %}
+
+              {% if section.settings.nav_style == 'style_1' %}
+              "navText": ["<i class=&#x27;sli sli-arrow-left&#x27;></i>", "<i class=&#x27;sli sli-arrow-right&#x27;></i>"],
+              {% elsif section.settings.nav_style == 'style_2' %}
+              "navText": ["<i class=&#x27;sli sli-arrow-up&#x27;></i>", "<i class=&#x27;sli sli-arrow-down&#x27;></i>"],    
+              {% elsif section.settings.nav_style == 'style_4' %}
+              "navText": ["<i class=&#x27;sli sli-arrow-up&#x27;></i>", "<i class=&#x27;sli sli-arrow-down&#x27;></i>"],
+              {% endif %}
+
+              {% if section.settings.dot_style == 'dot_hide' %}
+              "dots": false,
+              {% else %}
+              "dots": true,
+              {% endif %}
+
+              "autoplay": false,
+              "autoplayTimeout": 5000,
+              "items": {{ section.settings.testi_col }},
+              "margin": 30,
+                               
+              "responsive":{
+              "0":{ "items": 1 },
+              "576":{ "items": 1 },
+              "768":{ "items": {{ section.settings.testi_col_sm }} },
+              "1000":{ "items": {{ section.settings.testi_col_md }} },
+              "1500":{ "items": {{ section.settings.testi_col }} }
+               }                
+
+           }'>
+          
+          {%- for block in section.blocks -%}{%- case block.type -%}
+          {%- when 'testimonial' -%}
+          <div  class="single-testimonial text-center">
+            {% if block.settings.commentators_img %}
+            <img loading="lazy"  src="{{ block.settings.commentators_img | img_url: '100x' }}" alt="{{ image.alt }}">
+
+            {% endif %}
+            <p style="color: {{ section.settings.comment_color }}">{{ block.settings.comments }}</p>
+            <div class="client-info">
+              {% if section.settings.comment_icon %}
+              <img loading="lazy"  src="{{ section.settings.comment_icon | img_url: '100x' }}" alt="{{ image.alt }}">
+              {% endif %}
+              <h5 style="color: {{ section.settings.commentators_color }}">{{ block.settings.commentators }}</h5>
+            </div>
+            
+            {% if section.settings.shadow_enable %}
+              <svg width="58" height="50" viewBox="0 0 58 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5.4375 25L14.5 25L14.5 32.1429C14.5 36.0826 11.2488 39.2857 7.25 39.2857L6.34375 39.2857C4.83711 39.2857 3.625 40.4799 3.625 41.9643L3.625 47.3214C3.625 48.8058 4.83711 50 6.34375 50L7.25 50C17.2641 50 25.375 42.0089 25.375 32.1429L25.375 5.35714C25.375 2.39955 22.9395 -3.06509e-06 19.9375 -3.32753e-06L5.4375 -4.59516e-06C2.43555 -4.8576e-06 4.16136e-06 2.39955 3.9028e-06 5.35714L2.65391e-06 19.6429C2.39535e-06 22.6004 2.43555 25 5.4375 25ZM38.0625 25L47.125 25L47.125 32.1429C47.125 36.0826 43.8738 39.2857 39.875 39.2857L38.9688 39.2857C37.4621 39.2857 36.25 40.4799 36.25 41.9643L36.25 47.3214C36.25 48.8058 37.4621 50 38.9688 50L39.875 50C49.8891 50 58 42.0089 58 32.1429L58 5.35714C58 2.39956 55.5645 -2.12922e-07 52.5625 -4.75361e-07L38.0625 -1.74299e-06C35.0606 -2.00543e-06 32.625 2.39955 32.625 5.35714L32.625 19.6429C32.625 22.6004 35.0605 25 38.0625 25Z" fill="#ECE9E9"></path>
+              </svg>
+            {% endif %}
+            
+          </div>
+          {%- endcase -%}{%- endfor -%}
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+{%- render 'section-style' -%}
+{%- render 'heading-style' -%}
+
+ 
+<style>
+          
+{%- if section.settings.nav_custom_style -%} 
+  #section-{{ section.id }}.testimonial-area .nav-style-1.owl-carousel .owl-nav div, 
+  #section-{{ section.id }}.testimonial-area .nav-style-2 .owl-nav div, 
+  #section-{{ section.id }}.testimonial-area .nav-style-3 .owl-nav div {
+    color: {{ section.settings.controlnav_color }};
+    background-color: {{ section.settings.controlnav_bg_color }};
+    border: 1px solid {{ section.settings.controlnav_border_color }};
+    border-radius:{{section.settings.nav_border_radius}}px;
+  }
+  #section-{{ section.id }}.testimonial-area .nav-style-1.owl-carousel .owl-nav div:hover, 
+  #section-{{ section.id }}.testimonial-area .nav-style-2 .owl-nav div:hover, 
+  #section-{{ section.id }}.testimonial-area .nav-style-3 .owl-nav div:hover {
+    color: {{ section.settings.hover_controlnav_color }};
+    background-color: {{ section.settings.hover_controlnav_bg_color }};
+    border: 1px solid {{ section.settings.hover_controlnav_border_color }};
+  }
+{%endif%}
+
+
+{%- if section.settings.dot_custom_style -%}  
+  #section-{{ section.id }}.testimonial-area .dot-style-1 .owl-dots .owl-dot {
+    border: 1px solid {{section.settings.dot_color}};
+    outline: 1px solid {{section.settings.dot_color}};
+  }
+
+  #section-{{ section.id }}.testimonial-area .dot-style-1 .owl-dots .owl-dot.active {
+    background-color: {{section.settings.dot_active_color}};
+    border: 1px solid {{section.settings.dot_active_color}};
+    outline: 1px solid {{section.settings.dot_active_color}};
+  }   
+{%endif%}
+
+ #section-{{ section.id }} .single-testimonial{
+  background: {{ section.settings.single_testi_bg }}
+}
+
+ #section-{{ section.id }} .shadow_enable .single-testimonial {
+    padding: 40px 30px 50px;
+    border-radius: 0 50px 0 50px;
+    box-shadow: 0 0 50px rgb(0 0 0 / 4%);
+    margin: 20px;
+}
+
+ #section-{{ section.id }} .shadow_enable .single-testimonial svg {
+    width: 120px;
+    height: 120px;
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    opacity: .8;
+}
+
+</style>
+
+
+
+
+
+
+
+{% schema %}
+  {
+    "name": "Testimonial",
+    "settings": [
+              {
+                "type": "select",
+                "id": "section_width",
+                "label": "Section Width",
+                "options":[
+                      {
+                          "label": "Full Width",
+                          "value": "full_width"
+                      },
+                      {
+                          "label": "Box Width",
+                          "value": "box_width"
+                      },
+                      {
+                          "label": "Default Width",
+                          "value": "default"
+                      }
+                  ],
+                  "default": "default"
+              },
+			{
+			"type": "select",
+			"id": "testi_col_content",
+			"label": "Main Content Column",
+			"options": [
+				{
+					"label": "1",
+					"value": "1"
+				},
+				{
+					"label": "2",
+					"value": "2"
+				},
+				{
+					"label": "3",
+					"value": "3"
+				},				
+				{
+					"label": "4",
+					"value": "4"
+				},
+				{
+					"label": "5",
+					"value": "5"
+				},				
+				{
+					"label": "6",
+					"value": "6"
+				},
+				{
+					"label": "7",
+					"value": "7"
+				},
+				{
+					"label": "8",
+					"value": "8"
+				},
+				{
+					"label": "9",
+					"value": "9"
+				},
+				{
+					"label": "10",
+					"value": "10"
+				},
+				{
+					"label": "11",
+					"value": "11"
+				},
+				{
+					"label": "12",
+					"value": "12"
+				}
+			],
+			"default": "10"
+			},
+            {
+              "type": "select",
+              "id": "nav_style",
+              "label": "Nav Style",
+              "options": [
+                  {"label": "Style 1", "value": "style_1"},
+                  {"label": "Style 2", "value": "style_2"},
+                  {"label": "Style 3", "value": "style_4"},
+                  {"label": "Hide Nav", "value": "style_5"}
+              ],
+              "default": "style_1"
+            },
+      		{
+            "type": "checkbox",
+            "id": "shadow_enable",
+            "label": "Shadow Enable",
+            "default": false
+          },
+          {
+            "type": "color",
+            "id": "single_testi_bg",
+            "label": "Single Testimonial BG",
+            "default": "#fbfbfb"
+          },
+			{
+            "type": "checkbox",
+            "id": "nav_custom_style",
+            "label": "Nav Custom Style Enable",
+            "default": false
+          },
+          {
+            "type": "range",
+            "id": "nav_border_radius",
+            "label": "Nav Border Radius",
+            "max": 50,
+            "min": 0,
+            "step": 1,
+            "default": 30,
+            "unit": "px"
+          },
+          {
+            "type": "color",
+            "id": "controlnav_color",
+            "label": "Color",
+            "default": "#1f2226"
+          },
+          {
+            "type": "color",
+            "id": "controlnav_bg_color",
+            "label": "BG Color",
+            "default": "#fff"
+          },
+          {
+            "type": "color",
+            "id": "controlnav_border_color",
+            "label": "Border Color",
+            "default": "#e1e2e2"
+          },
+          {
+            "type": "color",
+            "id": "hover_controlnav_color",
+            "label": "Hover Color",
+            "default": "#fff"
+          },
+          {
+            "type": "color",
+            "id": "hover_controlnav_bg_color",
+            "label": "Hover BG Color",
+            "default": "#ff3535"
+          },
+          {
+            "type": "color",
+            "id": "hover_controlnav_border_color",
+            "label": "Hover Border Color",
+            "default": "#ff3535"
+          },
+          {
+            "type": "select",
+            "id": "dot_style",
+            "label": "Dot Position",
+            "options": [
+                {"label": "Left", "value": "dot_left"},
+                {"label": "Bottom", "value": "dot_bottom"},
+                {"label": "Right", "value": "dot_right"},
+                {"label": "Hide Dot", "value": "dot_hide"}
+            ],
+            "default": "dot_left"
+          },
+          {
+            "type": "checkbox",
+            "id": "dot_custom_style",
+            "label": "Dot Custom Style Enable",
+            "default": false
+          },
+          {
+            "type": "color",
+            "id": "dot_color",
+            "label": "Color",
+            "default": "#96bf48"
+          },
+          {
+            "type": "color",
+            "id": "dot_active_color",
+            "label": "Dot Active Color",
+            "default": "#96bf48"
+          },
+  
+			{
+			"type": "select",
+			"id": "testi_col",
+			"label": "Single Testimonial Column (Main)",
+			"options": [
+				{
+					"label": "1",
+					"value": "1"
+				},
+				{
+					"label": "2",
+					"value": "2"
+				},
+				{
+					"label": "3",
+					"value": "3"
+				},				
+				{
+					"label": "4",
+					"value": "4"
+				},
+				{
+					"label": "5",
+					"value": "5"
+				},
+				{
+					"label": "6",
+					"value": "6"
+				}
+			],
+			"default": "1"
+			},
+			{
+			"type": "select",
+			"id": "testi_col_md",
+			"label": "Single Testimonial Column (Medium)",
+			"options": [
+				{
+					"label": "1",
+					"value": "1"
+				},
+				{
+					"label": "2",
+					"value": "2"
+				},
+				{
+					"label": "3",
+					"value": "3"
+				},				
+				{
+					"label": "4",
+					"value": "4"
+				},
+				{
+					"label": "5",
+					"value": "5"
+				},
+				{
+					"label": "6",
+					"value": "6"
+				}
+			],
+			"default": "1"
+		},
+		{
+			"type": "select",
+			"id": "testi_col_sm",
+			"label": "Single Testimonial Column (Small)",
+			"options": [
+				{
+					"label": "1",
+					"value": "1"
+				},
+				{
+					"label": "2",
+					"value": "2"
+				},
+				{
+					"label": "3",
+					"value": "3"
+				},				
+				{
+					"label": "4",
+					"value": "4"
+				},
+				{
+					"label": "5",
+					"value": "5"
+				},
+				{
+					"label": "6",
+					"value": "6"
+				}
+			],
+			"default": "1"
+		},
+		{
+			"type": "header",
+            "content": "Section Title"
+        },
+
+        {
+          "type": "checkbox",
+          "id": "section_title_custom_color",
+          "label": "Section Title Custom Style Enable",
+          "default": false
+        },
+
+		{
+            "type": "text",
+            "id": "section_title",
+            "label": "Title",
+            "default": "New Arrivals"
+        },
+
+        {
+          "type": "color",
+          "id": "section_title_color",
+          "label": "Title Color",
+          "default": "#1f2226"
+        },
+          {
+            "type": "font_picker",
+            "id": "section_title_font",
+            "label": "Font Family: Section Title Font",
+            "default": "poppins_n6"
+          },
+          {
+              "type": "header",
+              "content": "Main Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_title_font_size",
+            "label": "Font Size: Font Size",
+            "default": "30",
+            "info": "Section Title Font Size"
+          }, 
+          {
+            "type":      "range",
+            "id":        "section_title_line_height",
+            "min":       20,
+            "max":        150,
+            "step":       5,
+            "unit":       "px",
+            "label":     "Section Title Line Height",
+            "default":   40
+          },
+          {
+              "type": "header",
+              "content": "Medium Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_title_font_size_md",
+            "label": "Font Size: Font Size (MD)",
+            "default": "24",
+            "info": "Section Title Font Size"
+          }, 
+          {
+            "type":      "range",
+            "id":        "section_title_line_height_md",
+            "min":       20,
+            "max":        150,
+            "step":       5,
+            "unit":       "px",
+            "label":     "Section Title Line Height (MD)",
+            "default":   35
+          },
+          {
+              "type": "header",
+              "content": "Small Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_title_font_size_sm",
+            "label": "Font Size: Font Size (SM)",
+            "default": "20",
+            "info": "Section Title Font Size"
+          }, 
+          {
+            "type":      "range",
+            "id":        "section_title_line_height_sm",
+            "min":       20,
+            "max":        150,
+            "step":       5,
+            "unit":       "px",
+            "label":     "Section Title Line Height (SM)",
+            "default":   30
+          },
+          {
+            "type":      "range",
+            "id":        "section_title_margin_bottom",
+            "min":       0,
+            "max":        50,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Title margin Bottom",
+            "default":   10
+          },
+
+
+		{
+            "type": "textarea",
+            "id": "section_sub_title",
+            "label": "Subtitle",
+            "default": "Contrary to popular belief, Lorem Ipsum is not simply random text."
+        },
+
+        {
+          "type": "color",
+          "id": "section_subtitle_color",
+          "label": "Subtitle Color",
+          "default": "#5a5a5a"
+        },	
+          {
+            "type": "font_picker",
+            "id": "section_sub_title_font",
+            "label": "Font Family: Section Sub Title Font",
+            "default": "poppins_n6"
+          },
+          {
+              "type": "header",
+              "content": "Main Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_des_font_size",
+            "label": "Font Size: Font Size",
+            "default": "14",
+            "info": "Section Description Font Size"
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_line_height",
+            "min":       20,
+            "max":        100,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title Line Height",
+            "default":   24
+          },
+          {
+              "type": "header",
+              "content": "Medium Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_des_font_size_md",
+            "label": "Font Size: Font Size (MD)",
+            "default": "14",
+            "info": "Section Description Font Size (MD)"
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_line_height_md",
+            "min":       20,
+            "max":        100,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title Line Height (MD)",
+            "default":   24
+          },
+
+          {
+              "type": "header",
+              "content": "Small Screen"
+          },
+          {
+            "type": "text",
+            "id": "section_des_font_size_sm",
+            "label": "Font Size: Font Size (SM)",
+            "default": "14",
+            "info": "Section Description Font Size (SM)"
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_line_height_sm",
+            "min":       20,
+            "max":        100,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title Line Height (SM)",
+            "default":   24
+          },
+          {
+            "type":      "range",
+            "id":        "section_sub_title_margin_bottom",
+            "min":       0,
+            "max":        50,
+            "step":       1,
+            "unit":       "px",
+            "label":     "Section Sub Title margin Bottom",
+            "default":   10
+          },
+
+		{
+                "type": "select",
+                "id": "title_align",
+                "label": "Title Align",
+                "options":[
+                      {
+                          "label": "Text Left",
+                          "value": "text-left"
+                      },
+                      {
+                          "label": "Text Center",
+                          "value": "text-center"
+                      },
+                      {
+                          "label": "Text Right",
+                          "value": "text-right"
+                      }
+                  ],
+                  "default": "text-center"
+              },    
+		{
+            "type": "color",
+            "id": "comment_color",
+            "label": "Comments Color",
+            "default": "#333"
+        },
+		{
+            "type": "color",
+            "id": "commentators_color",
+            "label": "Commentators Name Color",
+            "default": "#1f2226"
+        },
+        {
+            "type": "image_picker",
+            "id": "comment_icon",
+            "label": "Comment Icon"
+        }
+    ],
+	"blocks":[
+	   {
+          "type": "testimonial",
+          "name": "Testimonial",
+          "settings": [
+              {
+                  "type": "image_picker",
+                  "id": "commentators_img",
+                  "label": "Commentator Image",
+                  "info": "Recommended size: 100x100 px"
+              },
+              {
+                  "type": "textarea",
+                  "id": "comments",
+                  "label": "Comments",
+                  "default": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat Duis aute irure dolor in reprehenderit."
+              },
+              {
+                  "type": "text",
+                  "id": "commentators",
+                  "label": "Commentators Name",
+                  "default": "Hester Perkins"
+              }
+          ]
+       },
+	   {
+          "type": "section_margin",
+          "name": "Section Margin",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			}
+          ]
+       },
+	   {
+          "type": "section_padding",
+          "name": "Section Padding",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 80
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 95
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_md",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_md",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 80
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_xs",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_xs",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 60
+			}
+          ]
+       },
+	   {
+          "type": "section_background",
+          "name": "Section Background",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "image_picker",
+			  "id": "section_bg_image",
+			  "label": "BG Image"
+			},
+			{
+			  "type": "color",
+			  "id": "section_bg_color",
+			  "label": "BG Color",
+			  "default": "#ffffff"
+			}
+          ]
+       }
+	],
+	"presets": [
+		{
+		  "name": "Testimonial",
+		  "category": "4. Testimonial",
+		  "blocks":[
+				{
+					"type": "testimonial"
+				},
+				{
+					"type": "testimonial"
+				},
+				{
+					"type": "section_padding"
+				}
+			]
+		}
+	]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}
+

@@ -1,0 +1,386 @@
+{%- comment -%}
+  Metro Auto header. Design reference: _design/metro-auto-design/components/Header.dc.html
+  Mobile-first. Phones and tablets (under 1024px): hamburger, logo, garage icon and cart, with search full width underneath;
+  page links, the red category bar, wishlist and account move into the slide-out menu, which also holds
+  "Shop by category" (the Home sidebar is hidden on phones) and Today's deals.
+  1024px and up: white bar with logo, nav, My garage and icons, search full width on the row below, then the red category bar.
+  Below both: black vehicle bar, My garage pop-up and the first-order coupon pop-up.
+  Behaviour lives in assets/ma-theme.js.
+{%- endcomment -%}
+{%- liquid
+  assign main_menu = linklists[section.settings.main_menu]
+  assign cat_menu = linklists[section.settings.category_menu]
+  assign drawer_menu = linklists[section.settings.menu_category_menu]
+  assign fallback_nav = 'Home|/;Categories|/collections;Shop by vehicle|/pages/shop-by-vehicle;Brands|/pages/shop-by-brands;About us|/pages/about-us;Contact|/pages/contact-us' | split: ';'
+  assign fallback_cats = 'Brakes|/collections/brakes-suspension;Filters|/collections/filters-kits;Fluids|/collections/oil-fluids-chemicals;Steering|/collections/steering-components;Suspension|/collections/shock-absorbers-struts;Engine components|/collections/engine-drivetrain;Timing belts|/collections/belts-tensioners-pulleys-kits;Water pumps|/collections/water-pumps;Drivetrain|/collections/driveline-axles;Cooling|/collections/cooling-climate;Ignition|/collections/electrical-ignition;Accessories|/collections/body-exterior;Workshop|/collections/workshop-essentials' | split: ';'
+
+  # Same list as the Home sidebar's "Shop by category"; on phones it lives in the menu instead.
+
+  assign fallback_drawer = 'Brakes and suspension|/collections/brakes-suspension;Filters and maintenance|/collections/filters-kits;Kits and service packs|/collections/kits-service-packs;Struts, bonnet and body|/collections/struts-bonnet-body;Lubricants and aerosols|/collections/oil-fluids-chemicals;Cleaners|/collections/car-care-products;Electrical and ignition|/collections/electrical-ignition;Workshop essentials|/collections/workshop-essentials' | split: ';'
+  assign cat_icons = 'rotor,filter,kit,body,can,bottle,bolt,wrench' | split: ','
+  # Deals: the setting, else the "Today's deals" collection (todays-deals) or a "deals" collection, else all products.
+  assign deals_url = section.settings.deals_url
+  if deals_url == blank
+    if collections['todays-deals'] != blank
+      assign deals_url = collections['todays-deals'].url
+    elsif collections['deals'].products_count > 0
+      assign deals_url = collections['deals'].url
+    else
+      assign deals_url = routes.all_products_collection_url
+    endif
+  endif
+  assign wishlist_url = section.settings.wishlist_url | default: '/pages/wishlist-page'
+
+
+  # Top links as "title|url|current" rows, used by the desktop nav and the mobile menu.
+
+  assign nav_rows = ''
+  if main_menu.links.size > 0
+    for link in main_menu.links
+      assign cur = '0'
+      if link.current or link.child_current
+        assign cur = '1'
+      endif
+      assign nav_rows = nav_rows | append: link.title | append: '|' | append: link.url | append: '|' | append: cur | append: ';;'
+    endfor
+  else
+    for item in fallback_nav
+      assign parts = item | split: '|'
+      assign cur = '0'
+      if parts[1] == '/' and request.page_type == 'index'
+        assign cur = '1'
+      elsif parts[1] == '/collections' and request.page_type == 'list-collections'
+        assign cur = '1'
+      elsif parts[1] != '/' and request.path == parts[1]
+        assign cur = '1'
+      endif
+      assign nav_rows = nav_rows | append: item | append: '|' | append: cur | append: ';;'
+    endfor
+  endif
+  assign nav_rows = nav_rows | split: ';;'
+-%}
+
+<header class="ma-header" data-ma-header>
+  <div class="ma-header__top">
+    <div class="ma-header__row">
+      <button type="button" class="ma-burger" data-ma-open="menu" aria-label="Open menu" aria-expanded="false" aria-controls="ma-menu-{{ section.id }}">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+
+      <a href="{{ routes.root_url }}" class="ma-logo" aria-label="{{ shop.name | escape }} home">
+        {%- if section.settings.logo != blank -%}
+          {%- assign logo_style = 'width:' | append: section.settings.logo_width | append: 'px' -%}
+          {{- section.settings.logo | image_url: width: 600 | image_tag: width: section.settings.logo_width, alt: shop.name, loading: 'eager', style: logo_style -}}
+        {%- else -%}
+          <img class="ma-logo__img" src="{{ 'ma-logo.png' | asset_url }}" width="960" height="184" alt="{{ shop.name | escape }}" loading="eager">
+        {%- endif -%}
+      </a>
+
+      <nav class="ma-mainnav" aria-label="Main">
+        {%- for row in nav_rows -%}
+          {%- assign parts = row | split: '|' -%}
+          <a class="ma-mainnav__link" href="{{ parts[1] }}"{% if parts[2] == '1' %} aria-current="page"{% endif %}>{{ parts[0] | escape }}</a>
+        {%- endfor -%}
+      </nav>
+
+      <div class="ma-search" data-ma-search>
+        <form action="{{ routes.search_url }}" method="get" role="search" class="ma-search__box">
+          <label for="ma-q-{{ section.id }}" class="ma-sr">Search parts</label>
+          <input
+            id="ma-q-{{ section.id }}"
+            class="ma-search__input"
+            type="search"
+            name="q"
+            value="{{ search.terms | escape }}"
+            placeholder="{{ section.settings.search_placeholder | escape }}"
+            autocomplete="off"
+            role="combobox"
+            aria-expanded="false"
+            aria-controls="ma-search-panel-{{ section.id }}"
+            aria-autocomplete="list"
+            data-ma-search-input
+          >
+          <input type="hidden" name="type" value="product">
+          <input type="hidden" name="options[prefix]" value="last">
+          <button type="submit" class="ma-search__btn" aria-label="Search">
+            {%- render 'ma-icon', name: 'search', size: 16, width: 2.4 -%}<span class="ma-search__word">Search</span>
+          </button>
+        </form>
+        <div class="ma-search__panel" id="ma-search-panel-{{ section.id }}" role="listbox" data-ma-search-panel hidden></div>
+      </div>
+
+      <div class="ma-tools">
+        <button type="button" class="ma-garage-btn" data-ma-open="garage" aria-haspopup="dialog" aria-label="My garage: Add your vehicle" data-ma-garage-btn>
+          {%- render 'ma-icon', name: 'car', size: 22, stroke: '#E1251B' -%}
+          <span class="ma-garage-btn__text" aria-hidden="true">
+            <span class="ma-garage-btn__label">My garage</span>
+            <span class="ma-garage-btn__value" data-ma-garage-btn-value>Add your vehicle</span>
+          </span>
+        </button>
+        <a href="{{ wishlist_url }}" class="ma-icon-link ma-icon-link--desk" aria-label="Wishlist">
+          {%- render 'ma-icon', name: 'heart', size: 22 -%}
+        </a>
+        <a href="{{ routes.cart_url }}" class="ma-icon-link" aria-label="Cart, {{ cart.item_count }} items" data-ma-cart-link>
+          {%- render 'ma-icon', name: 'cart', size: 22 -%}
+          <span class="ma-cart-count" data-ma-cart-count>{{ cart.item_count }}</span>
+        </a>
+        {%- if shop.customer_accounts_enabled -%}
+          <a href="{{ routes.account_url }}" class="ma-icon-link ma-icon-link--desk" aria-label="Account">
+            {%- render 'ma-icon', name: 'user', size: 22 -%}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  <nav class="ma-catbar" aria-label="Categories">
+    <div class="ma-catbar__row">
+      <div class="ma-catbar__links">
+        {%- if cat_menu.links.size > 0 -%}
+          {%- for link in cat_menu.links -%}
+            <a class="ma-catbar__link" href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+          {%- endfor -%}
+        {%- else -%}
+          {%- for item in fallback_cats -%}
+            {%- assign parts = item | split: '|' -%}
+            <a class="ma-catbar__link" href="{{ parts[1] }}">{{ parts[0] }}</a>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+      {%- if section.settings.show_deals and section.settings.deals_label != blank -%}
+        <a class="ma-catbar__deals" href="{{ deals_url }}">
+          {%- render 'ma-icon', name: 'tag', size: 16, stroke: '#E1251B', width: 2.2 -%}{{ section.settings.deals_label | escape }}
+        </a>
+      {%- endif -%}
+    </div>
+  </nav>
+
+  <div class="ma-vehiclebar">
+    <div class="ma-vehiclebar__row">
+      <span class="ma-vehiclebar__state ma-vehiclebar__state--has">
+        <span class="ma-vehiclebar__msg">
+          <span class="ma-vehiclebar__tick">{%- render 'ma-icon', name: 'check', size: 12, stroke: '#FFFFFF', width: 3 -%}</span>
+          <span>Shopping for your <strong data-ma-vehicle-label></strong></span>
+        </span>
+        <a class="ma-vehiclebar__btn ma-vehiclebar__btn--sm" href="{{ routes.all_products_collection_url }}" data-ma-fits-link>Show parts that fit</a>
+        <button type="button" class="ma-vehiclebar__btn ma-vehiclebar__btn--ghost ma-vehiclebar__btn--sm" data-ma-open="garage">Change vehicle</button>
+        <button type="button" class="ma-vehiclebar__clear" data-ma-clear-vehicle>Clear</button>
+      </span>
+      <span class="ma-vehiclebar__state ma-vehiclebar__state--none">
+        <span class="ma-vehiclebar__msg">Add your vehicle and we'll show you which parts fit.</span>
+        <button type="button" class="ma-vehiclebar__btn" data-ma-open="garage">Add a vehicle</button>
+      </span>
+    </div>
+  </div>
+
+  {%- comment -%} Mobile menu: page links + shop by category (replaces the home sidebar and red bar on phones) {%- endcomment -%}
+  <div class="ma-drawer" id="ma-menu-{{ section.id }}" data-ma-modal="menu" hidden>
+    <button type="button" class="ma-drawer__scrim" aria-label="Close menu" data-ma-close tabindex="-1"></button>
+    <nav class="ma-drawer__panel" role="dialog" aria-modal="true" aria-label="Menu">
+      <div class="ma-drawer__head">
+        <img class="ma-drawer__logo" src="{{ 'ma-logo.png' | asset_url }}" width="960" height="184" alt="{{ shop.name | escape }}" loading="lazy">
+        <button type="button" class="ma-drawer__close" aria-label="Close menu" data-ma-close>
+          {%- render 'ma-icon', name: 'close', size: 18, width: 2.2 -%}
+        </button>
+      </div>
+      <ul class="ma-drawer__list">
+        {%- for row in nav_rows -%}
+          {%- assign parts = row | split: '|' -%}
+          <li><a class="ma-drawer__link" href="{{ parts[1] }}"{% if parts[2] == '1' %} aria-current="page"{% endif %}>{{ parts[0] | escape }}</a></li>
+        {%- endfor -%}
+      </ul>
+      <h2 class="ma-drawer__title">
+        {%- render 'ma-icon', name: 'filter', size: 16, width: 2.2 -%}Shop by category
+      </h2>
+      <ul class="ma-drawer__list ma-drawer__cats">
+        {%- if drawer_menu.links.size > 0 -%}
+          {%- for link in drawer_menu.links -%}
+            {%- assign i = forloop.index0 | modulo: 8 -%}
+            <li><a class="ma-drawer__cat" href="{{ link.url }}">
+              {%- render 'ma-icon', name: cat_icons[i], size: 16, stroke: '#E1251B' -%}
+              <span>{{ link.title | escape }}</span>
+              {%- render 'ma-icon', name: 'chevron', size: 14, stroke: '#9A9EA6', width: 2 -%}
+            </a></li>
+          {%- endfor -%}
+        {%- else -%}
+          {%- for item in fallback_drawer -%}
+            {%- assign parts = item | split: '|' -%}
+            <li><a class="ma-drawer__cat" href="{{ parts[1] }}">
+              {%- render 'ma-icon', name: cat_icons[forloop.index0], size: 16, stroke: '#E1251B' -%}
+              <span>{{ parts[0] }}</span>
+              {%- render 'ma-icon', name: 'chevron', size: 14, stroke: '#9A9EA6', width: 2 -%}
+            </a></li>
+          {%- endfor -%}
+        {%- endif -%}
+        {%- if section.settings.show_deals and section.settings.deals_label != blank -%}
+          <li><a class="ma-drawer__deals" href="{{ deals_url }}">
+            {%- render 'ma-icon', name: 'tag', size: 16, width: 2.2 -%}{{ section.settings.deals_label | escape }}
+          </a></li>
+        {%- endif -%}
+      </ul>
+      <div class="ma-drawer__foot">
+        {%- if shop.customer_accounts_enabled -%}
+          <a href="{{ routes.account_url }}">My account</a>
+        {%- endif -%}
+        <a href="{{ wishlist_url }}">Wishlist</a>
+      </div>
+    </nav>
+  </div>
+
+
+  {%- comment -%} My garage pop-up {%- endcomment -%}
+  <div class="ma-modal" data-ma-modal="garage" hidden>
+    <button type="button" class="ma-modal__scrim" aria-label="Close garage" data-ma-close tabindex="-1"></button>
+    <div class="ma-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="ma-garage-title-{{ section.id }}">
+      <div class="ma-modal__head">
+        <h2 id="ma-garage-title-{{ section.id }}" class="ma-modal__title">My garage</h2>
+        <button type="button" class="ma-modal__close" aria-label="Close" data-ma-close>
+          {%- render 'ma-icon', name: 'close', size: 18, width: 2.2 -%}
+        </button>
+      </div>
+      <div class="ma-modal__body">
+        <p class="ma-modal__intro">Pick a vehicle and we'll take you to the parts that fit it. It stays active on every page.</p>
+        <ul class="ma-garage-list" data-ma-garage-list hidden></ul>
+        <p class="ma-garage-empty" data-ma-garage-empty>No vehicles saved yet. Add one below.</p>
+        <fieldset class="ma-garage-add" data-ma-vselect>
+          <legend>Add a vehicle</legend>
+          <div class="ma-garage-add__grid">
+            <label class="ma-gfield">Make
+              <select class="ma-gselect" data-ma-v="make"><option value="">Select</option></select>
+            </label>
+            <label class="ma-gfield">Model
+              <select class="ma-gselect" data-ma-v="model" disabled><option value="">Select</option></select>
+            </label>
+            <label class="ma-gfield">Year
+              <select class="ma-gselect" data-ma-v="year" disabled><option value="">Select</option></select>
+            </label>
+          </div>
+          <button type="button" class="ma-garage-save" data-ma-garage-save disabled
+            data-label-ready="Save and show parts that fit"
+            data-label-wait="Choose make, model and year">Choose make, model and year</button>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} First-order coupon pop-up: once per visitor {%- endcomment -%}
+  {%- liquid
+    assign show_coupon = section.settings.coupon_enable
+    if section.settings.coupon_home_only and request.page_type != 'index'
+      assign show_coupon = false
+    endif
+    if customer and customer.orders_count > 0
+      assign show_coupon = false
+    endif
+    if request.design_mode and section.settings.coupon_preview == false
+      assign show_coupon = false
+    endif
+  -%}
+  {%- if show_coupon -%}
+    <div class="ma-modal ma-modal--coupon" data-ma-modal="coupon" data-ma-coupon-auto="{{ section.settings.coupon_delay | times: 1000 }}"{% if request.design_mode and section.settings.coupon_preview %} data-ma-coupon-preview{% endif %} hidden>
+      <button type="button" class="ma-modal__scrim" aria-label="Close offer" data-ma-close tabindex="-1"></button>
+      <div class="ma-coupon" role="dialog" aria-modal="true" aria-labelledby="ma-coupon-title-{{ section.id }}">
+        <button type="button" class="ma-modal__close" aria-label="Close" data-ma-close>
+          {%- render 'ma-icon', name: 'close', size: 18, width: 2.2 -%}
+        </button>
+        <div class="ma-coupon__body">
+          <span class="ma-eyebrow ma-eyebrow--soft">{{ section.settings.coupon_eyebrow | escape }}</span>
+          <h2 id="ma-coupon-title-{{ section.id }}" class="ma-coupon__title">{{ section.settings.coupon_title | newline_to_br }}</h2>
+          <p class="ma-coupon__text">{{ section.settings.coupon_text | escape }}</p>
+          <div class="ma-coupon__code">
+            <span class="ma-coupon__value">{{ section.settings.coupon_code | escape }}</span>
+            <button type="button" class="ma-coupon__copy" data-ma-copy="{{ section.settings.coupon_code | escape }}" data-copied-label="Copied">Copy code</button>
+          </div>
+          <button type="button" class="ma-coupon__done" data-ma-close>Start shopping</button>
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+</header>
+
+<script>
+  window.MA = window.MA || {};
+  window.MA.fitment = {
+    source: {{ section.settings.vehicle_source | json }},
+    sbUrl: {{ section.settings.supabase_url | json }},
+    sbKey: {{ section.settings.supabase_key | json }},
+    jsonUrl: {{ 'ma-vehicles.json' | asset_url | json }},
+    linkMode: {{ section.settings.fit_link_mode | json }}
+  };
+</script>
+
+{% schema %}
+{
+  "name": "Metro header",
+  "class": "ma-header-section",
+  "enabled_on": { "groups": ["header"] },
+  "settings": [
+    { "type": "header", "content": "Logo" },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image",
+      "info": "Leave empty to use the italic METRO AUTO wordmark from the design."
+    },
+    { "type": "range", "id": "logo_width", "label": "Logo width", "min": 80, "max": 300, "step": 10, "unit": "px", "default": 170 },
+    { "type": "header", "content": "Navigation" },
+    {
+      "type": "link_list",
+      "id": "main_menu",
+      "label": "Main menu",
+      "info": "Leave empty to use the design links: Home, Categories, Shop by vehicle, Brands, About us, Contact."
+    },
+    {
+      "type": "link_list",
+      "id": "category_menu",
+      "label": "Red category bar menu",
+      "info": "Leave empty to use the design categories (Brakes, Filters, Fluids…), which link to /collections/<handle>."
+    },
+    {
+      "type": "link_list",
+      "id": "menu_category_menu",
+      "label": "Mobile menu \"Shop by category\"",
+      "info": "Use the same menu as the Home sidebar. Empty uses the design categories."
+    },
+    { "type": "checkbox", "id": "show_deals", "label": "Show the deals button", "info": "In the red category bar and the phone menu.", "default": false },
+    { "type": "text", "id": "deals_label", "label": "Deals button label", "default": "Today's deals" },
+    { "type": "url", "id": "deals_url", "label": "Deals button link", "info": "Defaults to the Today's deals collection." },
+    { "type": "url", "id": "wishlist_url", "label": "Wishlist page", "info": "Defaults to /pages/wishlist-page" },
+    { "type": "header", "content": "Search" },
+    { "type": "text", "id": "search_placeholder", "label": "Placeholder", "default": "Search by part name, brand or SKU" },
+    { "type": "header", "content": "Vehicle data" },
+    {
+      "type": "select",
+      "id": "vehicle_source",
+      "label": "Make / model / year list",
+      "default": "supabase",
+      "options": [
+        { "value": "supabase", "label": "Supabase fitment database" },
+        { "value": "json", "label": "Static file (assets/ma-vehicles.json)" }
+      ]
+    },
+    { "type": "text", "id": "supabase_url", "label": "Supabase REST URL", "default": "https://agqbeulmaqbookokxkgs.supabase.co/rest/v1" },
+    { "type": "text", "id": "supabase_key", "label": "Supabase publishable key", "default": "sb_publishable_FzH9EUlosemwafRHniikeQ_P1RDg9gR", "info": "Publishable (public) key only. Uses the fitment_makes, fitment_models and fitment_years RPCs." },
+    {
+      "type": "select",
+      "id": "fit_link_mode",
+      "label": "\"Show parts that fit\" goes to",
+      "default": "search",
+      "options": [
+        { "value": "search", "label": "Search (Toyota AND Corolla AND 2019)" },
+        { "value": "tag", "label": "Fitment tag (toyota-corolla-2019)" }
+      ],
+      "info": "Search matches the current live setup. Tag uses /collections/all/<fitment-tag>."
+    },
+    { "type": "header", "content": "First-order pop-up" },
+    { "type": "checkbox", "id": "coupon_enable", "label": "Show pop-up", "default": true },
+    { "type": "checkbox", "id": "coupon_home_only", "label": "Home page only", "default": true },
+    { "type": "checkbox", "id": "coupon_preview", "label": "Show every time in the theme editor", "default": false },
+    { "type": "range", "id": "coupon_delay", "label": "Delay", "min": 0, "max": 10, "step": 1, "unit": "s", "default": 1 },
+    { "type": "text", "id": "coupon_eyebrow", "label": "Eyebrow", "default": "Welcome to Metro Auto" },
+    { "type": "textarea", "id": "coupon_title", "label": "Heading", "default": "15% off your\nfirst order" },
+    { "type": "text", "id": "coupon_text", "label": "Text", "default": "Enter this code at checkout. One use per customer." },
+    { "type": "text", "id": "coupon_code", "label": "Discount code", "default": "METRO15" }
+  ]
+}
+{% endschema %}

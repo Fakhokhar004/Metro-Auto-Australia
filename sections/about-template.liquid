@@ -1,0 +1,372 @@
+{%- assign sset = section.settings -%}
+{%- if sset.show_about_section -%}
+<div class="about-story-area" id="section-{{ section.id }}">
+  <div class="container">
+    {%- if sset.page_content == 'page' -%}
+    <div class="row">
+      <div class="col-lg-12">
+        {{ page.content }}
+      </div>
+    </div>
+    {%- else -%}
+    <div class="row{% if sset.image_position == 'right' %} flex-row-reverse{% endif %}">
+
+
+      {%- liquid
+        assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+        assign fetch_priority = 'auto'
+        if section.index == 1
+          assign fetch_priority = 'high'
+        endif
+        assign image_class = 'lazyload-main-image animated responsive-image__image'
+        assign lazy_load = 'lazy'
+      -%}
+
+      
+      {%- if sset.show_image -%}
+      <div class="{% if sset.show_content %}col-lg-6{% else %}col-lg-12{% endif %}">
+        <div class="story-img">
+          <a href="#" class="lazyload-wraper-position remove_href" style="padding-top:{{ 1 | divided_by: sset.about_img.aspect_ratio | times: 100}}%;">
+            {%- if sset.about_img -%}
+
+                {% assign image_height = sset.about_img.width | divided_by: sset.about_img.aspect_ratio %}
+                {{ sset.about_img | image_url: width: 3840 | image_tag: width: sset.about_img.width, height: image_height, 
+                widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load }}
+                            
+            {%- else -%}
+            <img loading="lazy"  src="https://via.placeholder.com/570x474" alt="placeholder-img">
+            {%- endif -%}
+          </a>          
+        </div>
+      </div>
+      {%- endif -%}
+
+      {%- if sset.show_content -%}
+      <div class="{% if sset.show_image %}col-lg-6{% else %}col-lg-12{% endif %}">
+        <div class="story-details">
+          {%- if sset.title != '' or sset.subtitle != '' -%}
+          <div class="story-details-top">
+            {%- if sset.title != '' -%}
+            <h2>{{ sset.title }}</h2>
+            {%- endif -%}
+
+            {%- if sset.subtitle != '' -%}
+            <p>{{ sset.subtitle }}</p>
+            {%- endif -%}
+          </div>
+          {%- endif -%}
+
+          {%- for block in section.blocks -%}{%- case block.type -%}
+          {%- when 'content' -%}
+          <div class="story-details-bottom">
+            {%- if block.settings.title != '' -%}
+            <h4>{{ block.settings.title }}</h4>
+            {%- endif -%}
+
+            {%- if block.settings.subtitle != '' -%}
+            <p>{{ block.settings.subtitle }}</p>
+            {%- endif -%}
+          </div>
+          {%- endcase -%}{%- endfor -%}
+        </div>
+      </div>
+      {%- endif -%}
+    </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{%- render 'section-style' -%}
+{%- endif -%}
+
+
+
+
+
+{% schema %}
+  {
+    "name": "About Us",
+    "settings": [
+        {
+            "type": "checkbox",
+            "id": "show_about_section",
+            "label": "Show About Us",
+            "default": true
+        },
+        {
+            "type": "radio",
+            "id": "page_content",
+            "label": "Content show from-",
+            "options": [
+				{
+					"label": "Page",
+					"value": "page"
+				},
+				{
+					"label": "Section",
+					"value": "section"
+				}
+			],
+            "default": "section"
+        },
+
+		{
+            "type": "header",
+            "content": "Image"
+        },
+        {
+            "type": "checkbox",
+            "id": "show_image",
+            "label": "Show Image",
+            "default": true
+        },
+        {
+            "type": "image_picker",
+            "id": "about_img",
+            "label": "Upload Image",
+            "info": "Recommended size: 570x474px"
+        },
+        {
+            "type": "radio",
+            "id": "image_position",
+            "label": "Image Position",
+            "options": [
+				{
+					"label": "Left Side",
+					"value": "left"
+				},
+				{
+					"label": "Right Side",
+					"value": "right"
+				}
+			],
+            "default": "left"
+        },
+		{
+            "type": "header",
+            "content": "Content"
+        },
+        {
+            "type": "checkbox",
+            "id": "show_content",
+            "label": "Show Content",
+            "default": true
+        },
+		{
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "WELCOME TO <span>PARLO</span>"
+        },
+		{
+            "type": "textarea",
+            "id": "subtitle",
+            "label": "Subtitle",
+            "default": "Parlo provide how all this mistaken idea of denouncing pleasure and sing pain was born an will give you a complete account of the system, and expound the actual teachings of the eat explorer."
+        }
+	],
+    "blocks": [
+        {
+            "type": "content",
+            "name": "Content",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Title",
+                    "default": "WE START AT 2015"
+                },
+                {
+                    "type": "textarea",
+                    "id": "subtitle",
+                    "label": "Subtitle",
+                    "default": "Parlo provide how all this mistaken idea of denouncing pleasure and sing pain was born an will give you a complete account of the system, and expound the actual teachings of the eat explorer."
+                }
+			]
+		},
+	    {
+          "type": "section_margin",
+          "name": "Section Margin",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			}
+          ]
+       },
+	   {
+          "type": "section_padding",
+          "name": "Section Padding",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 100
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 65
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_md",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 80
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_md",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 45
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_xs",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 50
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_xs",
+			  "min": 0,
+			  "max": 300,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 30
+			}
+          ]
+       },
+	   {
+          "type": "section_background",
+          "name": "Section Background",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "image_picker",
+			  "id": "section_bg_image",
+			  "label": "BG Image"
+			},
+			{
+			  "type": "color",
+			  "id": "section_bg_color",
+			  "label": "BG Color",
+			  "default": "#ffffff"
+			}
+          ]
+       }
+	]
+  }
+{% endschema %}
+
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

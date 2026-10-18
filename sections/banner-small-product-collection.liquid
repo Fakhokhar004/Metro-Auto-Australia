@@ -1,0 +1,614 @@
+<section class="group-product-area common_slick_slider" id="section-{{ section.id }}">
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %} {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+    <div class="row">
+
+  {%- liquid
+    assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+    assign fetch_priority = 'auto'
+    if section.index == 1
+      assign fetch_priority = 'high'
+    endif
+    assign image_class = 'lazyload-main-image animated responsive-image__image'
+    assign lazy_load = 'lazy'
+  -%}
+
+
+      
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'banner' -%}
+            <div class="col-sm-{{ block.settings.banner_column_sm }} col-md-{{ block.settings.banner_column_md }} col-lg-{{ block.settings.banner_column }}">
+              <div class="group-product-banner" id="block-{{ block.id }}">
+                <figure class="banner-statistics border__radius">
+
+                   <a href="{{ block.settings.banner_url }}" class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.banner_image.aspect_ratio | times: 100}}%;">
+                    {%- if block.settings.banner_image -%}
+
+                      {% assign image_height = block.settings.banner_image.width | divided_by: block.settings.banner_image.aspect_ratio %}
+                      {{ block.settings.banner_image | image_url: width: 3840 | image_tag: width: block.settings.banner_image.width, height: image_height, 
+                      widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load }}
+                      
+                    {%- else -%}
+                      <img loading="lazy"  src="https://via.placeholder.com/555x770" alt="{{ block.settings.banner_image.alt }}">
+                    {%- endif -%}
+                  </a>
+                  {%- if block.settings.banner_sub_title != ''
+                    or block.settings.banner_title != ''
+                    or block.settings.banner_button_title != ''
+                  -%}
+                    <div class="banner-content text-center">
+                      {%- if block.settings.banner_sub_title != '' -%}
+                        <h6 class="banner-text1">{{ block.settings.banner_sub_title }}</h6>
+                      {%- endif -%}
+                      {%- if block.settings.banner_title != '' -%}
+                        <h2 class="banner-text2">{{ block.settings.banner_title }}</h2>
+                      {%- endif -%}
+                      {%- if block.settings.banner_button_title != '' -%}
+                        <a href="{{ block.settings.banner_url }}" class="btn btn-text">
+                          {{- block.settings.banner_button_title -}}
+                        </a>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+                </figure>
+              </div>
+            </div>
+
+            {% if block.settings.banner_text_color_enable %}
+              <style>
+                #block-{{ block.id }} .banner-text1 {
+                  color: {{ block.settings.sub_title_color }};
+                }
+                #block-{{ block.id }} .banner-text2 {
+                  color: {{ block.settings.title_color }};
+                }
+                #block-{{ block.id }} .btn-text {
+                  color: {{ block.settings.button_color }};
+                }
+                #block-{{ block.id }} .btn-text::before {
+                  background-color: {{ block.settings.button_color }};
+                }
+                #block-{{ block.id }} .btn-text:hover {
+                  color: {{ block.settings.button_hover_color }};
+                }
+                #block-{{ block.id }} .btn-text:hover::before {
+                  background-color: {{ block.settings.button_hover_color }};
+                }
+              </style>
+            {% endif %}
+
+          {%- when 'collection' -%}
+            <div class="col-sm-{{ block.settings.collection_column_sm }} col-md-{{ block.settings.collection_column_md }} col-lg-{{ block.settings.collection_column }}">
+              <div class="categories-group-wrapper carsoule_arrow_style">
+                <!-- section title start -->
+                <div class="section-title-append">
+                  <h4>{{ block.settings.collection_title }}</h4>
+                  <div class="slick-append"></div>
+                </div>
+                <!-- section title start -->
+                <!-- group list carousel start -->
+                <div class="group-list-item-wrapper">
+                  <div
+                    class="group-list-carousel"
+                    {% if settings.rtl_enable %}
+                      dir="rtl"
+                    {% endif %}
+                  >
+                    {%- assign featured_product = collections[block.settings.featured_product_handle] -%}
+                    {%- assign featured_product_limit = block.settings.featured_product_limit_handle -%}
+                    {%- if featured_product == empty -%}
+                      {%- assign a = 1 -%}
+                      {%- for i in (1..featured_product_limit) -%}
+                        {%- assign product_item = 'product-' | append: a -%}
+                        {%- assign a = a | plus: 1 -%}
+                        <div class="group-slide-item">
+                          <div class="group-item">
+                            <div class="group-item-thumb">
+                              {{ product_item | placeholder_svg_tag: 'product-svg-image' }}
+                            </div>
+                            <div class="group-item-desc">
+                              <h5 class="group-product-name">Product Title</h5>
+                              <div class="price-box">
+                                <span class="price-regular">$99.99</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {%- if a == 7 -%}
+                          {%- assign a = 1 -%}
+                        {%- endif -%}
+                      {%- endfor -%}
+
+                    {%- else -%}
+                      {%- for product in featured_product.products limit: featured_product_limit -%}
+                        <div class="group-slide-item">
+                          <div class="group-item">
+                            <div class="group-item-thumb">
+                          
+                              <a href="{{ product.url | within: collection }}" class="theme-product-image" style="padding-top:{{ 1 | divided_by: product.featured_image.aspect_ratio | times: 100}}%;">
+                                {% assign image_height = product.featured_image.width | divided_by: product.featured_image.aspect_ratio %}
+                                {{ product.featured_image | image_url: width: 3840 | image_tag: width: product.featured_image.width, height: image_height,
+                                widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load }}
+                              </a>
+                              
+                            </div>
+                            <div class="group-item-desc">
+                              <h5 class="group-product-name">
+                                <a href="{{ product.url | within: collection }}">{{ product.title }}</a>
+                              </h5>
+                              <div class="price-box">
+                                <span class="price-regular">{{ product.variants.first.price | money }}</span>
+                                {%- if product.variants.first.compare_at_price > product.variants.first.price -%}
+                                  <span class="price-old"
+                                    ><del>{{ product.variants.first.compare_at_price | money }}</del></span
+                                  >
+                                {%- endif -%}
+                              </div>
+                              {%- render 'product-action-grid-small', product: product -%}
+                            </div>
+                          </div>
+                        </div>
+                      {%- endfor -%}
+                    {%- endif -%}
+                  </div>
+                </div>
+                <!-- group list carousel start -->
+              </div>
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<script>
+  $('#section-{{ section.id }} .group-list-carousel').each(function () {
+    var $this = $(this);
+  	var $arrowContainer = $(this).parent().siblings('.section-title-append').find('.slick-append');
+  	$this.slick({
+    infinite: true,
+    rows: {{ section.settings.product_casoule_row }},
+
+    {% if section.settings.tab_arsoule_arrow_enable %}
+    arrows: true,
+    prevArrow: '<span class="product-dec-icon product-dec-prev"><i class="sli sli-arrow-left"></i></span>',
+    nextArrow: '<span class="product-dec-icon product-dec-next"><i class="sli sli-arrow-right"></i></span>',
+    {%else%}
+    arrows: false,
+    {%endif%}
+    {% if settings.rtl_enable %}
+      "rtl": true,
+    {% endif %}
+    appendArrows: $arrowContainer,
+    responsive: [{
+    breakpoint: 992,
+    settings: {
+    slidesToShow: 1,
+  }
+              },
+              {
+              breakpoint: 768,
+              settings: {
+              slidesToShow: 1,
+              }
+              }]
+              });
+  });
+</script>
+
+{%- render 'section-style' -%}
+
+{% schema %}
+ {
+   "name": "Banner Small Product",
+   "settings": [
+             {
+               "type": "select",
+               "id": "section_width",
+               "label": "Section Width",
+               "options":[
+                     {
+                         "label": "Full Width",
+                         "value": "full_width"
+                     },
+                     {
+                         "label": "Box Width",
+                         "value": "box_width"
+                     },
+                     {
+                         "label": "Default Width",
+                         "value": "default"
+                     }
+                 ],
+                 "default": "default"
+             },
+
+             {
+                 "type": "checkbox",
+                 "id": "tab_arsoule_arrow_enable",
+                 "label": "Carsoule Arrow Enable",
+                 "default": true
+             },
+             {
+                 "type": "range",
+                 "id": "product_casoule_row",
+                 "min": 1,
+                 "max": 10,
+                 "step": 1,
+                 "label": "Product Carsoule Row",
+                 "default": 3
+             }
+
+],
+"blocks":[
+         {
+           "type": "banner",
+           "name": "Banner",
+           "settings": [
+             {
+               "type": "image_picker",
+               "id": "banner_image",
+               "label": "Image",
+       		"info": "Recommended Size: 540 x 426px"
+             },
+             {
+               "type": "text",
+               "id": "banner_sub_title",
+               "label": "Sub Title",
+               "default": "BEAUTIFUL"
+             },
+             {
+               "type": "text",
+               "id": "banner_title",
+               "label": "Title",
+               "default": "Wedding Rings"
+             },
+             {
+               "type": "text",
+               "id": "banner_button_title",
+               "label": "Button Title",
+               "default": "Shop Now"
+             },
+             {
+               "type": "url",
+               "id": "banner_url",
+               "label": "URL"
+             },
+             {
+               "type": "header",
+               "content": "Banner Column"
+             },
+             {
+               "type": "range",
+               "id": "banner_column",
+               "min": 1,
+               "max": 12,
+               "step": 1,
+               "label": "Desktop",
+               "unit": "/12",
+               "default": 6
+             },
+             {
+               "type": "range",
+               "id": "banner_column_md",
+               "min": 1,
+               "max": 12,
+               "step": 1,
+               "label": "Tablet",
+               "unit": "/12",
+               "default": 6
+             },
+             {
+               "type": "range",
+               "id": "banner_column_sm",
+               "min": 1,
+               "max": 12,
+               "step": 1,
+               "label": "Large Mobile",
+               "unit": "/12",
+               "default": 6
+             },
+             {
+               "type": "header",
+               "content": "Color"
+             },
+             {
+                 "type": "checkbox",
+                 "id": "banner_text_color_enable",
+                 "label": "Custom Color Enable",
+                 "default": false
+             },
+             {
+               "type": "color",
+               "id": "sub_title_color",
+               "label": "Sub Title Color",
+               "default": "#777"
+             },
+             {
+               "type": "color",
+               "id": "title_color",
+               "label": "Title Color",
+               "default": "#222"
+             },
+             {
+               "type": "color",
+               "id": "button_color",
+               "label": "Button Color",
+               "default": "#222"
+             },
+             {
+               "type": "color",
+               "id": "button_hover_color",
+               "label": "Button Hover Color",
+               "default": "#c29958"
+             }
+           ]
+        },
+         {
+           "type": "collection",
+           "name": "Collection",
+           "settings": [
+             {
+               "type": "header",
+               "content": "Section Heading"
+             },
+             {
+               "type": "text",
+               "id": "collection_title",
+               "label": "Section Title",
+               "default": "Section Title Here"
+             },
+             {
+                 "type": "header",
+                 "content": "Collection"
+             },
+             {
+                 "type": "collection",
+                 "id": "featured_product_handle",
+                 "label": "Select Collection"
+             },
+
+             {
+                 "type": "range",
+                 "id": "featured_product_limit_handle",
+                 "min": 2,
+                 "max": 20,
+                 "step": 1,
+                 "label": "Limit",
+                 "default": 8
+             },
+             {
+                 "type": "header",
+                 "content": "Collection Column"
+             },
+             {
+                 "type": "range",
+                 "id": "collection_column",
+                 "min": 1,
+                 "max": 12,
+                 "step": 1,
+                 "label": "Desktop",
+                 "unit": "/12",
+                 "default": 3
+             },
+             {
+                 "type": "range",
+                 "id": "collection_column_md",
+                 "min": 1,
+                 "max": 12,
+                 "step": 1,
+                 "label": "Tablet",
+                 "unit": "/12",
+                 "default": 12
+             },
+             {
+                 "type": "range",
+                 "id": "collection_column_sm",
+                 "min": 1,
+                 "max": 12,
+                 "step": 1,
+                 "label": "Large Mobile",
+                 "unit": "/12",
+                 "default": 12
+             }
+           ]
+        },
+   {
+         "type": "section_padding",
+         "name": "Section Padding",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "header",
+		  "content": "Large/Desktop Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 80
+		},
+		{
+		  "type": "header",
+		  "content": "Tablet Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 80
+		},
+		{
+		  "type": "header",
+		  "content": "Mobile Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 60
+		}
+         ]
+      },
+   {
+         "type": "section_margin",
+         "name": "Section Margin",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "header",
+		  "content": "Large/Desktop Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "header",
+		  "content": "Tablet Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "header",
+		  "content": "Mobile Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		}
+         ]
+      },
+   {
+         "type": "section_background",
+         "name": "Section Background",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "image_picker",
+		  "id": "section_bg_image",
+		  "label": "BG Image"
+		},
+		{
+		  "type": "color",
+		  "id": "section_bg_color",
+		  "label": "BG Color",
+		  "default": "#ffffff"
+		}
+         ]
+      }
+],
+"presets": [
+	{
+	  "name": "Banner Small Product",
+	  "category": "3. collections",
+	  "blocks":[
+			{
+				"type": "banner"
+			},
+			{
+				"type": "collection"
+			},
+			{
+				"type": "collection"
+			},
+			{
+				"type": "section_padding"
+			}
+		]
+	}
+]
+ }
+{% endschema %}

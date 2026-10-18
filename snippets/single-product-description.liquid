@@ -1,0 +1,10 @@
+{%- if product.available -%}
+{%- form 'product', product, id: "AddToCartForm", class: "product-content-inner" -%} 
+{%- render 'product-details', product: product, variant: variant, form: form, current_variant: current_variant, on_sale: on_sale -%}
+{%- endform -%}
+{%- else -%}
+{%- render 'product-details', product: product, variant: variant, form: form, current_variant: current_variant, on_sale: on_sale -%}
+{%- endif -%}
+
+
+

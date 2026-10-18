@@ -1,0 +1,252 @@
+<style>
+  {%- for block in section.blocks -%}
+  {%- case block.type -%}
+
+  {%- when 'product_pages' -%} 
+  {%- if block.settings.breadcrumb_banner_image and template == 'product' -%}
+  .template-{{ template.name | handle }} .breadcrumbs{
+    background: url("{{ block.settings.breadcrumb_banner_image | img_url: 'master' }}") no-repeat scroll center center / cover;
+      }
+  {%- endif -%}
+  
+  {%- when 'collection_pages' -%}
+  {%- if template == 'collection' -%}
+  {%- if collection.image and block.settings.collection_image_enable -%}
+  .template-{{ template.name | handle }} .breadcrumbs{
+    background: url("{{ collection.image.src | img_url: 'master' }}") no-repeat scroll center center / cover;
+      }
+  {%- elsif block.settings.breadcrumb_banner_image -%}
+  .template-{{ template.name | handle }} .breadcrumbs{
+    background: url("{{ block.settings.breadcrumb_banner_image | img_url: 'master' }}") no-repeat scroll center center / cover;
+      }
+  {%- endif -%}
+  {%- endif -%}
+  
+  {%- when 'collection_list' -%}
+  {%- if block.settings.breadcrumb_banner_image and template == 'list-collections' -%}
+  .template-{{ template.name | handle }} .breadcrumbs{
+    background: url("{{ block.settings.breadcrumb_banner_image | img_url: 'master' }}") no-repeat scroll center center / cover;
+      }
+  {%- endif -%}
+
+  {%- when 'blogs' -%}
+  {%- if block.settings.breadcrumb_banner_image and template == 'blog' -%}
+  .template-{{ template.name | handle }} .breadcrumbs{
+    background: url("{{ block.settings.breadcrumb_banner_image | img_url: 'master' }}") no-repeat scroll center center / cover;
+      }
+  {%- endif -%}
+  
+  {%- when 'blog_posts' -%}
+  {%- if block.settings.breadcrumb_banner_image and template == 'article' -%}
+  .template-{{ template.name | handle }} .breadcrumbs{
+    background: url("{{ block.settings.breadcrumb_banner_image | img_url: 'master' }}") no-repeat scroll center center / cover;
+      }
+  {%- endif -%}
+  
+  {%- when 'cart' -%}
+  {%- if block.settings.breadcrumb_banner_image and template == 'cart' -%}
+  .template-{{ template.name | handle }} .breadcrumbs{
+    background: url("{{ block.settings.breadcrumb_banner_image | img_url: 'master' }}") no-repeat scroll center center / cover;
+      }
+  {%- endif -%}
+  
+  {%- when 'template_404' -%}
+  {%- if block.settings.breadcrumb_banner_image and template == '404' -%}
+  .template-{{ template.name | handle }} .breadcrumbs{
+    background: url("{{ block.settings.breadcrumb_banner_image | img_url: 'master' }}") no-repeat scroll center center / cover;
+      }
+  {%- endif -%}
+  
+  {%- when 'page_about' -%}
+  {%- if block.settings.breadcrumb_banner_image and template == 'page.about' -%}
+  .template-{{ template.name | handle }} .breadcrumbs{
+    background: url("{{ block.settings.breadcrumb_banner_image | img_url: 'master' }}") no-repeat scroll center center / cover;
+      }
+  {%- endif -%}
+  
+  {%- when 'page_contact' -%}
+  {%- if block.settings.breadcrumb_banner_image and template == 'page.contact' -%}
+  .template-{{ template.name | handle }} .breadcrumbs{
+    background: url("{{ block.settings.breadcrumb_banner_image | img_url: 'master' }}") no-repeat scroll center center / cover;
+      }
+  {%- endif -%}
+  
+  {%- when 'page_faq' -%}
+  {%- if block.settings.breadcrumb_banner_image and template == 'page.faq' -%}
+  .template-{{ template.name | handle }} .breadcrumbs{
+    background: url("{{ block.settings.breadcrumb_banner_image | img_url: 'master' }}") no-repeat scroll center center / cover;
+      }
+  {%- endif -%}
+  
+  {%- when 'page_wishlist' -%}
+  {%- if block.settings.breadcrumb_banner_image and template == 'page.wishlist' -%}
+  .template-{{ template.name | handle }} .breadcrumbs{
+    background: url("{{ block.settings.breadcrumb_banner_image | img_url: 'master' }}") no-repeat scroll center center / cover;
+      }
+  {%- endif -%}
+
+  {%- endcase -%}
+  {%- endfor -%}
+</style>
+
+
+{% schema %}
+  {
+    "name": "Breadcrumb",
+    "settings": [
+      
+	],
+	"blocks":[
+        {
+          "type": "product_pages",
+          "name": "Product Pages",
+          "limit": 1,
+          "settings": [
+            {
+              "type": "image_picker",
+              "id": "breadcrumb_banner_image",
+              "label": "Image",
+              "info": "This applies only to this page"
+            }
+          ]
+        },
+        {
+          "type": "collection_pages",
+          "name": "Collection Pages",
+          "limit": 1,
+          "settings": [
+            {
+              "type": "image_picker",
+              "id": "breadcrumb_banner_image",
+              "label": "Image",
+              "info": "This applies only to this page"
+            },
+			{
+              "type": "checkbox",
+              "id": "collection_image_enable",
+              "label": "Show collection image",
+              "default": true,
+              "info": "If your collections have image then it display in breadcrumb banner"
+            }
+          ]
+        },
+        {
+          "type": "collection_list",
+          "name": "Collection List",
+          "limit": 1,
+          "settings": [
+            {
+              "type": "image_picker",
+              "id": "breadcrumb_banner_image",
+              "label": "Image",
+              "info": "This applies only to this page"
+            }
+          ]
+        },
+        {
+          "type": "blogs",
+          "name": "Blogs",
+          "limit": 1,
+          "settings": [
+            {
+              "type": "image_picker",
+              "id": "breadcrumb_banner_image",
+              "label": "Image",
+              "info": "This applies only to this page"
+            }
+          ]
+        },
+        {
+          "type": "blog_posts",
+          "name": "Blog Posts",
+          "limit": 1,
+          "settings": [
+            {
+              "type": "image_picker",
+              "id": "breadcrumb_banner_image",
+              "label": "Image",
+              "info": "This applies only to this page"
+            }
+          ]
+        },
+        {
+          "type": "cart",
+          "name": "Cart",
+          "limit": 1,
+          "settings": [
+            {
+              "type": "image_picker",
+              "id": "breadcrumb_banner_image",
+              "label": "Image",
+              "info": "This applies only to this page"
+            }
+          ]
+        },
+        {
+          "type": "template_404",
+          "name": "404",
+          "limit": 1,
+          "settings": [
+            {
+              "type": "image_picker",
+              "id": "breadcrumb_banner_image",
+              "label": "Image",
+              "info": "This applies only to this page"
+            }
+          ]
+        },
+        {
+          "type": "page_about",
+          "name": "About Page",
+          "limit": 1,
+          "settings": [
+            {
+              "type": "image_picker",
+              "id": "breadcrumb_banner_image",
+              "label": "Image",
+              "info": "This applies only to this page"
+            }
+          ]
+        },
+        {
+          "type": "page_contact",
+          "name": "Contact Page",
+          "limit": 1,
+          "settings": [
+            {
+              "type": "image_picker",
+              "id": "breadcrumb_banner_image",
+              "label": "Image",
+              "info": "This applies only to this page"
+            }
+          ]
+        },
+        {
+          "type": "page_faq",
+          "name": "FAQ Page",
+          "limit": 1,
+          "settings": [
+            {
+              "type": "image_picker",
+              "id": "breadcrumb_banner_image",
+              "label": "Image",
+              "info": "This applies only to this page"
+            }
+          ]
+        },
+        {
+          "type": "page_wishlist",
+          "name": "Wishlist Page",
+          "limit": 1,
+          "settings": [
+            {
+              "type": "image_picker",
+              "id": "breadcrumb_banner_image",
+              "label": "Image",
+              "info": "This applies only to this page"
+            }
+          ]
+        }
+	]
+  }
+{% endschema %}

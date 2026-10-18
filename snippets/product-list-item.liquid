@@ -1,0 +1,9 @@
+{%- if settings.p_list == 'list_1' -%}
+  {% render 'product-list-item-1', product: product %}
+{%- elsif settings.p_list == 'list_2' -%}
+  {% render 'product-list-item-2', product: product %}
+{%- elsif settings.p_list == 'list_3' -%}
+  {% render 'product-list-item-3', product: product %}
+{%- else -%}
+  {% render 'product-list-item-1', product: product %}  ← default fallback
+{%- endif -%}

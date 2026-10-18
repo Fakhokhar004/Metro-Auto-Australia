@@ -1,0 +1,132 @@
+{%- comment -%}
+  Metro Auto "All categories" page (/collections). Design reference: _design/metro-auto-design/pages/Collections.dc.html
+  Each group is a block: heading, icon, a "Shop all" collection and the collections shown as tiles.
+  The banner box filters tiles as you type; with no match it offers a product search.
+{%- endcomment -%}
+{{ 'ma-pages.css' | asset_url | stylesheet_tag }}
+
+<div data-ma-cats>
+  <section class="ma-banner">
+    <div class="ma-wrap ma-banner__in ma-cats__banner">
+      <div class="ma-cats__copy">
+        <nav class="ma-banner__crumb" aria-label="Breadcrumb">
+          <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span><span aria-current="page">{{ section.settings.title | escape }}</span>
+        </nav>
+        <h1 class="ma-banner__title">{{ section.settings.title | escape }}</h1>
+        {%- if section.settings.text != blank -%}<p class="ma-banner__text">{{ section.settings.text | escape }}</p>{%- endif -%}
+      </div>
+      <label class="ma-cats__find">
+        {%- render 'ma-icon', name: 'search', size: 18, stroke: '#62666D', width: 2 -%}
+        <input type="search" placeholder="Find a category, for example filters" aria-label="Find a category" autocomplete="off" data-ma-cats-input>
+      </label>
+    </div>
+  </section>
+
+  <div class="ma-wrap ma-cats">
+    {%- for block in section.blocks -%}
+      {%- liquid
+        case block.settings.icon
+          when 'bolt'
+            assign icon_d = 'M13 2L5 14h6l-1 8 8-12h-6z'
+          when 'engine'
+            assign icon_d = 'M4 10h3l2-3h6l2 3h3v7H4zM7 7V5M17 7V5M9 13h6'
+          when 'car'
+            assign icon_d = 'M3 15l2-5a2 2 0 0 1 2-1.4h10a2 2 0 0 1 2 1.4l2 5v3H3zM7 18v2M17 18v2'
+          when 'wrench'
+            assign icon_d = 'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z'
+          else
+            assign icon_d = 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z'
+        endcase
+        assign g_title = block.settings.title | default: block.settings.collection.title
+        assign g_short = block.settings.short | default: g_title | downcase
+      -%}
+      <section class="ma-cats__group" aria-labelledby="ma-grp-{{ block.id }}" data-ma-cats-group data-name="{{ g_title | downcase | escape }}" {{ block.shopify_attributes }}>
+        <div class="ma-cats__head">
+          <h2 class="ma-cats__title" id="ma-grp-{{ block.id }}">
+            <span class="ma-cats__gicon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ icon_d }}"></path></svg></span>{{ g_title | escape }}
+          </h2>
+          {%- if block.settings.collection != blank and block.settings.collection.all_products_count > 0 -%}
+            <a class="ma-cats__all" href="{{ block.settings.collection.url }}">Shop all {{ g_short | escape }}</a>
+          {%- endif -%}
+        </div>
+        <div class="ma-cats__tiles">
+          {%- for c in block.settings.collections -%}
+            {%- if section.settings.hide_empty and c.all_products_count == 0 -%}{%- continue -%}{%- endif -%}
+            <a class="ma-cats__tile" href="{{ c.url }}" data-ma-cats-tile data-name="{{ c.title | downcase | escape }}">
+              <span class="ma-cats__ticon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E1251B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ icon_d }}"></path></svg></span>
+              <span class="ma-cats__label">{{ c.title | escape }}</span>
+              <svg class="ma-cats__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9A9EA6" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+            </a>
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- endfor -%}
+
+    <div class="ma-empty-box ma-cats__none" data-ma-cats-none hidden>
+      <h2>No category called “<span data-ma-cats-q></span>”</h2>
+      <p>Try searching for the part itself instead.</p>
+      <a class="ma-button ma-button--red" href="{{ routes.search_url }}" data-ma-cats-search>Search for “<span data-ma-cats-q></span>”</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var root = document.querySelector('[data-ma-cats]');
+    if (!root) return;
+    var input = root.querySelector('[data-ma-cats-input]');
+    var groups = Array.prototype.slice.call(root.querySelectorAll('[data-ma-cats-group]'));
+    var none = root.querySelector('[data-ma-cats-none]');
+    var search = root.querySelector('[data-ma-cats-search]');
+    function run() {
+      var f = input.value.trim().toLowerCase(), shown = 0;
+      groups.forEach(function (g) {
+        var groupHit = f && g.getAttribute('data-name').indexOf(f) > -1, n = 0;
+        g.querySelectorAll('[data-ma-cats-tile]').forEach(function (t) {
+          var on = !f || groupHit || t.getAttribute('data-name').indexOf(f) > -1;
+          t.hidden = !on; if (on) n++;
+        });
+        g.hidden = n === 0; shown += n;
+      });
+      none.hidden = shown > 0;
+      if (!shown) {
+        root.querySelectorAll('[data-ma-cats-q]').forEach(function (s) { s.textContent = input.value.trim(); });
+        search.href = '{{ routes.search_url }}?type=product&options%5Bprefix%5D=last&q=' + encodeURIComponent(input.value.trim());
+      }
+    }
+    input.addEventListener('input', run);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Metro all categories",
+  "tag": "section",
+  "class": "ma-body",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Heading", "default": "All categories" },
+    { "type": "textarea", "id": "text", "label": "Banner text", "default": "Every part we sell, grouped the way you'd look for it in the workshop." },
+    { "type": "checkbox", "id": "hide_empty", "label": "Hide collections with no products", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "group",
+      "name": "Category group",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Heading", "info": "Empty uses the Shop all collection's title." },
+        { "type": "text", "id": "short", "label": "Shop all wording", "info": "Shown as Shop all {wording}." },
+        { "type": "select", "id": "icon", "label": "Icon", "default": "disc", "options": [
+          { "value": "disc", "label": "Brake disc" },
+          { "value": "bolt", "label": "Lightning bolt" },
+          { "value": "engine", "label": "Engine" },
+          { "value": "car", "label": "Car body" },
+          { "value": "wrench", "label": "Wrench" }
+        ] },
+        { "type": "collection", "id": "collection", "label": "Shop all collection" },
+        { "type": "collection_list", "id": "collections", "label": "Collections shown as tiles", "limit": 24 }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Metro all categories" }]
+}
+{% endschema %}

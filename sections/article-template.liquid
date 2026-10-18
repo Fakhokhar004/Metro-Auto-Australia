@@ -1,0 +1,317 @@
+<div class="blog-area pt-100 pb-100">
+  <div class="container">
+    <div class="row{% if section.settings.sidebar_handle == 'left_sidebar_handle' %} flex-row-reverse{% endif %}">
+      <div class="{% if section.settings.sidebar_handle == 'without_sidebar' %}col-lg-12{% else %}col-lg-9{% endif %}">
+        <div class="blog-details-wrapper mr-20">          
+          <div class="blog-details-top">
+
+
+          {%- liquid
+            assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+            assign fetch_priority = 'auto'
+            if section.index == 1
+              assign fetch_priority = 'high'
+            endif
+            assign image_class = 'lazyload-main-image animated responsive-image__image'
+            assign lazy_load = 'lazy'
+          -%}
+
+            
+            {% if section.settings.blog_image_enable %}            
+            <div class="blog-details-img">
+              <div class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: article.image.aspect_ratio | times: 100}}%;">
+                {% assign image_height = article.image.width | divided_by: article.image.aspect_ratio %}
+                {{ article.image | image_url: width: 3840 | image_tag: width: article.image.width, height: image_height, 
+                widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load }}
+               </div>
+            </div>
+            {% endif %}
+            
+           
+            <div class="blog-details-content">
+              <h3>{{ article.title }}</h3>
+              {% if section.settings.blog_meta_enable %}  
+              <div class="blog-details-meta">
+                <ul>
+                  <li>{{ article.published_at | date: '%d %B, %Y' }}</li>
+                  <li>{{ article.author }}</li>
+                </ul>
+              </div>  
+              {% endif %}
+            </div>
+
+          </div>
+          
+          {% if section.settings.blog_content_enable %}  
+          <div class="blog-details-content">
+            {{ article.content }}
+          </div>
+          {% endif %}
+          
+          {% if section.settings.blog_share_enable %}
+          <div class="tag-share">            
+            <div class="dec-tag">
+              <ul>
+                {% render 'tags-article', tag:tags %}
+              </ul>
+            </div>            
+            <div class="blog-share">
+              {% if section.settings.social_share_title != '' %}
+              <span>{{ section.settings.social_share_title }}</span>
+              {% endif %}
+              {% render 'blog-share' %}
+            </div>            
+          </div>
+          {% endif %}
+          
+          {% if section.settings.blog_next_prev_enable %}
+            {% if blog.next_article or blog.previous_article %}
+            <div class="next-previous-post">
+              {% if settings.rtl_enable %}
+              {% if blog.previous_article %}
+              <a href="{{ blog.previous_article }}">{{ 'blogs.article.older_post' | t }} <i class="sli sli-arrow-right"></i></a>
+              {% endif %}
+
+              {% if blog.next_article %}            
+              <a href="{{ blog.next_article }}"><i class="sli sli-arrow-left"></i> {{ 'blogs.article.newer_post' | t }}</a>
+              {% endif %}
+              {% else %}
+              {% if blog.previous_article %}
+              <a href="{{ blog.previous_article }}"> <i class="sli sli-arrow-left"></i> {{ 'blogs.article.older_post' | t }}</a>
+              {% endif %}
+
+              {% if blog.next_article %}            
+              <a href="{{ blog.next_article }}">{{ 'blogs.article.newer_post' | t }} <i class="sli sli-arrow-right"></i></a>
+              {% endif %}
+              {% endif %}
+            </div>
+            {% endif %}
+          {% endif %}
+
+          {%- if article.comments_enabled? -%}
+          <div id="comments" class="comment-success">
+            {%- if comment and comment.created_at -%}
+            <p class="note form-success">
+              {%- if blog.comments_modareted? -%}
+              {{ 'blogs.comments.success_moderated' | t }}            
+              {%- else -%}
+              {{ 'blogs.comments.success' | t }}
+              {%- endif -%}
+            </p>
+            {%- endif -%}            
+
+            {%- assign comment_post_limit = section.settings.comment_post_limit_handle -%}
+            {%- paginate article.comments by comment_post_limit -%}
+
+            {%- if article.comments.size > 0 -%}
+            {%- render 'blog-comments', comment: comments, paginate: paginate -%}
+            {%- endif -%}
+            {%- if paginate.pages > 1 -%}
+            <div class="pro-pagination-style text-center mt-30">
+              {% render 'pagination', paginate: paginate -%}
+            </div>
+            {%- endif -%}
+            {%- endpaginate -%}
+
+            {%- render 'blog-comment-form' -%}
+          </div>
+          {%- endif -%}  
+          
+          
+        </div>
+      </div>
+      
+      {%- unless section.settings.sidebar_handle == 'without_sidebar' -%}
+      <div class="col-lg-3">
+        {% render 'blog-sidebar' %}
+      </div>
+      {%- endunless -%}
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+{% schema %}
+  {
+    "name": "Article Page",
+    "settings": [
+
+
+            {
+                "type": "checkbox",
+                "id": "blog_image_enable",
+                "label": "Blog Image Enable",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "blog_meta_enable",
+                "label": "Blog Meta Enable",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "blog_content_enable",
+                "label": "Blog Content Enable",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "blog_share_enable",
+                "label": "Blog Share Enable",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "blog_next_prev_enable",
+                "label": "Blog Next Prvious Enable",
+                "default": true
+            },
+
+
+
+		{
+			"type": "radio",
+			"id": "sidebar_handle",
+			"label": "Article Sidebar Position",
+			"options": [
+				{
+					"label": "Left Sidebar",
+					"value": "left_sidebar_handle"
+				},
+				{
+					"label": "Right Sidebar",
+					"value": "right_sidebar_handle"
+				},
+				{
+					"label": "Without Sidebar",
+					"value": "without_sidebar"
+				}
+			],
+			"default": "left_sidebar_handle"
+		},
+		{
+			"type": "header",
+			"content": "Article Share"
+		},
+		{
+			"type": "text",
+			"id": "social_share_title",
+			"label": "Share Title",
+			"default": "Share: "
+		},
+		{
+			"type": "header",
+			"content": "Comment Box"
+		},
+		{
+			"type": "image_picker",
+			"id": "commentator_image",
+			"label": "Comment Thumb Image",
+			"info": "Recommended Size: 80 x 80px"
+		},
+		{
+            "type": "range",
+            "id": "comment_post_limit_handle",
+            "min": 1,
+            "max": 10,
+            "step": 1,
+            "label": "How Many Comment Post Show",
+            "default": 5
+        }
+	],
+	 "blocks":[
+		{
+          "type": "search",
+          "name": "Search",
+		  "limit": 1,
+          "settings": [
+            {
+              "type": "text",
+              "id": "widget_title",
+              "label": "Title",
+              "default": "Search"
+            }
+          ]
+       },
+	   {
+          "type": "recent_post",
+          "name": "Recent Post",
+		  "limit": 1,
+          "settings": [
+            {
+              "type": "text",
+              "id": "recent_post_title",
+              "label": "Recent Post Title",
+              "default": "Recent Post"
+			},
+            {
+              "type": "range",
+              "id": "recent_post_limit_handle",
+              "min": 2,
+              "max": 10,
+              "step": 1,
+              "label": "Post Limit",
+              "default": 3
+            }
+          ]
+       },
+	   {
+          "type": "archive",
+          "name": "Archive",
+		  "limit": 1,
+          "settings": [
+            {
+              "type": "text",
+              "id": "archive_title",
+              "label": "Archive Title",
+              "default": "Archive"
+            }
+          ]
+       },
+	   {
+          "type": "tag",
+          "name": "Tag",
+		  "limit": 1,
+          "settings": [
+            {
+              "type": "text",
+              "id": "blog_tags_title",
+              "label": "Tags Title",
+              "default": "Tags"
+			},
+            {
+              "type": "range",
+              "id": "blog_tags_list_limit_handle",
+              "min": 5,
+              "max": 20,
+              "step": 1,
+              "label": "Tag Limit",
+              "default": 10
+            }
+          ]
+       },
+	   {
+          "type": "menu",
+          "name": "Menu",
+          "settings": [
+            {
+              "type": "text",
+              "id": "menu_title",
+              "label": "Menu Title",
+              "default": "Custom Menu"
+            },
+			{
+              "type": "link_list",
+              "id": "menu_handle",
+              "label": "Menu"
+            }
+          ]
+       }
+	]
+  }
+{% endschema %}

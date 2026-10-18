@@ -1,0 +1,46 @@
+{{ 'bootstrap.min.css' | asset_url | stylesheet_tag }}
+
+{% if content_for_layout or content_for_header contains 'sli' %}
+{{ 'icons.min.css' | asset_url | stylesheet_tag }}
+{% endif %}
+
+{% if content_for_layout or content_for_header contains 'icofont' %}
+{{ 'icofont.min.css' | asset_url | stylesheet_tag }}
+{% endif %}
+
+
+{% if content_for_layout contains 'animated' %}
+{{ 'animate.css' | asset_url | stylesheet_tag }}
+{% endif %}
+
+{% if content_for_layout contains 'magni_video_pop' or content_for_layout contains 'img-popup' %}
+{{ 'magnific-popup.css' | asset_url | stylesheet_tag }}
+{% endif %}
+
+{% if content_for_layout contains 'owl-carousel' %}
+{{ 'owl-carousel.css' | asset_url | stylesheet_tag }}
+{% endif %}
+
+{% if content_for_layout contains 'common_slick_slider' %}
+{{ 'slick-slider.css' | asset_url | stylesheet_tag }}
+{% endif %}
+
+
+{{ 'plugins.css' | asset_url | stylesheet_tag }}
+{{ 'style.css' | asset_url | stylesheet_tag }}
+
+<!-- Theme Default CSS -->
+{{ 'theme-default.css' | asset_url | stylesheet_tag }}
+<!-- Make your theme CSS calls here -->
+{{ 'theme-custom.css' | asset_url | stylesheet_tag }}
+
+{% if settings.rtl_enable %}
+{{ 'theme-rtl.css' | asset_url | stylesheet_tag }}
+{% endif %}
+
+{{ 'theme-responsive.css' | asset_url | stylesheet_tag }}
+{{ 'skin-and-color.css' | asset_url | stylesheet_tag }}
+
+{%- if settings.theme_custom_css_style != '' -%}
+	{{ settings.theme_custom_css_style }}
+{%- endif -%}

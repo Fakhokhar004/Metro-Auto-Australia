@@ -1,0 +1,39 @@
+{%- comment -%}
+  "Parts for your <vehicle>". Design reference: Main.dc.html (FOR YOUR VEHICLE).
+  The garage lives in the shopper's browser, so this fills in client-side (ma-theme.js):
+  products tagged with the vehicle's fitment tag, then products tagged "universal".
+  Hidden when no vehicle is selected or nothing matches.
+{%- endcomment -%}
+<section
+  class="ma-products-sec ma-products-sec--fit ma-sec--48"
+  data-ma-fit-section
+  data-limit="{{ section.settings.limit }}"
+  data-universal-tag="{{ section.settings.universal_tag | handleize | default: 'universal' }}"
+  data-empty
+>
+  <div class="ma-wrap">
+    <div class="ma-section-head">
+      <div>
+        <span class="ma-eyebrow ma-eyebrow--green">{{ section.settings.eyebrow | escape }}</span>
+        <h2 class="ma-h2">{{ section.settings.heading | escape }} <span data-ma-fit-vehicle></span></h2>
+      </div>
+      <a class="ma-section-head__link" href="{{ routes.all_products_collection_url }}" data-ma-fit-all>{{ section.settings.link_label | escape }}</a>
+    </div>
+    <div class="ma-pgrid" data-ma-fit-grid aria-live="polite"></div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Metro parts for vehicle",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Matched to your garage" },
+    { "type": "text", "id": "heading", "label": "Heading (vehicle name follows)", "default": "Parts for your" },
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "See all parts that fit" },
+    { "type": "range", "id": "limit", "label": "Products", "min": 2, "max": 8, "step": 2, "default": 4 },
+    { "type": "text", "id": "universal_tag", "label": "Universal product tag", "default": "universal", "info": "Products with this tag show as \"Suits any vehicle\" and fill the row." }
+  ],
+  "presets": [{ "name": "Metro parts for vehicle" }]
+}
+{% endschema %}

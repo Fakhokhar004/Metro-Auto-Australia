@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<title>Metro Auto contact form</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #121316; width: 100%; box-sizing: border-box">
+ <sc-if value="{{sent}}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="border: 1px solid #86EFAC; background: #DCFCE7; color: #14532D; border-radius: 8px; padding: 24px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start">
+   <strong style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 26px; text-transform: uppercase">Message sent</strong>
+   <span style="font-size: 15px; line-height: 1.5">Thanks, {{firstName}}. We've received your message and will reply to {{email}}.</span>
+   <button onClick="{{reset}}" style="margin-top: 6px; min-height: 42px; padding: 0 16px; border-radius: 6px; border: 1px solid #14532D; background: #FFFFFF; color: #14532D; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer">Send another message</button>
+  </div>
+ </sc-if>
+ <sc-if value="{{editing}}" hint-placeholder-val="{{ true }}">
+  <form onSubmit="{{submit}}" novalidate style="display: flex; flex-direction: column; gap: 16px">
+   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px">
+    <label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px">First Name
+     <input value="{{f.first}}" onChange="{{on.first}}" placeholder="Name" autocomplete="given-name" aria-invalid="{{err.firstAria}}" style="min-height: 44px; border: 1px solid {{err.firstBorder}}; border-radius: 6px; background: #F1F1F1; padding: 0 14px; font-family: inherit; font-size: 15px; font-weight: 400; color: #121316">
+     <span style="font-size: 12px; font-weight: 400; color: #C81E1E">{{err.firstMsg}}</span>
+    </label>
+    <label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px">Surname
+     <input value="{{f.last}}" onChange="{{on.last}}" placeholder="Last Name" autocomplete="family-name" aria-invalid="{{err.lastAria}}" style="min-height: 44px; border: 1px solid {{err.lastBorder}}; border-radius: 6px; background: #F1F1F1; padding: 0 14px; font-family: inherit; font-size: 15px; font-weight: 400; color: #121316">
+     <span style="font-size: 12px; font-weight: 400; color: #C81E1E">{{err.lastMsg}}</span>
+    </label>
+   </div>
+   <label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px">Email Address
+    <input type="email" value="{{f.email}}" onChange="{{on.email}}" placeholder="Email" autocomplete="email" aria-invalid="{{err.emailAria}}" style="min-height: 44px; border: 1px solid {{err.emailBorder}}; border-radius: 6px; background: #F1F1F1; padding: 0 14px; font-family: inherit; font-size: 15px; font-weight: 400; color: #121316">
+    <span style="font-size: 12px; font-weight: 400; color: #C81E1E">{{err.emailMsg}}</span>
+   </label>
+   <label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px">Mobile Number
+    <input type="tel" value="{{f.mobile}}" onChange="{{on.mobile}}" placeholder="04XX XXX XXX" autocomplete="tel" style="min-height: 44px; border: 1px solid #D9D9D9; border-radius: 6px; background: #F1F1F1; padding: 0 14px; font-family: inherit; font-size: 15px; font-weight: 400; color: #121316">
+   </label>
+   <label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px">VIN Number
+    <input value="{{f.vin}}" onChange="{{on.vin}}" maxlength="17" style="min-height: 44px; border: 1px solid #D9D9D9; border-radius: 6px; background: #F1F1F1; padding: 0 14px; font-family: inherit; font-size: 15px; font-weight: 400; color: #121316; text-transform: uppercase">
+   </label>
+   <label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px">Registration Number
+    <input value="{{f.rego}}" onChange="{{on.rego}}" maxlength="8" style="min-height: 44px; border: 1px solid #D9D9D9; border-radius: 6px; background: #F1F1F1; padding: 0 14px; font-family: inherit; font-size: 15px; font-weight: 400; color: #121316; text-transform: uppercase">
+   </label>
+   <label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px">State
+    <select value="{{f.state}}" onChange="{{on.state}}" style="min-height: 46px; border: 1px solid #D9D9D9; border-radius: 6px; background: #F1F1F1; padding: 0 12px; font-family: inherit; font-size: 15px; font-weight: 400; color: #121316">
+     <option value="">Select State...</option>
+     <sc-for list="{{states}}" as="s" hint-placeholder-count="8"><option value="{{s}}">{{s}}</option></sc-for>
+    </select>
+   </label>
+   <label style="display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px">Message
+    <textarea value="{{f.message}}" onChange="{{on.message}}" placeholder="Your Message" rows="5" style="border: 1px solid #D9D9D9; border-radius: 6px; background: #F1F1F1; padding: 12px 14px; font-family: inherit; font-size: 15px; font-weight: 400; color: #121316; resize: vertical; min-height: 116px"></textarea>
+   </label>
+   <div style="display: flex; justify-content: center; padding-top: 4px">
+    <button type="submit" style="min-height: 46px; padding: 0 28px; border-radius: 6px; border: 0; background: #E1251B; color: #FFFFFF; font-family: inherit; font-weight: 700; font-size: 15px; cursor: pointer">Send Message</button>
+   </div>
+  </form>
+ </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":600,"height":760}}'>
+var CF_EMPTY={first:"",last:"",email:"",mobile:"",vin:"",rego:"",state:"",message:""};
+class Component extends DCLogic {
+ constructor(props){ super(props); this.state = {f:Object.assign({}, CF_EMPTY), tried:false, sent:false}; }
+ errors(f){
+  return {
+   first: !f.first.trim() ? "* Required" : "",
+   last: !f.last.trim() ? "* Required" : "",
+   email: !f.email.trim() ? "* Required" : (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim()) ? "" : "Enter an email like name@example.com")
+  };
+ }
+ renderVals(){
+  var st = this.state, f = st.f, e = this.errors(f);
+  var set = k => ev => { var n = Object.assign({}, st.f); n[k] = ev.target.value; this.setState({f:n}); };
+  var shown = k => st.tried ? e[k] : "* Required";
+  var bad = k => st.tried && !!e[k];
+  return {
+   f: f, sent: st.sent, editing: !st.sent,
+   on: {first:set("first"), last:set("last"), email:set("email"), mobile:set("mobile"), vin:set("vin"), rego:set("rego"), state:set("state"), message:set("message")},
+   err: {
+    firstMsg: shown("first"), lastMsg: shown("last"), emailMsg: shown("email"),
+    firstBorder: bad("first") ? "#C81E1E" : "#D9D9D9", lastBorder: bad("last") ? "#C81E1E" : "#D9D9D9", emailBorder: bad("email") ? "#C81E1E" : "#D9D9D9",
+    firstAria: bad("first") ? "true" : "false", lastAria: bad("last") ? "true" : "false", emailAria: bad("email") ? "true" : "false"
+   },
+   states: ["ACT","NSW","NT","QLD","SA","TAS","VIC","WA"],
+   submit: ev => { if (ev && ev.preventDefault) ev.preventDefault(); var x = this.errors(st.f); if (x.first || x.last || x.email) { this.setState({tried:true}); return; } this.setState({sent:true}); },
+   firstName: f.first.trim(), email: f.email.trim(),
+   reset: () => this.setState({f:Object.assign({}, CF_EMPTY), tried:false, sent:false})
+  };
+ }
+}
+</script>
+</body>
+</html>

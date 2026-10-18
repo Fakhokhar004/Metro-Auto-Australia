@@ -1,0 +1,12 @@
+{%- if section.settings.curr_t != '' -%}
+<h4>{{ section.settings.curr_t }}</h4>
+{%- endif -%}
+{% assign currency = section.settings.supported_currencies | split: '|' %}
+<ul class="switcher-dropdown currency" id="currencies">
+  {% for value in currency %}
+  {% assign array = value | split: ',' %}
+  {% assign iso_4217 = array[0] | upcase | strip %}
+  {% assign name = array[1] | strip %}
+  <li data-currency="{{ iso_4217 }}" class="currency__item"><a style="cursor: pointer">{{ name }}</a></li>
+  {% endfor %}
+</ul>

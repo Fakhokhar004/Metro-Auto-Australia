@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<title>Metro Auto home</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FFFFFF}
+a{color:#E1251B}a:hover{color:#B71C14}
+:focus-visible{outline:3px solid #2F6FD6;outline-offset:2px}
+.mx-wrap{max-width:1320px;margin:0 auto;padding:0 24px;box-sizing:border-box}
+.mx-top{display:grid;grid-template-columns:260px minmax(0,1fr);gap:24px;align-items:start}
+.mx-hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr)}
+.mx-trust{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mx-finder{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 180px;gap:10px;align-items:end}
+.mx-bento{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);grid-template-rows:200px 200px;gap:12px}
+.mx-feature{grid-row:span 2}
+.mx-ship{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.mx-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.mx-brands{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.mx-pill-short{display:none}
+.mx-marquee-track{display:flex;width:max-content;animation:mx-scroll 40s linear infinite}
+@keyframes mx-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion: reduce){.mx-marquee-track{animation:none}}
+@media (max-width:1100px){
+ .mx-top{grid-template-columns:1fr}
+ .mx-side{order:2}
+ .mx-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:860px){
+ .mx-side{display:none !important}
+ .mx-hero{grid-template-columns:1fr}
+ .mx-hero-art{display:none !important}
+ /* trust cards and shipping cards stay in one row of three on phones: icon + short label only */
+ .mx-trust,.mx-ship{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .mx-trust-card{flex-direction:column !important;text-align:center;padding:12px 6px !important;gap:8px !important}
+ .mx-trust-icon{width:38px !important;height:38px !important}
+ .mx-trust-title{font-size:14px !important;line-height:1.1}
+ .mx-trust-text,.mx-ship-text{display:none !important}
+ .mx-ship-card{padding:14px 6px !important;gap:6px !important}
+ .mx-ship-icon{width:38px !important;height:38px !important}
+ .mx-ship-title{font-size:13px !important;line-height:1.25}
+ .mx-finder{grid-template-columns:1fr}
+ .mx-bento{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto}
+ .mx-feature{grid-column:span 2;grid-row:auto;min-height:240px}
+ .mx-tile{min-height:170px}
+}
+@media (max-width:640px){
+ .mx-wrap{padding:0 12px}
+ .mx-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ /* brands: small name-only chips, four to a row */
+ .mx-brands{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+ .mx-brand{min-height:56px !important;padding:6px !important;justify-content:center !important;align-items:center;text-align:center}
+ .mx-brand-name{font-size:17px !important}
+ .mx-brand-sub{display:none !important}
+ .mx-h1{font-size:38px !important}
+ .mx-h2{font-size:26px !important}
+ .mx-hero{min-height:0 !important}
+ .mx-hero-in{padding:24px 18px !important;gap:14px !important}
+ .mx-hero-lead{font-size:15px !important}
+ .mx-pill-long{display:none}
+ .mx-pill-short{display:inline}
+ .mx-finder-box{padding:22px 14px !important}
+ .mx-section{padding-top:36px !important}
+ .mx-marquee-word{font-size:40px !important}
+ .mx-feature svg{width:180px;height:180px}
+}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #121316; background: #FFFFFF; min-height: 100vh">
+
+<dc-import name="Header" current="home" welcome="yes" hint-size="100%,210px"></dc-import>
+
+<!-- TOP: sidebar + hero column -->
+<section style="padding: 24px 0 0">
+<div class="mx-wrap">
+<div class="mx-top">
+ <div class="mx-side"><dc-import name="Sidebar" mode="home" hint-size="100%,1040px"></dc-import></div>
+
+ <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0">
+  <!-- HERO -->
+  <div class="mx-hero" style="position: relative; border-radius: 12px; overflow: hidden; background: radial-gradient(circle at 78% 40%, rgba(225,37,27,0.28), rgba(225,37,27,0) 55%), #121316; color: #FFFFFF; min-height: 470px">
+   <div class="mx-hero-in" style="padding: 44px 40px; display: flex; flex-direction: column; justify-content: center; gap: 18px; position: relative; z-index: 1">
+    <span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; border: 1px solid #3A3D44; border-radius: 99px; padding: 6px 12px; font-size: 13px; color: #D4D6DB"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E1251B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11zM12 12a2 2 0 1 0 0-.1"></path></svg><span class="mx-pill-long">Australian-owned auto parts store</span><span class="mx-pill-short">Aus-owned</span></span>
+    <h1 class="mx-h1" style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 64px; line-height: 0.95; text-transform: uppercase; letter-spacing: 0.005em">Find the right<br><span style="color: #E1251B">auto parts</span><br>for your ride</h1>
+    <p class="mx-hero-lead" style="margin: 0; font-size: 17px; line-height: 1.55; color: #D4D6DB; max-width: 440px">Quality parts, fast shipping Australia-wide. Backed by the manufacturer's warranty and our fitment guarantee.</p>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap">
+     <a href="Vehicles.dc.html" style="min-height: 48px; padding: 0 22px; border-radius: 6px; background: #E1251B; color: #FFFFFF; display: inline-flex; align-items: center; text-decoration: none; font-weight: 600; font-size: 15px">Shop by vehicle</a>
+     <a href="Collections.dc.html" style="min-height: 48px; padding: 0 22px; border-radius: 6px; border: 1px solid #5A5E66; color: #FFFFFF; display: inline-flex; align-items: center; text-decoration: none; font-weight: 600; font-size: 15px">Browse categories</a>
+    </div>
+   </div>
+   <div class="mx-hero-art" style="position: relative">
+    <svg width="380" height="380" viewBox="0 0 200 200" fill="none" aria-hidden="true" style="position: absolute; top: 24px; right: -40px">
+     <circle cx="100" cy="100" r="88" fill="#2A2C31"></circle>
+     <circle cx="100" cy="100" r="88" stroke="#4A4D55" stroke-width="2"></circle>
+     <circle cx="100" cy="100" r="76" stroke="#3A3D44" stroke-width="1.5" stroke-dasharray="2 6"></circle>
+     <circle cx="100" cy="100" r="36" fill="#3A3D44"></circle>
+     <circle cx="100" cy="100" r="14" fill="#121316"></circle>
+     <circle cx="100" cy="72" r="4.5" fill="#121316"></circle><circle cx="127" cy="91" r="4.5" fill="#121316"></circle><circle cx="117" cy="123" r="4.5" fill="#121316"></circle><circle cx="83" cy="123" r="4.5" fill="#121316"></circle><circle cx="73" cy="91" r="4.5" fill="#121316"></circle>
+     <path d="M30 60 C18 84 18 116 30 140 L52 130 C44 112 44 88 52 70 Z" fill="#E1251B"></path>
+     <rect x="24" y="92" width="12" height="16" rx="3" fill="#B71C14"></rect>
+    </svg>
+    <div style="position: absolute; right: 16px; bottom: 20px; display: flex; flex-direction: column; gap: 8px; width: 220px">
+     <sc-for list="{{heroCards}}" as="c" hint-placeholder-count="3">
+      <div style="background: #FFFFFF; color: #121316; border-radius: 8px; padding: 10px 12px; display: flex; gap: 10px; align-items: center; box-shadow: 0 8px 24px rgba(0,0,0,0.35)">
+       <span style="width: 32px; height: 32px; border-radius: 99px; background: #E1251B; color: #FFFFFF; display: grid; place-items: center; flex: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.icon}}"></path></svg></span>
+       <span style="display: flex; flex-direction: column; line-height: 1.25"><strong style="font-size: 14px; font-weight: 600">{{c.title}}</strong><span style="font-size: 12px; color: #62666D">{{c.text}}</span></span>
+      </div>
+     </sc-for>
+    </div>
+   </div>
+  </div>
+
+  <!-- TRUST -->
+  <div class="mx-trust">
+   <sc-for list="{{trust}}" as="t" hint-placeholder-count="3">
+    <div class="mx-trust-card" style="background: #121316; color: #FFFFFF; border-radius: 10px; padding: 16px; display: flex; gap: 12px; align-items: center">
+     <span class="mx-trust-icon" style="width: 44px; height: 44px; border-radius: 8px; background: #E1251B; display: grid; place-items: center; flex: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.icon}}"></path></svg></span>
+     <span style="display: flex; flex-direction: column; gap: 2px"><strong class="mx-trust-title" style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px; text-transform: uppercase; letter-spacing: 0.02em">{{t.title}}</strong><span class="mx-trust-text" style="font-size: 13px; color: #B9BCC3; line-height: 1.35">{{t.text}}</span></span>
+    </div>
+   </sc-for>
+  </div>
+
+  <!-- VEHICLE SELECTOR -->
+  <div class="mx-finder-box" style="background: #121316; color: #FFFFFF; border-radius: 12px; padding: 32px 28px; display: flex; flex-direction: column; gap: 18px">
+   <div style="text-align: center; display: flex; flex-direction: column; gap: 6px; align-items: center">
+    <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; color: #FF5A50">Vehicle selector</span>
+    <h2 class="mx-h2" style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 36px; text-transform: uppercase; line-height: 1">Enter your vehicle to find parts</h2>
+    <p style="margin: 0; font-size: 15px; color: #B9BCC3">We'll show only the parts that fit, and save your vehicle to your garage.</p>
+   </div>
+   <sc-if value="{{modeVehicle}}" hint-placeholder-val="{{ true }}">
+    <div class="mx-finder">
+     <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #B9BCC3">Make
+      <select value="{{fMake}}" onChange="{{onMake}}" style="min-height: 48px; border: 1px solid #3A3D44; border-radius: 6px; padding: 0 12px; font-family: inherit; font-size: 16px; color: #FFFFFF; background: #1F2125">
+       <option value="">Select make</option>
+       <sc-for list="{{makes}}" as="m" hint-placeholder-count="6"><option value="{{m}}">{{m}}</option></sc-for>
+      </select>
+     </label>
+     <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #B9BCC3">Model
+      <select value="{{fModel}}" onChange="{{onModel}}" disabled="{{noMake}}" style="min-height: 48px; border: 1px solid #3A3D44; border-radius: 6px; padding: 0 12px; font-family: inherit; font-size: 16px; color: #FFFFFF; background: #1F2125">
+       <option value="">Select model</option>
+       <sc-for list="{{models}}" as="m" hint-placeholder-count="4"><option value="{{m}}">{{m}}</option></sc-for>
+      </select>
+     </label>
+     <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #B9BCC3">Year
+      <select value="{{fYear}}" onChange="{{onYear}}" disabled="{{noModel}}" style="min-height: 48px; border: 1px solid #3A3D44; border-radius: 6px; padding: 0 12px; font-family: inherit; font-size: 16px; color: #FFFFFF; background: #1F2125">
+       <option value="">Select year</option>
+       <sc-for list="{{years}}" as="y" hint-placeholder-count="8"><option value="{{y}}">{{y}}</option></sc-for>
+      </select>
+     </label>
+     <a href="Search.dc.html" onClick="{{findGo}}" style="min-height: 48px; border-radius: 6px; background: #E1251B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-weight: 600; font-size: 15px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Find parts
+     </a>
+    </div>
+   </sc-if>
+   <sc-if value="{{modePart}}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end">
+     <label style="flex: 1 1 320px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #B9BCC3">Part, SKU or OEM number
+      <input value="{{part}}" onChange="{{onPart}}" placeholder="For example SP2174 or 030-612" style="min-height: 48px; border: 1px solid #3A3D44; border-radius: 6px; padding: 0 14px; font-family: inherit; font-size: 16px; color: #FFFFFF; background: #1F2125">
+     </label>
+     <a href="Search.dc.html" onClick="{{partGo}}" style="flex: 0 0 180px; min-height: 48px; border-radius: 6px; background: #E1251B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 600; font-size: 15px">Search</a>
+    </div>
+   </sc-if>
+   <div style="display: flex; justify-content: center; gap: 8px 16px; flex-wrap: wrap; align-items: center; font-size: 14px">
+    <span style="color: #B9BCC3">Your garage:</span>
+    <sc-for list="{{garage}}" as="g" hint-placeholder-count="2">
+     <a href="Search.dc.html" onClick="{{g.go}}" style="color: #FFFFFF; text-decoration: underline">{{g.label}}</a>
+    </sc-for>
+    <button onClick="{{toggleMode}}" style="border: 0; background: transparent; color: #FF5A50; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer; min-height: 36px">{{modeLabel}}</button>
+   </div>
+  </div>
+ </div>
+</div>
+</div>
+</section>
+
+<!-- SHOP BY CATEGORY bento -->
+<section class="mx-section" style="padding: 64px 0 0">
+<div class="mx-wrap">
+ <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 18px">
+  <div>
+   <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; color: #E1251B">Everyday essentials</span>
+   <h2 class="mx-h2" style="margin: 2px 0 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 40px; text-transform: uppercase; line-height: 1">Shop by category</h2>
+  </div>
+  <a href="Collections.dc.html" style="font-weight: 600; font-size: 15px">View all categories</a>
+ </div>
+ <div class="mx-bento">
+  <a class="mx-feature" href="Collections.dc.html" style="position: relative; border-radius: 12px; overflow: hidden; background: radial-gradient(circle at 70% 35%, rgba(225,37,27,0.35), rgba(225,37,27,0) 60%), #17181B; color: #FFFFFF; text-decoration: none; display: flex; align-items: flex-end; padding: 28px; box-sizing: border-box">
+   <svg width="300" height="300" viewBox="0 0 200 200" fill="none" aria-hidden="true" style="position: absolute; top: 10px; right: 20px">
+    <circle cx="110" cy="96" r="70" fill="#2A2C31" stroke="#4A4D55" stroke-width="2"></circle>
+    <circle cx="110" cy="96" r="28" fill="#3A3D44"></circle><circle cx="110" cy="96" r="11" fill="#17181B"></circle>
+    <path d="M48 56 C38 76 38 116 48 136 L66 128 C60 112 60 80 66 64 Z" fill="#E1251B"></path>
+    <rect x="150" y="120" width="28" height="70" rx="5" fill="#2F6FD6"></rect><rect x="150" y="140" width="28" height="22" fill="#FFFFFF"></rect>
+   </svg>
+   <span style="position: relative; display: flex; flex-direction: column; gap: 8px; max-width: 360px">
+    <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; color: #FF5A50">Over 7,600 parts in stock</span>
+    <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 40px; line-height: 0.95; text-transform: uppercase">Car parts and accessories</span>
+    <span style="font-size: 15px; color: #D4D6DB">Brakes, filters, fluids, body parts and workshop supplies for more than 100 car brands.</span>
+   </span>
+  </a>
+  <sc-for list="{{tiles}}" as="t" hint-placeholder-count="4">
+   <a class="mx-tile" href="Collection.dc.html" onClick="{{t.go}}" style="position: relative; border-radius: 12px; overflow: hidden; background: radial-gradient(circle at 70% 30%, rgba(225,37,27,0.3), rgba(225,37,27,0) 60%), #17181B; color: #FFFFFF; text-decoration: none; display: flex; align-items: flex-end; padding: 16px; box-sizing: border-box">
+    <span style="position: absolute; top: 14px; right: 14px; width: 110px; height: 110px; display: grid; place-items: center">
+     <sc-if value="{{t.rotor}}" hint-placeholder-val="{{ true }}"><svg width="100" height="100" viewBox="0 0 200 200" fill="none" aria-hidden="true"><circle cx="100" cy="100" r="80" fill="#2A2C31" stroke="#4A4D55" stroke-width="3"></circle><circle cx="100" cy="100" r="30" fill="#3A3D44"></circle><path d="M30 60 C18 84 18 116 30 140 L52 130 C44 112 44 88 52 70 Z" fill="#E1251B"></path></svg></sc-if>
+     <sc-if value="{{t.can}}" hint-placeholder-val="{{ false }}"><svg width="60" height="100" viewBox="0 0 120 200" fill="none" aria-hidden="true"><rect x="52" y="4" width="16" height="12" rx="2" fill="#62666D"></rect><path d="M40 16h40v18H40z" fill="#FFFFFF"></path><rect x="30" y="34" width="60" height="160" rx="10" fill="#2F6FD6"></rect><rect x="30" y="80" width="60" height="50" fill="#FFFFFF"></rect></svg></sc-if>
+     <sc-if value="{{t.plug}}" hint-placeholder-val="{{ false }}"><svg width="90" height="100" viewBox="0 0 120 160" fill="none" aria-hidden="true"><g><rect x="22" y="6" width="12" height="14" rx="2" fill="#B9BCC3"></rect><rect x="18" y="20" width="20" height="56" rx="8" fill="#F4F4F5"></rect><path d="M14 76h28l-3 14H17z" fill="#8A8E96"></path><rect x="20" y="90" width="16" height="40" fill="#62666D"></rect><path d="M26 130h4v14h-4z" fill="#B9BCC3"></path></g><g transform="translate(36 0)"><rect x="22" y="6" width="12" height="14" rx="2" fill="#B9BCC3"></rect><rect x="18" y="20" width="20" height="56" rx="8" fill="#F4F4F5"></rect><path d="M14 76h28l-3 14H17z" fill="#8A8E96"></path><rect x="20" y="90" width="16" height="40" fill="#62666D"></rect></g><g transform="translate(72 0)"><rect x="22" y="6" width="12" height="14" rx="2" fill="#B9BCC3"></rect><rect x="18" y="20" width="20" height="56" rx="8" fill="#F4F4F5"></rect><path d="M14 76h28l-3 14H17z" fill="#E1251B"></path><rect x="20" y="90" width="16" height="40" fill="#62666D"></rect></g></svg></sc-if>
+     <sc-if value="{{t.shock}}" hint-placeholder-val="{{ false }}"><svg width="70" height="104" viewBox="0 0 80 200" fill="none" aria-hidden="true"><circle cx="40" cy="14" r="10" stroke="#B9BCC3" stroke-width="5"></circle><rect x="34" y="24" width="12" height="60" fill="#B9BCC3"></rect><path d="M14 40 L66 52 L14 64 L66 76 L14 88 L66 100 L14 112 L66 124 L14 136" stroke="#E1251B" stroke-width="6" stroke-linecap="round"></path><rect x="24" y="84" width="32" height="96" rx="6" fill="#3A3D44"></rect><circle cx="40" cy="188" r="9" stroke="#B9BCC3" stroke-width="5"></circle></svg></sc-if>
+    </span>
+    <span style="position: relative; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; text-transform: uppercase; letter-spacing: 0.02em">{{t.label}}</span>
+   </a>
+  </sc-for>
+ </div>
+</div>
+</section>
+
+<!-- SHIPPING CARDS -->
+<section style="padding: 24px 0 0">
+<div class="mx-wrap">
+ <div class="mx-ship">
+  <sc-for list="{{ship}}" as="s" hint-placeholder-count="3">
+   <div class="mx-ship-card" style="border: 1px solid #E4E4E7; border-radius: 10px; padding: 22px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; box-shadow: 0 1px 2px rgba(18,19,22,0.05)">
+    <span class="mx-ship-icon" style="width: 48px; height: 48px; border-radius: 99px; background: #FDECEB; display: grid; place-items: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E1251B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{s.icon}}"></path></svg></span>
+    <strong class="mx-ship-title" style="font-size: 16px; font-weight: 600">{{s.title}}</strong>
+    <span class="mx-ship-text" style="font-size: 14px; color: #62666D">{{s.text}}</span>
+   </div>
+  </sc-for>
+ </div>
+</div>
+</section>
+
+<!-- MARQUEE -->
+<section aria-label="Why shop with Metro Auto" style="padding: 48px 0 0; overflow: hidden">
+ <div class="mx-marquee-track">
+  <sc-for list="{{marquee}}" as="m" hint-placeholder-count="2">
+   <span class="mx-marquee-word" style="flex: none; padding-right: 32px; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 64px; line-height: 1; text-transform: uppercase; white-space: nowrap; color: #FFFFFF; -webkit-text-stroke: 1.5px #C9CBD0">{{m}}</span>
+  </sc-for>
+ </div>
+</section>
+
+<!-- FOR YOUR VEHICLE -->
+<sc-if value="{{hasVehicle}}" hint-placeholder-val="{{ true }}">
+<section class="mx-section" style="padding: 48px 0 0">
+<div class="mx-wrap">
+ <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 18px">
+  <div>
+   <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; color: #15803D">Matched to your garage</span>
+   <h2 class="mx-h2" style="margin: 2px 0 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 40px; text-transform: uppercase; line-height: 1">Parts for your {{vehicleLabel}}</h2>
+  </div>
+  <a href="Search.dc.html" onClick="{{goFits}}" style="font-weight: 600; font-size: 15px">See all parts that fit</a>
+ </div>
+ <div class="mx-grid">
+  <sc-for list="{{fitList}}" as="p" hint-placeholder-count="4">
+   <dc-import name="ProductCard" item="{{p}}" hint-size="100%,520px"></dc-import>
+  </sc-for>
+ </div>
+</div>
+</section>
+</sc-if>
+
+<!-- HOT DEALS -->
+<section class="mx-section" style="padding: 56px 0 0">
+<div class="mx-wrap">
+ <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 18px">
+  <div>
+   <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; color: #E1251B">Hot deals</span>
+   <h2 class="mx-h2" style="margin: 2px 0 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 40px; text-transform: uppercase; line-height: 1">Essential performance parts</h2>
+  </div>
+  <a href="Collection.dc.html" onClick="{{goDeals}}" style="font-weight: 600; font-size: 15px">View all deals</a>
+ </div>
+ <div class="mx-grid">
+  <sc-for list="{{deals}}" as="p" hint-placeholder-count="8">
+   <dc-import name="ProductCard" item="{{p}}" hint-size="100%,520px"></dc-import>
+  </sc-for>
+ </div>
+</div>
+</section>
+
+<!-- BRANDS -->
+<section class="mx-section" style="padding: 56px 0 0">
+<div class="mx-wrap">
+ <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 18px">
+  <h2 class="mx-h2" style="margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 40px; text-transform: uppercase; line-height: 1">Our trusted brands</h2>
+  <a href="Brands.dc.html" style="font-weight: 600; font-size: 15px">See all brands</a>
+ </div>
+ <div class="mx-brands">
+  <sc-for list="{{brands}}" as="b" hint-placeholder-count="7">
+   <a class="mx-brand" href="Brands.dc.html" onClick="{{b.go}}" aria-label="{{b.label}} products" style="min-height: 172px; border-radius: 10px; background: {{b.bg}}; color: {{b.fg}}; text-decoration: none; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; box-sizing: border-box">
+    <span class="mx-brand-name" style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 38px; line-height: 1; text-transform: uppercase">{{b.label}}</span>
+    <span class="mx-brand-sub" style="display: flex; justify-content: space-between; align-items: flex-end; gap: 8px">
+     <span style="font-size: 13px; line-height: 1.4">{{b.covers}}</span>
+     <span style="font-size: 13px; font-weight: 600; text-decoration: underline; white-space: nowrap">View range</span>
+    </span>
+   </a>
+  </sc-for>
+ </div>
+</div>
+</section>
+
+<!-- DISCOUNT BANNER -->
+<section style="padding: 48px 0 64px">
+<div class="mx-wrap">
+ <div style="border: 2px dashed #E1251B; border-radius: 12px; background: #FFF6F5; padding: 22px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px 28px; flex-wrap: wrap">
+  <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap">
+   <span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-style: italic; font-size: 26px; text-transform: uppercase; line-height: 1"><span style="color: #E1251B">Metro</span> Auto</span>
+   <span style="display: flex; flex-direction: column; gap: 2px">
+    <strong style="font-size: 18px; font-weight: 600">15% off your first order</strong>
+    <span style="font-size: 15px; color: #3F4249">Use code <strong style="color: #121316">METRO15</strong> at checkout.</span>
+   </span>
+  </div>
+  <button onClick="{{copyCode}}" style="min-height: 48px; padding: 0 22px; border-radius: 6px; border: 0; background: #E1251B; color: #FFFFFF; font-family: inherit; font-weight: 600; font-size: 15px; cursor: pointer">{{copyLabel}}</button>
+ </div>
+</div>
+</section>
+
+<dc-import name="Footer" hint-size="100%,500px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4400}}'>
+var MS={get:function(k,d){try{var v=window.localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set:function(k,v){try{window.localStorage.setItem(k,JSON.stringify(v));}catch(e){}MS.fire(k);},fire:function(k){try{window.dispatchEvent(new Event(k));}catch(e){}}};
+var MA_DV={make:"Toyota",model:"Corolla",year:"2019"};
+function vKey(v){return v?v.year+" "+v.make+" "+v.model:"";}
+function vTag(v){return v?(v.make+"-"+v.model+"-"+v.year).toLowerCase().replace(/[^a-z0-9]+/g,"-"):"";}
+function gLoad(){var g=MS.get("ma-garage",null);return (g&&g.garage)?g:{vehicle:MA_DV,garage:[MA_DV,{make:"Mazda",model:"CX-5",year:"2017"}]};}
+function gSet(v){var g=gLoad();var l=g.garage.slice();if(v&&!l.some(function(x){return vKey(x)===vKey(v);}))l.unshift(v);MS.set("ma-garage",{vehicle:v,garage:l});}
+var MA_STOCK={1:18,2:4,3:32,4:120,5:46,6:14,7:27,8:15,9:3,10:22,11:0,12:2,13:1,14:5,15:9,16:0,17:40,18:6,19:7}; /* units on hand; from Shopify inventory on the live site */
+var MA_P=[
+[1,"HiQ Front Brake Pads Set SP2174","HiQ","SP2174",65,0,"pad","#3B4654","brakes","Brake pads",["Front","Brake pads"],["toyota-corolla-2017","toyota-corolla-2018","toyota-corolla-2019","toyota-corolla-2020"],0],
+[2,"HiQ Front Brake Pads Set SP1253","HiQ","SP1253",52.92,0,"pad","#3B4654","brakes","Brake pads",["Front","Brake pads"],["mazda-cx-5-2016","mazda-cx-5-2017","mazda-cx-5-2018","ford-ranger-2018"],0],
+[3,"CRC 5080 De-Squeak 300g","CRC","5080",31.46,0,"can","#E1251B","brakes","Brake care",["Aerosol","Brake noise"],[],1],
+[4,"CRC 5.56 Multi-Purpose Lubricant Aerosol Spray 400g","CRC","5005",7.70,12.68,"can","#2F6FD6","care","Lubricants and aerosols",["Aerosol","Lubricant"],[],1],
+[5,"CRC 2016 Co Contact Cleaner 350g Precision Electronic Cleaning Solvent","CRC","2016",18.32,28.71,"can","#0E7C86","care","Cleaners",["Aerosol","Electrical","Cleaner"],[],1],
+[6,"CRC 3055 808 Silicone Spray 330g Aerosol","CRC","3055",13.83,19.94,"can","#5B2A86","care","Lubricants and aerosols",["Aerosol","Silicone"],[],1],
+[7,"CRC 5021 Gasket Stripper 300g","CRC","5021",14.69,23.80,"can","#B45309","care","Cleaners",["Aerosol","Gasket removal"],[],1],
+[8,"CRC 3071 So Easy Glass Cleaner 500ml Fast Acting","CRC","3071",13.66,0,"bottle","#0E7C86","care","Cleaners",["Glass","Cleaner"],[],1],
+[9,"CRC 3081 Belt Grip Aerosol Spray 400g","CRC","3081",26.51,0,"can","#3F4249","care","Lubricants and aerosols",["Aerosol","Belts"],[],1],
+[10,"CRC 1754520 TAC-2 Non-Flammable 400g Adhesive Lubricant","CRC","1754520",37.04,0,"can","#B45309","care","Lubricants and aerosols",["Aerosol","Adhesive lubricant"],[],1],
+[11,"CRC 5-56 Marine 300g","CRC","6006",15.59,0,"can","#1E3A5F","care","Lubricants and aerosols",["Aerosol","Marine"],[],1],
+[12,"Wheel Stud Tech Tray 030-612","Goss","030-612",390.99,0,"tray","#2F6FD6","workshop","Wheel nuts and studs",["Workshop tray","Assortment"],[],0],
+[13,"Wheel Nut Tech Tray 030-613","Goss","030-613",606.99,0,"tray","#2F6FD6","workshop","Wheel nuts and studs",["Workshop tray","Assortment"],[],0],
+[14,"Door Lock Rod Clip Tech Tray 030-209","Goss","030-209",242.99,0,"tray","#2F6FD6","body","Body clips and fasteners",["Workshop tray","Clips"],[],0],
+[15,"Body Retainer Tech Tray 030-720","Goss","030-720",137.99,0,"tray","#2F6FD6","body","Body clips and fasteners",["Workshop tray","Retainers"],[],0],
+[16,"Stone Tray / Mud Guard 030-212","Goss","030-212",165.99,0,"tray","#2F6FD6","body","Body and exterior parts",["Workshop tray","Mud guard"],[],0],
+[17,"Cable Lock Assortment 3336","Goss","3336",27.99,0,"clip","#3F4249","body","Body clips and fasteners",["Assortment","Cable locks"],[],0],
+[18,"Vacuum Tees and Connectors 030-496","Goss","030-496",162.99,0,"tray","#2F6FD6","engine","Vacuum and breather hose",["Workshop tray","Connectors"],[],0],
+[19,"Wiper Linkage Bushing Tech Tray 030-203","Goss","030-203",139.99,0,"tray","#2F6FD6","body","Wiper arms and parts",["Workshop tray","Wipers"],[],0]
+].map(function(a){return {id:a[0],title:a[1],vendor:a[2],sku:a[3],price:a[4],compare:a[5],kind:a[6],tint:a[7],dept:a[8],col:a[9],tags:a[10],fit:a[11],uni:!!a[12],onHand:MA_STOCK[a[0]],stock:MA_STOCK[a[0]]>0};});
+function deco(p,v){var ok=!!(v&&p.fit.indexOf(vTag(v))>-1);return Object.assign({},p,{fitLabel:ok?"Fits your "+v.model:(p.uni?"Suits any vehicle":""),fitOk:ok});}
+var MA_VEH={
+ "Toyota":{"Corolla":[2014,2024],"HiLux":[2012,2024],"RAV4":[2013,2024],"Camry":[2012,2023]},
+ "Mazda":{"CX-5":[2012,2024],"Mazda3":[2010,2024],"BT-50":[2012,2024]},
+ "Ford":{"Ranger":[2011,2024],"Focus":[2011,2019]},
+ "Hyundai":{"i30":[2012,2024],"Tucson":[2015,2024]},
+ "Kia":{"Cerato":[2013,2024],"Sportage":[2011,2024]},
+ "Volkswagen":{"Golf":[2009,2024],"Amarok":[2011,2024]},
+ "Honda":{"Civic":[2012,2024],"CR-V":[2012,2024]},
+ "Mitsubishi":{"Triton":[2009,2024],"Outlander":[2012,2024]},
+ "Nissan":{"Navara":[2012,2024],"X-Trail":[2013,2024]},
+ "Subaru":{"Forester":[2012,2024],"Outback":[2012,2024]}
+};
+/* Brand list: in Shopify this comes from the brand list (product vendors or a brand metaobject), so new brands appear here automatically and the grid grows. */
+var MA_BRANDS=[
+ {name:"CRC", covers:"Lubricants, cleaners and brake care", bg:"#1F4FA3", fg:"#FFFFFF"},
+ {name:"HiQ", covers:"Brake pads", bg:"#E1251B", fg:"#FFFFFF"},
+ {name:"Goss", covers:"Workshop trays, clips and fasteners", bg:"#F2B705", fg:"#121316"},
+ {name:"Penrite", covers:"Oils and fluids", bg:"#0F6B3A", fg:"#FFFFFF"},
+ {name:"Nulon", covers:"Oils and fluids", bg:"#5B2A86", fg:"#FFFFFF"},
+ {name:"Hi-Tec", covers:"Oils and fluids", bg:"#0E6F78", fg:"#FFFFFF"},
+ {name:"Caltex", covers:"Oils and fluids", bg:"#121316", fg:"#FFFFFF"}
+];
+class Component extends DCLogic {
+ constructor(props){
+  super(props);
+  var g = gLoad(), v = g.vehicle;
+  this.state = {vehicle:v, garage:g.garage, mode:"vehicle", fMake:v?v.make:"", fModel:v?v.model:"", fYear:v?v.year:"", part:"", copied:false};
+ }
+ componentDidMount(){
+  this.onG = () => { var g = gLoad(); this.setState({vehicle:g.vehicle, garage:g.garage}); };
+  window.addEventListener("ma-garage", this.onG);
+ }
+ componentWillUnmount(){ window.removeEventListener("ma-garage", this.onG); clearTimeout(this.t); }
+ renderVals(){
+  var st = this.state, v = st.vehicle;
+  var models = st.fMake && MA_VEH[st.fMake] ? Object.keys(MA_VEH[st.fMake]) : [];
+  var years = [];
+  if (st.fMake && st.fModel && MA_VEH[st.fMake] && MA_VEH[st.fMake][st.fModel]) { var r = MA_VEH[st.fMake][st.fModel]; for (var y=r[1]; y>=r[0]; y--) years.push(String(y)); }
+  var clearQ = () => { MS.set("ma-q",""); MS.set("ma-tag",""); };
+  var fits = MA_P.filter(p => v && p.fit.indexOf(vTag(v)) > -1);
+  return {
+   heroCards: [
+    {title:"Fast delivery", text:"Same day before 2PM", icon:"M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19a2 2 0 1 0 0-.1M17 19a2 2 0 1 0 0-.1"},
+    {title:"Manufacturer warranty", text:"On every part we sell", icon:"M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"},
+    {title:"Easy returns", text:"30 days on unused parts", icon:"M4 9h11a5 5 0 0 1 0 10H8M4 9l4-4M4 9l4 4"}
+   ],
+   trust: [
+    {title:"Australian owned", text:"Melbourne based, shipping Australia-wide", icon:"M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11zM12 12a2 2 0 1 0 0-.1"},
+    {title:"Manufacturer warranty", text:"Bought direct from the makers", icon:"M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"},
+    {title:"Fitment guarantee", text:"The right part for your make and model", icon:"M9 12l2 2 4-4M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"}
+   ],
+   modeVehicle: st.mode==="vehicle", modePart: st.mode==="part",
+   modeLabel: st.mode==="vehicle" ? "Search by part number instead" : "Search by vehicle instead",
+   toggleMode: () => this.setState({mode: st.mode==="vehicle" ? "part" : "vehicle"}),
+   makes: Object.keys(MA_VEH), models: models, years: years,
+   fMake: st.fMake, fModel: st.fModel, fYear: st.fYear, noMake: !st.fMake, noModel: !st.fModel,
+   onMake: e => this.setState({fMake:e.target.value, fModel:"", fYear:""}),
+   onModel: e => this.setState({fModel:e.target.value, fYear:""}),
+   onYear: e => this.setState({fYear:e.target.value}),
+   findGo: () => { clearQ(); if (st.fMake && st.fModel && st.fYear) gSet({make:st.fMake, model:st.fModel, year:st.fYear}); },
+   part: st.part, onPart: e => this.setState({part:e.target.value}),
+   partGo: () => { MS.set("ma-tag",""); MS.set("ma-q", st.part.trim()); },
+   garage: st.garage.map(x => ({label:vKey(x), go:() => { clearQ(); gSet(x); }})),
+   tiles: [
+    {label:"Brake pads", col:"Brake pads", k:"rotor"},
+    {label:"Lubricants and sprays", col:"Lubricants and aerosols", k:"can"},
+    {label:"Ignition system", col:"Ignition system", k:"plug"},
+    {label:"Suspension", col:"Suspension", k:"shock"}
+   ].map(t => ({label:t.label, go:() => MS.set("ma-col", t.col), rotor:t.k==="rotor", can:t.k==="can", plug:t.k==="plug", shock:t.k==="shock"})),
+   ship: [
+    {title:"Free shipping over $200", text:"Australia-wide delivery", icon:"M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19a2 2 0 1 0 0-.1M17 19a2 2 0 1 0 0-.1"},
+    {title:"Same-day dispatch", text:"Order before 2PM on working days", icon:"M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0"},
+    {title:"30-day returns", text:"Easy returns on unused parts", icon:"M4 9h11a5 5 0 0 1 0 10H8M4 9l4-4M4 9l4 4"}
+   ],
+   marquee: ["Fast shipping Australia-wide • Manufacturer warranty • Fitment guarantee • Australian owned • ", "Fast shipping Australia-wide • Manufacturer warranty • Fitment guarantee • Australian owned • "],
+   hasVehicle: !!v, vehicleLabel: vKey(v), goFits: clearQ,
+   fitList: fits.concat(MA_P.filter(p => p.uni)).slice(0,4).map(p => deco(p, v)),
+   deals: MA_P.filter(p => p.compare > p.price).concat(MA_P.filter(p => !p.compare)).slice(0,8).map(p => deco(p, v)),
+   goDeals: () => MS.set("ma-col","Deals"),
+   brands: MA_BRANDS.map(b => ({label:b.name, covers:b.covers, bg:b.bg, fg:b.fg, go:() => MS.set("ma-brand", b.name)})),
+   copyLabel: st.copied ? "Code copied" : "Copy code METRO15",
+   copyCode: () => { try { navigator.clipboard.writeText("METRO15"); } catch(e) {} this.setState({copied:true}); clearTimeout(this.t); this.t = setTimeout(() => this.setState({copied:false}), 2500); }
+  };
+ }
+}
+</script>
+</body>
+</html>

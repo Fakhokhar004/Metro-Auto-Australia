@@ -1,0 +1,1049 @@
+{%- assign sset = section.settings -%}
+{%- if sset.show_team_section -%}
+  <div class="team-area common_slick_slider" id="section-{{ section.id }}" data-section="About_team">
+    <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+      {%- capture data_slick_activation -%}
+    data-slick='{
+
+    "infinite": true,
+    {% if settings.rtl_enable %}
+    "rtl": true,
+    {% endif %}
+    "slidesToShow": {{section.settings.product_column_handle}},
+    "slidesToScroll": 1,
+    "rows":{{ section.settings.product_casoule_row }},
+    {% if section.settings.tab_arsoule_arrow_enable %}
+    "arrows": true,
+    "prevArrow": "<span class=&#x27;product-dec-icon product-dec-prev&#x27;><i class=&#x27;sli sli-arrow-left&#x27;></i></span>",
+    "nextArrow": "<span class=&#x27;product-dec-icon product-dec-next&#x27;><i class=&#x27;sli sli-arrow-right&#x27;></i></span>",
+    {%else%}
+    "arrows": false,
+    {%endif%}
+
+    "responsive": [{
+    "breakpoint": 1200,
+    "settings": {
+    "slidesToShow": {{section.settings.product_column_handle}},
+    "slidesToScroll": 1
+    }
+    },
+    {
+    "breakpoint": 1199,
+    "settings": {
+    "slidesToShow": {{section.settings.product_column_handle}},
+    "slidesToScroll": 1
+    }
+    },
+    {
+    "breakpoint": 991,
+    "settings": {
+    "slidesToShow": {{section.settings.product_column_handle_md}},
+    "slidesToScroll": 1
+    }
+    },
+    {
+    "breakpoint": 767,
+    "settings": {
+    "slidesToShow": {{section.settings.product_column_handle_sm}},
+    "slidesToScroll": 1
+    }
+    },
+    {
+    "breakpoint": 575,
+    "settings": {
+    "slidesToShow": 2,
+    "slidesToScroll": 1
+    }
+    }
+    ]
+    }'
+    {%- endcapture -%}
+
+      {% if section.settings.section_title != '' or section.settings.section_sub_title != '' %}
+        <div class="section-title {{ section.settings.title_align }} pb-40 {% if settings.section__animation__enable %}scroll-zoom {% endif %}">
+          {% if section.settings.section_title != '' %}
+            <h2>{{ section.settings.section_title }}</h2>
+          {% endif %}
+
+          {% if section.settings.section_sub_title != '' %}
+            <p>{{ section.settings.section_sub_title }}</p>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <div
+        class="{% if section.settings.tab_arsoule_active %} banner-slider-active-team carsoule_arrow_style {% endif %} row {% if settings.section__animation__enable %}scroll-zoom {% endif %}"
+        {{ data_slick_activation }}
+      >
+
+
+      {%- liquid
+        assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+        assign fetch_priority = 'auto'
+        if section.index == 1
+          assign fetch_priority = 'high'
+        endif
+        assign image_class = 'lazyload-main-image animated responsive-image__image'
+        assign lazy_load = 'lazy'
+      -%}
+
+        
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'team_member' -%}
+              {%- assign bset = block.settings -%}
+              <div class="{% if section.settings.tab_arsoule_active %}col-md-12 {% else %} col-lg-{{section.settings.product_column_handle}} col-md-{{section.settings.product_column_handle_md}} col-sm-{{section.settings.product_column_handle_sm}} col-12 {% endif %}">
+               
+               {% if section.settings.team__grid__style == 'style__one' %}
+                
+                <div class="team-wrapper mb-30">
+                  <div class="team-img">
+                	<a href="#" class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.member_img.aspect_ratio | times: 100}}%;">
+                      {%- if bset.member_img -%}
+                        
+                          {% assign image_height = block.settings.member_img.width | divided_by: block.settings.member_img.aspect_ratio %}
+                          {{ block.settings.member_img | image_url: width: 3840 | image_tag: width: block.settings.member_img.width, height: image_height, 
+                          widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load }}
+                        
+                      {%- else -%}
+                        <img loading="lazy"  src="https://via.placeholder.com/270x330" alt="placeholder-img">
+                      {%- endif -%}
+                    </a>
+                    <div class="team-action">
+                      {%- if bset.show_fb -%}
+                        <a class="facebook" href="{{ bset.fb_url }}">
+                          <i class="sli sli-social-facebook"></i>
+                        </a>
+                      {%- endif -%}
+
+                      {%- if bset.show_twitter -%}
+                        <a class="twitter" href="{{ bset.twitter_url }}">
+                          <i class="sli sli-social-twitter"></i>
+                        </a>
+                      {%- endif -%}
+
+                      {%- if bset.show_instagram -%}
+                        <a class="instagram" href="{{ bset.instagram_url }}">
+                          <i class="sli sli-social-instagram"></i>
+                        </a>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                  <div class="team-content text-center">
+                    <h4>{{ bset.member_name }}</h4>
+                    {%- if bset.member_desig != '' -%}
+                      <span>{{ bset.member_desig }}</span>
+                    {%- endif -%}
+                  </div>
+                </div>
+                 
+              {% elsif section.settings.team__grid__style == 'style__two' %}
+                 <div class="team-wrapper style__two mb-30">
+                  <div class="team-img-2">
+                  	<a href="#" class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.member_img.aspect_ratio | times: 100}}%;">
+                      {%- if bset.member_img -%}
+                          {% assign image_height = block.settings.member_img.width | divided_by: block.settings.member_img.aspect_ratio %}
+                          {{ block.settings.member_img | image_url: width: 3840 | image_tag: width: block.settings.member_img.width, height: image_height, 
+                          widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load }}
+                      {%- else -%}
+                        <img loading="lazy"  src="https://via.placeholder.com/270x330" alt="placeholder-img">
+                      {%- endif -%}
+                    </a>
+                  </div>
+                  <div class="team-content-2 text-center">
+
+                    <h4>{{ bset.member_name }}</h4>
+                    {%- if bset.member_desig != '' -%}
+                      <span>{{ bset.member_desig }}</span>
+                    {%- endif -%}
+
+                   <div class="team-action-2">
+                      {%- if bset.show_fb -%}
+                        <a class="facebook" href="{{ bset.fb_url }}">
+                          <i class="sli sli-social-facebook"></i>
+                        </a>
+                      {%- endif -%}
+
+                      {%- if bset.show_twitter -%}
+                        <a class="twitter" href="{{ bset.twitter_url }}">
+                          <i class="sli sli-social-twitter"></i>
+                        </a>
+                      {%- endif -%}
+
+                      {%- if bset.show_instagram -%}
+                        <a class="instagram" href="{{ bset.instagram_url }}">
+                          <i class="sli sli-social-instagram"></i>
+                        </a>
+                      {%- endif -%}
+                    </div>
+                    
+
+                  </div>
+                </div>
+                
+              {% endif %}
+
+                
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+
+{%- endif -%}
+
+
+{%- render 'section-style' -%}
+
+{%- render 'heading-style' -%}
+
+<style>
+  .team-wrapper.style__two::before {
+	position: absolute;
+	content: "";
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 100%;
+	width: 100%;
+	background: linear-gradient(3.98deg, rgba(0, 0, 0, 0) 3.24%, #000000 93.62%);
+	border-radius: 10px;
+	transform: rotate(-180deg);
+	visibility: hidden;
+	opacity: 0;
+	-webkit-transition: all 0.3s ease-out 0s;
+	-moz-transition: all 0.3s ease-out 0s;
+	-ms-transition: all 0.3s ease-out 0s;
+	-o-transition: all 0.3s ease-out 0s;
+	transition: all 0.3s ease-out 0s;
+    z-index:9
+  }
+  .team-wrapper.style__two:hover::before {
+    visibility: visible;
+	opacity: 1;
+  }
+  .team-content-2 {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      transition: .3s;
+      opacity: 0;
+      visibility: hidden;
+      z-index:99
+  }
+  .team-wrapper:hover .team-content-2 {
+    bottom: 20px;
+    opacity:1;
+    visibility: visible;
+}
+  .team-wrapper .team-content-2 h4 {
+    color: #fff;
+}
+.team-wrapper .team-content-2 span {
+    color: #fff;
+}
+.team-wrapper .team-action-2 a{
+  color:#fff;
+  margin:0 5px;
+  font-size:20px
+}
+.team-wrapper .team-action-2 a:hover{
+  color:{{ settings.color_primary }};
+}
+.team-wrapper .team-action-2 {
+    margin-top: 15px;
+}
+.team-wrapper .team-img-2 img {
+    border-radius: 10px;
+}
+  
+</style>
+
+{% if section.settings.tab_arsoule_active %}
+  <script>
+    $('#section-{{ section.id }} .banner-slider-active').slick({
+
+      infinite: true,
+      slidesToShow: {{section.settings.product_column_handle}},
+      slidesToScroll: 1,
+      rows:{{ section.settings.product_casoule_row }},
+      {% if section.settings.tab_arsoule_arrow_enable %}
+      arrows: true,
+      prevArrow: '<span class="product-dec-icon product-dec-prev"><i class="sli sli-arrow-left"></i></span>',
+      nextArrow: '<span class="product-dec-icon product-dec-next"><i class="sli sli-arrow-right"></i></span>',
+      {%else%}
+      arrows: false,
+      {%endif%}
+
+      responsive: [{
+      breakpoint: 1200,
+      settings: {
+      slidesToShow: {{section.settings.product_column_handle}},
+      slidesToScroll: 1
+      }
+      },
+      {
+      breakpoint: 1199,
+      settings: {
+      slidesToShow: {{section.settings.product_column_handle}},
+      slidesToScroll: 1
+      }
+      },
+      {
+      breakpoint: 991,
+      settings: {
+      slidesToShow: {{section.settings.product_column_handle_md}},
+      slidesToScroll: 1
+      }
+      },
+      {
+      breakpoint: 767,
+      settings: {
+      slidesToShow: {{section.settings.product_column_handle_sm}},
+      slidesToScroll: 1
+      }
+      },
+      {
+      breakpoint: 575,
+      settings: {
+      slidesToShow: 1,
+      slidesToScroll: 1
+      }
+      }
+      ]
+
+
+      });
+  </script>
+{% endif %}
+
+{% schema %}
+ {
+   "name": "Team Member",
+   "settings": [
+             {
+                 "type": "checkbox",
+                 "id": "show_team_section",
+                 "label": "Show Team Member",
+                 "default": true
+             },
+             {
+               "type": "select",
+               "id": "section_width",
+               "label": "Section Width",
+               "options":[
+                     {
+                         "label": "Full Width",
+                         "value": "full_width"
+                     },
+                     {
+                         "label": "Box Width",
+                         "value": "box_width"
+                     },
+                     {
+                         "label": "Default Width",
+                         "value": "default"
+                     }
+                 ],
+                 "default": "default"
+             },
+             {
+                 "type": "checkbox",
+                 "id": "tab_arsoule_active",
+                 "label": "Active Carsoule",
+                 "default": true
+             },
+             {
+                 "type": "checkbox",
+                 "id": "tab_arsoule_arrow_enable",
+                 "label": "Carsoule Arrow Enable",
+                 "default": true
+             },
+             {
+                 "type": "range",
+                 "id": "product_casoule_row",
+                 "min": 1,
+                 "max": 10,
+                 "step": 1,
+                 "label": "Product Carsoule Row",
+                 "default": 1
+             },
+             {
+               "type": "select",
+               "id": "team__grid__style",
+               "label": "Team Grid Style",
+               "options":[
+                     {
+                         "label": "Style One",
+                         "value": "style__one"
+                     },
+                     {
+                         "label": "Style Two",
+                         "value": "style__two"
+                     }
+                 ],
+                 "default": "style__one"
+             },
+             {
+               "type": "select",
+               "id": "product_column_handle",
+               "label": "Product Column",
+               "options":[
+                     {
+                         "label": "1",
+                         "value": "1"
+                     },
+                     {
+                         "label": "2",
+                         "value": "2"
+                     },
+                     {
+                         "label": "3",
+                         "value": "3"
+                     },
+                     {
+                         "label": "4",
+                         "value": "4"
+                     },
+                     {
+                         "label": "5",
+                         "value": "5"
+                     },
+                     {
+                         "label": "6",
+                         "value": "6"
+                     },
+				  {
+                         "label": "7",
+                         "value": "7"
+                     },
+                     {
+                         "label": "8",
+                         "value": "8"
+                     },
+                     {
+                         "label": "9",
+                         "value": "9"
+                     },
+                     {
+                         "label": "10",
+                         "value": "10"
+                     },
+                     {
+                         "label": "11",
+                         "value": "11"
+                     },
+                     {
+                         "label": "12",
+                         "value": "12"
+                     }
+                 ],
+                 "default": "3"
+             },
+             {
+               "type": "select",
+               "id": "product_column_handle_md",
+               "label": "Product Column (Medium)",
+               "options":[
+                     {
+                         "label": "1",
+                         "value": "1"
+                     },
+                     {
+                         "label": "2",
+                         "value": "2"
+                     },
+                     {
+                         "label": "3",
+                         "value": "3"
+                     },
+                     {
+                         "label": "4",
+                         "value": "4"
+                     },
+                     {
+                         "label": "5",
+                         "value": "5"
+                     },
+                     {
+                         "label": "6",
+                         "value": "6"
+                     },
+				  {
+                         "label": "7",
+                         "value": "7"
+                     },
+                     {
+                         "label": "8",
+                         "value": "8"
+                     },
+                     {
+                         "label": "9",
+                         "value": "9"
+                     },
+                     {
+                         "label": "10",
+                         "value": "10"
+                     },
+                     {
+                         "label": "11",
+                         "value": "11"
+                     },
+                     {
+                         "label": "12",
+                         "value": "12"
+                     }
+                 ],
+                 "default": "4"
+             },
+             {
+               "type": "select",
+               "id": "product_column_handle_sm",
+               "label": "Product Column (Tablet)",
+               "options":[
+                     {
+                         "label": "1",
+                         "value": "1"
+                     },
+                     {
+                         "label": "2",
+                         "value": "2"
+                     },
+                     {
+                         "label": "3",
+                         "value": "3"
+                     },
+                     {
+                         "label": "4",
+                         "value": "4"
+                     },
+                     {
+                         "label": "5",
+                         "value": "5"
+                     },
+                     {
+                         "label": "6",
+                         "value": "6"
+                     },
+				  {
+                         "label": "7",
+                         "value": "7"
+                     },
+                     {
+                         "label": "8",
+                         "value": "8"
+                     },
+                     {
+                         "label": "9",
+                         "value": "9"
+                     },
+                     {
+                         "label": "10",
+                         "value": "10"
+                     },
+                     {
+                         "label": "11",
+                         "value": "11"
+                     },
+                     {
+                         "label": "12",
+                         "value": "12"
+                     }
+                 ],
+                 "default": "6"
+             },
+	{
+		"type": "header",
+           "content": "Section Title"
+       },
+
+       {
+         "type": "checkbox",
+         "id": "section_title_custom_color",
+         "label": "Section Title Custom Style Enable",
+         "default": false
+       },
+
+	{
+           "type": "text",
+           "id": "section_title",
+           "label": "Title",
+           "default": "New Arrivals"
+       },
+
+       {
+         "type": "color",
+         "id": "section_title_color",
+         "label": "Title Color",
+         "default": "#1f2226"
+       },
+         {
+           "type": "font_picker",
+           "id": "section_title_font",
+           "label": "Font Family: Section Title Font",
+           "default": "poppins_n6"
+         },
+         {
+             "type": "header",
+             "content": "Main Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_title_font_size",
+           "label": "Font Size: Font Size",
+           "default": "30",
+           "info": "Section Title Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_line_height",
+           "min":       20,
+           "max":        150,
+           "step":       5,
+           "unit":       "px",
+           "label":     "Section Title Line Height",
+           "default":   40
+         },
+         {
+             "type": "header",
+             "content": "Medium Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_title_font_size_md",
+           "label": "Font Size: Font Size (MD)",
+           "default": "24",
+           "info": "Section Title Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_line_height_md",
+           "min":       20,
+           "max":        150,
+           "step":       5,
+           "unit":       "px",
+           "label":     "Section Title Line Height (MD)",
+           "default":   35
+         },
+         {
+             "type": "header",
+             "content": "Small Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_title_font_size_sm",
+           "label": "Font Size: Font Size (SM)",
+           "default": "20",
+           "info": "Section Title Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_line_height_sm",
+           "min":       20,
+           "max":        150,
+           "step":       5,
+           "unit":       "px",
+           "label":     "Section Title Line Height (SM)",
+           "default":   30
+         },
+         {
+           "type":      "range",
+           "id":        "section_title_margin_bottom",
+           "min":       0,
+           "max":        50,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Title margin Bottom",
+           "default":   10
+         },
+
+
+	{
+           "type": "textarea",
+           "id": "section_sub_title",
+           "label": "Subtitle",
+           "default": "Contrary to popular belief, Lorem Ipsum is not simply random text."
+       },
+
+       {
+         "type": "color",
+         "id": "section_subtitle_color",
+         "label": "Subtitle Color",
+         "default": "#5a5a5a"
+       },
+         {
+           "type": "font_picker",
+           "id": "section_sub_title_font",
+           "label": "Font Family: Section Sub Title Font",
+           "default": "poppins_n6"
+         },
+         {
+             "type": "header",
+             "content": "Main Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_des_font_size",
+           "label": "Font Size: Font Size",
+           "default": "14",
+           "info": "Section Description Font Size"
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_line_height",
+           "min":       20,
+           "max":        100,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title Line Height",
+           "default":   24
+         },
+         {
+             "type": "header",
+             "content": "Medium Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_des_font_size_md",
+           "label": "Font Size: Font Size (MD)",
+           "default": "14",
+           "info": "Section Description Font Size (MD)"
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_line_height_md",
+           "min":       20,
+           "max":        100,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title Line Height (MD)",
+           "default":   24
+         },
+
+         {
+             "type": "header",
+             "content": "Small Screen"
+         },
+         {
+           "type": "text",
+           "id": "section_des_font_size_sm",
+           "label": "Font Size: Font Size (SM)",
+           "default": "14",
+           "info": "Section Description Font Size (SM)"
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_line_height_sm",
+           "min":       20,
+           "max":        100,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title Line Height (SM)",
+           "default":   24
+         },
+         {
+           "type":      "range",
+           "id":        "section_sub_title_margin_bottom",
+           "min":       0,
+           "max":        50,
+           "step":       1,
+           "unit":       "px",
+           "label":     "Section Sub Title margin Bottom",
+           "default":   10
+         },
+
+	{
+               "type": "select",
+               "id": "title_align",
+               "label": "Title Align",
+               "options":[
+                     {
+                         "label": "Text Left",
+                         "value": "text-left"
+                     },
+                     {
+                         "label": "Text Center",
+                         "value": "text-center"
+                     },
+                     {
+                         "label": "Text Right",
+                         "value": "text-right"
+                     }
+                 ],
+                 "default": "text-center"
+             },
+
+       {
+         "type": "color",
+         "id": "team_name_color",
+         "label": "Name Color",
+         "default": "#1f2226"
+       },
+       {
+         "type": "color",
+         "id": "team_deg_color",
+         "label": "Degination Color",
+         "default": "#1f2226"
+       }
+],
+   "blocks": [
+       {
+           "type": "team_member",
+           "name": "Team Member",
+           "settings": [
+               {
+                   "type": "image_picker",
+                   "id": "member_img",
+                   "label": "Image",
+                   "info": "Recommended size: 270x330px"
+               },
+               {
+                   "type": "text",
+                   "id": "member_name",
+                   "label": "Name",
+                   "default": "Mr. Mike Banding"
+               },
+               {
+                   "type": "text",
+                   "id": "member_desig",
+                   "label": "Designation",
+                   "default": "Manager"
+               },
+               {
+                   "type": "header",
+                   "content": "Member Social"
+               },
+               {
+                   "type": "checkbox",
+                   "id": "show_fb",
+                   "label": "Show Facebook",
+                   "default": true
+               },
+               {
+                   "type": "url",
+                   "id": "fb_url",
+                   "label": "Facbook URL"
+               },
+               {
+                   "type": "checkbox",
+                   "id": "show_twitter",
+                   "label": "Show Twitter",
+                   "default": true
+               },
+               {
+                   "type": "url",
+                   "id": "twitter_url",
+                   "label": "Twitter URL"
+               },
+               {
+                   "type": "checkbox",
+                   "id": "show_instagram",
+                   "label": "Show Instagram",
+                   "default": true
+               },
+               {
+                   "type": "url",
+                   "id": "instagram_url",
+                   "label": "Instagram URL"
+               }
+		]
+	},
+    {
+         "type": "section_margin",
+         "name": "Section Margin",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "header",
+		  "content": "Large/Desktop Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "header",
+		  "content": "Tablet Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "header",
+		  "content": "Mobile Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		}
+         ]
+      },
+   {
+         "type": "section_padding",
+         "name": "Section Padding",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "header",
+		  "content": "Large/Desktop Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top",
+		  "min": 0,
+		  "max": 300,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 100
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom",
+		  "min": 0,
+		  "max": 300,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 65
+		},
+		{
+		  "type": "header",
+		  "content": "Tablet Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top_md",
+		  "min": 0,
+		  "max": 300,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 80
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom_md",
+		  "min": 0,
+		  "max": 300,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 45
+		},
+		{
+		  "type": "header",
+		  "content": "Mobile Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top_xs",
+		  "min": 0,
+		  "max": 300,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 50
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom_xs",
+		  "min": 0,
+		  "max": 300,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 30
+		}
+         ]
+      },
+   {
+         "type": "section_background",
+         "name": "Section Background",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "image_picker",
+		  "id": "section_bg_image",
+		  "label": "BG Image"
+		},
+		{
+		  "type": "color",
+		  "id": "section_bg_color",
+		  "label": "BG Color",
+		  "default": "#ffffff"
+		}
+         ]
+      }
+],
+"presets":[
+	{
+		"name": "Team Member",
+		"category": "6. Service",
+		"blocks":[
+			{"type": "team_member"},
+			{"type": "team_member"},
+			{"type": "team_member"},
+			{"type": "team_member"}
+		]
+	}
+]
+ }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

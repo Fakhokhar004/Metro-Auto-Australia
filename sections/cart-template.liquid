@@ -1,0 +1,1835 @@
+{%- comment -%}
+  ============================================================================
+  CART PAGE — Metro Auto Australia
+
+  Built as a CSS grid, NOT a <table>, so none of the theme's global table
+  borders can reach it. The only rule between items is the one you control.
+
+  Retains the hardened behaviour:
+  - $0 lines block checkout, decided in Liquid (works with JS disabled)
+  - All customer input escaped (note, line item properties)
+  - No state-changing GET links, no external CDNs, no jQuery
+  - AJAX quantity/remove via Section Rendering API; plain form POST fallback
+
+  NEW in this version (nothing else changed):
+  - Blocks under the summary, rendered AFTER the "100% Secure Payments" line:
+      Payment icons  · Trust feature · Text · Divider
+    Every block is scoped to #ma-blk-{{ block.id }} so blocks never bleed
+    into each other, and each carries its own colour / size / spacing settings.
+  - Empty cart: the "here" link now takes a URL from the theme editor
+    (Empty cart → Link destination). Falls back to All products if left blank.
+  ============================================================================
+{%- endcomment -%}
+
+{%- liquid
+  assign has_zero = false
+
+  for item in cart.items
+    if item.variant.price == 0 or item.final_price == 0 or item.final_line_price == 0
+      assign has_zero = true
+      break
+    endif
+  endfor
+
+  unless section.settings.zero_block_enable
+    assign has_zero = false
+  endunless
+
+  assign support_url = section.settings.support_url | strip
+  assign support_ok = false
+  if support_url != blank
+    assign u = support_url | downcase
+    assign support_ok = true
+    if u contains 'javascript:'
+      assign support_ok = false
+    endif
+    if u contains 'data:'
+      assign support_ok = false
+    endif
+    if u contains 'vbscript:'
+      assign support_ok = false
+    endif
+  endif
+
+  assign sym = ''
+  if section.settings.currency_symbol_small
+    assign sym = ' ma-sym'
+  endif
+
+  # Empty-cart link: merchant-supplied URL, falling back to the all products page.
+  # Scheme-checked the same way the support link is.
+  assign empty_url = section.settings.empty_link_url | strip
+  if empty_url != blank
+    assign eu = empty_url | downcase
+    if eu contains 'javascript:' or eu contains 'data:' or eu contains 'vbscript:'
+      assign empty_url = ''
+    endif
+  endif
+  if empty_url == blank
+    assign empty_url = routes.all_products_collection_url
+  endif
+-%}
+
+{%- style -%}
+  {{ section.settings.heading_font | font_face: font_display: 'swap' }}
+  {{ section.settings.body_font | font_face: font_display: 'swap' }}
+  {%- assign body_bold = section.settings.body_font | font_modify: 'weight', 'bold' -%}
+  {%- if body_bold -%}{{ body_bold | font_face: font_display: 'swap' }}{%- endif -%}
+
+  #ma-cart-{{ section.id }} {
+    --r: {{ section.settings.radius }}px;
+    --br: {{ section.settings.button_radius }}px;
+    --rule: {{ section.settings.row_divider_color }};
+    --accent: {{ section.settings.accent_color }};
+    background: {{ section.settings.page_bg }};
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    font-family: {{ section.settings.body_font.family }}, {{ section.settings.body_font.fallback_families }};
+    font-weight: {{ section.settings.body_font.weight }};
+    color: {{ section.settings.name_color }};
+  }
+
+  /* nothing from the theme's table/list styling can apply — but be explicit */
+  #ma-cart-{{ section.id }} div,
+  #ma-cart-{{ section.id }} dl,
+  #ma-cart-{{ section.id }} dt,
+  #ma-cart-{{ section.id }} dd { border: 0; background: none; }
+
+  /* ---------- heading ---------- */
+  #ma-cart-{{ section.id }} .ma-title {
+    font-family: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: {{ section.settings.heading_weight }};
+    letter-spacing: {{ section.settings.heading_spacing }}px;
+    text-transform: {{ section.settings.heading_transform }};
+    color: {{ section.settings.heading_color }};
+    line-height: 1.08;
+    margin: 0 0 {{ section.settings.heading_margin }}px;
+  }
+
+  /* ---------- layout ---------- */
+  #ma-cart-{{ section.id }} .ma-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) {{ section.settings.summary_width }}px;
+    gap: {{ section.settings.column_gap }}px;
+    align-items: start;
+  }
+
+  #ma-cart-{{ section.id }} .ma-line,
+  #ma-cart-{{ section.id }} .ma-labels {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) {{ section.settings.qty_col_width }}px {{ section.settings.total_col_width }}px;
+    gap: {{ section.settings.cell_gap }}px;
+    align-items: center;
+  }
+
+  #ma-cart-{{ section.id }} .ma-labels {
+    padding-bottom: {{ section.settings.label_padding }}px;
+    {% if section.settings.header_rule_enable %}
+      border-bottom: {{ section.settings.header_rule_width }}px solid {{ section.settings.header_rule_color }};
+    {% endif %}
+  }
+  #ma-cart-{{ section.id }} .ma-labels span {
+    font-size: {{ section.settings.label_size }}px;
+    font-weight: {{ section.settings.label_weight }};
+    letter-spacing: {{ section.settings.label_spacing }}px;
+    text-transform: {{ section.settings.label_transform }};
+    color: {{ section.settings.label_color }};
+  }
+  #ma-cart-{{ section.id }} .ma-labels .ma-c-qty { text-align: center; }
+  #ma-cart-{{ section.id }} .ma-labels .ma-c-total { text-align: right; }
+
+  #ma-cart-{{ section.id }} .ma-line {
+    padding: {{ section.settings.row_padding }}px 0;
+  }
+  {% if section.settings.row_divider_enable %}
+    #ma-cart-{{ section.id }} .ma-line + .ma-line {
+      border-top: {{ section.settings.row_divider_width }}px solid var(--rule);
+    }
+  {% endif %}
+  #ma-cart-{{ section.id }} .ma-line--flag { background: {{ section.settings.alert_bg }}; }
+
+  /* ---------- product cell ---------- */
+  #ma-cart-{{ section.id }} .ma-item {
+    display: flex;
+    align-items: flex-start;
+    gap: {{ section.settings.thumb_gap }}px;
+  }
+  #ma-cart-{{ section.id }} .ma-thumb {
+    flex: 0 0 auto;
+    display: block;
+    width: {{ section.settings.thumb_size }}px;
+    background: {{ section.settings.thumb_bg }};
+    border-radius: var(--r);
+    overflow: hidden;
+    {% if section.settings.thumb_border_enable %}
+      border: 1px solid {{ section.settings.thumb_border_color }};
+      padding: {{ section.settings.thumb_padding }}px;
+    {% endif %}
+  }
+  #ma-cart-{{ section.id }} .ma-thumb img { display: block; width: 100%; height: auto; }
+
+  #ma-cart-{{ section.id }} .ma-name {
+    display: block;
+    font-size: {{ section.settings.name_size }}px;
+    font-weight: {{ section.settings.name_weight }};
+    letter-spacing: {{ section.settings.name_spacing }}px;
+    text-transform: {{ section.settings.name_transform }};
+    line-height: 1.45;
+    color: {{ section.settings.name_color }};
+    text-decoration: none;
+  }
+  #ma-cart-{{ section.id }} .ma-name:hover {
+    color: {{ section.settings.name_hover_color }};
+    text-decoration: {{ section.settings.name_hover_underline | default: 'none' }};
+  }
+
+  #ma-cart-{{ section.id }} .ma-meta {
+    display: block;
+    font-size: {{ section.settings.meta_size }}px;
+    color: {{ section.settings.meta_color }};
+    margin-top: 3px;
+  }
+
+  #ma-cart-{{ section.id }} .ma-unit {
+    display: block;
+    margin-top: {{ section.settings.price_margin }}px;
+    font-size: {{ section.settings.price_size }}px;
+    font-weight: {{ section.settings.price_weight }};
+    letter-spacing: {{ section.settings.price_spacing }}px;
+    color: {{ section.settings.price_color }};
+  }
+  #ma-cart-{{ section.id }} .ma-unit s {
+    font-weight: 400;
+    font-size: .68em;
+    color: {{ section.settings.meta_color }};
+    margin-left: 6px;
+  }
+  #ma-cart-{{ section.id }} .ma-sym::first-letter { font-size: .62em; vertical-align: .38em; }
+
+  #ma-cart-{{ section.id }} .ma-props {
+    margin: 8px 0 0;
+    font-size: {{ section.settings.meta_size }}px;
+    color: {{ section.settings.meta_color }};
+  }
+  #ma-cart-{{ section.id }} .ma-props dt,
+  #ma-cart-{{ section.id }} .ma-props dd { display: inline; margin: 0; }
+  #ma-cart-{{ section.id }} .ma-props a { color: var(--accent); }
+
+  /* ---------- quantity ---------- */
+  #ma-cart-{{ section.id }} .ma-c-qty { text-align: center; }
+  #ma-cart-{{ section.id }} .ma-qty {
+    display: inline-flex;
+    border: 1px solid {{ section.settings.qty_border_color }};
+    border-radius: var(--r);
+    overflow: hidden;
+  }
+  #ma-cart-{{ section.id }} .ma-qty button {
+    width: {{ section.settings.qty_height }}px;
+    height: {{ section.settings.qty_height }}px;
+    border: 0;
+    background: {{ section.settings.qty_btn_bg }};
+    color: {{ section.settings.qty_btn_color }};
+    font-size: {{ section.settings.qty_font_size | plus: 3 }}px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  #ma-cart-{{ section.id }} .ma-qty button:hover { filter: brightness(.94); }
+  #ma-cart-{{ section.id }} .ma-qty input {
+    width: {{ section.settings.qty_input_width }}px;
+    height: {{ section.settings.qty_height }}px;
+    border: 0;
+    border-left: 1px solid {{ section.settings.qty_border_color }};
+    border-right: 1px solid {{ section.settings.qty_border_color }};
+    background: {{ section.settings.qty_input_bg }};
+    color: {{ section.settings.qty_text_color }};
+    font-size: {{ section.settings.qty_font_size }}px;
+    text-align: center;
+    -moz-appearance: textfield;
+  }
+  #ma-cart-{{ section.id }} .ma-qty input::-webkit-outer-spin-button,
+  #ma-cart-{{ section.id }} .ma-qty input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  #ma-cart-{{ section.id }} .ma-remove {
+    display: inline-block;
+    margin-top: {{ section.settings.remove_margin }}px;
+    border: 0; background: none; padding: 0;
+    font-family: inherit;
+    font-size: {{ section.settings.remove_size }}px;
+    font-weight: {{ section.settings.remove_weight }};
+    text-transform: {{ section.settings.remove_transform }};
+    color: {{ section.settings.remove_color }};
+    cursor: pointer;
+  }
+  #ma-cart-{{ section.id }} .ma-remove:hover {
+    color: {{ section.settings.remove_hover_color }};
+    text-decoration: underline;
+  }
+
+  /* ---------- line total ---------- */
+  #ma-cart-{{ section.id }} .ma-c-total {
+    text-align: right;
+    font-size: {{ section.settings.total_size }}px;
+    font-weight: {{ section.settings.total_weight }};
+    color: {{ section.settings.total_color }};
+  }
+
+  /* ---------- summary ---------- */
+  #ma-cart-{{ section.id }} .ma-summary {
+    background: {{ section.settings.summary_bg }};
+    color: {{ section.settings.summary_text }};
+    padding: {{ section.settings.summary_padding }}px;
+    border-radius: {{ section.settings.summary_radius }}px;
+    position: sticky;
+    top: {{ section.settings.summary_sticky_top }}px;
+  }
+  #ma-cart-{{ section.id }} .ma-sum-row {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 14px;
+  }
+  #ma-cart-{{ section.id }} .ma-sum-row + .ma-sum-row { margin-top: 9px; }
+  #ma-cart-{{ section.id }} .ma-sum-label {
+    font-size: {{ section.settings.sum_label_size }}px;
+    font-weight: {{ section.settings.sum_label_weight }};
+    letter-spacing: {{ section.settings.sum_label_spacing }}px;
+    text-transform: {{ section.settings.sum_label_transform }};
+  }
+  #ma-cart-{{ section.id }} .ma-sum-value {
+    font-size: {{ section.settings.sum_value_size }}px;
+    font-weight: {{ section.settings.sum_value_weight }};
+  }
+  #ma-cart-{{ section.id }} .ma-minor { opacity: .78; }
+  #ma-cart-{{ section.id }} .ma-minor .ma-sum-label,
+  #ma-cart-{{ section.id }} .ma-minor .ma-sum-value {
+    font-size: {{ section.settings.meta_size | plus: 1 }}px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  #ma-cart-{{ section.id }} .ma-minor .ma-sym::first-letter { font-size: 1em; vertical-align: baseline; }
+
+  #ma-cart-{{ section.id }} .ma-divider {
+    border: 0;
+    border-top: 1px solid {{ section.settings.summary_divider_color }};
+    margin: {{ section.settings.summary_divider_margin }}px 0;
+  }
+
+  #ma-cart-{{ section.id }} .ma-note-label {
+    display: block;
+    font-size: {{ section.settings.note_label_size }}px;
+    font-weight: {{ section.settings.note_label_weight }};
+    color: {{ section.settings.note_label_color }};
+    margin-bottom: 10px;
+  }
+  #ma-cart-{{ section.id }} .ma-summary textarea {
+    width: 100%;
+    min-height: {{ section.settings.note_height }}px;
+    resize: vertical;
+    border: 0;
+    border-radius: var(--r);
+    padding: 11px 13px;
+    font-family: inherit;
+    font-size: {{ section.settings.note_text_size }}px;
+    background: {{ section.settings.note_bg }};
+    color: {{ section.settings.note_text_color }};
+  }
+
+  #ma-cart-{{ section.id }} .ma-save {
+    margin-top: 12px;
+    border: 0;
+    border-radius: var(--br);
+    cursor: pointer;
+    font-family: inherit;
+    background: {{ section.settings.save_bg }};
+    color: {{ section.settings.save_text_color }};
+    font-size: {{ section.settings.save_size }}px;
+    font-weight: {{ section.settings.save_weight }};
+    letter-spacing: {{ section.settings.save_spacing }}px;
+    text-transform: {{ section.settings.save_transform }};
+    padding: {{ section.settings.save_padding_y }}px {{ section.settings.save_padding_x }}px;
+    transition: opacity .15s ease;
+  }
+  #ma-cart-{{ section.id }} .ma-save:hover:not(:disabled) { filter: brightness(1.14); }
+  #ma-cart-{{ section.id }} .ma-save:disabled { opacity: .4; cursor: not-allowed; }
+  #ma-cart-{{ section.id }} .ma-save[data-saved="1"] { background: {{ section.settings.save_done_bg }}; opacity: 1; }
+
+  #ma-cart-{{ section.id }} .ma-tax {
+    font-size: {{ section.settings.tax_size }}px;
+    line-height: 1.55;
+    color: {{ section.settings.tax_color }};
+    margin: 0;
+  }
+  #ma-cart-{{ section.id }} .ma-tax a { color: {{ section.settings.tax_link_color }}; text-decoration: underline; }
+
+  #ma-cart-{{ section.id }} .ma-checkout {
+    display: flex; align-items: center; justify-content: {% if section.settings.checkout_arrow %}space-between{% else %}center{% endif %}; gap: 14px;
+    width: 100%;
+    margin-top: {{ section.settings.checkout_margin }}px;
+    border: 0;
+    border-radius: var(--br);
+    cursor: pointer;
+    font-family: inherit;
+    background: {{ section.settings.checkout_bg }};
+    color: {{ section.settings.checkout_text_color }};
+    font-size: {{ section.settings.checkout_size }}px;
+    font-weight: {{ section.settings.checkout_weight }};
+    letter-spacing: {{ section.settings.checkout_spacing }}px;
+    text-transform: {{ section.settings.checkout_transform }};
+    padding: {{ section.settings.checkout_padding_y }}px {{ section.settings.checkout_padding_x }}px;
+  }
+  #ma-cart-{{ section.id }} .ma-checkout:hover { filter: brightness(1.1); }
+
+  #ma-cart-{{ section.id }} .ma-secure {
+    display: flex; align-items: center; justify-content: center; gap: 9px;
+    margin-top: {{ section.settings.secure_margin }}px;
+    font-size: {{ section.settings.secure_size }}px;
+    font-weight: {{ section.settings.secure_weight }};
+    color: {{ section.settings.secure_color }};
+  }
+  #ma-cart-{{ section.id }} .ma-secure svg { color: {{ section.settings.secure_icon_color }}; }
+
+  /* ---------- $0 block ---------- */
+  #ma-cart-{{ section.id }} .ma-alert {
+    border: 1px solid {{ section.settings.alert_border }};
+    background: {{ section.settings.alert_bg }};
+    color: {{ section.settings.alert_text }};
+    border-radius: var(--r);
+    padding: 20px 22px;
+    margin-bottom: 28px;
+  }
+  #ma-cart-{{ section.id }} .ma-alert h2 { margin: 0 0 8px; font-size: 18px; font-weight: 800; color: inherit; }
+  #ma-cart-{{ section.id }} .ma-alert p { margin: 0 0 12px; font-size: 14px; line-height: 1.55; }
+  #ma-cart-{{ section.id }} .ma-alert ul { margin: 0 0 16px; padding-left: 18px; font-size: 14px; }
+  #ma-cart-{{ section.id }} .ma-alert-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  #ma-cart-{{ section.id }} .ma-btn {
+    display: inline-block; border: 0; cursor: pointer; text-decoration: none;
+    font-family: inherit;
+    border-radius: var(--br);
+    font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    padding: 13px 24px; line-height: 1.2;
+  }
+  #ma-cart-{{ section.id }} .ma-btn--solid { background: var(--accent); color: #fff; }
+  #ma-cart-{{ section.id }} .ma-btn--solid:hover { filter: brightness(1.1); color: #fff; }
+  #ma-cart-{{ section.id }} .ma-btn--ghost {
+    background: transparent; color: {{ section.settings.alert_text }};
+    box-shadow: inset 0 0 0 1px {{ section.settings.alert_border }};
+  }
+  #ma-cart-{{ section.id }} .ma-flag {
+    display: inline-block; margin-top: 8px;
+    font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    color: {{ section.settings.alert_text }};
+  }
+  #ma-cart-{{ section.id }} .ma-blocked {
+    margin-top: 20px; padding: 18px 20px;
+    border-radius: var(--r);
+    background: rgba(255,255,255,.08);
+    border: 1px solid {{ section.settings.summary_divider_color }};
+  }
+  #ma-cart-{{ section.id }} .ma-blocked h3 {
+    margin: 0 0 8px; font-size: 15px; font-weight: 800; color: inherit;
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+  #ma-cart-{{ section.id }} .ma-blocked p { margin: 0 0 14px; font-size: 14px; line-height: 1.5; }
+
+  /* ---------- states ---------- */
+  #ma-cart-{{ section.id }} .ma-err { display: none; margin-top: 8px; font-size: 13px; color: #b3261e; }
+  #ma-cart-{{ section.id }} .ma-err.is-on { display: block; }
+  #ma-cart-{{ section.id }} [data-cart-root] { transition: opacity .15s ease; }
+  #ma-cart-{{ section.id }} [data-cart-root].is-busy { opacity: .5; pointer-events: none; }
+  #ma-cart-{{ section.id }} .ma-hidden {
+    position: absolute !important; width: 1px; height: 1px;
+    margin: -1px; padding: 0; border: 0; overflow: hidden;
+    clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+  }
+  #ma-cart-{{ section.id }} :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  #ma-cart-{{ section.id }} .ma-empty p {
+    font-size: 16px; color: {{ section.settings.meta_color }};
+  }
+  #ma-cart-{{ section.id }} .ma-empty a {
+    color: {{ section.settings.empty_link_color }};
+    {% if section.settings.empty_link_underline %}text-decoration: underline;{% else %}text-decoration: none;{% endif %}
+  }
+  #ma-cart-{{ section.id }} .ma-empty a:hover { color: {{ section.settings.empty_link_hover_color }}; }
+
+  /* ---------- blocks under the summary ---------- */
+  #ma-cart-{{ section.id }} .ma-extras { display: block; }
+  #ma-cart-{{ section.id }} .ma-blk { display: block; }
+  #ma-cart-{{ section.id }} .ma-pay { display: flex; flex-wrap: wrap; align-items: center; }
+  #ma-cart-{{ section.id }} .ma-pay-item { display: inline-flex; align-items: center; justify-content: center; }
+  #ma-cart-{{ section.id }} .ma-pay-item img { display: block; width: auto; }
+  #ma-cart-{{ section.id }} .ma-pay-title { display: block; }
+  #ma-cart-{{ section.id }} .ma-feat-icon { display: inline-flex; flex: 0 0 auto; }
+  #ma-cart-{{ section.id }} .ma-feat-img { display: block; flex: 0 0 auto; height: auto; }
+  #ma-cart-{{ section.id }} .ma-feat-body { min-width: 0; }
+  #ma-cart-{{ section.id }} .ma-feat-title,
+  #ma-cart-{{ section.id }} .ma-feat-text { display: block; }
+  #ma-cart-{{ section.id }} .ma-blk--text p { margin: 0 0 .55em; }
+  #ma-cart-{{ section.id }} .ma-blk--text p:last-child { margin-bottom: 0; }
+  #ma-cart-{{ section.id }} .ma-blk--rule { border: 0; }
+
+  {%- for block in section.blocks -%}
+    {%- case block.type -%}
+
+      {%- when 'payment_icons' -%}
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} {
+          margin-top: {{ block.settings.margin_top }}px;
+          text-align: {% if block.settings.align == 'flex-start' %}left{% elsif block.settings.align == 'flex-end' %}right{% else %}center{% endif %};
+        }
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-pay {
+          gap: {{ block.settings.gap }}px;
+          justify-content: {{ block.settings.align }};
+        }
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-pay-title {
+          margin-bottom: {{ block.settings.title_margin }}px;
+          font-size: {{ block.settings.title_size }}px;
+          font-weight: {{ block.settings.title_weight }};
+          letter-spacing: {{ block.settings.title_spacing }}px;
+          text-transform: {{ block.settings.title_transform }};
+          color: {{ block.settings.title_color }};
+        }
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-pay-item {
+          background: {{ block.settings.tile_bg }};
+          border-radius: {{ block.settings.tile_radius }}px;
+          padding: {{ block.settings.tile_padding }}px;
+          {% if block.settings.tile_border_enable %}border: 1px solid {{ block.settings.tile_border_color }};{% endif %}
+        }
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-pay-item img,
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-pay-item svg {
+          height: {{ block.settings.icon_height }}px;
+          width: auto;
+          display: block;
+          {% if block.settings.greyscale %}filter: grayscale(1); opacity: .8; transition: filter .15s ease, opacity .15s ease;{% endif %}
+        }
+        {% if block.settings.greyscale %}
+          #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-pay-item:hover img,
+          #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-pay-item:hover svg { filter: none; opacity: 1; }
+        {% endif %}
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-pay-info {
+          margin: 0 0 {{ block.settings.info_margin }}px;
+          font-size: {{ block.settings.info_size }}px;
+          line-height: 1.5;
+          color: {{ block.settings.info_color }};
+        }
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-pay-info p { margin: 0 0 .4em; }
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-pay-info p:last-child { margin-bottom: 0; }
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-pay-banner {
+          display: inline-block;
+          max-width: 100%;
+          width: {{ block.settings.banner_width }}px;
+          height: auto;
+          margin-bottom: {{ block.settings.banner_margin }}px;
+        }
+
+      {%- when 'feature' -%}
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} {
+          margin-top: {{ block.settings.margin_top }}px;
+          display: flex;
+          gap: {{ block.settings.gap }}px;
+          {% if block.settings.layout == 'stacked' %}
+            flex-direction: column;
+            align-items: {{ block.settings.align }};
+          {% else %}
+            flex-direction: row;
+            align-items: {% if block.settings.icon_align_top %}flex-start{% else %}center{% endif %};
+            justify-content: {{ block.settings.align }};
+          {% endif %}
+          text-align: {% if block.settings.align == 'flex-start' %}left{% elsif block.settings.align == 'flex-end' %}right{% else %}center{% endif %};
+          background: {{ block.settings.box_bg }};
+          border-radius: {{ block.settings.box_radius }}px;
+          padding: {{ block.settings.box_padding_y }}px {{ block.settings.box_padding_x }}px;
+          {% if block.settings.box_border_enable %}border: 1px solid {{ block.settings.box_border_color }};{% endif %}
+        }
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-feat-icon { color: {{ block.settings.icon_color }}; }
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-feat-img { width: {{ block.settings.image_width }}px; }
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-feat-title {
+          font-size: {{ block.settings.title_size }}px;
+          font-weight: {{ block.settings.title_weight }};
+          letter-spacing: {{ block.settings.title_spacing }}px;
+          text-transform: {{ block.settings.title_transform }};
+          color: {{ block.settings.title_color }};
+          line-height: 1.35;
+        }
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-feat-text {
+          margin-top: 3px;
+          font-size: {{ block.settings.text_size }}px;
+          color: {{ block.settings.text_color }};
+          line-height: 1.5;
+        }
+
+      {%- when 'text' -%}
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} {
+          margin-top: {{ block.settings.margin_top }}px;
+          font-size: {{ block.settings.text_size }}px;
+          line-height: {{ block.settings.line_height }};
+          color: {{ block.settings.text_color }};
+          text-align: {{ block.settings.align }};
+        }
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} a {
+          color: {{ block.settings.link_color }};
+          text-decoration: underline;
+        }
+
+      {%- when 'divider' -%}
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} {
+          margin: {{ block.settings.margin_top }}px auto {{ block.settings.margin_bottom }}px;
+          width: {{ block.settings.width }}%;
+          border-top: {{ block.settings.thickness }}px solid {{ block.settings.color }};
+        }
+
+    {%- endcase -%}
+  {%- endfor -%}
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 991px) {
+    #ma-cart-{{ section.id }} .ma-grid { grid-template-columns: 1fr; gap: 32px; }
+    #ma-cart-{{ section.id }} .ma-summary { position: static; }
+  }
+  @media (max-width: 640px) {
+    #ma-cart-{{ section.id }} .ma-labels { display: none; }
+    #ma-cart-{{ section.id }} .ma-line {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    #ma-cart-{{ section.id }} .ma-c-qty { text-align: left; }
+    #ma-cart-{{ section.id }} .ma-c-total { text-align: left; }
+    #ma-cart-{{ section.id }} .ma-c-total::before {
+      content: attr(data-label) ": ";
+      font-weight: 500;
+      color: {{ section.settings.meta_color }};
+    }
+    #ma-cart-{{ section.id }} .ma-title { font-size: {{ section.settings.heading_size | times: 0.68 | round }}px; }
+
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'payment_icons' -%}
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-pay-item img,
+        #ma-cart-{{ section.id }} #ma-blk-{{ block.id }} .ma-pay-item svg { height: {{ block.settings.icon_height_mobile }}px; }
+      {%- endif -%}
+    {%- endfor -%}
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #ma-cart-{{ section.id }} [data-cart-root],
+    #ma-cart-{{ section.id }} .ma-save { transition: none; }
+  }
+{%- endstyle -%}
+
+<div class="ma-cart" id="ma-cart-{{ section.id }}" data-section-id="{{ section.id }}">
+  <div class="container">
+    <div data-cart-root>
+
+      {%- if cart.item_count > 0 -%}
+
+        {%- if section.settings.cart_heading != blank -%}
+          <h1 class="ma-title">{{ section.settings.cart_heading | escape }}</h1>
+        {%- endif -%}
+
+        {%- if has_zero -%}
+          <div class="ma-alert" role="alert">
+            <h2>{{ section.settings.zero_title | escape }}</h2>
+            {%- if section.settings.zero_message != blank -%}
+              <p>{{ section.settings.zero_message | escape | newline_to_br }}</p>
+            {%- endif -%}
+            <ul>
+              {%- for item in cart.items -%}
+                {%- if item.variant.price == 0 or item.final_price == 0 or item.final_line_price == 0 -%}
+                  <li>
+                    {{ item.product.title | escape }}
+                    {%- unless item.variant.title contains 'Default' %} — {{ item.variant.title | escape }}{% endunless -%}
+                    {%- if item.sku != blank %} (SKU {{ item.sku | escape }}){% endif -%}
+                  </li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+            <div class="ma-alert-actions">
+              {%- if support_ok -%}
+                <a class="ma-btn ma-btn--solid"
+                   href="{{ support_url | escape }}"
+                   {% if section.settings.support_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                  {{ section.settings.support_btn_label | escape }}
+                </a>
+              {%- endif -%}
+              <button type="button" class="ma-btn ma-btn--ghost" data-remove-zero>
+                {{ section.settings.zero_remove_label | escape }}
+              </button>
+            </div>
+          </div>
+        {%- endif -%}
+
+        <form action="{{ routes.cart_url }}" method="post" novalidate class="ma-grid" data-cart-form>
+
+          {%- comment -%} Default submit: keeps Enter-in-quantity from firing Remove when JS is off {%- endcomment -%}
+          <button type="submit" name="update" class="ma-hidden" tabindex="-1" aria-hidden="true">Update</button>
+
+          <div class="ma-items">
+
+            {%- if section.settings.show_column_labels -%}
+              <div class="ma-labels" aria-hidden="true">
+                <span>{{ section.settings.table_product_title | escape }}</span>
+                <span class="ma-c-qty">{{ section.settings.table_quantity_title | escape }}</span>
+                <span class="ma-c-total">{{ section.settings.table_total_title | escape }}</span>
+              </div>
+            {%- endif -%}
+
+            {%- for item in cart.items -%}
+              {%- liquid
+                assign is_zero = false
+                if item.variant.price == 0 or item.final_price == 0 or item.final_line_price == 0
+                  assign is_zero = true
+                endif
+                assign ratio = item.image.aspect_ratio | default: 1.0
+              -%}
+              <div class="ma-line{% if is_zero and has_zero %} ma-line--flag{% endif %}"
+                   data-line-key="{{ item.key | escape }}">
+
+                <div class="ma-item">
+                  {%- if item.image -%}
+                    <a class="ma-thumb" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+                      <img
+                        src="{{ item.image | image_url: width: 200 }}"
+                        srcset="{{ item.image | image_url: width: 200 }} 200w,
+                                {{ item.image | image_url: width: 400 }} 400w"
+                        sizes="{{ section.settings.thumb_size }}px"
+                        width="{{ section.settings.thumb_size }}"
+                        height="{{ section.settings.thumb_size | divided_by: ratio | round }}"
+                        alt="{{ item.image.alt | default: item.product.title | escape }}"
+                        {% if forloop.index > 2 %}loading="lazy"{% endif %}>
+                    </a>
+                  {%- endif -%}
+
+                  <div>
+                    <a class="ma-name" href="{{ item.url }}">{{ item.product.title | escape }}</a>
+
+                    {%- unless item.variant.title contains 'Default' -%}
+                      <span class="ma-meta">{{ item.variant.title | escape }}</span>
+                    {%- endunless -%}
+                    {%- if section.settings.cart_vendor_enable and item.vendor != blank -%}
+                      <span class="ma-meta">{{ item.vendor | escape }}</span>
+                    {%- endif -%}
+                    {%- if section.settings.show_sku and item.sku != blank -%}
+                      <span class="ma-meta">SKU {{ item.sku | escape }}</span>
+                    {%- endif -%}
+
+                    <span class="ma-unit{{ sym }}">
+                      {%- if item.original_price != item.final_price -%}
+                        {{ item.final_price | money_with_currency }} <s>{{ item.original_price | money }}</s>
+                      {%- else -%}
+                        {{ item.original_price | money_with_currency }}
+                      {%- endif -%}
+                    </span>
+
+                    {%- for property in item.properties -%}
+                      {%- liquid
+                        assign first_char = property.first | slice: 0
+                        assign val = property.last
+                        assign val_low = val | downcase
+                        assign safe_link = false
+                        if val_low contains '/uploads/'
+                          assign safe_link = true
+                          if val_low contains 'javascript:'
+                            assign safe_link = false
+                          endif
+                          if val_low contains 'data:'
+                            assign safe_link = false
+                          endif
+                          if val_low contains 'vbscript:'
+                            assign safe_link = false
+                          endif
+                        endif
+                      -%}
+                      {%- if val != blank and first_char != '_' -%}
+                        <dl class="ma-props">
+                          <dt>{{ property.first | escape }}:</dt>
+                          <dd>
+                            {%- if safe_link -%}
+                              <a href="{{ val | escape }}" target="_blank" rel="noopener noreferrer nofollow">
+                                {{ val | split: '/' | last | escape }}
+                              </a>
+                            {%- else -%}
+                              {{ val | escape }}
+                            {%- endif -%}
+                          </dd>
+                        </dl>
+                      {%- endif -%}
+                    {%- endfor -%}
+
+                    {%- if is_zero and has_zero -%}
+                      <span class="ma-flag">{{ section.settings.zero_line_label | escape }}</span>
+                    {%- endif -%}
+
+                    <span class="ma-err" data-line-error role="status"></span>
+                  </div>
+                </div>
+
+                <div class="ma-c-qty">
+                  <div class="ma-qty">
+                    <button type="button" data-step="-1" aria-label="Decrease quantity">&minus;</button>
+                    <label class="ma-hidden" for="qty-{{ section.id }}-{{ forloop.index }}">
+                      {{ section.settings.table_quantity_title | escape }}
+                    </label>
+                    <input id="qty-{{ section.id }}-{{ forloop.index }}"
+                           type="number" inputmode="numeric"
+                           min="0" max="999" step="1"
+                           value="{{ item.quantity }}"
+                           data-qty
+                           name="updates[{{ item.key | escape }}]">
+                    <button type="button" data-step="1" aria-label="Increase quantity">+</button>
+                  </div>
+                  <br>
+                  <button type="submit"
+                          class="ma-remove"
+                          name="updates[{{ item.key | escape }}]"
+                          value="0"
+                          data-remove
+                          {% if is_zero %}data-zero-line{% endif %}>
+                    {{ section.settings.remove_label | escape }}
+                  </button>
+                </div>
+
+                <div class="ma-c-total{{ sym }}" data-label="{{ section.settings.table_total_title | escape }}">
+                  {{ item.final_line_price | money }}
+                  {%- for discount in item.line_level_discount_allocations -%}
+                    <span class="ma-meta">{{ discount.discount_application.title | escape }} (&minus;{{ discount.amount | money }})</span>
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+
+          <div>
+            <aside class="ma-summary">
+
+              {%- if cart.total_discounts > 0 -%}
+                <div class="ma-sum-row ma-minor">
+                  <span class="ma-sum-label">{{ section.settings.cart_subtotal_title | escape }}</span>
+                  <span class="ma-sum-value{{ sym }}">{{ cart.original_total_price | money }}</span>
+                </div>
+                {%- for discount in cart.cart_level_discount_applications -%}
+                  <div class="ma-sum-row ma-minor">
+                    <span class="ma-sum-label">{{ discount.title | escape }}</span>
+                    <span class="ma-sum-value{{ sym }}">&minus;{{ discount.total_allocated_amount | money }}</span>
+                  </div>
+                {%- endfor -%}
+                <hr class="ma-divider">
+              {%- endif -%}
+
+              <div class="ma-sum-row">
+                <span class="ma-sum-label">{{ section.settings.cart_total_title | escape }}</span>
+                <span class="ma-sum-value{{ sym }}" aria-live="polite">
+                  <span id="bk-cart-subtotal-price">{{ cart.total_price | money_with_currency }}</span>
+                </span>
+              </div>
+
+              {%- if section.settings.show_note -%}
+                <hr class="ma-divider">
+                <label class="ma-note-label" for="CartSpecialInstructions">
+                  {{ section.settings.cart_note_title | escape }}
+                </label>
+                <textarea name="note"
+                          id="CartSpecialInstructions"
+                          maxlength="1000"
+                          placeholder="{{ section.settings.note_placeholder | escape }}"
+                          data-cart-note>{{ cart.note | escape }}</textarea>
+                <button type="button"
+                        class="ma-save"
+                        data-note-save
+                        disabled
+                        data-label="{{ section.settings.note_save_label | escape }}"
+                        data-saved-label="{{ section.settings.note_saved_label | escape }}">
+                  {{ section.settings.note_save_label | escape }}
+                </button>
+              {%- endif -%}
+
+              {%- if section.settings.tax_note != blank or section.settings.shipping_link_label != blank -%}
+                <hr class="ma-divider">
+                <p class="ma-tax">
+                  {{ section.settings.tax_note | escape }}
+                  {%- if section.settings.shipping_link_label != blank and section.settings.shipping_policy_url != blank -%}
+                    <a href="{{ section.settings.shipping_policy_url | escape }}">{{ section.settings.shipping_link_label | escape }}</a>
+                  {%- endif -%}
+                </p>
+              {%- endif -%}
+
+              {%- if has_zero -%}
+                <div class="ma-blocked">
+                  <h3>{{ section.settings.zero_checkout_title | escape }}</h3>
+                  {%- if section.settings.zero_checkout_message != blank -%}
+                    <p>{{ section.settings.zero_checkout_message | escape | newline_to_br }}</p>
+                  {%- endif -%}
+                  {%- if support_ok -%}
+                    <a class="ma-btn ma-btn--solid"
+                       href="{{ support_url | escape }}"
+                       {% if section.settings.support_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                      {{ section.settings.support_btn_label | escape }}
+                    </a>
+                  {%- endif -%}
+                </div>
+              {%- else -%}
+                <button type="submit" name="checkout" class="ma-checkout">
+                  <span>{{ section.settings.checkout_button_title | escape }}</span>
+                  {%- if section.settings.checkout_arrow -%}
+                    <svg width="20" height="12" viewBox="0 0 20 12" fill="none" aria-hidden="true">
+                      <path d="M0 6h17M13 1l5 5-5 5" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                  {%- endif -%}
+                </button>
+              {%- endif -%}
+            </aside>
+
+            {%- if section.settings.secure_text != blank -%}
+              <div class="ma-secure">
+                <svg width="15" height="18" viewBox="0 0 15 18" fill="none" aria-hidden="true">
+                  <path d="M3 7V5a4.5 4.5 0 019 0v2" stroke="currentColor" stroke-width="2"/>
+                  <rect x="1" y="7" width="13" height="10" rx="1.5" fill="currentColor"/>
+                </svg>
+                <span>{{ section.settings.secure_text | escape }}</span>
+              </div>
+            {%- endif -%}
+
+            {%- comment -%}
+              Merchant blocks — render directly under the secure payments line.
+              Add / reorder / remove them in Online Store → Customize → Cart page.
+            {%- endcomment -%}
+            {%- if section.blocks.size > 0 -%}
+              <div class="ma-extras">
+                {%- for block in section.blocks -%}
+                  {%- case block.type -%}
+
+                    {%- when 'payment_icons' -%}
+                      <div class="ma-blk ma-blk--pay" id="ma-blk-{{ block.id }}" {{ block.shopify_attributes }}>
+                        {%- if block.settings.title != blank -%}
+                          <span class="ma-pay-title">{{ block.settings.title | escape }}</span>
+                        {%- endif -%}
+
+                        {%- if block.settings.payment_information != blank -%}
+                          <div class="ma-pay-info">{{ block.settings.payment_information }}</div>
+                        {%- endif -%}
+
+                        {%- if block.settings.payment_image != blank -%}
+                          {%- liquid
+                            assign bw = block.settings.banner_width
+                            assign bh = bw | divided_by: block.settings.payment_image.aspect_ratio | round
+                            assign bw2 = bw | times: 2
+                          -%}
+                          <img class="ma-pay-banner"
+                               src="{{ block.settings.payment_image | image_url: width: bw2 }}"
+                               width="{{ bw }}"
+                               height="{{ bh }}"
+                               alt="{{ block.settings.payment_image.alt | escape }}"
+                               loading="lazy">
+                        {%- endif -%}
+
+                        <div class="ma-pay">
+
+                          {%- comment -%}
+                            Same mechanic as the product page's Payment & Social Share block:
+                            Automatic  = whatever payment methods are actually live on the store
+                            Custom     = only the providers ticked below
+                            Anything Shopify has no icon for renders nothing rather than an empty tile.
+                          {%- endcomment -%}
+                          {%- if block.settings.payment_icon == 'automatic' -%}
+                            {%- for type in shop.enabled_payment_types -%}
+                              {%- capture pay_svg -%}{{ type | payment_type_svg_tag: class: 'ma-pay-svg' }}{%- endcapture -%}
+                              {%- if pay_svg != blank -%}
+                                <span class="ma-pay-item">{{ pay_svg }}</span>
+                              {%- endif -%}
+                            {%- endfor -%}
+                          {%- else -%}
+                            {%- assign pay_types = 'visa,master,american_express,paypal,apple_pay,google_pay,shopify_pay,klarna,maestro,jcb,discover,diners_club,dankort,sofort,dwolla,forbrugsforeningen,bitcoin,dogecoin,litecoin,amazon_payments' | split: ',' -%}
+                            {%- for type in pay_types -%}
+                              {%- if block.settings[type] -%}
+                                {%- capture pay_svg -%}{{ type | payment_type_svg_tag: class: 'ma-pay-svg' }}{%- endcapture -%}
+                                {%- if pay_svg != blank -%}
+                                  <span class="ma-pay-item">{{ pay_svg }}</span>
+                                {%- endif -%}
+                              {%- endif -%}
+                            {%- endfor -%}
+                          {%- endif -%}
+
+                          {%- comment -%} Uploaded icons — Afterpay, Zip, anything Shopify has no built-in for {%- endcomment -%}
+                          {%- for i in (1..8) -%}
+                            {%- liquid
+                              assign key = 'icon_' | append: i
+                              assign pic = block.settings[key]
+                            -%}
+                            {%- if pic != blank -%}
+                              {%- liquid
+                                assign ph = block.settings.icon_height
+                                assign pw = pic.aspect_ratio | times: ph | round
+                                assign ph2 = ph | times: 2
+                                assign ph4 = ph | times: 4
+                              -%}
+                              <span class="ma-pay-item">
+                                <img src="{{ pic | image_url: height: ph2 }}"
+                                     srcset="{{ pic | image_url: height: ph2 }} 1x, {{ pic | image_url: height: ph4 }} 2x"
+                                     width="{{ pw }}"
+                                     height="{{ ph }}"
+                                     alt="{{ pic.alt | escape }}"
+                                     loading="lazy">
+                              </span>
+                            {%- endif -%}
+                          {%- endfor -%}
+                        </div>
+                      </div>
+
+                    {%- when 'feature' -%}
+                      <div class="ma-blk ma-blk--feat" id="ma-blk-{{ block.id }}" {{ block.shopify_attributes }}>
+                        {%- if block.settings.image != blank -%}
+                          {%- liquid
+                            assign fw = block.settings.image_width
+                            assign fh = fw | divided_by: block.settings.image.aspect_ratio | round
+                            assign fw2 = fw | times: 2
+                          -%}
+                          <img class="ma-feat-img"
+                               src="{{ block.settings.image | image_url: width: fw2 }}"
+                               width="{{ fw }}"
+                               height="{{ fh }}"
+                               alt="{{ block.settings.image.alt | escape }}"
+                               loading="lazy">
+                        {%- elsif block.settings.icon != 'none' -%}
+                          <span class="ma-feat-icon">
+                            {%- assign s = block.settings.icon_size -%}
+                            {%- case block.settings.icon -%}
+                              {%- when 'lock' -%}
+                                <svg width="{{ s }}" height="{{ s }}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                  <path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="2"/>
+                                  <rect x="4" y="10" width="16" height="11" rx="2" fill="currentColor"/>
+                                </svg>
+                              {%- when 'truck' -%}
+                                <svg width="{{ s }}" height="{{ s }}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                  <path d="M1 5h13v11H1zM14 9h4l3 3v4h-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                                  <circle cx="6" cy="18.5" r="1.8" fill="currentColor"/>
+                                  <circle cx="17.5" cy="18.5" r="1.8" fill="currentColor"/>
+                                </svg>
+                              {%- when 'shield' -%}
+                                <svg width="{{ s }}" height="{{ s }}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                  <path d="M12 2l8 3v6c0 5-3.4 9-8 11-4.6-2-8-6-8-11V5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                                  <path d="M8.5 12l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                              {%- when 'returns' -%}
+                                <svg width="{{ s }}" height="{{ s }}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                  <path d="M3.5 12a8.5 8.5 0 103-6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                  <path d="M3 3.5V9h5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                              {%- when 'phone' -%}
+                                <svg width="{{ s }}" height="{{ s }}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                  <path d="M5 3h4l2 5-2.5 1.5a12 12 0 006 6L16 13l5 2v4a2 2 0 01-2 2A17 17 0 013 5a2 2 0 012-2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                                </svg>
+                              {%- when 'tag' -%}
+                                <svg width="{{ s }}" height="{{ s }}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                  <path d="M3 11V3h8l10 10-8 8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                                  <circle cx="7.5" cy="7.5" r="1.6" fill="currentColor"/>
+                                </svg>
+                              {%- when 'spanner' -%}
+                                <svg width="{{ s }}" height="{{ s }}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                  <path d="M15.5 3.5a5.5 5.5 0 00-5 8.2L3.7 18.5a1.8 1.8 0 002.5 2.5l6.8-6.8a5.5 5.5 0 006.6-7.4l-3 3-2.6-.7-.7-2.6 3-3a5.5 5.5 0 00-.8-.1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                </svg>
+                            {%- endcase -%}
+                          </span>
+                        {%- endif -%}
+
+                        <div class="ma-feat-body">
+                          {%- if block.settings.title != blank -%}
+                            <span class="ma-feat-title">{{ block.settings.title | escape }}</span>
+                          {%- endif -%}
+                          {%- if block.settings.text != blank -%}
+                            <span class="ma-feat-text">{{ block.settings.text | escape }}</span>
+                          {%- endif -%}
+                        </div>
+                      </div>
+
+                    {%- when 'text' -%}
+                      <div class="ma-blk ma-blk--text" id="ma-blk-{{ block.id }}" {{ block.shopify_attributes }}>
+                        {{ block.settings.text }}
+                      </div>
+
+                    {%- when 'divider' -%}
+                      <hr class="ma-blk ma-blk--rule" id="ma-blk-{{ block.id }}" {{ block.shopify_attributes }}>
+
+                  {%- endcase -%}
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          </div>
+
+        </form>
+
+      {%- else -%}
+
+        <div class="ma-empty">
+          <h1 class="ma-title">{{ section.settings.shopping_cart_title | escape }}</h1>
+          <p>
+            {{ section.settings.cart_empty_title | escape }}
+            {{ section.settings.cart_continue_title | escape }}
+            <a href="{{ empty_url | escape }}"
+               {% if section.settings.empty_link_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>{{ section.settings.here_title | escape }}</a>
+          </p>
+        </div>
+
+      {%- endif -%}
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var HOST = document.getElementById('ma-cart-{{ section.id }}');
+  if (!HOST || HOST.dataset.maBound === '1') return;
+  HOST.dataset.maBound = '1';
+
+  var SECTION_ID  = HOST.dataset.sectionId;
+  var CART_URL    = {{ routes.cart_url | json }};
+  var CHANGE_URL  = {{ routes.cart_change_url | json }} + '.js';
+  var UPDATE_URL  = {{ routes.cart_update_url | json }} + '.js';
+  var DEBOUNCE_MS = 400;
+  var TIMEOUT_MS  = 12000;
+
+  var controller = null, debounce = null, inFlight = false;
+  var savedNote = '';
+
+  function root() { return HOST.querySelector('[data-cart-root]'); }
+
+  function busy(on) {
+    inFlight = on;
+    var r = root();
+    if (r) r.classList.toggle('is-busy', !!on);
+  }
+
+  function showError(scope, msg) {
+    var el = scope && scope.querySelector ? scope.querySelector('[data-line-error]') : null;
+    if (!el) { window.alert(msg); return; }
+    el.textContent = msg;
+    el.classList.add('is-on');
+  }
+
+  /* ---- order instructions: enabled only when there is something to save ---- */
+  function noteEls() {
+    return {
+      field: HOST.querySelector('[data-cart-note]'),
+      btn: HOST.querySelector('[data-note-save]')
+    };
+  }
+
+  function syncSaveState() {
+    var e = noteEls();
+    if (!e.field || !e.btn) return;
+    var current = e.field.value;
+    var changed = current !== savedNote;
+    var hasContent = current.trim().length > 0;
+    // Enabled when there is text to save, or when clearing text that was saved.
+    e.btn.disabled = !(changed && (hasContent || savedNote.trim().length > 0));
+  }
+
+  function initNote() {
+    var e = noteEls();
+    if (!e.field) return;
+    savedNote = e.field.value;
+    syncSaveState();
+  }
+
+  function saveNote(btn) {
+    var e = noteEls();
+    if (!e.field || !btn || btn.disabled) return;
+    var value = e.field.value.slice(0, 1000);
+    btn.disabled = true;
+
+    fetch(UPDATE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ note: value })
+    }).then(function (res) {
+      if (!res.ok) throw new Error('save failed');
+      savedNote = value;
+      btn.dataset.saved = '1';
+      btn.textContent = btn.dataset.savedLabel || 'Saved';
+      setTimeout(function () {
+        btn.dataset.saved = '0';
+        btn.textContent = btn.dataset.label || 'Save';
+        syncSaveState();
+      }, 2000);
+    }).catch(function () {
+      btn.disabled = false;
+      window.alert('We could not save your instructions. Please try again.');
+    });
+  }
+
+  function paint(html) {
+    if (!html) { window.location.reload(); return; }
+    var parsed = new DOMParser().parseFromString(html, 'text/html');
+    var fresh  = parsed.getElementById('ma-cart-' + SECTION_ID);
+    var target = root();
+    var freshRoot = fresh && fresh.querySelector('[data-cart-root]');
+    if (!freshRoot || !target) { window.location.reload(); return; }
+
+    // preserve anything the customer has typed but not saved
+    var typed = null;
+    var current = HOST.querySelector('[data-cart-note]');
+    if (current) typed = current.value;
+
+    target.innerHTML = freshRoot.innerHTML;
+
+    var restored = HOST.querySelector('[data-cart-note]');
+    if (restored && typed !== null) restored.value = typed;
+    syncSaveState();
+  }
+
+  function post(url, payload, scope) {
+    if (inFlight && controller) controller.abort();
+    controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, TIMEOUT_MS);
+
+    payload.sections = SECTION_ID;
+    payload.sections_url = CART_URL;
+    busy(true);
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    })
+      .then(function (res) {
+        clearTimeout(timer);
+        return res.json().then(function (data) { if (!res.ok) { throw data; } return data; });
+      })
+      .then(function (data) {
+        paint(data.sections && data.sections[SECTION_ID]);
+        document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: data } }));
+        busy(false);
+      })
+      .catch(function (err) {
+        clearTimeout(timer);
+        busy(false);
+        if (err && err.name === 'AbortError') return;
+        showError(scope, String((err && (err.description || err.message)) ||
+          'We could not update your cart. Please refresh and try again.'));
+      });
+  }
+
+  function lineOf(el) { return el.closest('[data-line-key]'); }
+
+  function setQty(row, qty) {
+    if (!row) return;
+    var err = row.querySelector('[data-line-error]');
+    if (err) err.classList.remove('is-on');
+    post(CHANGE_URL, { id: row.getAttribute('data-line-key'), quantity: qty }, row);
+  }
+
+  function normalize(v) {
+    var n = parseInt(v, 10);
+    if (isNaN(n) || n < 0) n = 0;
+    if (n > 999) n = 999;
+    return n;
+  }
+
+  HOST.addEventListener('click', function (e) {
+    var step = e.target.closest('[data-step]');
+    if (step) {
+      e.preventDefault();
+      var row = lineOf(step), input = row && row.querySelector('[data-qty]');
+      if (!input) return;
+      var next = normalize(input.value) + parseInt(step.getAttribute('data-step'), 10);
+      if (next < 1) next = 1;
+      input.value = next;
+      clearTimeout(debounce);
+      debounce = setTimeout(function () { setQty(row, next); }, DEBOUNCE_MS);
+      return;
+    }
+
+    var remove = e.target.closest('[data-remove]');
+    if (remove) { e.preventDefault(); setQty(lineOf(remove), 0); return; }
+
+    var save = e.target.closest('[data-note-save]');
+    if (save) { e.preventDefault(); saveNote(save); return; }
+
+    var removeZero = e.target.closest('[data-remove-zero]');
+    if (removeZero) {
+      e.preventDefault();
+      var updates = {};
+      HOST.querySelectorAll('[data-zero-line]').forEach(function (btn) {
+        var row = lineOf(btn);
+        if (row) updates[row.getAttribute('data-line-key')] = 0;
+      });
+      if (Object.keys(updates).length) post(UPDATE_URL, { updates: updates }, null);
+    }
+  });
+
+  HOST.addEventListener('change', function (e) {
+    var input = e.target.closest('[data-qty]');
+    if (!input) return;
+    var row = lineOf(input), qty = normalize(input.value);
+    input.value = qty;
+    clearTimeout(debounce);
+    debounce = setTimeout(function () { setQty(row, qty); }, DEBOUNCE_MS);
+  });
+
+  HOST.addEventListener('input', function (e) {
+    if (e.target.closest('[data-cart-note]')) syncSaveState();
+  });
+
+  HOST.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target.closest('[data-qty]')) { e.preventDefault(); e.target.blur(); }
+  });
+
+  window.addEventListener('pageshow', function (e) { if (e.persisted) window.location.reload(); });
+
+  initNote();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Cart Page",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    { "type": "color", "id": "page_bg", "label": "Page background", "default": "#ffffff" },
+    { "type": "color", "id": "accent_color", "label": "Accent (links, support button)", "default": "#e01b22" },
+    { "type": "range", "id": "padding_top", "label": "Top padding", "min": 0, "max": 140, "step": 5, "unit": "px", "default": 60 },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 0, "max": 140, "step": 5, "unit": "px", "default": 80 },
+    { "type": "range", "id": "summary_width", "label": "Summary card width", "min": 300, "max": 520, "step": 10, "unit": "px", "default": 400 },
+    { "type": "range", "id": "column_gap", "label": "Gap between columns", "min": 20, "max": 90, "step": 2, "unit": "px", "default": 46 },
+    { "type": "range", "id": "qty_col_width", "label": "Quantity column width", "min": 100, "max": 240, "step": 5, "unit": "px", "default": 150 },
+    { "type": "range", "id": "total_col_width", "label": "Total column width", "min": 80, "max": 240, "step": 5, "unit": "px", "default": 120 },
+    { "type": "range", "id": "cell_gap", "label": "Gap between columns in a row", "min": 8, "max": 60, "step": 2, "unit": "px", "default": 20 },
+    { "type": "range", "id": "radius", "label": "Corner roundness (boxes, inputs)", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 0 },
+    { "type": "range", "id": "button_radius", "label": "Corner roundness (buttons)", "min": 0, "max": 40, "step": 1, "unit": "px", "default": 0 },
+
+    { "type": "header", "content": "Fonts" },
+    { "type": "font_picker", "id": "heading_font", "label": "Heading font", "default": "helvetica_n7" },
+    { "type": "font_picker", "id": "body_font", "label": "Body font", "default": "helvetica_n4" },
+
+    { "type": "header", "content": "Page heading" },
+    { "type": "text", "id": "cart_heading", "label": "Heading text", "default": "Review My Cart" },
+    { "type": "color", "id": "heading_color", "label": "Colour", "default": "#111111" },
+    { "type": "range", "id": "heading_size", "label": "Size", "min": 18, "max": 72, "step": 1, "unit": "px", "default": 44 },
+    {
+      "type": "select", "id": "heading_weight", "label": "Weight", "default": "800",
+      "options": [
+        { "value": "300", "label": "Light" }, { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" }, { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }, { "value": "800", "label": "Extrabold" },
+        { "value": "900", "label": "Black" }
+      ]
+    },
+    { "type": "range", "id": "heading_spacing", "label": "Letter spacing", "min": -3, "max": 6, "step": 0.1, "unit": "px", "default": -0.5 },
+    {
+      "type": "select", "id": "heading_transform", "label": "Case", "default": "none",
+      "options": [
+        { "value": "none", "label": "As typed" }, { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "capitalize", "label": "Title Case" }, { "value": "lowercase", "label": "lowercase" }
+      ]
+    },
+    { "type": "range", "id": "heading_margin", "label": "Space below", "min": 0, "max": 80, "step": 2, "unit": "px", "default": 34 },
+
+    { "type": "header", "content": "Column labels" },
+    { "type": "checkbox", "id": "show_column_labels", "label": "Show column labels", "default": true },
+    { "type": "text", "id": "table_product_title", "label": "Product label", "default": "Product" },
+    { "type": "text", "id": "table_quantity_title", "label": "Quantity label", "default": "Quantity" },
+    { "type": "text", "id": "table_total_title", "label": "Total label", "default": "Total" },
+    { "type": "color", "id": "label_color", "label": "Colour", "default": "#7a7a7a" },
+    { "type": "range", "id": "label_size", "label": "Size", "min": 9, "max": 20, "step": 1, "unit": "px", "default": 11 },
+    {
+      "type": "select", "id": "label_weight", "label": "Weight", "default": "600",
+      "options": [
+        { "value": "400", "label": "Regular" }, { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" }, { "value": "700", "label": "Bold" }
+      ]
+    },
+    { "type": "range", "id": "label_spacing", "label": "Letter spacing", "min": 0, "max": 5, "step": 0.1, "unit": "px", "default": 1.4 },
+    {
+      "type": "select", "id": "label_transform", "label": "Case", "default": "uppercase",
+      "options": [
+        { "value": "none", "label": "As typed" }, { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "capitalize", "label": "Title Case" }
+      ]
+    },
+    { "type": "range", "id": "label_padding", "label": "Space below labels", "min": 4, "max": 40, "step": 1, "unit": "px", "default": 13 },
+    { "type": "checkbox", "id": "header_rule_enable", "label": "Line under labels", "default": true },
+    { "type": "color", "id": "header_rule_color", "label": "Line colour", "default": "#e4e4e4" },
+    { "type": "range", "id": "header_rule_width", "label": "Line thickness", "min": 1, "max": 4, "step": 1, "unit": "px", "default": 1 },
+
+    { "type": "header", "content": "Separator between products" },
+    { "type": "checkbox", "id": "row_divider_enable", "label": "Line between products", "default": true },
+    { "type": "color", "id": "row_divider_color", "label": "Line colour", "default": "#eaeaea" },
+    { "type": "range", "id": "row_divider_width", "label": "Line thickness", "min": 1, "max": 4, "step": 1, "unit": "px", "default": 1 },
+    { "type": "range", "id": "row_padding", "label": "Space around each product", "min": 8, "max": 60, "step": 2, "unit": "px", "default": 26 },
+
+    { "type": "header", "content": "Product image" },
+    { "type": "range", "id": "thumb_size", "label": "Image size", "min": 50, "max": 180, "step": 5, "unit": "px", "default": 90 },
+    { "type": "range", "id": "thumb_gap", "label": "Space beside image", "min": 8, "max": 50, "step": 2, "unit": "px", "default": 22 },
+    { "type": "color", "id": "thumb_bg", "label": "Image background", "default": "#ffffff" },
+    { "type": "checkbox", "id": "thumb_border_enable", "label": "Border around image", "default": true },
+    { "type": "color", "id": "thumb_border_color", "label": "Border colour", "default": "#e4e4e4" },
+    { "type": "range", "id": "thumb_padding", "label": "Padding inside border", "min": 0, "max": 20, "step": 1, "unit": "px", "default": 6 },
+
+    { "type": "header", "content": "Product name" },
+    { "type": "color", "id": "name_color", "label": "Colour", "default": "#1a1a1a" },
+    { "type": "color", "id": "name_hover_color", "label": "Hover colour", "default": "#e01b22" },
+    {
+      "type": "select", "id": "name_hover_underline", "label": "Underline on hover", "default": "underline",
+      "options": [ { "value": "underline", "label": "Yes" }, { "value": "none", "label": "No" } ]
+    },
+    { "type": "range", "id": "name_size", "label": "Size", "min": 11, "max": 28, "step": 1, "unit": "px", "default": 15 },
+    {
+      "type": "select", "id": "name_weight", "label": "Weight", "default": "400",
+      "options": [
+        { "value": "300", "label": "Light" }, { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" }, { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ]
+    },
+    { "type": "range", "id": "name_spacing", "label": "Letter spacing", "min": -1, "max": 3, "step": 0.1, "unit": "px", "default": 0 },
+    {
+      "type": "select", "id": "name_transform", "label": "Case", "default": "none",
+      "options": [
+        { "value": "none", "label": "As typed" }, { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "capitalize", "label": "Title Case" }
+      ]
+    },
+    { "type": "checkbox", "id": "show_sku", "label": "Show SKU under name", "default": false },
+    { "type": "checkbox", "id": "cart_vendor_enable", "label": "Show vendor under name", "default": false },
+    { "type": "color", "id": "meta_color", "label": "Variant / vendor / SKU colour", "default": "#767676" },
+    { "type": "range", "id": "meta_size", "label": "Variant / vendor / SKU size", "min": 10, "max": 20, "step": 1, "unit": "px", "default": 13 },
+
+    { "type": "header", "content": "Unit price" },
+    { "type": "checkbox", "id": "currency_symbol_small", "label": "Raise the currency symbol", "default": true },
+    { "type": "color", "id": "price_color", "label": "Colour", "default": "#111111" },
+    { "type": "range", "id": "price_size", "label": "Size", "min": 12, "max": 40, "step": 1, "unit": "px", "default": 21 },
+    {
+      "type": "select", "id": "price_weight", "label": "Weight", "default": "800",
+      "options": [
+        { "value": "400", "label": "Regular" }, { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" }, { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extrabold" }, { "value": "900", "label": "Black" }
+      ]
+    },
+    { "type": "range", "id": "price_spacing", "label": "Letter spacing", "min": -1, "max": 3, "step": 0.1, "unit": "px", "default": -0.2 },
+    { "type": "range", "id": "price_margin", "label": "Space above price", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 9 },
+
+    { "type": "header", "content": "Line total" },
+    { "type": "color", "id": "total_color", "label": "Colour", "default": "#1a1a1a" },
+    { "type": "range", "id": "total_size", "label": "Size", "min": 11, "max": 28, "step": 1, "unit": "px", "default": 15 },
+    {
+      "type": "select", "id": "total_weight", "label": "Weight", "default": "400",
+      "options": [
+        { "value": "400", "label": "Regular" }, { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" }, { "value": "700", "label": "Bold" }
+      ]
+    },
+
+    { "type": "header", "content": "Quantity control" },
+    { "type": "range", "id": "qty_height", "label": "Height", "min": 28, "max": 60, "step": 2, "unit": "px", "default": 40 },
+    { "type": "range", "id": "qty_input_width", "label": "Input width", "min": 34, "max": 90, "step": 2, "unit": "px", "default": 46 },
+    { "type": "range", "id": "qty_font_size", "label": "Number size", "min": 11, "max": 22, "step": 1, "unit": "px", "default": 15 },
+    { "type": "color", "id": "qty_border_color", "label": "Border", "default": "#dcdcdc" },
+    { "type": "color", "id": "qty_input_bg", "label": "Input background", "default": "#ffffff" },
+    { "type": "color", "id": "qty_text_color", "label": "Number colour", "default": "#1a1a1a" },
+    { "type": "color", "id": "qty_btn_bg", "label": "− / + background", "default": "#f4f4f4" },
+    { "type": "color", "id": "qty_btn_color", "label": "− / + colour", "default": "#555555" },
+
+    { "type": "header", "content": "Remove link" },
+    { "type": "text", "id": "remove_label", "label": "Text", "default": "Remove" },
+    { "type": "color", "id": "remove_color", "label": "Colour", "default": "#1a1a1a" },
+    { "type": "color", "id": "remove_hover_color", "label": "Hover colour", "default": "#e01b22" },
+    { "type": "range", "id": "remove_size", "label": "Size", "min": 10, "max": 20, "step": 1, "unit": "px", "default": 14 },
+    {
+      "type": "select", "id": "remove_weight", "label": "Weight", "default": "400",
+      "options": [
+        { "value": "400", "label": "Regular" }, { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" }, { "value": "700", "label": "Bold" }
+      ]
+    },
+    {
+      "type": "select", "id": "remove_transform", "label": "Case", "default": "none",
+      "options": [
+        { "value": "none", "label": "As typed" }, { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "capitalize", "label": "Title Case" }
+      ]
+    },
+    { "type": "range", "id": "remove_margin", "label": "Space above", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 11 },
+
+    { "type": "header", "content": "Summary card" },
+    { "type": "color", "id": "summary_bg", "label": "Background", "default": "#0a0a0a" },
+    { "type": "color", "id": "summary_text", "label": "Text", "default": "#ffffff" },
+    { "type": "color", "id": "summary_divider_color", "label": "Divider lines", "default": "#3a3a3a" },
+    { "type": "range", "id": "summary_divider_margin", "label": "Space around dividers", "min": 8, "max": 44, "step": 2, "unit": "px", "default": 22 },
+    { "type": "range", "id": "summary_padding", "label": "Padding", "min": 14, "max": 56, "step": 2, "unit": "px", "default": 30 },
+    { "type": "range", "id": "summary_radius", "label": "Corner roundness", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 0 },
+    { "type": "range", "id": "summary_sticky_top", "label": "Sticky offset from top", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 24 },
+    { "type": "text", "id": "cart_total_title", "label": "Total label", "default": "Total" },
+    { "type": "text", "id": "cart_subtotal_title", "label": "Subtotal label (shows only with discounts)", "default": "Subtotal" },
+    { "type": "range", "id": "sum_label_size", "label": "Total label size", "min": 12, "max": 40, "step": 1, "unit": "px", "default": 22 },
+    {
+      "type": "select", "id": "sum_label_weight", "label": "Total label weight", "default": "800",
+      "options": [
+        { "value": "500", "label": "Medium" }, { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }, { "value": "800", "label": "Extrabold" },
+        { "value": "900", "label": "Black" }
+      ]
+    },
+    { "type": "range", "id": "sum_label_spacing", "label": "Total label letter spacing", "min": -1, "max": 5, "step": 0.1, "unit": "px", "default": 0.2 },
+    {
+      "type": "select", "id": "sum_label_transform", "label": "Total label case", "default": "uppercase",
+      "options": [
+        { "value": "none", "label": "As typed" }, { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "capitalize", "label": "Title Case" }
+      ]
+    },
+    { "type": "range", "id": "sum_value_size", "label": "Total amount size", "min": 12, "max": 44, "step": 1, "unit": "px", "default": 22 },
+    {
+      "type": "select", "id": "sum_value_weight", "label": "Total amount weight", "default": "800",
+      "options": [
+        { "value": "500", "label": "Medium" }, { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }, { "value": "800", "label": "Extrabold" },
+        { "value": "900", "label": "Black" }
+      ]
+    },
+
+    { "type": "header", "content": "Order instructions" },
+    { "type": "checkbox", "id": "show_note", "label": "Show order instructions box", "default": true },
+    { "type": "text", "id": "cart_note_title", "label": "Label", "default": "Special instructions for seller" },
+    { "type": "text", "id": "note_placeholder", "label": "Placeholder", "info": "Optional — leave empty for no placeholder text" },
+    { "type": "color", "id": "note_label_color", "label": "Label colour", "default": "#ffffff" },
+    { "type": "range", "id": "note_label_size", "label": "Label size", "min": 11, "max": 24, "step": 1, "unit": "px", "default": 15 },
+    {
+      "type": "select", "id": "note_label_weight", "label": "Label weight", "default": "400",
+      "options": [
+        { "value": "400", "label": "Regular" }, { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" }, { "value": "700", "label": "Bold" }
+      ]
+    },
+    { "type": "color", "id": "note_bg", "label": "Box background", "default": "#ffffff" },
+    { "type": "color", "id": "note_text_color", "label": "Box text", "default": "#111111" },
+    { "type": "range", "id": "note_text_size", "label": "Box text size", "min": 11, "max": 20, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "note_height", "label": "Box height", "min": 50, "max": 220, "step": 5, "unit": "px", "default": 80 },
+    { "type": "text", "id": "note_save_label", "label": "Save button text", "default": "Save" },
+    { "type": "text", "id": "note_saved_label", "label": "Saved confirmation text", "default": "Saved" },
+    { "type": "color", "id": "save_bg", "label": "Save button background", "default": "#6f6f6f" },
+    { "type": "color", "id": "save_text_color", "label": "Save button text colour", "default": "#ffffff" },
+    { "type": "color", "id": "save_done_bg", "label": "Save button after saving", "default": "#2e7d32" },
+    { "type": "range", "id": "save_size", "label": "Save button text size", "min": 10, "max": 20, "step": 1, "unit": "px", "default": 12 },
+    {
+      "type": "select", "id": "save_weight", "label": "Save button weight", "default": "700",
+      "options": [
+        { "value": "500", "label": "Medium" }, { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }, { "value": "800", "label": "Extrabold" }
+      ]
+    },
+    { "type": "range", "id": "save_spacing", "label": "Save button letter spacing", "min": 0, "max": 4, "step": 0.1, "unit": "px", "default": 1.2 },
+    {
+      "type": "select", "id": "save_transform", "label": "Save button case", "default": "uppercase",
+      "options": [
+        { "value": "none", "label": "As typed" }, { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "capitalize", "label": "Title Case" }
+      ]
+    },
+    { "type": "range", "id": "save_padding_y", "label": "Save button height padding", "min": 6, "max": 26, "step": 1, "unit": "px", "default": 12 },
+    { "type": "range", "id": "save_padding_x", "label": "Save button width padding", "min": 10, "max": 60, "step": 2, "unit": "px", "default": 24 },
+
+    { "type": "header", "content": "Tax and shipping note" },
+    { "type": "text", "id": "tax_note", "label": "Note text", "default": "Tax included." },
+    { "type": "text", "id": "shipping_link_label", "label": "Link text", "default": "Shipping calculated at checkout" },
+    { "type": "text", "id": "shipping_policy_url", "label": "Link URL", "default": "/policies/shipping-policy" },
+    { "type": "color", "id": "tax_color", "label": "Text colour", "default": "#d6d6d6" },
+    { "type": "color", "id": "tax_link_color", "label": "Link colour", "default": "#e01b22" },
+    { "type": "range", "id": "tax_size", "label": "Size", "min": 11, "max": 20, "step": 1, "unit": "px", "default": 14 },
+
+    { "type": "header", "content": "Checkout button" },
+    { "type": "text", "id": "checkout_button_title", "label": "Text", "default": "Proceed to Checkout" },
+    { "type": "checkbox", "id": "checkout_arrow", "label": "Show arrow", "default": true },
+    { "type": "color", "id": "checkout_bg", "label": "Background", "default": "#e01b22" },
+    { "type": "color", "id": "checkout_text_color", "label": "Text colour", "default": "#ffffff" },
+    { "type": "range", "id": "checkout_size", "label": "Text size", "min": 11, "max": 24, "step": 1, "unit": "px", "default": 14 },
+    {
+      "type": "select", "id": "checkout_weight", "label": "Weight", "default": "700",
+      "options": [
+        { "value": "500", "label": "Medium" }, { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }, { "value": "800", "label": "Extrabold" },
+        { "value": "900", "label": "Black" }
+      ]
+    },
+    { "type": "range", "id": "checkout_spacing", "label": "Letter spacing", "min": 0, "max": 5, "step": 0.1, "unit": "px", "default": 1.2 },
+    {
+      "type": "select", "id": "checkout_transform", "label": "Case", "default": "uppercase",
+      "options": [
+        { "value": "none", "label": "As typed" }, { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "capitalize", "label": "Title Case" }
+      ]
+    },
+    { "type": "range", "id": "checkout_padding_y", "label": "Height padding", "min": 8, "max": 34, "step": 1, "unit": "px", "default": 17 },
+    { "type": "range", "id": "checkout_padding_x", "label": "Width padding", "min": 10, "max": 60, "step": 2, "unit": "px", "default": 22 },
+    { "type": "range", "id": "checkout_margin", "label": "Space above button", "min": 0, "max": 50, "step": 2, "unit": "px", "default": 22 },
+
+    { "type": "header", "content": "Secure payments line" },
+    { "type": "text", "id": "secure_text", "label": "Text", "default": "100% Secure Payments" },
+    { "type": "color", "id": "secure_color", "label": "Text colour", "default": "#1a1a1a" },
+    { "type": "color", "id": "secure_icon_color", "label": "Lock colour", "default": "#e01b22" },
+    { "type": "range", "id": "secure_size", "label": "Size", "min": 11, "max": 20, "step": 1, "unit": "px", "default": 14 },
+    {
+      "type": "select", "id": "secure_weight", "label": "Weight", "default": "600",
+      "options": [
+        { "value": "400", "label": "Regular" }, { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" }, { "value": "700", "label": "Bold" }
+      ]
+    },
+    { "type": "range", "id": "secure_margin", "label": "Space above", "min": 0, "max": 50, "step": 2, "unit": "px", "default": 18 },
+
+    { "type": "header", "content": "Blocks under the summary" },
+    {
+      "type": "paragraph",
+      "content": "Anything you add as a block (payment icons, trust features, text, dividers) appears directly under the “100% Secure Payments” line. Add or reorder them in the Cart page section of the theme editor."
+    },
+
+    { "type": "header", "content": "Zero-price protection" },
+    {
+      "type": "paragraph",
+      "content": "Blocks checkout while any line has a $0.00 price. Theme code cannot stop a customer opening /checkout directly — pair this with a Shopify Flow rule that unpublishes variants priced at 0."
+    },
+    { "type": "checkbox", "id": "zero_block_enable", "label": "Block checkout on $0.00 items", "default": true },
+    { "type": "text", "id": "zero_title", "label": "Warning heading", "default": "One item needs checking before you can order" },
+    {
+      "type": "textarea",
+      "id": "zero_message",
+      "label": "Warning message",
+      "default": "The item below is showing a price of $0.00, which means its price hasn't loaded correctly. Contact our team and we'll confirm the price, or remove it to keep going with the rest of your order."
+    },
+    { "type": "text", "id": "zero_line_label", "label": "Label on the affected product", "default": "Price unavailable" },
+    { "type": "text", "id": "zero_remove_label", "label": "Remove-item button", "default": "Remove these items" },
+    { "type": "text", "id": "zero_checkout_title", "label": "Checkout-area heading", "default": "Checkout unavailable" },
+    {
+      "type": "textarea",
+      "id": "zero_checkout_message",
+      "label": "Checkout-area message",
+      "default": "Contact our team to confirm the price on the flagged item, or remove it from your cart to continue."
+    },
+    { "type": "color", "id": "alert_bg", "label": "Warning background", "default": "#fdf2f2" },
+    { "type": "color", "id": "alert_border", "label": "Warning border", "default": "#e7b8b8" },
+    { "type": "color", "id": "alert_text", "label": "Warning text", "default": "#8c2620" },
+
+    { "type": "header", "content": "Support link" },
+    {
+      "type": "text",
+      "id": "support_url",
+      "label": "Support link",
+      "info": "Full URL, or mailto:sales@example.com.au, or tel:+61...",
+      "default": "/pages/contact"
+    },
+    { "type": "text", "id": "support_btn_label", "label": "Support button label", "default": "Contact support" },
+    { "type": "checkbox", "id": "support_new_tab", "label": "Open in a new tab", "default": false },
+
+    { "type": "header", "content": "Empty cart" },
+    { "type": "text", "id": "shopping_cart_title", "label": "Heading", "default": "Shopping Cart" },
+    { "type": "text", "id": "cart_empty_title", "label": "Empty message", "default": "Your cart is currently empty." },
+    { "type": "text", "id": "cart_continue_title", "label": "Continue browsing text", "default": "Continue browsing" },
+    { "type": "text", "id": "here_title", "label": "Link text", "default": "here" },
+    {
+      "type": "url",
+      "id": "empty_link_url",
+      "label": "Link destination",
+      "info": "Where the link text goes. Leave empty to use the All products page."
+    },
+    { "type": "checkbox", "id": "empty_link_new_tab", "label": "Open link in a new tab", "default": false },
+    { "type": "color", "id": "empty_link_color", "label": "Link colour", "default": "#e01b22" },
+    { "type": "color", "id": "empty_link_hover_color", "label": "Link hover colour", "default": "#b3151b" },
+    { "type": "checkbox", "id": "empty_link_underline", "label": "Underline the link", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "payment_icons",
+      "name": "Payment icons",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Small heading above the icons", "info": "Optional — leave empty to hide" },
+        { "type": "richtext", "id": "payment_information", "label": "Information", "default": "<p>Guaranteed safe checkout</p>" },
+        { "type": "image_picker", "id": "payment_image", "label": "Payment image", "info": "Optional — a single strip image shown above the icons" },
+        { "type": "range", "id": "banner_width", "label": "Payment image width", "min": 60, "max": 400, "step": 5, "unit": "px", "default": 240 },
+        { "type": "range", "id": "banner_margin", "label": "Space below payment image", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 12 },
+        {
+          "type": "radio", "id": "payment_icon", "label": "Payment icon", "default": "custom_icon",
+          "options": [
+            { "value": "automatic", "label": "Automatic" },
+            { "value": "custom_icon", "label": "Custom icon" }
+          ],
+          "info": "Automatic shows the payment methods that are actually live on your store."
+        },
+        { "type": "header", "content": "Custom payments icon" },
+        { "type": "checkbox", "id": "visa", "label": "Visa", "default": true },
+        { "type": "checkbox", "id": "master", "label": "Mastercard", "default": true },
+        { "type": "checkbox", "id": "american_express", "label": "American Express", "default": true },
+        { "type": "checkbox", "id": "paypal", "label": "PayPal", "default": true },
+        { "type": "checkbox", "id": "apple_pay", "label": "Apple Pay", "default": true },
+        { "type": "checkbox", "id": "google_pay", "label": "Google Pay", "default": true },
+        { "type": "checkbox", "id": "shopify_pay", "label": "Shop Pay", "default": true },
+        { "type": "checkbox", "id": "klarna", "label": "Klarna", "default": false },
+        { "type": "checkbox", "id": "maestro", "label": "Maestro", "default": false },
+        { "type": "checkbox", "id": "jcb", "label": "JCB", "default": false },
+        { "type": "checkbox", "id": "discover", "label": "Discover", "default": false },
+        { "type": "checkbox", "id": "diners_club", "label": "Diners Club", "default": false },
+        { "type": "checkbox", "id": "dankort", "label": "Dankort", "default": false },
+        { "type": "checkbox", "id": "sofort", "label": "Sofort", "default": false },
+        { "type": "checkbox", "id": "dwolla", "label": "Dwolla", "default": false },
+        { "type": "checkbox", "id": "forbrugsforeningen", "label": "Forbrugsforeningen", "default": false },
+        { "type": "checkbox", "id": "bitcoin", "label": "Bitcoin", "default": false },
+        { "type": "checkbox", "id": "dogecoin", "label": "Dogecoin", "default": false },
+        { "type": "checkbox", "id": "litecoin", "label": "Litecoin", "default": false },
+        { "type": "checkbox", "id": "amazon_payments", "label": "Amazon Pay", "default": false },
+        { "type": "header", "content": "Uploaded icons" },
+        {
+          "type": "paragraph",
+          "content": "For anything Shopify has no built-in icon for — Afterpay, Zip, Latitude, bank transfer. These show after the icons above."
+        },
+        { "type": "image_picker", "id": "icon_1", "label": "Icon 1" },
+        { "type": "image_picker", "id": "icon_2", "label": "Icon 2" },
+        { "type": "image_picker", "id": "icon_3", "label": "Icon 3" },
+        { "type": "image_picker", "id": "icon_4", "label": "Icon 4" },
+        { "type": "image_picker", "id": "icon_5", "label": "Icon 5" },
+        { "type": "image_picker", "id": "icon_6", "label": "Icon 6" },
+        { "type": "image_picker", "id": "icon_7", "label": "Icon 7" },
+        { "type": "image_picker", "id": "icon_8", "label": "Icon 8" },
+        { "type": "range", "id": "icon_height", "label": "Icon height", "min": 12, "max": 60, "step": 1, "unit": "px", "default": 26 },
+        { "type": "range", "id": "icon_height_mobile", "label": "Icon height (mobile)", "min": 10, "max": 50, "step": 1, "unit": "px", "default": 22 },
+        { "type": "range", "id": "gap", "label": "Space between icons", "min": 2, "max": 40, "step": 1, "unit": "px", "default": 10 },
+        {
+          "type": "select", "id": "align", "label": "Alignment", "default": "center",
+          "options": [
+            { "value": "flex-start", "label": "Left" },
+            { "value": "center", "label": "Centre" },
+            { "value": "flex-end", "label": "Right" }
+          ]
+        },
+        { "type": "range", "id": "margin_top", "label": "Space above", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 16 },
+        { "type": "checkbox", "id": "greyscale", "label": "Grey until hovered", "default": false },
+        { "type": "header", "content": "Information style" },
+        { "type": "color", "id": "info_color", "label": "Colour", "default": "#767676" },
+        { "type": "range", "id": "info_size", "label": "Size", "min": 10, "max": 22, "step": 1, "unit": "px", "default": 13 },
+        { "type": "range", "id": "info_margin", "label": "Space below", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 10 },
+        { "type": "header", "content": "Icon tile" },
+        { "type": "color", "id": "tile_bg", "label": "Tile background", "default": "#ffffff" },
+        { "type": "checkbox", "id": "tile_border_enable", "label": "Border around each icon", "default": true },
+        { "type": "color", "id": "tile_border_color", "label": "Border colour", "default": "#e4e4e4" },
+        { "type": "range", "id": "tile_radius", "label": "Corner roundness", "min": 0, "max": 20, "step": 1, "unit": "px", "default": 0 },
+        { "type": "range", "id": "tile_padding", "label": "Padding inside tile", "min": 0, "max": 20, "step": 1, "unit": "px", "default": 6 },
+        { "type": "header", "content": "Heading style" },
+        { "type": "color", "id": "title_color", "label": "Colour", "default": "#7a7a7a" },
+        { "type": "range", "id": "title_size", "label": "Size", "min": 9, "max": 22, "step": 1, "unit": "px", "default": 11 },
+        {
+          "type": "select", "id": "title_weight", "label": "Weight", "default": "600",
+          "options": [
+            { "value": "400", "label": "Regular" }, { "value": "500", "label": "Medium" },
+            { "value": "600", "label": "Semibold" }, { "value": "700", "label": "Bold" }
+          ]
+        },
+        { "type": "range", "id": "title_spacing", "label": "Letter spacing", "min": 0, "max": 5, "step": 0.1, "unit": "px", "default": 1.4 },
+        {
+          "type": "select", "id": "title_transform", "label": "Case", "default": "uppercase",
+          "options": [
+            { "value": "none", "label": "As typed" }, { "value": "uppercase", "label": "UPPERCASE" },
+            { "value": "capitalize", "label": "Title Case" }
+          ]
+        },
+        { "type": "range", "id": "title_margin", "label": "Space below heading", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 10 }
+      ]
+    },
+    {
+      "type": "feature",
+      "name": "Trust feature",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Fast Australia-wide delivery" },
+        { "type": "text", "id": "text", "label": "Text under the title", "default": "Dispatched from our Melbourne warehouse" },
+        {
+          "type": "select", "id": "icon", "label": "Icon", "default": "truck",
+          "options": [
+            { "value": "none", "label": "No icon" },
+            { "value": "truck", "label": "Delivery truck" },
+            { "value": "lock", "label": "Padlock" },
+            { "value": "shield", "label": "Shield tick" },
+            { "value": "returns", "label": "Returns arrow" },
+            { "value": "phone", "label": "Phone" },
+            { "value": "tag", "label": "Price tag" },
+            { "value": "spanner", "label": "Spanner" }
+          ]
+        },
+        { "type": "range", "id": "icon_size", "label": "Icon size", "min": 12, "max": 48, "step": 1, "unit": "px", "default": 20 },
+        { "type": "color", "id": "icon_color", "label": "Icon colour", "default": "#e01b22" },
+        { "type": "image_picker", "id": "image", "label": "Custom image", "info": "Optional — replaces the icon above" },
+        { "type": "range", "id": "image_width", "label": "Image width", "min": 14, "max": 90, "step": 1, "unit": "px", "default": 26 },
+        {
+          "type": "select", "id": "layout", "label": "Layout", "default": "inline",
+          "options": [
+            { "value": "inline", "label": "Icon beside text" },
+            { "value": "stacked", "label": "Icon above text" }
+          ]
+        },
+        {
+          "type": "select", "id": "align", "label": "Alignment", "default": "flex-start",
+          "options": [
+            { "value": "flex-start", "label": "Left" },
+            { "value": "center", "label": "Centre" },
+            { "value": "flex-end", "label": "Right" }
+          ]
+        },
+        { "type": "checkbox", "id": "icon_align_top", "label": "Align icon to the top line", "default": false },
+        { "type": "range", "id": "gap", "label": "Space between icon and text", "min": 4, "max": 30, "step": 1, "unit": "px", "default": 12 },
+        { "type": "range", "id": "margin_top", "label": "Space above", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 14 },
+        { "type": "header", "content": "Text style" },
+        { "type": "color", "id": "title_color", "label": "Title colour", "default": "#1a1a1a" },
+        { "type": "range", "id": "title_size", "label": "Title size", "min": 11, "max": 24, "step": 1, "unit": "px", "default": 14 },
+        {
+          "type": "select", "id": "title_weight", "label": "Title weight", "default": "700",
+          "options": [
+            { "value": "400", "label": "Regular" }, { "value": "500", "label": "Medium" },
+            { "value": "600", "label": "Semibold" }, { "value": "700", "label": "Bold" },
+            { "value": "800", "label": "Extrabold" }
+          ]
+        },
+        { "type": "range", "id": "title_spacing", "label": "Title letter spacing", "min": -1, "max": 4, "step": 0.1, "unit": "px", "default": 0 },
+        {
+          "type": "select", "id": "title_transform", "label": "Title case", "default": "none",
+          "options": [
+            { "value": "none", "label": "As typed" }, { "value": "uppercase", "label": "UPPERCASE" },
+            { "value": "capitalize", "label": "Title Case" }
+          ]
+        },
+        { "type": "color", "id": "text_color", "label": "Text colour", "default": "#767676" },
+        { "type": "range", "id": "text_size", "label": "Text size", "min": 10, "max": 20, "step": 1, "unit": "px", "default": 13 },
+        { "type": "header", "content": "Box" },
+        { "type": "color", "id": "box_bg", "label": "Background", "default": "rgba(0,0,0,0)" },
+        { "type": "checkbox", "id": "box_border_enable", "label": "Border", "default": false },
+        { "type": "color", "id": "box_border_color", "label": "Border colour", "default": "#e4e4e4" },
+        { "type": "range", "id": "box_radius", "label": "Corner roundness", "min": 0, "max": 24, "step": 1, "unit": "px", "default": 0 },
+        { "type": "range", "id": "box_padding_y", "label": "Padding top and bottom", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 0 },
+        { "type": "range", "id": "box_padding_x", "label": "Padding left and right", "min": 0, "max": 30, "step": 1, "unit": "px", "default": 0 }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Need a hand? Call our Melbourne team before you order.</p>" },
+        { "type": "color", "id": "text_color", "label": "Colour", "default": "#767676" },
+        { "type": "color", "id": "link_color", "label": "Link colour", "default": "#e01b22" },
+        { "type": "range", "id": "text_size", "label": "Size", "min": 10, "max": 22, "step": 1, "unit": "px", "default": 13 },
+        { "type": "range", "id": "line_height", "label": "Line height", "min": 1.1, "max": 2.2, "step": 0.1, "default": 1.6 },
+        {
+          "type": "select", "id": "align", "label": "Alignment", "default": "center",
+          "options": [
+            { "value": "left", "label": "Left" }, { "value": "center", "label": "Centre" },
+            { "value": "right", "label": "Right" }
+          ]
+        },
+        { "type": "range", "id": "margin_top", "label": "Space above", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 14 }
+      ]
+    },
+    {
+      "type": "divider",
+      "name": "Divider",
+      "settings": [
+        { "type": "color", "id": "color", "label": "Colour", "default": "#eaeaea" },
+        { "type": "range", "id": "thickness", "label": "Thickness", "min": 1, "max": 6, "step": 1, "unit": "px", "default": 1 },
+        { "type": "range", "id": "width", "label": "Width", "min": 20, "max": 100, "step": 5, "unit": "%", "default": 100 },
+        { "type": "range", "id": "margin_top", "label": "Space above", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 18 },
+        { "type": "range", "id": "margin_bottom", "label": "Space below", "min": 0, "max": 60, "step": 2, "unit": "px", "default": 0 }
+      ]
+    }
+  ]
+}
+{% endschema %}

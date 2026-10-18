@@ -1,0 +1,59 @@
+{% assign itemStyle = '' %}{% if cart.item_count == 0 %}{% assign itemStyle = ' style="display:none;"' %}{% endif %}
+{% assign itemEmpty = '' %}{% if cart.item_count == 0 %}{% assign itemEmpty = ' style="display:block;"' %}{% endif %}
+
+{%- assign item_count = cart.item_count -%}
+
+<button class="icon-cart-active">
+  <span class="icon-cart">
+    
+    {{section.settings.header_cart_icon}}
+    
+    <span class="count-style bigcounter">{{ item_count }}</span>
+  </span>
+  
+ {% comment %}
+  <span class="cart-price shopping-cart__total">{{ cart.total_price | money }}</span>
+ {% endcomment %}
+  
+</button>
+
+
+<div class="shopping-cart-content">
+  <div class="shopping-cart-top">
+    {%- if section.settings.cart_t != '' -%}
+    <h4>{{ section.settings.cart_t }}</h4>
+    {%- endif -%}
+    <a class="cart-close" href="#"><i class="icofont-close-circled"></i></a>
+  </div>
+  <ul class="single-product-cart single-cart-item-loop" {{ itemStyle  }}>
+    {%- for item in cart.items -%}
+    <li class="single-shopping-cart">
+      <div class="shopping-cart-img">
+        <a href="{{ item.url }}"><img loading="lazy"  src="{{ item | img_url: 'small' }}" alt="{{ item.img.alt }}"></a>
+        <div class="item-close">
+          <a href="javascript:void(0);" onclick="Shopify.removeItem({{ item.variant.id }})"><i class="icofont-close-circled"></i></a>
+        </div>
+      </div>
+      <div class="shopping-cart-title">
+        <h4><a href="{{ item.url }}">{{ item.title }}</a></h4>       
+        <span>{{ item.quantity }} x {{ item.price | money }}</span>       
+      </div>
+    </li>
+    {%- endfor -%}
+  </ul>
+  <div class="single-product-cart shopping-cart-bottom" {{ itemStyle  }}>
+    <div class="shopping-cart-total">
+      <h4>{% if section.settings.total_t != '' %}{{ section.settings.total_t }} {% endif %}<span class="shop-total shopping-cart__total">{{ cart.total_price | money }}</span></h4>
+    </div>
+    <div class="shopping-cart-btn btn-hover text-center">
+      {%- if section.settings.checkout_title != '' -%}
+      <a class="default-btn" href="/checkout">{{ section.settings.checkout_title }}</a>
+      {%- endif -%}
+      <a class="default-btn" href="{{ routes.cart_url }}">{{ section.settings.view_cart_title }}</a>
+    </div>
+  </div>
+
+  <div class="cart-empty-title" {{ itemEmpty }}>
+    <p>{{ section.settings.empty_cart_title }}</p>
+  </div>
+</div>

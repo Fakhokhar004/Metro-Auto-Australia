@@ -1,0 +1,200 @@
+{%- comment -%}
+  Metro Auto About page. Design reference: _design/metro-auto-design/pages/About.dc.html
+  Hero with stats → values (blocks) → order steps (blocks) → our story → trade accounts → contact + common questions (blocks).
+  Contact details come from Theme settings → Metro contact details.
+{%- endcomment -%}
+{{ 'ma-pages.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign values = section.blocks | where: 'type', 'value'
+  assign steps = section.blocks | where: 'type', 'step'
+  assign faqs = section.blocks | where: 'type', 'faq'
+  assign c_email = settings.ma_email | default: shop.email
+-%}
+
+<section class="ma-banner">
+  <div class="ma-wrap ma-about__hero">
+    <div class="ma-about__intro">
+      <nav class="ma-banner__crumb" aria-label="Breadcrumb">
+        <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span><span aria-current="page">About us</span>
+      </nav>
+      <h1 class="ma-about__h1">{{ section.settings.title | escape }}{% if section.settings.title_red != blank %} <span>{{ section.settings.title_red | escape }}</span>{% endif %}</h1>
+      <p class="ma-about__lead">{{ section.settings.text | escape }}</p>
+      <div class="ma-about__btns">
+        <a class="ma-button ma-button--red" href="{{ section.settings.btn_url | default: '/pages/shop-by-vehicle' }}">{{ section.settings.btn_label | escape }}</a>
+        <a class="ma-about__ghost" href="#ma-about-contact">Contact us</a>
+      </div>
+    </div>
+    <dl class="ma-about__stats">
+      {%- for i in (1..4) -%}
+        {%- liquid
+          assign lk = 'stat' | append: i | append: '_label'
+          assign vk = 'stat' | append: i | append: '_value'
+        -%}
+        {%- if section.settings[vk] != blank -%}
+          <div class="ma-about__stat{% if section.settings[vk].size > 8 %} is-words{% endif %}"><dt>{{ section.settings[lk] | escape }}</dt><dd>{{ section.settings[vk] | escape }}</dd></div>
+        {%- endif -%}
+      {%- endfor -%}
+    </dl>
+  </div>
+</section>
+
+{%- if values.size > 0 -%}
+<section class="ma-wrap ma-about__sec">
+  <h2 class="ma-about__h2">{{ section.settings.values_title | escape }}</h2>
+  <div class="ma-about__values">
+    {%- for block in values -%}
+      {%- liquid
+        case block.settings.icon
+          when 'truck'
+            assign d = 'M3 7h11v9H3zM14 10h4l3 3v3h-7'
+          when 'shield'
+            assign d = 'M9 12l2 2 4-4M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z'
+          when 'returns'
+            assign d = 'M4 9h11a5 5 0 0 1 0 10H8M4 9l4-4M4 9l4 4'
+          else
+            assign d = 'M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z'
+        endcase
+      -%}
+      <div class="ma-about__value" {{ block.shopify_attributes }}>
+        <span class="ma-about__vicon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ d }}"></path></svg></span>
+        <h3>{{ block.settings.title | escape }}</h3>
+        <p>{{ block.settings.text | escape }}</p>
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+{%- endif -%}
+
+{%- if steps.size > 0 -%}
+<section class="ma-wrap ma-about__sec">
+  <h2 class="ma-about__h2">{{ section.settings.steps_title | escape }}</h2>
+  <ol class="ma-about__steps">
+    {%- for block in steps -%}
+      <li {{ block.shopify_attributes }}>
+        <span class="ma-about__n" aria-hidden="true">{{ forloop.index }}</span>
+        <div><h3>{{ block.settings.title | escape }}</h3><p>{{ block.settings.text | escape }}</p></div>
+      </li>
+    {%- endfor -%}
+  </ol>
+</section>
+{%- endif -%}
+
+<section class="ma-wrap ma-about__sec">
+  <div class="ma-about__story">
+    <div class="ma-about__storytext">
+      <h2 class="ma-about__h2">{{ section.settings.story_title | escape }}</h2>
+      <div class="ma-about__rte">{{ section.settings.story }}</div>
+    </div>
+    {%- if section.settings.story_image -%}
+      {%- assign s_alt = section.settings.story_image.alt | default: 'The Metro Auto team and warehouse' -%}
+      {{ section.settings.story_image | image_url: width: 1200 | image_tag: alt: s_alt, widths: '480,720,960,1200', sizes: '(min-width: 1001px) 640px, 100vw', loading: 'lazy', class: 'ma-about__img' }}
+    {%- elsif request.design_mode -%}
+      <div class="ma-about__ph">Add a photo of the team or the Melbourne warehouse</div>
+    {%- endif -%}
+  </div>
+</section>
+
+{%- if section.settings.trade_title != blank -%}
+<section class="ma-wrap ma-about__sec">
+  <div class="ma-about__trade">
+    <div>
+      <h2 class="ma-about__h2">{{ section.settings.trade_title | escape }}</h2>
+      <p>{{ section.settings.trade_text | escape }}</p>
+    </div>
+    {%- if section.settings.trade_url != blank -%}
+      <a class="ma-about__badge" href="{{ section.settings.trade_url }}">{{ section.settings.trade_badge | escape }}</a>
+    {%- else -%}
+      <span class="ma-about__badge">{%- render 'ma-icon', name: 'clock', size: 18, width: 2.2 -%}{{ section.settings.trade_badge | escape }}</span>
+    {%- endif -%}
+  </div>
+</section>
+{%- endif -%}
+
+<section class="ma-wrap ma-about__sec ma-about__sec--last" id="ma-about-contact">
+  <div class="ma-about__contact">
+    <div class="ma-about__card">
+      <h2>Contact us</h2>
+      <div class="ma-about__cardbody">
+        <p>{{ section.settings.contact_text | escape }}</p>
+        <dl>
+          {%- if settings.ma_address != blank -%}<dt>Warehouse</dt><dd>{{ settings.ma_address | escape | newline_to_br }}</dd>{%- endif -%}
+          {%- if settings.ma_phone != blank -%}<dt>Phone</dt><dd><a href="tel:{{ settings.ma_phone | remove: ' ' }}">{{ settings.ma_phone | escape }}</a></dd>{%- endif -%}
+          {%- if c_email != blank -%}<dt>Email</dt><dd><a href="mailto:{{ c_email }}">{{ c_email | escape }}</a></dd>{%- endif -%}
+          {%- if settings.ma_hours != blank -%}<dt>Hours</dt><dd>{{ settings.ma_hours | escape | newline_to_br }}</dd>{%- endif -%}
+        </dl>
+        <div class="ma-about__msg">
+          <p>Have a question about a part, an order or a return? Our contact page has the full message form.</p>
+          <a class="ma-button ma-button--red" href="/pages/contact-us">Send us a message <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        </div>
+      </div>
+    </div>
+    {%- if faqs.size > 0 -%}
+      <div class="ma-about__faqs">
+        <h2 class="ma-about__h2">{{ section.settings.faq_title | escape }}</h2>
+        {%- for block in faqs -%}
+          <details class="ma-about__faq" data-ma-accordion{% if forloop.first %} open{% endif %} {{ block.shopify_attributes }}>
+            <summary>{{ block.settings.q | escape }}<span class="ma-pm" aria-hidden="true"></span></summary>
+            <div data-ma-accordion-body><div class="ma-about__a">{{ block.settings.a }}</div></div>
+          </details>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Metro about",
+  "tag": "section",
+  "class": "ma-body",
+  "settings": [
+    { "type": "header", "content": "Hero" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Australian-owned auto parts, sent from" },
+    { "type": "text", "id": "title_red", "label": "Heading word in red", "default": "Melbourne" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Metro Auto sells car parts and workshop supplies online. We buy direct from manufacturers, keep stock in our own Melbourne warehouse, and match parts to your vehicle so you get the right one first time." },
+    { "type": "text", "id": "btn_label", "label": "Button label", "default": "Shop by vehicle" },
+    { "type": "url", "id": "btn_url", "label": "Button link", "info": "Defaults to /pages/shop-by-vehicle" },
+    { "type": "text", "id": "stat1_label", "label": "Stat 1 label", "default": "Parts in stock" },
+    { "type": "text", "id": "stat1_value", "label": "Stat 1 value", "default": "7,600+" },
+    { "type": "text", "id": "stat2_label", "label": "Stat 2 label", "default": "Car makes covered" },
+    { "type": "text", "id": "stat2_value", "label": "Stat 2 value", "default": "30" },
+    { "type": "text", "id": "stat3_label", "label": "Stat 3 label", "default": "Same-day dispatch" },
+    { "type": "text", "id": "stat3_value", "label": "Stat 3 value", "default": "Order before 2PM" },
+    { "type": "text", "id": "stat4_label", "label": "Stat 4 label", "default": "Free delivery" },
+    { "type": "text", "id": "stat4_value", "label": "Stat 4 value", "default": "Orders over $200" },
+    { "type": "header", "content": "Headings" },
+    { "type": "text", "id": "values_title", "label": "Values heading", "default": "What you can count on" },
+    { "type": "text", "id": "steps_title", "label": "Steps heading", "default": "How your order gets to you" },
+    { "type": "header", "content": "Our story" },
+    { "type": "text", "id": "story_title", "label": "Heading", "default": "Our story" },
+    { "type": "richtext", "id": "story", "label": "Story", "default": "<p>Metro Auto is an Australian-owned parts business based in Melbourne.</p><p>Today we stock parts for 30 car makes, from Toyota and Mazda to Mercedes-Benz and BMW, plus the oils, sprays and workshop supplies that keep them running.</p>" },
+    { "type": "image_picker", "id": "story_image", "label": "Photo" },
+    { "type": "header", "content": "Trade accounts" },
+    { "type": "text", "id": "trade_title", "label": "Heading", "default": "Trade accounts for workshops and fleets" },
+    { "type": "textarea", "id": "trade_text", "label": "Text", "default": "Trade pricing and a dedicated contact for businesses that buy parts regularly. Trade accounts are coming soon. Get in touch if you'd like to hear when they open." },
+    { "type": "text", "id": "trade_badge", "label": "Badge", "default": "Coming soon" },
+    { "type": "url", "id": "trade_url", "label": "Badge link", "info": "When set, the badge becomes a link, e.g. to the trade application page." },
+    { "type": "header", "content": "Contact and questions" },
+    { "type": "textarea", "id": "contact_text", "label": "Contact text", "default": "Not sure which part you need? Send us your rego or VIN and we'll check it for you." },
+    { "type": "text", "id": "faq_title", "label": "Questions heading", "default": "Common questions" }
+  ],
+  "blocks": [
+    { "type": "value", "name": "Value", "settings": [
+      { "type": "select", "id": "icon", "label": "Icon", "default": "star", "options": [
+        { "value": "star", "label": "Star" }, { "value": "truck", "label": "Truck" }, { "value": "shield", "label": "Shield" }, { "value": "returns", "label": "Returns" }
+      ] },
+      { "type": "text", "id": "title", "label": "Heading", "default": "Quality-checked parts" },
+      { "type": "textarea", "id": "text", "label": "Text", "default": "OEM-quality parts, checked before they leave the warehouse." }
+    ] },
+    { "type": "step", "name": "Order step", "settings": [
+      { "type": "text", "id": "title", "label": "Heading", "default": "You order online" },
+      { "type": "textarea", "id": "text", "label": "Text", "default": "Find your part by vehicle, category or part number and check out securely." }
+    ] },
+    { "type": "faq", "name": "Question", "settings": [
+      { "type": "text", "id": "q", "label": "Question", "default": "How much is delivery?" },
+      { "type": "richtext", "id": "a", "label": "Answer", "default": "<p>Delivery is free on orders over $200 anywhere in Australia.</p>" }
+    ] }
+  ],
+  "presets": [{ "name": "Metro about" }]
+}
+{% endschema %}

@@ -1,0 +1,501 @@
+{{ 'Custom_collection_list_template.css' | asset_url | stylesheet_tag }}
+
+<div class="shop-area pt-50 pb-100 section-padding-3" id="section-{{ section.id }}" data-section="collectionTemplate">
+  <div class="container{% if section.settings.full_width == 'full_width' %}-fluid{% endif %}">
+    <div class="row{% if section.settings.sidebar_handle == 'left_sidebar_handle' %} flex-row-reverse{% endif %}">
+      <div class="{% if section.settings.sidebar_handle == 'without_sidebar' %}col-lg-12{% else %}col-lg-9{% endif %}">
+
+        
+        
+        {%- if cart.attributes.pagination != blank -%}
+        {%- assign products_limit = cart.attributes.pagination -%}
+        {%- else -%}
+        {%- assign products_limit = section.settings.products_limit_handle -%}
+        {%- endif -%}
+        {%- paginate collection.products by products_limit -%}
+
+     
+        {%- if section.settings.tab_bar_enable or section.settings.short_by_enable or section.settings.showing_product_counter_enable -%}
+        <div class="shop-top-bar">          
+          {%- render 'collection-sorting', paginate: paginate, products_limit: products_limit -%}
+        </div>
+        {%- endif -%}
+        
+        
+        
+        <div class="shop-bottom-area mt-35 {% if settings.product_color_enable or setting.product_size_enable %} list_size_color{% endif %}">
+          <div class="tab-content jump">           
+            {%- for product in collection.products -%}
+            {% render 'product-list-item', product: product -%}
+            {%- endfor -%}
+          </div>
+          
+          <div class="pro-pagination-style text-center mt-30">
+            {%- render 'pagination', paginate: paginate -%}
+            
+            {% if section.settings.pagination_custom_style %}
+            <style>
+
+              #section-{{ section.id }} .pro-pagination-style ul li a,
+              #section-{{ section.id }} .pro-pagination-style ul li a.prev, 
+              #section-{{ section.id }} .pro-pagination-style ul li a.next {
+                color: {{ section.settings.pagination_color }};
+                background:{{ section.settings.pagination_bg_color }};
+                border-radius:{{section.settings.pagination_border_radius}}px
+              }
+              #section-{{ section.id }} .pro-pagination-style ul li a:hover,
+              #section-{{ section.id }} .pro-pagination-style ul li a.prev:hover, 
+              #section-{{ section.id }} .pro-pagination-style ul li a.next:hover {
+                color: {{ section.settings.pagination_hover_color }};
+                background: {{ section.settings.pagination_bg_hover_color }};
+              }
+
+              #section-{{ section.id }} .pro-pagination-style ul li a.active {
+                color: {{ section.settings.pagination_active_color }};
+                background: {{ section.settings.pagination_active_bg_color }};
+              }
+
+            </style>
+            {% endif %}
+            
+          </div>
+        </div>
+        {%- endpaginate -%}
+      </div>
+
+      {%- unless section.settings.sidebar_handle == 'without_sidebar' -%}
+        <div class="col-lg-3 sidebar__filter__responsive">
+          
+          <button type="button" class="theme-default-button sidebar-collapse-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 32 32" width="24"><g id="Layer_2" data-name="Layer 2"><path d="m28.552 6.184h-2.671a4.556 4.556 0 0 0 -8.659 0h-13.774a1.449 1.449 0 0 0 0 2.9h13.774a4.556 4.556 0 0 0 8.659 0h2.671a1.449 1.449 0 0 0 0-2.9zm-7 3.138a1.69 1.69 0 1 1 1.689-1.69 1.692 1.692 0 0 1 -1.689 1.69z"></path><path d="m28.552 14.552h-13.774a4.556 4.556 0 0 0 -8.659 0h-2.671a1.448 1.448 0 0 0 0 2.9h2.671a4.556 4.556 0 0 0 8.659 0h13.774a1.448 1.448 0 0 0 0-2.9zm-18.1 3.138a1.69 1.69 0 1 1 1.686-1.69 1.692 1.692 0 0 1 -1.69 1.69z"></path><path d="m28.552 22.919h-2.671a4.556 4.556 0 0 0 -8.659 0h-13.774a1.449 1.449 0 0 0 0 2.9h13.774a4.556 4.556 0 0 0 8.659 0h2.671a1.449 1.449 0 0 0 0-2.9zm-7 3.138a1.69 1.69 0 1 1 1.689-1.689 1.692 1.692 0 0 1 -1.689 1.689z"></path></g></svg>
+            Filter
+          </button>
+
+          <div class="sidebar-collapse-hide">
+            {%- render 'collection-sidebar' %}
+          </div>
+          
+        </div>
+      {%- endunless -%}
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+{% schema %}
+  {
+  	"name": "Collection List Template",
+  	"settings": [
+          {
+            "type": "radio",
+            "id": "full_width",
+            "label": "Page Width",
+            "options":[
+                  {
+                      "label": "Default",
+                      "value": "def"
+                  },
+                  {
+                      "label": "Full Wide",
+                      "value": "full_width"
+                  }
+              ],
+              "default": "def"
+          },
+		  {
+            "type": "range",
+            "id": "products_limit_handle",
+            "min": 6,
+            "max": 100,
+            "step": 1,
+            "label": "Limit",
+            "default": 12,
+			"info": "How many products are displayed on each page"
+          },
+          {
+              "type": "header",
+              "content": "Collection Sorting"
+          },
+		  {
+              "type": "checkbox",
+              "id": "tab_bar_enable",
+              "label": "Show Grid/List View",
+              "default": true
+          },
+          {
+            "type": "radio",
+            "id": "grid_list_pos",
+            "label": "Grid/List Position",
+            "options":[
+                  {
+                      "label": "Left",
+                      "value": "left_pos"
+                  },
+                  {
+                      "label": "Right",
+                      "value": "right_pos"
+                  }
+              ],
+              "default": "right_pos"
+          },
+		  {
+              "type": "checkbox",
+              "id": "showing_product_counter_enable",
+              "label": "Showing Product Counter",
+              "default": true
+          },
+		  {
+              "type": "text",
+              "id": "showing_title_handle",
+              "label": "Showing Title",
+              "default": "Showing | of | result"
+          },
+
+          {
+              "type": "checkbox",
+              "id": "short_by_enable",
+              "label": "Show Short By",
+              "default": true
+          },
+		  {
+              "type": "checkbox",
+              "id": "show_ajax_paginate",
+              "label": "Show Ajax Counter",
+              "default": true
+          },
+          {
+              "type": "header",
+              "content": "Collection Sidebar"
+          },
+          {
+              "type": "radio",
+              "id": "sidebar_handle",
+              "label": "Sidebar Position",
+              "options": [
+                  {
+                      "label": "Left Sidebar",
+                      "value": "left_sidebar_handle"
+                  },
+                  {
+                      "label": "Right Sidebar",
+                      "value": "right_sidebar_handle"
+                  },
+                  {
+                      "label": "Without Sidebar",
+                      "value": "without_sidebar"
+                  }
+              ],
+              "default": "left_sidebar_handle"
+          },
+          {
+              "type": "radio",
+              "id": "collection_filtering_handle",
+              "label": "Collection Filtering",
+              "options": [
+                  {
+                      "label": "Storefront Filtering",
+                      "value": "storefront_filtering"
+                  },
+                  {
+                      "label": "Tag Filtering",
+                      "value": "tag_filtering"
+                  }
+              ],
+              "default": "storefront_filtering",
+              "info": "Customize Storefront [filters](\/admin\/menus)"
+          },
+          {
+              "type": "header",
+              "content": "Pagination Custom Style"
+          },
+          {
+            "type": "checkbox",
+            "id": "pagination_custom_style",
+            "label": "Pagination Custom Style Enable",
+            "default": true
+          },
+          {
+            "type": "color",
+            "id": "pagination_color",
+            "label": "Pagination Color",
+            "default": "#fff"
+          },
+          {
+            "type": "color",
+            "id": "pagination_bg_color",
+            "label": "Pagination BG Color",
+            "default": "#e1e2e2"
+          },
+          {
+            "type": "color",
+            "id": "pagination_hover_color",
+            "label": "Hover Color",
+            "default": "#ff3535"
+          },
+          {
+            "type": "color",
+            "id": "pagination_bg_hover_color",
+            "label": "Hover BG Color",
+            "default": "#ff3535"
+          },
+          {
+            "type": "color",
+            "id": "pagination_active_color",
+            "label": "Pagination Active Color",
+            "default": "#fff"
+          },
+          {
+            "type": "color",
+            "id": "pagination_active_bg_color",
+            "label": "Pagination Active BG Color",
+            "default": "#f00"
+          },
+          {
+            "type":      "range",
+            "id":        "pagination_border_radius",
+            "min":       0,
+            "max":        50,
+            "step":       2,
+            "unit":       "px",
+            "label":     "Pagination Border Radius",
+            "default":   0
+          }
+      ],
+	  "blocks":[
+		{
+          "type": "search",
+          "name": "Search",
+		  "limit": 1,
+          "settings": [
+            {
+              "type": "text",
+              "id": "widget_title",
+              "label": "Title",
+              "default": "Search"
+            }
+          ]
+       },
+	   {
+          "type": "category",
+          "name": "Category",
+		  "limit": 1,
+          "settings": [
+            {
+              "type": "text",
+              "id": "widget_title",
+              "label": "Title",
+              "default": "Categories"
+            },
+            {
+              "type": "range",
+              "id": "categories_list_limit_hanlde",
+              "min": 5,
+              "max": 20,
+              "step": 1,
+              "label": "Limit",
+              "default": 5
+            }
+          ]
+       },
+	   {
+          "type": "vendor",
+          "name": "Vendor",
+		  "limit": 1,
+          "settings": [
+            {
+              "type": "text",
+              "id": "widget_title",
+              "label": "Title",
+              "default": "Vendors"
+            },
+            {
+              "type": "range",
+              "id": "vendors_list_limit_hanlde",
+              "min": 5,
+              "max": 20,
+              "step": 1,
+              "label": "Limit",
+              "default": 5
+            }
+          ]
+       },
+	   {
+          "type": "type",
+          "name": "Type",
+		  "limit": 1,
+          "settings": [
+            {
+              "type": "text",
+              "id": "widget_title",
+              "label": "Title",
+              "default": "Products Types"
+            },
+            {
+              "type": "range",
+              "id": "types_list_limit_hanlde",
+              "min": 5,
+              "max": 20,
+              "step": 1,
+              "label": "Limit",
+              "default": 5
+            }
+          ]
+       },
+	   {
+          "type": "color",
+          "name": "Color",
+		  "limit": 1,
+          "settings": [
+            {
+              "type": "text",
+              "id": "widget_title",
+              "label": "Title",
+              "default": "Color"
+            },
+            {
+              "type": "textarea",
+              "id": "color_picker",
+              "label": "Put your color name",
+              "default": "red, green, blue, yellow, white, gold, gray, magenta, maroon, navy, purple, violet, black, pink, orange, silver",
+              "info": "Ex: red, green, blue [More Color Name](https:\/\/www.w3schools.com\/colors\/colors_names.asp)"
+            },
+            {
+              "type": "range",
+              "id": "colors_list_limit_hanlde",
+              "min": 5,
+              "max": 20,
+              "step": 1,
+              "label": "Limit",
+              "default": 10
+            }
+          ]
+       },
+	   {
+          "type": "size",
+          "name": "Size",
+		  "limit": 1,
+          "settings": [
+            {
+              "type": "text",
+              "id": "widget_title",
+              "label": "Title",
+              "default": "Size"
+            },
+            {
+              "type": "textarea",
+              "id": "size_picker",
+              "label": "Put your size name",
+              "default": "s, m, l, xl, xxl",
+              "info": "Ex: s, m, l, xl, xxl"
+            },
+            {
+              "type": "range",
+              "id": "size_list_limit_hanlde",
+              "min": 5,
+              "max": 20,
+              "step": 1,
+              "label": "Limit",
+              "default": 5
+            }
+          ]
+       },
+	   {
+          "type": "tag",
+          "name": "Tag",
+		  "limit": 1,
+          "settings": [
+            {
+              "type": "text",
+              "id": "widget_title",
+              "label": "Title",
+              "default": "Tags"
+            },
+            {
+              "type": "range",
+              "id": "tags_list_limit_hanlde",
+              "min": 5,
+              "max": 20,
+              "step": 1,
+              "label": "Limit",
+              "default": 15
+            }
+          ]
+       },
+	   {
+          "type": "menu",
+          "name": "Menu",
+          "settings": [
+            {
+              "type": "text",
+              "id": "widget_title",
+              "label": "Title",
+              "default": "Custom Menu"
+            },
+			{
+              "type": "link_list",
+              "id": "menu_handle",
+              "label": "Menu",
+              "info": "Dropdown menu applicable"
+            }
+          ]
+       },
+	   {
+          "type": "banner",
+          "name": "Banner",
+          "settings": [
+            {
+              "type": "text",
+              "id": "widget_title",
+              "label": "Title",
+              "default": "Banner"
+            },
+            {
+              "type": "image_picker",
+              "id": "banner_image",
+              "label": "Image"
+            },
+			{
+              "type": "url",
+              "id": "banner_image_url",
+              "label": "URL"
+            }
+          ]
+       },
+	   {
+          "type": "recent-view",
+          "name": "Recent View Product",
+		  "limit": 1,
+          "settings": [
+            {
+              "type": "text",
+              "id": "recent_view_title",
+              "label": "Title",
+              "default": "Recently Viewed"
+            },
+            {
+              "type": "range",
+              "id": "product_limit",
+              "min": 1,
+              "max": 5,
+              "step": 1,
+              "label": "Product Limit",
+              "default": 3
+            },
+            {
+              "type": "range",
+              "id": "product_memory_limit",
+              "min": 4,
+              "max": 12,
+              "step": 2,
+              "label": "Product Memory Limit",
+              "default": 10
+            }
+          ]
+       }
+	]
+  }
+{% endschema %}

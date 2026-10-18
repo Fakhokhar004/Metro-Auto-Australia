@@ -1,0 +1,8 @@
+{
+  "layout": "metro",
+  "sections": {
+    "deals": { "type": "ma-deals", "settings": {} },
+    "main": { "type": "ma-collection", "settings": { "show_banner": false } }
+  },
+  "order": ["deals", "main"]
+}

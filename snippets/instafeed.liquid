@@ -1,0 +1,80 @@
+<div class="instagram-area" id="section-{{ section.id }}">
+  {% if section.settings.section_title != '' or section.settings.section_sub_title != '' %}
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+   
+    {% if section.settings.section_title != '' or section.settings.section_sub_title != '' %}
+    <div class="section-title {{ section.settings.title_align }} pb-60">
+      {% if section.settings.section_title != '' %}
+      <h2>{{ section.settings.section_title }}</h2>
+      {% endif %}
+
+      {% if section.settings.section_sub_title != '' %}
+      <p>{{ section.settings.section_sub_title }}</p>
+      {% endif %}
+    </div>
+    {% endif %}
+    
+    
+  </div>
+  {% endif %}
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+   
+    <div class="instagram-feed-thumb">
+      <div class="instagram-carousel owl-carousel" id="instafeed"></div>
+    </div>
+  </div>
+</div>
+{%- include 'section-style' -%}
+
+
+
+<script>
+  (function ($) {
+    "use strict";
+    jQuery(document).ready(function(){
+      var userFeed = new Instafeed({
+        get: 'user',
+        userId: '{{ section.settings.instafeed_user_id }}',
+        limit: '{{ section.settings.instafeed_limit }}',
+        accessToken: '{{ section.settings.instafeed_access_token }}',
+        resolution: '{{ section.settings.image_resolution }}',
+        template: '<div class="single-instagram-item"><a href="\{\{link\}\}"><img loading="lazy"  src="\{\{image\}\}"></a></div>',
+        after: {
+      	
+      	}
+      });
+      userFeed.run();
+    });
+
+  })(jQuery); 
+</script>
+<script>
+  jQuery(window).on('load', function () {
+      $('.instagram-carousel').owlCarousel({
+        loop: true,
+        {% if settings.rtl_enable %}
+        rtl: true,
+        {% endif %}
+        nav: false,
+        autoplay: false,
+        autoplayTimeout: 5000,
+        item: 5,
+        responsive: {
+          0: {
+            items: 1,
+            autoplay: true,
+          },
+          576: {
+            items: 3
+          },
+          768: {
+            items: 4
+          },
+          1000: {
+            items: 5
+          }
+        }
+      })        
+  })
+</script>
+<script src="{{ 'instafeed.min.js' | asset_url }}"></script>

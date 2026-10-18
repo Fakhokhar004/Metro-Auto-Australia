@@ -1,0 +1,41 @@
+<div class="col-lg-7 col-md-12">
+  <div class="product-details-img product__media__inner">
+    <div class="row">
+      {%- for image in product.images limit: 4 -%}
+      <div class="{% if product.images.size == 1 %}col-lg-12{% else %}col-lg-6 col-sm-6 col-12{% endif %}">
+        <div class="single-img-gallery mb-30 zoompro-span">
+          <img  class="{% if section.settings.product_zoom_enable %}product-zoom {% endif %}product_variant_image" 
+               data-image-id="{{ image.id }}" alt="{{ image.src.alt | escape }}" 
+               data-zoom-image="{{ image.src | img_url: '1024x1024' }}" 
+               src="{{ image.src | img_url: '1024x1024' }}">
+
+          {%- if settings.show_product_badge and forloop.index == 1 -%}
+       		{%- render 'product-badge', product: product, on_sale: on_sale, sold_out: sold_out -%}
+          {%- endif -%}
+
+          {% if section.settings.show_video and product.description contains '[product_video]' and forloop.index == 1 %}
+          {% assign product_video_first = product.description | split:'[/product_video]' | first %}
+          {% assign product_video_final = product_video_first | split:'[product_video]' | last %}
+          <div class="product-video">
+            <a class="video-popup magni_video_pop" href="https://www.youtube.com/watch?v={{ product_video_final }}">          
+              {% if section.settings.show_video_icon %}
+              <i class="sli sli-control-play"></i>{% endif %}
+
+              {% if section.settings.video_btn != '' %}
+              {{ section.settings.video_btn }}{% endif %}
+            </a>
+          </div>
+          {% endif %}
+          
+        </div>
+      </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<div class="col-lg-5 col-md-12">
+  <div class="product-details-content">
+    {% render 'single-product-description', product: product, variant: variant, form: form, current_variant: current_variant, on_sale: on_sale -%}
+  </div>
+</div>

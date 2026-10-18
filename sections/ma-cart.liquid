@@ -1,0 +1,248 @@
+{%- comment -%}
+  Metro Auto cart page. Design reference: _design/metro-auto-design/pages/Cart.dc.html
+  Lines, quantity and remove work without JavaScript (/cart/change links); with it, the section re-renders in place
+  through the Section Rendering API. Discount codes go through /cart/update.js. Recently viewed: sections/ma-recent.
+{%- endcomment -%}
+{{ 'ma-listing.css' | asset_url | stylesheet_tag }}
+{{ 'ma-pages.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign free_from = section.settings.free_from | times: 100
+  assign left_for_free = free_from | minus: cart.total_price
+  assign first_item = cart.items | first
+-%}
+
+<div class="ma-cartpage" data-ma-cart data-section="{{ section.id }}">
+  <section class="ma-sbanner">
+    <div class="ma-wrap ma-sbanner__in">
+      <div class="ma-sbanner__copy">
+        <nav class="ma-sbanner__crumb" aria-label="Breadcrumb">
+          <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span><span aria-current="page">Cart</span>
+        </nav>
+        <h1 class="ma-cartpage__h1">{{ section.settings.title | escape }}</h1>
+      </div>
+      <a class="ma-cartpage__cont" href="{{ section.settings.continue_url | default: routes.collections_url }}">Continue shopping</a>
+    </div>
+  </section>
+
+  <div class="ma-wrap ma-cartpage__body" data-ma-cart-body data-count="{{ cart.item_count }}" data-total="{{ cart.total_price }}">
+    <div class="ma-cartpage__grid">
+      <div class="ma-cartpage__lines">
+        {%- if cart.item_count > 0 -%}
+          <div class="ma-cartpage__head">
+            <span>{{ cart.item_count }} {% if cart.item_count == 1 %}item{% else %}items{% endif %}</span><span>Total</span>
+          </div>
+          {%- for item in cart.items -%}
+            {%- assign img_alt = item.image.alt | default: item.product.title -%}
+            <div class="ma-cline" data-line="{{ forloop.index }}">
+              <a class="ma-cline__img" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+                {%- if item.image -%}
+                  {{ item.image | image_url: width: 200 | image_tag: alt: img_alt, widths: '100,200', sizes: '88px', loading: 'lazy' }}
+                {%- endif -%}
+              </a>
+              <div class="ma-cline__info">
+                <span class="ma-cline__meta">{{ item.vendor | escape }}{% if item.sku != blank %}, part {{ item.sku | escape }}{% endif %}</span>
+                <a class="ma-cline__title" href="{{ item.url }}">{{ item.product.title | escape }}</a>
+                {%- unless item.product.has_only_default_variant -%}<span class="ma-cline__variant">{{ item.variant.title | escape }}</span>{%- endunless -%}
+                <span class="ma-cline__each">
+                  {%- if item.original_price > item.final_price -%}<s>{{ item.original_price | money }}</s> {% endif -%}
+                  {{ item.final_price | money }} each
+                </span>
+                {%- for d in item.line_level_discount_allocations -%}<span class="ma-cline__disc">{{ d.discount_application.title | escape }} (−{{ d.amount | money }})</span>{%- endfor -%}
+                <a class="ma-cline__remove" href="{{ routes.cart_change_url }}?line={{ forloop.index }}&amp;quantity=0" data-ma-cart-qty="0" aria-label="Remove {{ item.product.title | escape }}">Remove</a>
+              </div>
+              <div class="ma-cline__qty">
+                <a href="{{ routes.cart_change_url }}?line={{ forloop.index }}&amp;quantity={{ item.quantity | minus: 1 }}" data-ma-cart-qty="{{ item.quantity | minus: 1 }}" aria-label="Decrease quantity of {{ item.product.title | escape }}">−</a>
+                <span aria-live="polite">{{ item.quantity }}</span>
+                <a href="{{ routes.cart_change_url }}?line={{ forloop.index }}&amp;quantity={{ item.quantity | plus: 1 }}" data-ma-cart-qty="{{ item.quantity | plus: 1 }}" aria-label="Increase quantity of {{ item.product.title | escape }}">+</a>
+              </div>
+              <span class="ma-cline__total">{{ item.final_line_price | money }}</span>
+            </div>
+          {%- endfor -%}
+        {%- else -%}
+          <div class="ma-cartpage__empty">
+            <h2>Your cart is empty</h2>
+            <p>Find parts that fit your vehicle and add them here.</p>
+            <div class="ma-cartpage__emptybtns">
+              <a class="ma-button ma-button--red" href="{{ routes.search_url }}" data-ma-cart-fit>Shop parts for my vehicle</a>
+              <a class="ma-button ma-button--dark" href="{{ routes.collections_url }}">Browse categories</a>
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+
+      <aside class="ma-csum" aria-label="Order summary">
+        <h2 class="ma-csum__h">Order summary</h2>
+        <div class="ma-csum__body">
+          {%- if section.settings.promo_code != blank -%}
+            <div class="ma-csum__promo">First order? Use <strong>{{ section.settings.promo_code | escape }}</strong> for {{ section.settings.promo_text | escape }}.</div>
+          {%- endif -%}
+          <form class="ma-csum__code" action="{{ routes.cart_url }}" method="post" data-ma-cart-discount>
+            <label for="ma-code-{{ section.id }}">Discount code</label>
+            <div class="ma-csum__coderow">
+              <input id="ma-code-{{ section.id }}" type="text" name="discount" placeholder="{{ section.settings.promo_code | default: 'Code' | escape }}" autocomplete="off" autocapitalize="characters" spellcheck="false">
+              <button type="submit">Apply</button>
+            </div>
+            {%- for code in cart.discount_codes -%}
+              <span class="ma-csum__msg{% unless code.applicable %} is-bad{% endunless %}">
+                {%- if code.applicable -%}{{ code.code | escape }} applied.{%- else -%}{{ code.code | escape }} can't be used with this cart.{%- endif -%}
+                <button type="button" class="ma-csum__x" data-ma-cart-uncode aria-label="Remove code {{ code.code | escape }}">Remove</button>
+              </span>
+            {%- endfor -%}
+            <span class="ma-csum__msg is-bad" data-ma-cart-codemsg hidden></span>
+          </form>
+          <dl class="ma-csum__rows">
+            <div><dt>Subtotal</dt><dd>{{ cart.items_subtotal_price | money }}</dd></div>
+            {%- for d in cart.cart_level_discount_applications -%}
+              <div class="is-disc"><dt>{{ d.title | escape }}</dt><dd>−{{ d.total_allocated_amount | money }}</dd></div>
+            {%- endfor -%}
+            <div><dt>Delivery</dt><dd>{% if cart.total_price >= free_from and cart.item_count > 0 %}Free{% else %}Calculated at checkout{% endif %}</dd></div>
+          </dl>
+          {%- if cart.item_count > 0 and left_for_free > 0 -%}
+            <p class="ma-csum__free">Add <strong>{{ left_for_free | money }}</strong> more for free delivery.</p>
+          {%- endif -%}
+          <div class="ma-csum__total">
+            <span>Total <small>including GST</small></span>
+            <strong>{{ cart.total_price | money }}</strong>
+          </div>
+          {%- if cart.item_count > 0 -%}
+            <form action="{{ routes.cart_url }}" method="post">
+              <button type="submit" name="checkout" class="ma-csum__checkout">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Secure checkout
+              </button>
+            </form>
+          {%- endif -%}
+          {%- if section.settings.payment_badges != blank -%}
+            <div class="ma-csum__pay" aria-label="Payment methods">
+              {%- assign badges = section.settings.payment_badges | split: ',' -%}
+              {%- for b in badges -%}<span>{{ b | strip | escape }}</span>{%- endfor -%}
+            </div>
+          {%- endif -%}
+          <ul class="ma-csum__points">
+            <li>Same-day dispatch when you order before 2PM</li>
+            <li>30-day returns on unused parts</li>
+            <li>Manufacturer warranty on every part</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    {%- if first_item and section.settings.show_pairs -%}
+      <section class="ma-cartpage__pairs" data-ma-cart-pairs data-url="{{ routes.product_recommendations_url }}?product_id={{ first_item.product_id }}&limit=8&section_id=ma-card-results">
+        <h2 class="ma-recent__title">{{ section.settings.pairs_title | escape }}</h2>
+        <div class="ma-pgrid ma-recent__grid" data-ma-cart-pairs-grid></div>
+      </section>
+    {%- endif -%}
+  </div>
+</div>
+
+<script>
+  (function () {
+    var root = document.querySelector('[data-ma-cart]');
+    if (!root || root._ma) return;
+    root._ma = true;
+    var sid = root.getAttribute('data-section');
+    var busy = false;
+
+    function swap(sections, count) {
+      var html = sections && sections[sid];
+      if (!html) { window.location.reload(); return; }
+      var fresh = new DOMParser().parseFromString(html, 'text/html').querySelector('[data-ma-cart-body]');
+      var body = root.querySelector('[data-ma-cart-body]');
+      if (fresh && body) { body.replaceWith(fresh); pairs(); fitLink(); }
+      if (count != null) Array.prototype.forEach.call(document.querySelectorAll('[data-ma-cart-count]'), function (el) { el.textContent = count; });
+    }
+    function post(url, data) {
+      busy = true;
+      root.classList.add('is-busy');
+      data.sections = [sid];
+      data.sections_url = window.location.pathname;
+      return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) })
+        .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw j; return j; }); })
+        .finally(function () { busy = false; root.classList.remove('is-busy'); });
+    }
+
+    root.addEventListener('click', function (e) {
+      var q = e.target.closest('[data-ma-cart-qty]');
+      if (q) {
+        e.preventDefault();
+        if (busy) return;
+        var line = q.closest('[data-line]');
+        post('/cart/change.js', { line: +line.getAttribute('data-line'), quantity: +q.getAttribute('data-ma-cart-qty') })
+          .then(function (j) { swap(j.sections, j.item_count); })
+          .catch(function (err) {
+            var msg = (err && (err.description || err.message)) || 'That change didn’t work. Please try again.';
+            alert(msg);
+          });
+        return;
+      }
+      if (e.target.closest('[data-ma-cart-uncode]')) {
+        e.preventDefault();
+        post('/cart/update.js', { discount: '' }).then(function (j) { swap(j.sections, j.item_count); }).catch(function () { window.location.reload(); });
+      }
+    });
+
+    root.addEventListener('submit', function (e) {
+      var f = e.target.closest('[data-ma-cart-discount]');
+      if (!f) return;
+      e.preventDefault();
+      var code = f.querySelector('input[name="discount"]').value.trim();
+      var msg = f.querySelector('[data-ma-cart-codemsg]');
+      if (!code) { msg.textContent = 'Enter a discount code.'; msg.hidden = false; return; }
+      /* keep codes already applied and add this one */
+      var current = Array.prototype.map.call(root.querySelectorAll('[data-ma-cart-uncode]'), function (b) { return b.getAttribute('aria-label').replace('Remove code ', ''); });
+      if (current.indexOf(code) < 0) current.push(code);
+      post('/cart/update.js', { discount: current.join(',') }).then(function (j) { swap(j.sections, j.item_count); })
+        .catch(function () { msg.textContent = 'That code isn’t valid. Check it and try again.'; msg.hidden = false; });
+    });
+
+    /* "Often added with these": recommendations for the first item, minus what's already in the cart */
+    function pairs() {
+      var box = root.querySelector('[data-ma-cart-pairs]');
+      if (!box || box._ma) return;
+      box._ma = true;
+      var inCart = Array.prototype.map.call(root.querySelectorAll('.ma-cline__title'), function (a) { return a.getAttribute('href').split('?')[0]; });
+      fetch(box.getAttribute('data-url')).then(function (r) { return r.text(); }).then(function (html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var grid = box.querySelector('[data-ma-cart-pairs-grid]');
+        var cards = Array.prototype.filter.call(doc.querySelectorAll('[data-ma-card]'), function (c) {
+          var a = c.querySelector('a[href*="/products/"]');
+          return !(a && inCart.indexOf(a.getAttribute('href').split('?')[0]) > -1);
+        }).slice(0, 4);
+        if (!cards.length) { box.hidden = true; return; }
+        cards.forEach(function (c) { grid.appendChild(document.importNode(c, true)); });
+        if (window.MA && MA.paintWishlist) MA.paintWishlist(grid);
+      }).catch(function () { box.hidden = true; });
+    }
+    /* empty cart: "Shop parts for my vehicle" goes to the garage vehicle's parts */
+    function fitLink() {
+      var a = root.querySelector('[data-ma-cart-fit]');
+      var v = window.MA && MA.garage && MA.garage.load().vehicle;
+      if (a && v && MA.fitUrl) a.href = MA.fitUrl(v);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { pairs(); fitLink(); }); else { pairs(); fitLink(); }
+    document.addEventListener('ma:cart', function (e) {
+      /* added from a card on this page: refresh the lines when the cart differs from what's shown */
+      var c = e.detail || {}, body = root.querySelector('[data-ma-cart-body]');
+      if (!body || (String(c.item_count) === body.getAttribute('data-count') && String(c.total_price) === body.getAttribute('data-total'))) return;
+      fetch(window.location.pathname + '?section_id=' + sid).then(function (r) { return r.text(); }).then(function (html) { var o = {}; o[sid] = html; swap(o); });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Metro cart",
+  "tag": "section",
+  "class": "ma-body",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Heading", "default": "Your cart" },
+    { "type": "url", "id": "continue_url", "label": "Continue shopping link", "info": "Defaults to All categories" },
+    { "type": "text", "id": "promo_code", "label": "Promo code", "default": "METRO15" },
+    { "type": "text", "id": "promo_text", "label": "Promo wording", "default": "15% off" },
+    { "type": "range", "id": "free_from", "label": "Free delivery from", "min": 0, "max": 500, "step": 10, "unit": "$", "default": 200 },
+    { "type": "text", "id": "payment_badges", "label": "Payment badges", "info": "Comma separated", "default": "VISA, Mastercard, PayPal, Afterpay" },
+    { "type": "checkbox", "id": "show_pairs", "label": "Show \"Often added with these\"", "default": true },
+    { "type": "text", "id": "pairs_title", "label": "Heading for those", "default": "Often added with these" }
+  ]
+}
+{% endschema %}

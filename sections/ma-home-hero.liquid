@@ -1,0 +1,208 @@
+{%- comment -%}
+  Home top area. Design reference: _design/metro-auto-design/pages/Main.dc.html
+  Left sidebar (Home only) + hero, trust cards and the vehicle selector band.
+{%- endcomment -%}
+{%- liquid
+  assign hero_cards = section.blocks | where: 'type', 'hero_card'
+  assign trust_cards = section.blocks | where: 'type', 'trust'
+-%}
+<section class="ma-home-top">
+  <div class="ma-wrap">
+    <div class="ma-top{% unless section.settings.show_sidebar %} ma-top--no-side{% endunless %}">
+      {%- if section.settings.show_sidebar -%}
+        <div class="ma-top__side">
+          {%- render 'ma-sidebar',
+            section_id: section.id,
+            menu: section.settings.sidebar_menu,
+            brands: section.settings.sidebar_brands,
+            price_max: section.settings.price_max,
+            apply_url: section.settings.filter_url
+          -%}
+        </div>
+      {%- endif -%}
+
+      <div class="ma-top__main">
+        <div class="ma-hero">
+          <div class="ma-hero__copy">
+            {%- if section.settings.pill != blank -%}
+              <span class="ma-hero__pill">
+                {%- render 'ma-icon', name: 'pin', size: 14, stroke: '#E1251B', width: 2.2 -%}
+                <span class="ma-hero__pill-long">{{ section.settings.pill | escape }}</span>
+                <span class="ma-hero__pill-short">{{ section.settings.pill_short | default: section.settings.pill | escape }}</span>
+              </span>
+            {%- endif -%}
+            <h1 class="ma-hero__title">
+              {{- section.settings.title_1 | escape -}}
+              {%- if section.settings.title_highlight != blank -%}<br><em>{{ section.settings.title_highlight | escape }}</em>{%- endif -%}
+              {%- if section.settings.title_2 != blank -%}<br>{{ section.settings.title_2 | escape }}{%- endif -%}
+            </h1>
+            {%- if section.settings.text != blank -%}
+              <div class="ma-hero__text">{{ section.settings.text }}</div>
+            {%- endif -%}
+            <div class="ma-hero__ctas">
+              {%- if section.settings.btn1_label != blank -%}
+                <a class="ma-button ma-button--red" href="{{ section.settings.btn1_url | default: '/pages/shop-by-vehicle' }}">{{ section.settings.btn1_label | escape }}</a>
+              {%- endif -%}
+              {%- if section.settings.btn2_label != blank -%}
+                <a class="ma-button ma-button--ghost" href="{{ section.settings.btn2_url | default: routes.collections_url }}">{{ section.settings.btn2_label | escape }}</a>
+              {%- endif -%}
+            </div>
+          </div>
+          <div class="ma-hero__art">
+            {%- if section.settings.image != blank -%}
+              {{- section.settings.image | image_url: width: 1200 | image_tag: class: 'ma-hero__img', widths: '600,900,1200', sizes: '(min-width: 1100px) 480px, 45vw', loading: 'eager', fetchpriority: 'high', alt: '' -}}
+            {%- else -%}
+              <svg width="380" height="380" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+                <circle cx="100" cy="100" r="88" fill="#2A2C31"/>
+                <circle cx="100" cy="100" r="88" stroke="#4A4D55" stroke-width="2"/>
+                <circle cx="100" cy="100" r="76" stroke="#3A3D44" stroke-width="1.5" stroke-dasharray="2 6"/>
+                <circle cx="100" cy="100" r="36" fill="#3A3D44"/>
+                <circle cx="100" cy="100" r="14" fill="#121316"/>
+                <circle cx="100" cy="72" r="4.5" fill="#121316"/><circle cx="127" cy="91" r="4.5" fill="#121316"/><circle cx="117" cy="123" r="4.5" fill="#121316"/><circle cx="83" cy="123" r="4.5" fill="#121316"/><circle cx="73" cy="91" r="4.5" fill="#121316"/>
+                <path d="M30 60 C18 84 18 116 30 140 L52 130 C44 112 44 88 52 70 Z" fill="#E1251B"/>
+                <rect x="24" y="92" width="12" height="16" rx="3" fill="#B71C14"/>
+              </svg>
+            {%- endif -%}
+            {%- if hero_cards.size > 0 -%}
+              <div class="ma-hero__cards">
+                {%- for block in hero_cards -%}
+                  <div class="ma-hero-card" {{ block.shopify_attributes }}>
+                    <span class="ma-hero-card__icon">{%- render 'ma-icon', name: block.settings.icon, size: 16, width: 2 -%}</span>
+                    <span class="ma-hero-card__text"><strong>{{ block.settings.title | escape }}</strong><span>{{ block.settings.text | escape }}</span></span>
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+
+        {%- if trust_cards.size > 0 -%}
+          <div class="ma-trust">
+            {%- for block in trust_cards -%}
+              <div class="ma-trust__card" {{ block.shopify_attributes }}>
+                <span class="ma-trust__icon">{%- render 'ma-icon', name: block.settings.icon, size: 22, stroke: '#FFFFFF' -%}</span>
+                <span class="ma-trust__text"><strong>{{ block.settings.title | escape }}</strong><span>{{ block.settings.text | escape }}</span></span>
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.show_finder -%}
+          <div class="ma-finder-band" data-ma-finder>
+            <div class="ma-finder-band__head">
+              <span class="ma-eyebrow ma-eyebrow--soft">{{ section.settings.finder_eyebrow | escape }}</span>
+              <h2 class="ma-h2 ma-finder-band__title">{{ section.settings.finder_title | escape }}</h2>
+              <p class="ma-finder-band__text">{{ section.settings.finder_text | escape }}</p>
+            </div>
+
+            <div class="ma-finder" data-ma-finder-mode="vehicle">
+              <label class="ma-finder__field">Make
+                <select class="ma-finder__control" data-ma-v="make"><option value="">Select make</option></select>
+              </label>
+              <label class="ma-finder__field">Model
+                <select class="ma-finder__control" data-ma-v="model" disabled><option value="">Select model</option></select>
+              </label>
+              <label class="ma-finder__field">Year
+                <select class="ma-finder__control" data-ma-v="year" disabled><option value="">Select year</option></select>
+              </label>
+              <a href="{{ routes.all_products_collection_url }}" class="ma-button ma-button--red" data-ma-finder-go>
+                {%- render 'ma-icon', name: 'search', size: 18, width: 2.4 -%}Find parts
+              </a>
+            </div>
+
+            <form class="ma-finder__part" action="{{ routes.search_url }}" method="get" role="search" data-ma-finder-mode="part" hidden>
+              <input type="hidden" name="type" value="product">
+              <label class="ma-finder__field">Part, SKU or OEM number
+                <input class="ma-finder__control" type="search" name="q" placeholder="For example SP2174 or 030-612" autocomplete="off">
+              </label>
+              <button type="submit" class="ma-button ma-button--red">Search</button>
+            </form>
+
+            <div class="ma-finder__garage">
+              <span data-ma-finder-garage-wrap hidden style="display: contents">
+                <span class="ma-finder__garage-label">Your garage:</span>
+                <span data-ma-finder-garage style="display: contents"></span>
+              </span>
+              <button type="button" class="ma-finder__toggle" data-ma-finder-toggle
+                data-label-part="Search by part number instead"
+                data-label-vehicle="Search by vehicle instead">Search by part number instead</button>
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Metro hero",
+  "tag": "div",
+  "settings": [
+    { "type": "header", "content": "Sidebar" },
+    { "type": "checkbox", "id": "show_sidebar", "label": "Show sidebar", "default": true },
+    { "type": "link_list", "id": "sidebar_menu", "label": "Category menu", "info": "Empty uses the design categories." },
+    { "type": "text", "id": "sidebar_brands", "label": "Top brands", "info": "Comma separated vendor names, used for the brand filter.", "default": "CRC, HiQ, Goss, Penrite, Nulon, Hi-Tec, Caltex" },
+    { "type": "range", "id": "price_max", "label": "Price slider maximum", "min": 100, "max": 2000, "step": 50, "unit": "$", "default": 700 },
+    { "type": "url", "id": "filter_url", "label": "Filter results page", "info": "Collection that receives the price and brand filters. Defaults to all products." },
+    { "type": "header", "content": "Hero" },
+    { "type": "text", "id": "pill", "label": "Badge", "default": "Australian-owned auto parts store" },
+    { "type": "text", "id": "pill_short", "label": "Badge on phones", "default": "Aus-owned" },
+    { "type": "text", "id": "title_1", "label": "Heading line 1", "default": "Find the right" },
+    { "type": "text", "id": "title_highlight", "label": "Heading line 2 (red)", "default": "auto parts" },
+    { "type": "text", "id": "title_2", "label": "Heading line 3", "default": "for your ride" },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Quality parts, fast shipping Australia-wide. Backed by the manufacturer's warranty and our fitment guarantee.</p>" },
+    { "type": "text", "id": "btn1_label", "label": "Button 1 label", "default": "Shop by vehicle" },
+    { "type": "url", "id": "btn1_url", "label": "Button 1 link", "info": "Defaults to /pages/shop-by-vehicle" },
+    { "type": "text", "id": "btn2_label", "label": "Button 2 label", "default": "Browse categories" },
+    { "type": "url", "id": "btn2_url", "label": "Button 2 link", "default": "/collections" },
+    { "type": "image_picker", "id": "image", "label": "Hero image", "info": "Optional. Replaces the brake rotor illustration on the right." },
+    { "type": "header", "content": "Vehicle selector" },
+    { "type": "checkbox", "id": "show_finder", "label": "Show vehicle selector", "default": true },
+    { "type": "text", "id": "finder_eyebrow", "label": "Eyebrow", "default": "Vehicle selector" },
+    { "type": "text", "id": "finder_title", "label": "Heading", "default": "Enter your vehicle to find parts" },
+    { "type": "text", "id": "finder_text", "label": "Text", "default": "We'll show only the parts that fit, and save your vehicle to your garage." }
+  ],
+  "blocks": [
+    {
+      "type": "hero_card",
+      "name": "Hero card",
+      "limit": 3,
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Icon", "default": "truck", "options": [
+          { "value": "truck", "label": "Truck" }, { "value": "shield", "label": "Shield" }, { "value": "shield-check", "label": "Shield with tick" },
+          { "value": "returns", "label": "Returns" }, { "value": "clock", "label": "Clock" }, { "value": "pin", "label": "Location" }
+        ] },
+        { "type": "text", "id": "title", "label": "Title", "default": "Fast delivery" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Same day before 2PM" }
+      ]
+    },
+    {
+      "type": "trust",
+      "name": "Trust card",
+      "limit": 3,
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Icon", "default": "pin", "options": [
+          { "value": "truck", "label": "Truck" }, { "value": "shield", "label": "Shield" }, { "value": "shield-check", "label": "Shield with tick" },
+          { "value": "returns", "label": "Returns" }, { "value": "clock", "label": "Clock" }, { "value": "pin", "label": "Location" }
+        ] },
+        { "type": "text", "id": "title", "label": "Title", "default": "Australian owned" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Melbourne based, shipping Australia-wide" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Metro hero",
+      "blocks": [
+        { "type": "hero_card", "settings": { "icon": "truck", "title": "Fast delivery", "text": "Same day before 2PM" } },
+        { "type": "hero_card", "settings": { "icon": "shield", "title": "Manufacturer warranty", "text": "On every part we sell" } },
+        { "type": "hero_card", "settings": { "icon": "returns", "title": "Easy returns", "text": "30 days on unused parts" } },
+        { "type": "trust", "settings": { "icon": "pin", "title": "Australian owned", "text": "Melbourne based, shipping Australia-wide" } },
+        { "type": "trust", "settings": { "icon": "shield", "title": "Manufacturer warranty", "text": "Bought direct from the makers" } },
+        { "type": "trust", "settings": { "icon": "shield-check", "title": "Fitment guarantee", "text": "The right part for your make and model" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,136 @@
+{%- comment -%}
+  Filter panel (Shopify Search & Discovery) for listing pages: collection, search, and later brands and vehicles.
+  Below 900px it sits behind the "Filters" button. Behaviour: assets/ma-listing.js.
+  Params: filters, action (form URL), clear_url, section_id, open_count, count (results),
+          q (search query, kept as hidden fields), fit (true to keep vehicle mode), keep_q (brand page: vendor name),
+          tag_lines (search: "Label|tag" lines), tag_base (search URL ending in q=), active_tag, tag_mode
+{%- endcomment -%}
+<aside class="ma-filters" id="ma-filters-{{ section_id }}" aria-label="Filters" data-ma-filters>
+  <form action="{{ action }}" method="get" id="ma-filter-form-{{ section_id }}" data-ma-filter-form>
+    {%- comment -%} Search: keep the query, type and vehicle mode when filters change {%- endcomment -%}
+    {%- if q != blank -%}
+      <input type="hidden" name="q" value="{{ q | escape }}">
+      <input type="hidden" name="type" value="product">
+      <input type="hidden" name="options[prefix]" value="last">
+    {%- endif -%}
+    {%- if fit -%}<input type="hidden" name="fit" value="1">{%- endif -%}
+    {%- comment -%} Brand (vendor) page: keep ?q=<Brand> {%- endcomment -%}
+    {%- if keep_q != blank -%}<input type="hidden" name="q" value="{{ keep_q | escape }}">{%- endif -%}
+    <div class="ma-filters__head">
+      <h2 class="ma-filters__title">Filters</h2>
+      <a class="ma-filters__clear" href="{{ clear_url }}">Clear all</a>
+    </div>
+
+    {%- if filters.size == 0 -%}
+      {%- if request.design_mode -%}
+        <p class="ma-filters__empty">No filters yet. Add Availability, Price, Brand and Product type in the <strong>Search &amp; Discovery</strong> app → Filters.</p>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- for filter in filters -%}
+      {%- liquid
+        assign sel = 0
+        if filter.type == 'price_range'
+          if filter.min_value.value != nil
+            assign sel = sel | plus: 1
+          endif
+          if filter.max_value.value != nil
+            assign sel = sel | plus: 1
+          endif
+        else
+          assign sel = filter.active_values.size
+        endif
+        assign open = true
+        if forloop.index > open_count and sel == 0
+          assign open = false
+        endif
+      -%}
+      <div class="ma-facet{% if open %} is-open{% endif %}" data-ma-facet>
+        <button type="button" class="ma-facet__head" aria-expanded="{{ open }}" data-ma-facet-toggle>
+          <span>{{ filter.label | escape }}{% if sel > 0 %}<span class="ma-facet__count">{{ sel }}</span>{% endif %}</span>
+          <span class="ma-facet__sign ma-pm" aria-hidden="true"></span>
+        </button>
+        <div class="ma-facet__body">
+          {%- case filter.type -%}
+            {%- when 'price_range' -%}
+              <p class="ma-facet__note">The highest price is {{ filter.range_max | money }}</p>
+              <div class="ma-price">
+                <label class="ma-price__field"><span aria-hidden="true">$</span>
+                  <input type="number" inputmode="decimal" min="0" step="0.01" placeholder="From" aria-label="Price from"
+                    name="{{ filter.min_value.param_name }}"
+                    {% if filter.min_value.value %}value="{{ filter.min_value.value | money_without_currency | remove: ',' }}"{% endif %}
+                    data-ma-price-input>
+                </label>
+                <span aria-hidden="true">to</span>
+                <label class="ma-price__field"><span aria-hidden="true">$</span>
+                  <input type="number" inputmode="decimal" min="0" step="0.01" placeholder="To" aria-label="Price to"
+                    name="{{ filter.max_value.param_name }}"
+                    {% if filter.max_value.value %}value="{{ filter.max_value.value | money_without_currency | remove: ',' }}"{% endif %}
+                    data-ma-price-input>
+                </label>
+              </div>
+            {%- else -%}
+              {%- for value in filter.values -%}
+                {%- assign off = false -%}
+                {%- if value.count == 0 and value.active == false -%}{%- assign off = true -%}{%- endif -%}
+                <label class="ma-check{% if off %} is-off{% endif %}"{% if forloop.index > 8 %} data-ma-more hidden{% endif %}>
+                  <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}"{% if value.active %} checked{% endif %}{% if off %} disabled{% endif %} data-ma-auto>
+                  <span class="ma-check__label">{{ value.label | escape }}</span>
+                  <span class="ma-check__n">({{ value.count }})</span>
+                </label>
+              {%- endfor -%}
+              {%- if filter.values.size > 8 -%}
+                <button type="button" class="ma-facet__more" data-ma-more-toggle>Show all {{ filter.values.size }}</button>
+              {%- endif -%}
+          {%- endcase -%}
+        </div>
+      </div>
+    {%- endfor -%}
+
+    {%- comment -%} Search only: tag links. A tag replaces the query and lists every product with that tag. {%- endcomment -%}
+    {%- if tag_lines.size > 0 -%}
+      {%- liquid
+        assign tag_on = false
+        if tag_mode == 'tag'
+          assign tag_on = true
+        endif
+        assign tag_n = 0
+      -%}
+      <div class="ma-facet is-open" data-ma-facet>
+        <button type="button" class="ma-facet__head" aria-expanded="true" data-ma-facet-toggle>
+          <span>Tags{% if tag_on %}<span class="ma-facet__count">1</span>{% endif %}</span>
+          <span class="ma-facet__sign ma-pm" aria-hidden="true"></span>
+        </button>
+        <div class="ma-facet__body">
+          {%- for line in tag_lines -%}
+            {%- liquid
+              assign line = line | strip
+              if line == blank
+                continue
+              endif
+              assign tag_n = tag_n | plus: 1
+              assign parts = line | split: '|'
+              assign t_label = parts[0] | strip
+              assign t_tag = parts[1] | default: parts[0] | strip
+              assign t_q = 'tag:"' | append: t_tag | append: '"' | url_encode
+              assign t_active = false
+              if tag_on and active_tag == t_tag
+                assign t_active = true
+              endif
+            -%}
+            <a class="ma-tagopt{% if t_active %} is-on{% endif %}" href="{% if t_active %}{{ tag_base }}*{% else %}{{ tag_base }}{{ t_q }}{% endif %}" data-ma-tag-link{% if t_active %} aria-current="true"{% endif %}{% if tag_n > 8 and t_active == false %} data-ma-more hidden{% endif %}>
+              <span class="ma-tagopt__box" aria-hidden="true"></span>{{ t_label | escape }}
+            </a>
+          {%- endfor -%}
+          {%- if tag_n > 8 -%}
+            <button type="button" class="ma-facet__more" data-ma-more-toggle>Show all {{ tag_n }}</button>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    <div class="ma-filters__foot">
+      <button type="submit" class="ma-filters__show" data-ma-filters-close>Show {{ count }} result{% if count != 1 %}s{% endif %}</button>
+    </div>
+  </form>
+</aside>

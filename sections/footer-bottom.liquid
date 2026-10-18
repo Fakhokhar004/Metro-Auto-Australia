@@ -1,0 +1,761 @@
+{% render 'footer_bottom' %}
+
+
+
+{% schema %}
+  {
+    "name": "Footer Bottom",
+    "settings": [
+		{
+			"type": "checkbox",
+			"id": "show_ft_top",
+			"label": "Show Footer Bottom",
+			"default": true
+		},
+              {
+                "type": "select",
+                "id": "section_width",
+                "label": "Section Width",
+                "options":[
+                      {
+                          "label": "Full Width",
+                          "value": "full_width"
+                      },
+                      {
+                          "label": "Box Width",
+                          "value": "box_width"
+                      },
+                      {
+                          "label": "Default Width",
+                          "value": "default"
+                      }
+                  ],
+                  "default": "default"
+              },
+
+		{
+          "type": "checkbox",
+          "id": "position_fb",
+          "label": "Transparent Style",
+          "default": false
+        },
+
+		{
+          "type": "checkbox",
+          "id": "custom_footer_style",
+          "label": "Custom Footer Color",
+          "default": true
+        },
+		{
+			"type": "color",
+			"id": "border_color",
+			"label": "Border Top Color",
+			"default": "#fff"
+		},
+		{
+			"type": "color",
+			"id": "ft_content_color",
+			"label": "Content Color",
+			"default": "#5e5e5e"
+		}, 
+		{
+			"type": "color",
+			"id": "ft_content_color_hover",
+			"label": "Content Link Hover Color",
+			"default": "#fff"
+		}, 
+
+		{
+          "type": "font_picker",
+          "id": "footer_bottom_font",
+          "label": "Font Family: Footer Bottom Content Font",
+          "default": "poppins_n4"
+        },
+        {
+          "type": "text",
+          "id": "footer_bottom_font_size",
+          "label": "Font Size: Font Size",
+          "default": "15",
+          "info": "Footer Bottom Content Font Size"
+        }
+
+	],
+    "blocks": [
+		{
+			"type": "social",
+			"name": "Social",
+			"settings": [
+                {
+                    "type": "select",
+                    "id": "widget_col",
+                    "label": "Select Column for desktop",
+                    "options": [
+                        {
+                            "label": "2",
+                            "value": "2"
+                        },
+                        {
+                            "label": "3",
+                            "value": "3"
+                        },
+                        {
+                            "label": "4",
+                            "value": "4"
+                        },
+                        {
+                            "label": "5",
+                            "value": "5"
+                        },
+                        {
+                            "label": "6",
+                            "value": "6"
+                        },
+                        {
+                            "label": "7",
+                            "value": "7"
+                        },
+                        {
+                            "label": "8",
+                            "value": "8"
+                        },
+                        {
+                            "label": "9",
+                            "value": "9"
+                        },
+                        {
+                            "label": "10",
+                            "value": "10"
+                        },
+                        {
+                            "label": "11",
+                            "value": "11"
+                        },
+                        {
+                            "label": "12",
+                            "value": "12"
+                        }
+                    ],
+                    "default": "4"
+                },
+                {
+                    "type": "select",
+                    "id": "widget_col_md",
+                    "label": "Select Column for tablet",
+                    "options": [
+                        {
+                            "label": "2",
+                            "value": "2"
+                        },
+                        {
+                            "label": "3",
+                            "value": "3"
+                        },
+                        {
+                            "label": "4",
+                            "value": "4"
+                        },
+                        {
+                            "label": "5",
+                            "value": "5"
+                        },
+                        {
+                            "label": "6",
+                            "value": "6"
+                        },
+                        {
+                            "label": "7",
+                            "value": "7"
+                        },
+                        {
+                            "label": "8",
+                            "value": "8"
+                        },
+                        {
+                            "label": "9",
+                            "value": "9"
+                        },
+                        {
+                            "label": "10",
+                            "value": "10"
+                        },
+                        {
+                            "label": "11",
+                            "value": "11"
+                        },
+                        {
+                            "label": "12",
+                            "value": "12"
+                        }
+                    ],
+                    "default": "5"
+                },	
+                {
+                    "type": "radio",
+                    "id": "text",
+                    "label": "Text Align",
+                    "options": [
+                        {
+                            "label": "Left",
+                            "value": "left"
+                        },
+                        {
+                            "label": "Right",
+                            "value": "right"
+                        },
+                        {
+                            "label": "Center",
+                            "value": "center"
+                        }
+                    ],
+                    "default": "left"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_icon",
+                    "label": "Show Social Icon",
+                    "default": false
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_name",
+                    "label": "Show Social Text",
+                    "default": true
+                },
+				{
+					"type": "header",
+					"content": "Social 1"
+				},
+				{
+					"type": "text",
+					"id": "social1",
+					"label": "Title",
+					"default": "Facebook"
+				},
+				{
+					"type": "url",
+					"id": "social1_url",
+					"label": "URL"
+				},
+				{
+					"type": "header",
+					"content": "Social 2"
+				},
+				{
+					"type": "text",
+					"id": "social2",
+					"label": "Title",
+					"default": "Twitter"
+				},
+				{
+					"type": "url",
+					"id": "social2_url",
+					"label": "URL"
+				},
+				{
+					"type": "header",
+					"content": "Social 3"
+				},
+				{
+					"type": "text",
+					"id": "social3",
+					"label": "Title",
+					"default": "Linkedin"
+				},
+				{
+					"type": "url",
+					"id": "social3_url",
+					"label": "URL"
+				},
+				{
+					"type": "header",
+					"content": "Social 4"
+				},
+				{
+					"type": "text",
+					"id": "social4",
+					"label": "Title",
+					"default": "Instagram"
+				},
+				{
+					"type": "url",
+					"id": "social4_url",
+					"label": "URL"
+				},
+				{
+					"type": "header",
+					"content": "Social 5"
+				},
+				{
+					"type": "text",
+					"id": "social5",
+					"label": "Title"
+				},
+				{
+					"type": "url",
+					"id": "social5_url",
+					"label": "URL"
+				}
+			]		
+		},
+		{
+			"type": "copyright",
+			"name": "Copyright",
+			"settings": [
+                {
+                    "type": "select",
+                    "id": "widget_col",
+                    "label": "Select Column for desktop",
+                    "options": [
+                        {
+                            "label": "2",
+                            "value": "2"
+                        },
+                        {
+                            "label": "3",
+                            "value": "3"
+                        },
+                        {
+                            "label": "4",
+                            "value": "4"
+                        },
+                        {
+                            "label": "5",
+                            "value": "5"
+                        },
+                        {
+                            "label": "6",
+                            "value": "6"
+                        },
+                        {
+                            "label": "7",
+                            "value": "7"
+                        },
+                        {
+                            "label": "8",
+                            "value": "8"
+                        },
+                        {
+                            "label": "9",
+                            "value": "9"
+                        },
+                        {
+                            "label": "10",
+                            "value": "10"
+                        },
+                        {
+                            "label": "11",
+                            "value": "11"
+                        },
+                        {
+                            "label": "12",
+                            "value": "12"
+                        }
+                    ],
+                    "default": "4"
+                },
+                {
+                    "type": "select",
+                    "id": "widget_col_md",
+                    "label": "Select Column for tablet",
+                    "options": [
+                        {
+                            "label": "2",
+                            "value": "2"
+                        },
+                        {
+                            "label": "3",
+                            "value": "3"
+                        },
+                        {
+                            "label": "4",
+                            "value": "4"
+                        },
+                        {
+                            "label": "5",
+                            "value": "5"
+                        },
+                        {
+                            "label": "6",
+                            "value": "6"
+                        },
+                        {
+                            "label": "7",
+                            "value": "7"
+                        },
+                        {
+                            "label": "8",
+                            "value": "8"
+                        },
+                        {
+                            "label": "9",
+                            "value": "9"
+                        },
+                        {
+                            "label": "10",
+                            "value": "10"
+                        },
+                        {
+                            "label": "11",
+                            "value": "11"
+                        },
+                        {
+                            "label": "12",
+                            "value": "12"
+                        }
+                    ],
+                    "default": "4"
+                },
+				{
+					"type": "richtext",
+					"id": "copy",
+					"label": "Content",
+					"default": "<p>Copyright © All Right Reserved</p>"
+				},	
+                {
+                    "type": "radio",
+                    "id": "text",
+                    "label": "Text Align",
+                    "options": [
+                        {
+                            "label": "Left",
+                            "value": "left"
+                        },
+                        {
+                            "label": "Right",
+                            "value": "right"
+                        },
+                        {
+                            "label": "Center",
+                            "value": "center"
+                        }
+                    ],
+                    "default": "center"
+                }
+			]		
+		},
+		{
+			"type": "payment",
+			"name": "Payment",
+			"settings": [
+                {
+                    "type": "select",
+                    "id": "widget_col",
+                    "label": "Select Column for desktop",
+                    "options": [
+                        {
+                            "label": "2",
+                            "value": "2"
+                        },
+                        {
+                            "label": "3",
+                            "value": "3"
+                        },
+                        {
+                            "label": "4",
+                            "value": "4"
+                        },
+                        {
+                            "label": "5",
+                            "value": "5"
+                        },
+                        {
+                            "label": "6",
+                            "value": "6"
+                        },
+                        {
+                            "label": "7",
+                            "value": "7"
+                        },
+                        {
+                            "label": "8",
+                            "value": "8"
+                        },
+                        {
+                            "label": "9",
+                            "value": "9"
+                        },
+                        {
+                            "label": "10",
+                            "value": "10"
+                        },
+                        {
+                            "label": "11",
+                            "value": "11"
+                        },
+                        {
+                            "label": "12",
+                            "value": "12"
+                        }
+                    ],
+                    "default": "4"
+                },
+                {
+                    "type": "select",
+                    "id": "widget_col_md",
+                    "label": "Select Column for tablet",
+                    "options": [
+                        {
+                            "label": "2",
+                            "value": "2"
+                        },
+                        {
+                            "label": "3",
+                            "value": "3"
+                        },
+                        {
+                            "label": "4",
+                            "value": "4"
+                        },
+                        {
+                            "label": "5",
+                            "value": "5"
+                        },
+                        {
+                            "label": "6",
+                            "value": "6"
+                        },
+                        {
+                            "label": "7",
+                            "value": "7"
+                        },
+                        {
+                            "label": "8",
+                            "value": "8"
+                        },
+                        {
+                            "label": "9",
+                            "value": "9"
+                        },
+                        {
+                            "label": "10",
+                            "value": "10"
+                        },
+                        {
+                            "label": "11",
+                            "value": "11"
+                        },
+                        {
+                            "label": "12",
+                            "value": "12"
+                        }
+                    ],
+                    "default": "3"
+                },
+				{
+					"type": "image_picker",
+					"id": "img",
+					"label": "Image"
+				},
+				{
+					"type": "url",
+					"id": "img_url",
+					"label": "URL",
+					"default": "\/"
+				},
+                {
+                    "type": "radio",
+                    "id": "text",
+                    "label": "Text Align",
+                    "options": [
+                        {
+                            "label": "Left",
+                            "value": "left"
+                        },
+                        {
+                            "label": "Right",
+                            "value": "right"
+                        },
+                        {
+                            "label": "Center",
+                            "value": "center"
+                        }
+                    ],
+                    "default": "right"
+                }
+			]		
+		},
+	   {
+          "type": "section_padding",
+          "name": "Section Padding",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 20
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 20
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Top",
+			  "unit": "px",
+			  "default": 20
+			},
+			{
+			  "type": "range",
+			  "id": "section_padding_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Padding Bottom",
+			  "unit": "px",
+			  "default": 0
+			}
+          ]
+       },
+	   {
+          "type": "section_margin",
+          "name": "Section Margin",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "header",
+			  "content": "Large/Desktop Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Tablet Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_md",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "header",
+			  "content": "Mobile Device"
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_top_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Top",
+			  "unit": "px",
+			  "default": 0
+			},
+			{
+			  "type": "range",
+			  "id": "section_margin_bottom_xs",
+			  "min": 0,
+			  "max": 150,
+			  "step": 5,
+			  "label": "Margin Bottom",
+			  "unit": "px",
+			  "default": 0
+			}
+          ]
+       },
+	   {
+          "type": "section_background",
+          "name": "Section Background",
+		  "limit": 1,
+          "settings": [
+            {
+			  "type": "image_picker",
+			  "id": "section_bg_image",
+			  "label": "BG Image"
+			},
+			{
+			  "type": "color",
+			  "id": "section_bg_color",
+			  "label": "BG Color",
+			  "default": "#ffffff"
+			}
+          ]
+       }
+	]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

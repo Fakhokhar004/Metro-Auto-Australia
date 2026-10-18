@@ -1,0 +1,19 @@
+<div class="blog-comment-wrapper mt-55">
+  <h4 class="blog-dec-title">{{ 'blogs.comments.with_count' | t: count: article.comments_count }}</h4>
+  {% for comment in article.comments %}
+  <div class="single-comment-wrapper mt-35">
+    <div class="blog-comment-img">
+      {% if section.settings.commentator_image %}
+      <img loading="lazy"  src="{{ section.settings.commentator_image | img_url: '100x100', crop: 'center' }}" alt="{{ section.settings.commentator_image.alt }}">
+      {% else %}
+      <img loading="lazy"  src="https://www.gravatar.com/avatar/{{ comment.email | remove: ' ' | strip_newlines | downcase | md5 | append: '?s=200' }}" />
+      {% endif %}
+    </div>
+    <div class="blog-comment-content">
+      <h4>{{ comment.author }}</h4>
+      <span>{{ comment.created_at | date: "%B %d, %Y" }}</span>
+      <p>{{ comment.content }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>

@@ -1,0 +1,55 @@
+{%- comment -%}
+  ============================================================
+  METRO AUTO — Vehicle fitment table  (single source of truth)
+  Reads a product's custom.vehicle_compatibility metaobject list.
+
+  Usage anywhere:
+    {% render 'vehicle-compatibility', product: product %}
+
+  ── TO ADD A NEW COLUMN IN FUTURE ──────────────────────────
+  You only edit THIS file, and it updates every page that
+  renders it. Add your field in the TWO ➕ ADD-FIELD spots
+  below — one <th> in the header, one <td> in the body — and
+  keep them in the same left-to-right order.
+  ============================================================
+{%- endcomment -%}
+
+{%- assign compat_list = product.metafields.custom.vehicle_compatibility.value -%}
+
+{%- if compat_list and compat_list.size > 0 -%}
+  <details class="ma-fitment">
+    <summary class="ma-fitment__summary">
+      <span class="ma-fitment__label">
+        Fits {{ compat_list.size }} vehicle{% if compat_list.size != 1 %}s{% endif %}
+      </span>
+      <span class="ma-fitment__chev" aria-hidden="true"></span>
+    </summary>
+
+    <div class="ma-fitment__scroll">
+      <table class="ma-fitment__table">
+        <thead>
+          <tr>
+            <th>Make</th>
+            <th>Model</th>
+            <th>Year</th>
+            <th>Trim</th>
+            <th>Notes</th>
+            {%- comment -%} ➕ ADD-FIELD (header): e.g.  <th>Engine</th>  {%- endcomment -%}
+          </tr>
+        </thead>
+        <tbody>
+          {%- for entry in compat_list -%}
+            <tr>
+              <td>{{ entry.make.value.name }}</td>
+              <td>{{ entry.model.value.name }}</td>
+              <td>{{ entry.year.value.year }}</td>
+              <td>{{ entry.trim.value.label }}</td>
+              <td>{{ entry.notes.value }}</td>
+              {%- comment -%} ➕ ADD-FIELD (cell): same order, e.g.  <td>{{ entry.engine.value }}</td>  {%- endcomment -%}
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+    </div>
+  </details>
+{%- endif -%}

@@ -1,0 +1,85 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "blog-template",
+      "blocks": {
+        "eea5a317-df79-4e85-99a5-28cb03b8919f": {
+          "type": "search",
+          "settings": {
+            "widget_title": "Search"
+          }
+        },
+        "463cdb4c-0971-4378-b7ae-125694d18c7d": {
+          "type": "menu",
+          "disabled": true,
+          "settings": {
+            "menu_title": "Custom Menu",
+            "menu_handle": "footer"
+          }
+        },
+        "c8552efd-4ff3-49a3-850f-c7beb15a5619": {
+          "type": "recent_post",
+          "settings": {
+            "recent_post_title": "Recent Post",
+            "recent_post_limit_handle": 3
+          }
+        },
+        "55740dca-9f7e-4b57-9ab6-5822178484af": {
+          "type": "archive",
+          "settings": {
+            "archive_title": "Archive"
+          }
+        },
+        "7412bb3a-cfac-464b-99be-22f044355a12": {
+          "type": "tag",
+          "settings": {
+            "blog_tags_title": "Tags",
+            "blog_tags_list_limit_handle": 10
+          }
+        }
+      },
+      "block_order": [
+        "eea5a317-df79-4e85-99a5-28cb03b8919f",
+        "463cdb4c-0971-4378-b7ae-125694d18c7d",
+        "c8552efd-4ff3-49a3-850f-c7beb15a5619",
+        "55740dca-9f7e-4b57-9ab6-5822178484af",
+        "7412bb3a-cfac-464b-99be-22f044355a12"
+      ],
+      "settings": {
+        "bgrid": "grid_1",
+        "blog_limit_handle": 4,
+        "product_column_handle": "6",
+        "product_column_handle_md": "6",
+        "product_column_handle_sm": "6",
+        "sidebar_handle": "left_sidebar_handle",
+        "blog_image_enable": true,
+        "blog_title_enable": true,
+        "blog_comments_enable": true,
+        "blog_date_enable": true,
+        "blog_text_enable": true,
+        "blog_button_enable": true,
+        "button_title": "Read More",
+        "pagination_custom_style": true,
+        "pagination_color": "#333333",
+        "pagination_bg_color": "#f6f6f6",
+        "pagination_hover_color": "#ffffff",
+        "pagination_bg_hover_color": "#fdb819",
+        "pagination_active_color": "#ffffff",
+        "pagination_active_bg_color": "#fdb819",
+        "pagination_border_radius": 10
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

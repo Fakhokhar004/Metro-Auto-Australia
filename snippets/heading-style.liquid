@@ -1,0 +1,57 @@
+
+{% if section.settings.section_title_custom_color %}
+<style>
+  
+  {%- assign section_title_font = section.settings.section_title_font -%}
+  {%- assign section_sub_title_font = section.settings.section_sub_title_font -%}
+  {{ section_title_font | font_face }}
+  {{ section_sub_title_font | font_face }}
+  
+  
+  #section-{{ section.id }} .section-title h2{
+    font-family: {{ section_title_font.family }}, {{ section_title_font.fallback_families }};
+    font-style: {{ section_title_font.style }};
+    font-weight: {{ section_title_font.weight }};
+    color: {{ section.settings.section_title_color }};
+    font-size:{{ section.settings.section_title_font_size }}px;
+    line-height: {{section.settings.section_title_line_height}}px;
+    margin-bottom: {{section.settings.section_title_margin_bottom}}px;
+  }
+  
+  #section-{{ section.id }} .section-title p{
+    font-family: {{ section_sub_title_font.family }}, {{ section_sub_title_font.fallback_families }};
+    font-style: {{ section_sub_title_font.style }};
+    font-weight: {{ section_sub_title_font.weight }};
+    color: {{ section.settings.section_subtitle_color }};
+    font-size:{{ section.settings.section_des_font_size }}px;
+    line-height: {{section.settings.section_sub_title_line_height}}px;
+    margin-bottom: {{section.settings.section_sub_title_margin_bottom}}px;
+  }
+  
+  
+  @media (min-width: 768px) and (max-width: 1200px) {
+
+    #section-{{ section.id }} .section-title h2{
+      font-size:{{ section.settings.section_title_font_size_md }}px;
+      line-height: {{section.settings.section_title_line_height_md}}px;
+    }
+    #section-{{ section.id }} .section-title p{
+      font-size:{{ section.settings.section_des_font_size_md }}px;
+      line-height: {{section.settings.section_sub_title_line_height_md}}px;
+    }
+  }
+
+  @media (min-width: 300px) and (max-width: 767px) {    
+    
+    #section-{{ section.id }} .section-title h2{
+      font-size:{{ section.settings.section_title_font_size_sm }}px;
+      line-height: {{section.settings.section_title_line_height_sm}}px;
+    }
+    #section-{{ section.id }} .section-title p{
+      font-size:{{ section.settings.section_des_font_size_sm }}px;
+      line-height: {{section.settings.section_sub_title_line_height_sm}}px;
+    }
+  }
+
+</style>
+{% endif %}

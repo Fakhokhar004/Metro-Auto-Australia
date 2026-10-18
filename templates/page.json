@@ -1,0 +1,42 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "page-template",
+      "settings": {}
+    },
+    "shop_by_products_grid_dhbx6h": {
+      "type": "Shop-by-products-grid",
+      "disabled": true,
+      "name": "Shop by Products Grid",
+      "settings": {
+        "heading": "Shop by Products",
+        "heading_color": "#111111",
+        "columns_desktop": 5,
+        "columns_tablet": 3,
+        "columns_mobile": 2,
+        "section_padding": 16,
+        "section_margin": 0,
+        "card_gap": 16,
+        "border_color": "#ffffff",
+        "border_radius": 8,
+        "title_color": "#111111",
+        "show_badge": true,
+        "badge_bg_color": "#e8e8e8",
+        "badge_text_color": "#ff4400"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "shop_by_products_grid_dhbx6h"
+  ]
+}

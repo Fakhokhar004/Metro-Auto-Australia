@@ -1,0 +1,118 @@
+{{ 'fastclick.min.js' | asset_url | script_tag | remove: ' type="text/javascript"' }}
+{{ 'timber.js' | asset_url | script_tag | remove: ' type="text/javascript"' }}
+
+{% comment %}
+Template-specific js
+{% endcomment %}
+<script>
+  {% if resetPassword %}
+  $(function() {
+    timber.resetPasswordSuccess();
+  });
+  {% endif %}
+</script>
+
+{%- unless settings.product_cart_type == 'without_ajax_cart' -%}
+{%- render 'popup_cart' -%}
+{%- endunless -%}
+
+{%- if settings.ajax_search_enable -%}
+{% render 'ajax-search-bar' %}
+{%- endif -%}
+
+{%- if settings.product_quickview_enalbe -%}
+{% render 'product-quickview' %}
+
+{% comment %}
+<script>
+  $(".cart-plus-minus").prepend('<div class="dec qtybutton">-</div>');
+  $(".cart-plus-minus").append('<div class="inc qtybutton">+</div>');
+  $(".qtybutton").on("click", function() {
+    var $button = $(this);
+    var oldValue = $button.parent().find("input").val();
+    if ($button.text() == "+") {
+      var newVal = parseFloat(oldValue) + 1;
+    } else {
+      // Don't allow decrementing below zero
+      if (oldValue > 0) {
+        var newVal = parseFloat(oldValue) - 1;
+      } else {
+        newVal = 1;
+      }
+    }
+    $button.parent().find("input").val(newVal);
+  });
+</script>
+{% endcomment %}
+{%- endif -%}
+
+{% if settings.product_cart_type == 'ajax_spin_cart' %}
+<script>
+  $('.ajax-spin-cart').on('click', function() {
+    $(this).addClass('loading add-item');
+    setTimeout(function () {
+      $('.ajax-spin-cart').removeClass('loading');
+    },1000);
+    setTimeout(function () {
+      $('.ajax-spin-cart').removeClass("add-item");
+    },2000);
+
+  });
+</script>
+{% endif %}
+
+{%- if settings.wishlist_enable -%}
+{{ 'wishlist.js' | asset_url | script_tag | remove: ' type="text/javascript"' }}
+<script>  
+  /* Ajax Wishlist */
+  $(".action-wishlist").on('click', function(){
+    $(this).addClass("loading-wishlist adding-wishlist");
+    setTimeout(function () {
+      $(".action-wishlist").removeClass("loading-wishlist");
+    },1000);
+    setTimeout(function () {
+      $(".adding-wishlist").removeClass("adding-wishlist");
+    },2000);
+
+  });
+</script>
+{%- endif -%}
+
+<!-- Recently Viewed Products -->
+{%- if template contains 'product' and settings.recenly_view_product_enable -%}
+<script>
+  Shopify.Products.recordRecentlyViewed();
+</script>
+{%- endif -%}
+
+
+{%- if settings.currency_enable -%}
+{%- render 'currency' -%}
+{%- endif -%}
+
+<script>
+  $('.theme-product-countdown').each(function() {
+    var $this = $(this), finalDate = $(this).data('countdown');
+    $this.countdown(finalDate, function(event) {
+      $this.html(event.strftime('<div class="cd-single"><div class="cd-single-inner"><h3>%D</h3><p>Days</p></div></div><div class="cd-single"><div class="cd-single-inner"><h3>%H</h3><p>Hours</p></div></div><div class="cd-single"><div class="cd-single-inner"><h3>%M</h3><p>Min</p></div></div><div class="cd-single"><div class="cd-single-inner"><h3>%S</h3><p>Sec</p></div></div>'));
+    });
+  });
+</script>
+
+{%- if settings.privacy_policy_checbox_enable -%}
+<script>
+  $('#privacyoption2').click(function () {
+    //check if checkbox is checked
+    if ($(this).is(':checked')) {
+      $('#subscribe2').removeAttr('disabled'); //enable input
+    } else {
+      $('#subscribe2').attr('disabled', true); //disable input
+    }
+  });
+</script>
+{%- endif -%}
+
+
+{%- if settings.theme_custom_script != '' -%}
+	{{ settings.theme_custom_script }}
+{%- endif -%}

@@ -1,0 +1,67 @@
+{% comment %}
+  Snippet: vfp-icon
+  Usage: {% render 'vfp-icon', icon: 'shield' %}
+  Options: shield, funnel, wrench, award, star, restore, truck, pin, search
+{% endcomment %}
+
+{% case icon %}
+
+  {% when 'shield' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3 5 6v6c0 5 3 8.5 7 9 4-0.5 7-4 7-9V6l-7-3z"/>
+      <path d="M9 12l2 2 4-4.5"/>
+    </svg>
+
+  {% when 'funnel' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 4h18l-7 8.5V19l-4 2v-8.5L3 4z"/>
+    </svg>
+
+  {% when 'wrench' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14.7 6.3a4 4 0 1 1-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 1 5.4-5.4l-3-3-3 3z"/>
+    </svg>
+
+  {% when 'award' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="5"/>
+      <path d="M9 12.5 7.5 21 12 18.5 16.5 21 15 12.5"/>
+    </svg>
+
+  {% when 'star' %}
+    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="12,2 15,9 22,9.5 16.5,14 18,21 12,17.3 6,21 7.5,14 2,9.5 9,9"/>
+    </svg>
+
+  {% when 'restore' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/>
+      <polyline points="3.5,4.5 3.5,10.5 9.5,10.5"/>
+    </svg>
+
+  {% when 'truck' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="1.5" y="7" width="13" height="8.5" rx="1"/>
+      <path d="M14.5 10.5h4l3 3v2h-7z"/>
+      <circle cx="6" cy="18" r="1.8"/>
+      <circle cx="17.5" cy="18" r="1.8"/>
+    </svg>
+
+  {% when 'pin' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7z"/>
+      <circle cx="12" cy="9" r="2.2"/>
+    </svg>
+
+  {% when 'search' %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="7"/>
+      <line x1="21" y1="21" x2="16.2" y2="16.2"/>
+    </svg>
+
+{% else %}
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9"/>
+  </svg>
+
+{% endcase %}

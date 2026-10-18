@@ -1,0 +1,493 @@
+{%- for block in section.blocks -%}
+{%- case block.type -%}
+
+{%- when 'title' -%}
+<h2 id="popup_cart_title">{{ product.title }}</h2>
+
+
+{%- when 'price' -%}
+<div class="product-details-price">  
+  <span id="ProductPrice">{{ product.selected_or_first_available_variant.price | money }}</span>
+  {%- if product.compare_at_price_max > product.price -%}
+  <span id="ComparePrice" class="old">{{ product.selected_or_first_available_variant.compare_at_price | money }}</span>
+  {%- endif -%}
+</div>
+
+
+{%- when 'sku_vendor_type'-%}
+{%- if block.settings.product_sku_enable and current_variant.sku.size > 0 -%}
+  <div class="sku_size_vendor_type">
+    <div class="product-sku pro-details-rating-wrap">{{ block.settings.product_sku_title }}  <span class="variant-sku"> {{ current_variant.sku }} </span></div>
+  </div>
+{% endif %}
+
+{% if block.settings.product_vendor_enable and product.vendor != blank %}
+	<div class="product-sku pro-details-rating-wrap">{{ block.settings.vendor_title | default: 'vendor: ' }}  <span class=""> {{ product.vendor }} </span></div>
+{% endif %}
+
+{% if block.settings.product_type_enable  and product.type != blank %}
+	{% assign types_list_limit = block.settings.types_list_limit_hanlde %}
+	<div class="product-sku pro-details-rating-wrap">{{ block.settings.type_title | default: 'Type: ' }}  <span class=""> {{ product.type }} </span></div>
+{% endif %}
+
+
+
+  {%- when 'inventory' -%}
+
+
+{% if block.settings.inventory__features =='feature_1' %}
+  <script>       
+    var inv_qty = {};
+    {% for var in product.variants %}
+    inv_qty[{{- var.id -}}] = {{ var.inventory_quantity | default: 0 }};
+    {% endfor %}
+  </script>            
+  {% if current_variant.inventory_management == "shopify" %}
+  <div class="product-variant-inventory">
+    <span class="inventory-title">{{ block.settings.availability_title }}</span> <span class="variant-inventory">{{ current_variant.inventory_quantity }} {{ block.settings.left_in_stock_title }}</span>
+  </div>
+  {% endif %}
+
+  {% elsif block.settings.inventory__features =='feature_2' %}
+    <div
+      class="product__inventory product__inventory__style__2 {% if product.selected_or_first_available_variant.inventory_management != 'shopify' %} visibility-hidden{% endif %}"
+      {{ block.shopify_attributes }}
+      id="Inventory-{{ section.id }}"
+      role="status"
+    >
+      {%- if product.selected_or_first_available_variant.inventory_management == 'shopify' -%}
+        {%- if product.selected_or_first_available_variant.inventory_quantity > 0 -%}
+          {%- if product.selected_or_first_available_variant.inventory_quantity <= block.settings.inventory_threshold -%}
+            <svg width="15" height="15" aria-hidden="true">
+              <circle cx="7.5" cy="7.5" r="7.5" fill="rgb(238,148,65, 0.3)"/>
+              <circle cx="7.5" cy="7.5" r="5" stroke="rgb(255, 255, 255)" stroke-width="1" fill="rgb(238,148,65)"/>
+            </svg>
+            {%- if block.settings.show_inventory_quantity -%}
+              {{- 'products.product.inventory_low_stock_show_count' | t: quantity: product.selected_or_first_available_variant.inventory_quantity -}}
+            {%- else -%}
+              {{- 'products.product.inventory_low_stock' | t -}}
+            {%- endif -%}
+          {%- else -%}
+            <svg width="15" height="15" aria-hidden="true">
+              <circle cx="7.5" cy="7.5" r="7.5" fill="rgb(62,214,96, 0.3)"/>
+              <circle cx="7.5" cy="7.5" r="5" stroke="rgb(255, 255, 255)" stroke-width="1" fill="rgb(62,214,96)"/>
+            </svg>
+            {%- if block.settings.show_inventory_quantity -%}
+              {{- 'products.product.inventory_in_stock_show_count' | t: quantity: product.selected_or_first_available_variant.inventory_quantity -}}
+            {%- else -%}
+                {{- 'products.product.inventory_in_stock' | t -}}
+            {%- endif -%}
+          {%- endif -%}
+        {%- else -%}
+          {%- if product.selected_or_first_available_variant.inventory_policy == 'continue' -%}
+            <svg width="15" height="15" aria-hidden="true">
+              <circle cx="7.5" cy="7.5" r="7.5" fill="rgb(62,214,96, 0.3)"/>
+              <circle cx="7.5" cy="7.5" r="5" stroke="rgb(255, 255, 255)" stroke-width="1" fill="rgb(62,214,96)"/>
+            </svg>
+            {{- 'products.product.inventory_out_of_stock_continue_selling' | t -}}
+          {%- else -%}
+            <svg width="15" height="15" aria-hidden="true">
+              <circle cx="7.5" cy="7.5" r="7.5" fill="rgb(200,200,200, 0.3)"/>
+              <circle cx="7.5" cy="7.5" r="5" stroke="rgb(255, 255, 255)" stroke-width="1" fill="rgb(200,200,200)"/>
+            </svg>
+            {{- 'products.product.inventory_out_of_stock' | t -}}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+
+{%- endif -%}
+
+
+
+{%- when 'countdown' -%}
+
+{%- assign productCountdown = product.metafields.countdown.date -%}
+{%- assign cdownMeta = productCountdown | date: '%s' -%}
+{%- assign today_date = 'now' | date: '%s' -%}
+
+{%- if productCountdown != blank -%}
+      {%- if today_date < cdownMeta -%}      
+        <div class="theme-product-countdown-wrap single-prod-countdown">
+          <div class="theme-product-countdown" data-countdown="{{ productCountdown }}"></div>
+        </div>
+      {%- endif -%}
+      {%- elsif product.description contains '[countdown]' -%}    
+          {%- assign count_down_first = product.description | split:'[/countdown]' | first -%}
+          {%- assign count_down_final = count_down_first | split:'[countdown]' | last -%}
+          <div class="theme-product-countdown-wrap single-prod-countdown">
+            <div class="theme-product-countdown" data-countdown="{{ count_down_final }}"></div>
+          </div>
+{%- endif -%}
+
+
+
+  
+
+{%- when 'description' -%}
+{%- unless block.settings.product_description_handle == 'without_description' -%}
+{%- if block.settings.product_description_handle == 'full_description' -%}
+{{ product.description | split: '[info_1]' | first | split: '[info_2]' | first | split: '[info_3]' | first | split: '[info_4]' | first | split: '[info_5]' | first | split: '[info_6]' | first | split: '[info_7]' | first | split: '[info_8]' | first | split: '[info_9]' | first | split: '[info_10]' | first | split: '[countdown]' | first | split: '[affiliate_link]' | first | split: '[product_video]' | first | split: '[short_description]' | first | split: '[product_description]' | first | split: '[more_info]' | first }}
+{%- elsif block.settings.product_description_handle == 'short_description' -%}
+<div class="product-description">
+  {%- if product.description contains '[short_description]' -%} 
+  {%- assign short_description_first = product.description | split:'[/short_description]' | first -%}
+  {%- assign short_description_final = short_description_first | split:'[short_description]' | last -%}
+  {{ short_description_final }}
+  {%- else -%}
+  {%- assign truncatewords_count = block.settings.truncatewords_count_handle -%}
+  <p>{{ product.description | truncatewords: truncatewords_count | split: '[short_description]' | first | split: '[product_description]' | first | split: '[new_products]' | first | split: '[product_video]' | first | split: '[affiliate_link]' | first | split: '[countdown]' | first }}</p>
+  {%- endif -%}
+</div>
+{%- endif -%}
+{%- endunless -%}
+
+
+{% if block.settings.product_meta_enable %}
+<div class="single_product_special_feature">
+  <ul>
+    {% if block.settings.product_meta_title !='' %}
+    <li><span class="label">{{ block.settings.product_meta_title }}</span> <span class="desc">{{ product.title }}</span></li>
+    {% endif %}
+
+    {% if block.settings.product_meta_author !='' %}
+    <li><span class="label">{{ block.settings.product_meta_author }}</span> <span class="desc">{{ product.vendor | link_to_vendor }}</span></li>
+    {% endif %}
+
+    {% if block.settings.product_meta_type !='' %}
+    <li><span class="label">{{ block.settings.product_meta_type }}</span> <span class="desc">{{ product.type | link_to_type }}</span></li>
+    {% endif %}
+
+    {% if block.settings.product_meta_date !='' %}
+    <li><span class="label">{{ block.settings.product_meta_date }}</span> <span class="desc">{{ product.published_at | date: '%Y / %m / %d' }}</span></li>
+    {% endif %}
+
+    {%- if current_variant.barcode.size > 0 and block.settings.product_meta_barcode !='' -%}
+    <li><span class="label">{{ block.settings.product_meta_barcode }}</span> <span class="desc">{{ current_variant.barcode }}</span></li>
+    {% endif %}
+  </ul>
+</div>
+{% endif %}
+
+
+{%- when 'variants' -%}
+{%- render 'product-variant', variant: variant, current_variant: current_variant, block: block -%}
+
+
+{%- when 'additional_info' -%}
+{%- render 'product_additional_information', block: block -%}
+
+
+{%- when 'product_actions' -%}
+<div class="pro-details-quality {% if block.settings.sticky_product_enable %}sticky__pro_button{% endif %}">
+
+  {%- if product.description contains '[affiliate_link]' -%}
+  {%- render 'affiliate-product-cart-action', product: product -%}
+  {%- else -%}
+
+
+      {% if product.gift_card? %}
+        {%- render 'gift-card-recipient-form', product: product, form: form, block: block, section: section -%}  
+    
+        <div class="product-quantity-action quantity-selector cart-plus-minus">
+          <input class="cart-plus-minus-box" type="text" name="quantity" value="1">
+        </div>    
+    
+        <div class="pro-details-cart btn-hover product-cart-action">
+          <button type="submit" id="AddToCart" class="sp_cart_btn">
+            <span class="cart-title" id="AddToCartText">{{ settings.cart_button_title }}</span>
+          </button>
+        </div>
+    
+      {% else %}
+    
+        <div class="product-quantity-action quantity-selector cart-plus-minus">
+          <input class="cart-plus-minus-box" type="text" name="quantity" value="1">
+        </div>    
+        {%- render 'product-cart-action' with product as product, current_variant: current_variant, block: block -%}
+        
+      {% endif %}
+
+
+    
+  {%- if settings.show_product_wishlist -%}
+  <div class="pro-details-wishlist">
+
+  {%- if product.handle != blank -%}
+  <a class="action-wishlist tile-actions--btn flex wishlist-btn wishlist" href="javascript: void(0)" button-wishlist data-product-handle="{{ product.handle }}" data-toggle="tooltip" data-placement="left" title="{{ settings.wishlist_title }}">
+    <span class="add-wishlist"><i class="sli sli-heart"></i></span>
+    <span class="loading-wishlist"><i class="sli sli-heart"></i></span>
+    <span class="remove-wishlist"><i class="sli sli-heart"></i></span>
+  </a>
+  {%- endif -%}
+
+  <a class="go-to-wishlist" target="_blank" href="/pages/wishlist" data-toggle="tooltip" data-placement="left" title="{{ settings.wishlist_title }}"> 
+    <i class="sli sli-action-redo"></i> <span>{{ settings.go_to_wishlit_title }}</span>
+  </a>
+
+</div>
+  {%- endif -%}  
+
+
+  {%- if settings.compare_product_enalbe -%}
+  <div class="pro-details-compare">
+    <a href="#" data-pid="{{ product.handle }}" class="compare"><i class="sli sli-refresh"></i></a>
+  </div>
+  {%- endif -%}
+
+
+    
+  {%- endif -%}
+</div>
+
+
+{%- unless product.description contains '[affiliate_link]' -%}
+  {%- if product.available and block.settings.dynamic_checkout_button_enable -%}
+  <div class="dynamic_btn{% if block.settings.product_style == 'slider' %} text-center{% endif %}">
+    {{ form | payment_button }}
+  </div>
+  {%- endif -%}
+{%- endunless -%}
+
+  
+{%- if block.settings.soldout_product_notification_enable -%}
+  {% unless product.available %}
+    <div id="sold-out" class="soldout-notify">
+      {% form 'contact' %}
+      {% if form.posted_successfully? %}
+      <p class="accent-text form-success note">{{ block.settings.notification_success_message }}</p>
+      {% else %}
+      <p class="notification-text"><i class="sli sli-bell"></i>{{ block.settings.notification_text }}</p>
+      {% endif %}
+      {% if form.errors %}
+      <div class="error note feedback accent-text">
+        <p>{{ block.settings.error_text }}</p>
+      </div>
+      {% endif %}
+      {% unless form.posted_successfully? %}
+      <div id="notify-me-wrapper" class="clearfix" style="display:none">
+        {% if customer %}
+        <input type="email" name="contact[email]" value="{{ customer.email }}" />
+        {% else %}
+        <input required="required" type="email" name="contact[email]" placeholder="your@email.com" class="styled-input{% if form.errors contains 'email' %} error{% endif %}" value="{{ contact.fields.email }}" />
+        {% endif %}
+        <input type="hidden" name="contact[body]" value="Please notify me when '{{ product.title | escape }}' becomes available." />
+        <input class="btn styled-submit theme-default-button" type="submit" value="{{ block.settings.send_button_title }}" />
+      </div>
+      {% endunless %}
+      {% endform %}
+    </div>
+
+    <script>
+      jQuery('#notify-me').click(function() {
+        jQuery('#notify-me-wrapper').fadeIn();
+        return false;
+      } );
+    </script>
+  {% endunless %}
+{%- endif -%}
+  
+
+
+{%- when 'category_tags' -%}
+
+{%- if block.settings.show_cat -%}
+<div class="pro-details-meta">
+  <span>{{ block.settings.cat_title }}</span>
+  <ul>
+    {%- for collection in product.collections limit: 5 -%}
+    <li><a href="{{ collection.url }}">{{ collection.title }}</a></li>{% unless forloop.last %}, {% endunless %}
+    {%- endfor -%}
+  </ul>
+</div>
+{%- endif -%}
+
+
+{%- if block.settings.show_tag and product.tags.size > 0 -%}
+<div class="pro-details-meta">
+  <span>{{ block.settings.tag_title }}</span>
+  <ul>
+    {%- for tag in product.tags limit: 5 -%}
+    <li><a href="/collections/all/{{ tag | handle }}">{{ tag }}</a></li>{% unless forloop.last %}, {% endunless %}
+    {%- endfor -%}
+  </ul>
+</div>
+{%- endif -%}
+
+
+{%- when 'payment_social_share' -%}
+{%- if block.settings.social_share_enable -%}
+{%- render 'social-share', share_title: product.title, share_permalink: product.url, share_image: product, block: block -%}
+{%- endif -%}
+
+{%- if block.settings.payment_option_enable -%}
+<div class="custom-payment-options">
+  {%- if block.settings.payment_information != '' -%}
+  <div>
+    {{ block.settings.payment_information }}
+  </div>
+  {%- endif -%}
+  {%- if block.settings.payment_image -%}
+  <img loading="lazy"  src="{{ block.settings.payment_image | img_url: '1024x1024' }}" alt="{{ block.settings.payment_image.alt }}">
+  {%- endif -%}
+  {%- render 'payment-icon', block: block -%}
+</div>
+{%- endif -%}
+
+
+
+{%- when 'complementary' -%}
+<div class="product-complementary" data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=4&intent=complementary">
+  {%- if recommendations.performed? and recommendations.products_count > 0 -%}
+      <span class="pc_title">Pair it with</span>
+      <div class="product-complementary__carousel carsoule_arrow_style row">
+        {%- for product in recommendations.products -%}
+          {% render 'recomendation-grid' with product as product %}
+        {%- endfor -%}
+      </div>
+  {%- endif -%}
+</div>
+
+<script>
+  const handleIntersection = (entries, observer) => {
+    if (!entries[0].isIntersecting) return;
+
+    observer.unobserve(productRecommendationsSection);
+
+    const url = productRecommendationsSection.dataset.url;
+
+    fetch(url)
+      .then(response => response.text())
+      .then(text => {
+        const html = document.createElement('div');
+        html.innerHTML = text;
+        const recommendations = html.querySelector('.product-complementary');
+
+        if (recommendations && recommendations.innerHTML.trim().length) {
+          productRecommendationsSection.innerHTML = recommendations.innerHTML;
+
+          // product carousel active
+          $('.product-complementary__carousel').slick({
+        		speed: 1000,
+        		autoplay: false,
+        		slidesToShow: 2,
+        		adaptiveHeight: true,
+                  prevArrow: '<span class="product-dec-icon product-dec-prev"><i class="sli sli-arrow-left"></i></span>',
+                  nextArrow: '<span class="product-dec-icon product-dec-next"><i class="sli sli-arrow-right"></i></span>',
+        		responsive: [{
+        			breakpoint: 1366,
+        			settings: {
+        				slidesToShow: 2
+        			}
+        		},
+        		{
+        			breakpoint: 1000,
+        			settings: {
+        				slidesToShow: 1,
+        				arrows: true
+        			}
+        		},
+          		{
+        			breakpoint: 769,
+        			settings: {
+        				slidesToShow: 2,
+        				arrows: true
+        			}
+        		},
+        		{
+        			breakpoint: 575,
+        			settings: {
+        				slidesToShow: 1,
+        				arrows: true
+        			}
+        		}]
+        	});
+          
+        }
+      })
+      .catch(e => {
+        console.error(e);
+      });
+  };
+
+  const productRecommendationsSection = document.querySelector('.product-complementary');
+  const observer = new IntersectionObserver(handleIntersection, {rootMargin: '0px 0px 200px 0px'});
+
+  observer.observe(productRecommendationsSection);
+</script>
+
+  
+
+
+{%- when 'visitor_counter' -%}               
+<div class="visitor-counter-area">
+  <div onload="startTime()">
+    <img src="https://cdn.shopify.com/s/files/1/0272/4937/7337/files/eye.gif" alt="live beacon" alt="Visitor Counter" style="height:30px; margin-right:5px; padding-bottom: 0px;">
+    <span id="txt"><strong>10</strong> {{ block.settings.visitor_counter_content }}</span>
+  </div>
+</div> 
+
+<script>
+  function startTime() {
+    const today = new Date();
+    const h = today.getHours();
+    const m = today.getMinutes();
+    const s = today.getSeconds();
+    let count = 0;
+    const max = 20;
+    const min = 15;
+    const range = max - min;
+  
+    if (s < 11) {
+      count = 0.73 * max + m / 10;
+    } else if (s > 12 && s < 30) {
+      count = 0.63 * max + m / 10;
+    } else if (s > 31 && s < 45) {
+      count = min + 0.55 * range + m / 10;
+    } else if (s > 46 && s < 51) {
+      count = 0.89 * range + min - s + 44 + m / 10;
+    } else if (s === 52 || s === 55 || s === 58 || s === 59) {
+      count = 0.92 * max - s + 54 + m / 10;
+    } else {
+      count = 0.87 * max + m / 10;
+    }
+  
+    const formattedCount = Math.round(count);
+    const displayText = `${formattedCount}`;
+    document.querySelector('#txt strong').innerHTML = displayText;
+    const t = setTimeout(startTime, 5000);
+  }
+  
+  function checkTime(i) {
+    return i < 10 ? `0${i}` : i.toString();
+  }
+  startTime();
+</script> 
+
+
+
+{%- when 'estimated-delivery' -%}
+<div class="estimated-delivery-area">
+  <p> <img src="https://cdn-icons-png.flaticon.com/512/1670/1670915.png" style="height:25px;float:left;margin-right:10px;padding-bottom: 0px;"/>
+  {{ block.settings.delivery_date_label }} : <strong><span id="fromDate"></span> - <span id="toDate"></span></strong></p>
+
+  <script>
+    var fromDate = Date.today().addDays({{ block.settings.minimum_day }});
+    var toDate = Date.today().addDays({{ block.settings.maximum_day }});
+    document.getElementById('fromDate').innerHTML = fromDate.toString('dd');
+    document.getElementById('toDate').innerHTML = toDate.toString('dd MMMM yyyy');
+  </script>
+</div>
+
+
+
+{%- when '@app' -%}
+{%- render block -%}
+
+{%- when 'text' -%}
+<div class="product-text">
+  {{ block.settings.text }}
+</div>
+
+{% endcase %}
+{% endfor %}

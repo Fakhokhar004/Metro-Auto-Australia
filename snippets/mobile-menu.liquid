@@ -1,0 +1,37 @@
+{%- assign main_user_menu = section.settings.main_user_menu_handle -%}
+    
+<nav>
+  <ul class="mobile-menu">
+    {% for link in linklists[main_user_menu].links %}
+    {% assign childlink_handle = link.title | handle %}
+    {% if linklists[childlink_handle] and linklists[childlink_handle].links.size > 0 %}
+    <li class="menu-item-has-children"><a href="{{ link.url }}">{{ link.title }}</a>
+      <ul class="dropdown">
+        {% for childlink in linklists[childlink_handle].links %}
+        {% assign grand_childlink_handle = childlink.title | handle %}
+        {% if linklists[grand_childlink_handle] and linklists[grand_childlink_handle].links.size > 0 %}
+        <li class="m_mega-menu-li"><a href="{{ childlink.url }}">{{ childlink.title }}</a>
+          <ul class="dropdown">
+            {% for grand_childlink in linklists[grand_childlink_handle].links %}
+            <li><a href="{{ grand_childlink.url }}">{{ grand_childlink.title }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% else %}
+        <li><a href="{{ childlink.url }}">{{ childlink.title }}</a></li>
+        {% endif %}  
+        {% endfor %}
+      </ul>
+    </li>
+    {% else %}
+    <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+</nav>
+
+
+
+<script>	
+  $('.m_mega-menu-li').addClass('menu-item-has-children');
+</script>

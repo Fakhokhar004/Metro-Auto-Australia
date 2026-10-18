@@ -1,0 +1,111 @@
+{%- comment -%}
+  Metro Auto "Shop by vehicle" page. Design reference: _design/metro-auto-design/pages/Vehicles.dc.html (makes view).
+  Same source as the old page: every collection with the metafield custom.is_car_brand = true, A to Z,
+  shown with the collection image (the make's logo). A new make collection appears here automatically.
+  Each tile opens the make's collection, which sections/ma-collection shows as a make page.
+{%- endcomment -%}
+{{ 'ma-pages.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign sorted = collections | sort: 'title'
+  assign shown = 0
+-%}
+
+<div data-ma-makes>
+  <section class="ma-banner">
+    <div class="ma-wrap ma-banner__in ma-cats__banner">
+      <div class="ma-cats__copy">
+        <nav class="ma-banner__crumb" aria-label="Breadcrumb">
+          <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span><span aria-current="page">{{ section.settings.title | escape }}</span>
+        </nav>
+        <h1 class="ma-banner__title">{{ section.settings.title | escape }}</h1>
+        {%- if section.settings.text != blank -%}<p class="ma-banner__text">{{ section.settings.text | escape }}</p>{%- endif -%}
+      </div>
+      <label class="ma-cats__find ma-cats__find--brand">
+        {%- render 'ma-icon', name: 'search', size: 18, stroke: '#62666D', width: 2 -%}
+        <input type="search" placeholder="Find your make" aria-label="Find a make" autocomplete="off" data-ma-makes-input>
+      </label>
+    </div>
+  </section>
+
+  <div class="ma-wrap ma-vpage">
+    {%- if section.settings.show_garage -%}
+      <div class="ma-vpage__garage" data-ma-makes-garage hidden>
+        <span class="ma-vpage__gtext"><span>Shopping for</span> <strong data-ma-makes-vehicle></strong></span>
+        <a class="ma-button ma-button--red" href="{{ routes.search_url }}" data-ma-makes-fit>See parts that fit</a>
+        <button type="button" class="ma-vpage__gchange" data-ma-open="garage">Change</button>
+      </div>
+    {%- endif -%}
+
+    <div class="ma-makes">
+      {%- for c in sorted -%}
+        {%- unless c.metafields.custom.is_car_brand == true -%}{%- continue -%}{%- endunless -%}
+        {%- if section.settings.hide_empty and c.all_products_count == 0 -%}{%- continue -%}{%- endif -%}
+        {%- assign shown = shown | plus: 1 -%}
+        <a class="ma-make{% if c.image %} has-logo{% endif %}" href="{{ c.url }}" data-ma-make data-name="{{ c.title | downcase | escape }}" aria-label="View {{ c.title | escape }} parts">
+          {%- if c.image and section.settings.show_logos -%}
+            <span class="ma-make__logo">{{ c.image | image_url: width: 240 | image_tag: alt: '', widths: '120,240', sizes: '120px', loading: 'lazy' }}</span>
+          {%- endif -%}
+          <span class="ma-make__name">{{ c.title | escape }}</span>
+          {%- if section.settings.show_counts -%}<span class="ma-make__count">{{ c.all_products_count }} parts</span>{%- endif -%}
+        </a>
+      {%- endfor -%}
+    </div>
+
+    {%- if shown == 0 and request.design_mode -%}
+      <p class="ma-note">No make collections yet. Set the collection metafield <strong>custom.is_car_brand</strong> to true on each make collection.</p>
+    {%- endif -%}
+
+    <div class="ma-empty-box" data-ma-makes-none hidden>
+      <h2>No make called “<span data-ma-makes-q></span>”</h2>
+      <p>Send us your rego or VIN and we'll find the right part.</p>
+      <a class="ma-button ma-button--red" href="{{ section.settings.ask_url | default: '/pages/contact-us' }}">Contact us</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var root = document.querySelector('[data-ma-makes]');
+    if (!root) return;
+    var tiles = Array.prototype.slice.call(root.querySelectorAll('[data-ma-make]'));
+    var input = root.querySelector('[data-ma-makes-input]');
+    var none = root.querySelector('[data-ma-makes-none]');
+    input.addEventListener('input', function () {
+      var f = input.value.trim().toLowerCase(), n = 0;
+      tiles.forEach(function (t) { var on = !f || t.getAttribute('data-name').indexOf(f) > -1; t.hidden = !on; if (on) n++; });
+      none.hidden = n > 0;
+      root.querySelectorAll('[data-ma-makes-q]').forEach(function (s) { s.textContent = input.value.trim(); });
+    });
+    /* the garage vehicle: straight to the parts that fit */
+    var box = root.querySelector('[data-ma-makes-garage]');
+    function paint() {
+      if (!box || !window.MA || !MA.garage) return;
+      var v = MA.garage.load().vehicle;
+      box.hidden = !v;
+      if (!v) return;
+      box.querySelector('[data-ma-makes-vehicle]').textContent = MA.vKey(v);
+      if (MA.fitUrl) box.querySelector('[data-ma-makes-fit]').href = MA.fitUrl(v);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', paint); else paint();
+    document.addEventListener('ma:garage', paint);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Metro shop by vehicle",
+  "tag": "section",
+  "class": "ma-body",
+  "settings": [
+    { "type": "paragraph", "content": "Makes are the collections with the metafield custom.is_car_brand set to true. The collection image is used as the logo." },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Shop by vehicle" },
+    { "type": "textarea", "id": "text", "label": "Banner text", "default": "Pick your car make to see the parts we carry for it, with prices and stock." },
+    { "type": "checkbox", "id": "show_logos", "label": "Show make logos", "default": true },
+    { "type": "checkbox", "id": "show_counts", "label": "Show part counts", "default": false },
+    { "type": "checkbox", "id": "hide_empty", "label": "Hide makes with no products", "default": true },
+    { "type": "checkbox", "id": "show_garage", "label": "Show the shopper's saved vehicle", "default": true },
+    { "type": "url", "id": "ask_url", "label": "Contact link", "info": "Defaults to /pages/contact-us" }
+  ],
+  "presets": [{ "name": "Metro shop by vehicle" }]
+}
+{% endschema %}

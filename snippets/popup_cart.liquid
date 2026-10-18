@@ -1,0 +1,43 @@
+{% if settings.product_cart_type == 'ajax_popup_cart' %}
+<!-- modalAddToCart -->
+<div class="modal fade ajax-popup" id="modalAddToCart" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog white-modal modal-md">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="modal-content-text">
+          <div class="popup-image">
+            <img class="popupimage" src="">
+          </div>
+          <div class="popup-content">
+            <h3 class="productmsg"></h3>
+            <p class="success-message"><i class="sli sli-check"></i> {{ settings.successfull_note }}</p> 
+            <div class="modal-button">
+              <a href="{{ routes.cart_url }}" class="theme-default-button">{{ settings.view_cart_button2 }}</a>
+              <a href="/checkout" class="theme-default-button">{{ settings.checkout_button2 }}</a>
+            </div>
+          </div>
+        </div>
+        <div class="modal-close">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="sli sli-close"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- modalAddToCart -->
+{% endif %}
+<!-- modalAddToCart Error -->
+<div class="modal fade ajax-popup error-ajax-popup" id="modalAddToCartError" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog white-modal modal-md">
+    <div class="modal-content ">
+      <div class="modal-body">
+        <div class="modal-content-text">
+          <p class="error_message"></p>
+        </div>
+        <div class="modal-close">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="sli sli-close"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

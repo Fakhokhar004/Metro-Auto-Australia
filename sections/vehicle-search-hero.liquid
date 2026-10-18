@@ -1,0 +1,855 @@
+{% comment %}
+  ============================================================
+  Section: Vehicle Search Hero — "Pit Lane Console" design
+  Dark angular automotive console with heading, subheading, and
+  a Make / Model / Year / Engine cascading search bar. Each field
+  is a live type-ahead dropdown backed by a Supabase table:
+  choosing a Make filters the Model list, choosing a Model
+  filters the Year list, and so on. "Search Parts" looks up
+  matching product handles in Supabase and redirects to results.
+
+  FUNCTIONALITY IS UNCHANGED from the original section — only the
+  markup/CSS was restyled. The Supabase query logic, cascading
+  reset behaviour, keyboard "Enter" support, and result redirect
+  logic are byte-for-byte the same JavaScript as before.
+
+  Standalone section — safe to reorder/remove independently of
+  the Filters & Top Brands panel below it.
+  ============================================================
+{% endcomment %}
+
+<section
+  class="vsh-hero"
+  id="vsh-hero-{{ section.id }}"
+  style="
+    {% if section.settings.hero_image %}background-image: url('{{ section.settings.hero_image | image_url: width: 1920 }}');{% endif %}
+    min-height: {{ section.settings.hero_height }}px;
+    background-color: {{ section.settings.overlay_color }};
+  "
+>
+  <div class="vsh-hero__overlay" style="background-color: {{ section.settings.overlay_color }}; opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
+  <div class="vsh-hero__grid-lines" aria-hidden="true"></div>
+
+  <div class="vsh-hero__inner">
+    <div class="vsh-hero__card">
+
+      <div class="vsh-hero__stripe" style="background: {{ section.settings.button_color | default: '#e30000' }};" aria-hidden="true"></div>
+
+      <div class="vsh-hero__heading-row">
+        <span class="vsh-hero__tag" style="background: {{ section.settings.button_color | default: '#e30000' }};">FITMENT SEARCH</span>
+        <h1 class="vsh-hero__title" style="color: {{ section.settings.heading_color }};">
+          {{ section.settings.heading | default: 'Find the Right Auto Parts for Your Vehicle' }}
+        </h1>
+
+        {% if section.settings.subheading != blank %}
+          <p class="vsh-hero__subtitle" style="color: {{ section.settings.subheading_color }};">
+            {{ section.settings.subheading }}
+          </p>
+        {% endif %}
+      </div>
+
+      <div class="vsh-search">
+        <div class="vsh-search__console">
+
+          <div class="vsh-field" data-vsh-field="make" data-col="{{ section.settings.make_column | default: 'make' }}">
+            <span class="vsh-field__badge">01</span>
+            <span class="vsh-field__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l1.6-4.6A2 2 0 0 1 6.5 7h11a2 2 0 0 1 1.9 1.4L21 13"/><path d="M3 13h18v4a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H6v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-4z"/><circle cx="7.5" cy="16.5" r="1.2"/><circle cx="16.5" cy="16.5" r="1.2"/></svg>
+            </span>
+            <span class="vsh-field__label">Make</span>
+            <input type="text" class="vsh-trigger" placeholder="{{ section.settings.make_placeholder | default: 'Type Make...' }}" autocomplete="off">
+            <div class="vsh-options"></div>
+          </div>
+
+          <div class="vsh-chevron" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
+
+          <div class="vsh-field" data-vsh-field="model" data-col="{{ section.settings.model_column | default: 'model' }}">
+            <span class="vsh-field__badge">02</span>
+            <span class="vsh-field__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l7 4v6c0 5-3.4 8.4-7 10-3.6-1.6-7-5-7-10V6l7-4z"/><path d="M9.5 12l1.8 1.8L14.8 10"/></svg>
+            </span>
+            <span class="vsh-field__label">Model</span>
+            <input type="text" class="vsh-trigger" placeholder="{{ section.settings.model_placeholder | default: 'Type Model...' }}" autocomplete="off">
+            <div class="vsh-options"></div>
+          </div>
+
+          <div class="vsh-chevron" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
+
+          <div class="vsh-field" data-vsh-field="year" data-col="{{ section.settings.year_column | default: 'year' }}">
+            <span class="vsh-field__badge">03</span>
+            <span class="vsh-field__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+            </span>
+            <span class="vsh-field__label">Year</span>
+            <input type="text" class="vsh-trigger" placeholder="{{ section.settings.year_placeholder | default: 'Type Year...' }}" autocomplete="off">
+            <div class="vsh-options"></div>
+          </div>
+
+          <div class="vsh-chevron" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
+
+          <div class="vsh-field" data-vsh-field="engine" data-col="{{ section.settings.engine_column | default: 'engine_variant' }}">
+            <span class="vsh-field__badge">04</span>
+            <span class="vsh-field__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2M6 6l1.4 1.4M16.6 16.6L18 18M18 6l-1.4 1.4M7.4 16.6L6 18"/></svg>
+            </span>
+            <span class="vsh-field__label">Engine</span>
+            <input type="text" class="vsh-trigger" placeholder="{{ section.settings.engine_placeholder | default: 'Type Engine...' }}" autocomplete="off">
+            <div class="vsh-options"></div>
+          </div>
+
+          <button type="button" class="vsh-search__btn" id="vsh-search-btn-{{ section.id }}" style="background: {{ section.settings.button_color | default: '#e30000' }};">
+            <span class="vsh-search__btn-label">{{ section.settings.search_button_label | default: 'Search Parts' }}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="vsh-search__btn-icon"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  #vsh-hero-{{ section.id }} {
+    position: relative;
+    z-index: 50;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    isolation: isolate;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-hero__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-hero__grid-lines {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.9) 0%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.9) 0%, transparent 75%);
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-hero__inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 48px 24px;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-hero__card {
+    /* NOTE: no overflow:hidden and no clip-path directly on this element —
+       either would clip the absolutely-positioned dropdown lists below.
+       The angular card shape is drawn on the ::before layer instead. */
+    position: relative;
+    padding: 44px 48px 40px 56px;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-hero__card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 2px, transparent 2px, transparent 14px),
+      linear-gradient(160deg, rgba(14,18,30,0.92) 0%, rgba(8,10,18,0.92) 100%);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid rgba(255,255,255,0.08);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%);
+    border-radius: 4px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-hero__stripe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 6px;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-hero__heading-row {
+    margin-bottom: 30px;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-hero__tag {
+    display: inline-block;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    clip-path: polygon(0 0, 100% 0, 92% 100%, 0% 100%);
+    margin-bottom: 16px;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-hero__title {
+    font-size: clamp(26px, 4vw, 42px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: 0.2px;
+    margin: 0 0 12px;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-hero__subtitle {
+    font-size: clamp(14px, 1.6vw, 16px);
+    font-weight: 500;
+    margin: 0;
+    opacity: 0.75;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-search__console {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    flex-wrap: nowrap;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-chevron {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    flex: 0 0 26px;
+    color: rgba(255,255,255,0.28);
+    align-self: center;
+    margin-top: 10px;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-chevron svg { width: 16px; height: 16px; }
+
+  #vsh-hero-{{ section.id }} .vsh-field {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    z-index: 1;
+    margin-top: 10px;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-field:focus-within {
+    z-index: 999999;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-field__badge {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background: #0d1220;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.55);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    z-index: 2;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-field__icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: rgba(0,0,0,0.4);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-field__icon svg { width: 100%; height: 100%; display: block; }
+
+  #vsh-hero-{{ section.id }} .vsh-field__label {
+    position: absolute;
+    left: 40px;
+    top: 7px;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.38);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-trigger {
+    width: 100%;
+    height: 100%;
+    min-height: 60px;
+    padding: 22px 16px 8px 40px;
+    border-radius: 3px;
+    background: #f4f5f7;
+    border: 2px solid transparent;
+    border-right: 1px solid rgba(0,0,0,0.08);
+    color: #111;
+    font-weight: 700;
+    font-size: 14.5px;
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-field:first-child .vsh-trigger { border-top-left-radius: 3px; border-bottom-left-radius: 3px; }
+
+  #vsh-hero-{{ section.id }} .vsh-trigger::placeholder {
+    color: #a2a5ab;
+    font-weight: 500;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-trigger:focus {
+    border-color: {{ section.settings.button_color | default: '#e30000' }};
+    background: #ffffff;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-trigger:focus ~ .vsh-field__icon,
+  #vsh-hero-{{ section.id }} .vsh-field:has(.vsh-trigger:focus) .vsh-field__icon {
+    color: {{ section.settings.button_color | default: '#e30000' }};
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-options {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    right: 0;
+    background: rgba(9, 12, 22, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 8px;
+    z-index: 2147483647;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.4), 0 28px 60px rgba(0,0,0,0.85), 0 4px 18px rgba(0,0,0,0.6);
+    display: none;
+    max-height: 240px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.3) transparent;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-options::-webkit-scrollbar { width: 6px; }
+  #vsh-hero-{{ section.id }} .vsh-options::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 6px;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-options.is-active {
+    display: block;
+    animation: vsh-options-in 0.15s ease;
+  }
+
+  @keyframes vsh-options-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-option {
+    position: relative;
+    padding: 11px 18px 11px 22px;
+    color: #eceef2;
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: background 0.15s ease, padding-left 0.15s ease;
+    border-left: 3px solid transparent;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-option:hover {
+    background: rgba(255,255,255,0.06);
+    padding-left: 26px;
+    border-left-color: {{ section.settings.button_color | default: '#e30000' }};
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-option.is-disabled {
+    opacity: 0.45;
+    cursor: default;
+    color: #aaa;
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-option.is-disabled:hover {
+    background: transparent;
+    padding-left: 22px;
+    border-left-color: transparent;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-search__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    flex: 0 0 auto;
+    margin-left: 14px;
+    margin-top: 10px;
+    min-height: 60px;
+    color: #fff;
+    border: none;
+    clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%, 0 14px);
+    border-radius: 3px;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    padding: 0 26px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: filter 0.2s ease, transform 0.15s ease;
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-search__btn-icon { width: 17px; height: 17px; flex: 0 0 auto; }
+
+  #vsh-hero-{{ section.id }} .vsh-search__btn:hover {
+    filter: brightness(1.12);
+    transform: translateY(-1px);
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-search__btn:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
+  }
+
+  #vsh-hero-{{ section.id }} .vsh-search__btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  @media (max-width: 1000px) {
+    #vsh-hero-{{ section.id }} .vsh-hero__card { padding: 36px 28px 32px 34px; }
+    #vsh-hero-{{ section.id }} .vsh-search__console { flex-wrap: wrap; row-gap: 22px; }
+    #vsh-hero-{{ section.id }} .vsh-field { flex: 1 1 40%; }
+    #vsh-hero-{{ section.id }} .vsh-chevron { display: none; }
+    #vsh-hero-{{ section.id }} .vsh-search__btn { flex: 1 1 100%; margin-left: 0; }
+  }
+
+  @media (max-width: 560px) {
+    #vsh-hero-{{ section.id }} .vsh-hero__card { padding: 28px 20px 26px 26px; }
+    #vsh-hero-{{ section.id }} .vsh-hero__card::before { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%); }
+    #vsh-hero-{{ section.id }} .vsh-field { flex: 1 1 100%; }
+    #vsh-hero-{{ section.id }} .vsh-trigger { min-height: 56px; }
+    #vsh-hero-{{ section.id }} .vsh-search__btn { min-height: 54px; }
+  }
+</style>
+
+{% if section.settings.supabase_url != blank and section.settings.supabase_key != blank %}
+<script>
+(function () {
+  var root = document.getElementById('vsh-hero-{{ section.id }}');
+  if (!root) return;
+
+  var SUPABASE_URL   = {{ section.settings.supabase_url | json }};
+  var SUPABASE_KEY   = {{ section.settings.supabase_key | json }};
+  var TABLE_NAME     = {{ section.settings.supabase_table | default: 'fitman_alternators' | json }};
+  var HANDLE_COL     = {{ section.settings.product_handle_column | default: 'product_handle' | json }};
+  var RESULTS_URL    = {{ section.settings.results_url | default: '/search' | json }};
+  var MAX_OR_TERMS   = {{ section.settings.max_or_terms | default: 50 }};
+  var PAGE_SIZE      = 1000;
+
+  // ---- Load the Supabase SDK once, even if this section is used twice ----
+  window.__vshSupabaseLoad = window.__vshSupabaseLoad || new Promise(function (resolve) {
+    if (window.supabase) { resolve(); return; }
+    var existing = document.querySelector('script[data-vsh-supabase-sdk]');
+    if (existing) { existing.addEventListener('load', resolve); return; }
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    s.setAttribute('data-vsh-supabase-sdk', '');
+    s.onload = resolve;
+    document.head.appendChild(s);
+  });
+
+  window.__vshSupabaseLoad.then(function () { init(root); });
+
+  function init(root) {
+    var _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    var fieldEls = Array.prototype.slice.call(root.querySelectorAll('.vsh-field'));
+    var dropdowns = fieldEls.map(function (el) {
+      return {
+        key: el.getAttribute('data-vsh-field'),
+        col: el.getAttribute('data-col'),
+        el: el,
+        trigger: el.querySelector('.vsh-trigger'),
+        list: el.querySelector('.vsh-options')
+      };
+    });
+
+    var masterLists = {};
+    var selected = {};
+    dropdowns.forEach(function (dd) { masterLists[dd.key] = []; selected[dd.key] = ''; });
+
+    var pendingFetch = {};
+    var searchBtn = document.getElementById('vsh-search-btn-{{ section.id }}');
+    var originalBtnLabel = searchBtn.querySelector('.vsh-search__btn-label')
+      ? searchBtn.querySelector('.vsh-search__btn-label').textContent
+      : searchBtn.textContent;
+    var btnLabelEl = searchBtn.querySelector('.vsh-search__btn-label');
+
+    function setBtnLabel(text) {
+      if (btnLabelEl) { btnLabelEl.textContent = text; }
+      else { searchBtn.textContent = text; }
+    }
+
+    // ---- Value resolution helpers ----
+    function resolveFilterValue(key, typedVal) {
+      if (typedVal === undefined || typedVal === null || typedVal === '') return '';
+      var str = typedVal.toString();
+      var list = masterLists[key] || [];
+      var exact = list.filter(function (v) { return v.toString() === str; })[0];
+      if (exact !== undefined) return exact;
+      var ci = list.filter(function (v) { return v.toString().toLowerCase() === str.toLowerCase(); })[0];
+      return ci !== undefined ? ci.toString() : str;
+    }
+
+    function applyColumnFilter(query, dd, val) {
+      if (dd.key === 'year') {
+        var n = parseInt(val, 10);
+        return isNaN(n) ? query.eq(dd.col, -1) : query.eq(dd.col, n);
+      }
+      if (dd.key === 'engine') {
+        // engine_variant-style columns store comma-separated combos, e.g. "1.8L, 1.6L, 1.6 Sport"
+        return query.ilike(dd.col, '%' + val + '%');
+      }
+      return query.ilike(dd.col, val);
+    }
+
+    function dedupeCaseInsensitive(values) {
+      var map = {};
+      var order = [];
+      values.forEach(function (v) {
+        var str = v.toString();
+        var key = str.toLowerCase();
+        if (!(key in map)) {
+          map[key] = v;
+          order.push(key);
+          return;
+        }
+        var existingStr = map[key].toString();
+        var existingIsAllCaps = existingStr === existingStr.toUpperCase() && existingStr !== existingStr.toLowerCase();
+        var newIsAllCaps = str === str.toUpperCase() && str !== str.toLowerCase();
+        if (existingIsAllCaps && !newIsAllCaps) map[key] = v;
+      });
+      return order.map(function (k) { return map[k]; });
+    }
+
+    function buildFilteredQuery(col, index, opts) {
+      var q = _supabase.from(TABLE_NAME).select(col, opts);
+      for (var i = 0; i < index; i++) {
+        var prevDd = dropdowns[i];
+        var prevVal = selected[prevDd.key] || prevDd.trigger.value.trim();
+        if (prevVal) {
+          q = applyColumnFilter(q, prevDd, resolveFilterValue(prevDd.key, prevVal));
+        }
+      }
+      return q;
+    }
+
+    function fetchAllRows(col, index) {
+      return buildFilteredQuery(col, index, { count: 'exact', head: true }).then(function (res) {
+        if (res.error) throw res.error;
+        var total = res.count || 0;
+        if (total === 0) return [];
+
+        var pageCount = Math.ceil(total / PAGE_SIZE);
+        var pagePromises = [];
+        for (var p = 0; p < pageCount; p++) {
+          pagePromises.push(buildFilteredQuery(col, index).range(p * PAGE_SIZE, p * PAGE_SIZE + PAGE_SIZE - 1));
+        }
+        return Promise.all(pagePromises).then(function (pages) {
+          var rows = [];
+          pages.forEach(function (page) {
+            if (page.error) throw page.error;
+            if (page.data) rows = rows.concat(page.data);
+          });
+          return rows;
+        });
+      });
+    }
+
+    function fetchDataFor(index) {
+      if (index >= dropdowns.length) return Promise.resolve();
+      var dd = dropdowns[index];
+
+      return fetchAllRows(dd.col, index).then(function (data) {
+        if (!data) return;
+        var unique;
+
+        if (dd.key === 'engine') {
+          var tokens = {};
+          var tokenOrder = [];
+          data.forEach(function (r) {
+            var raw = r[dd.col];
+            if (raw) {
+              raw.toString().split(',').forEach(function (t) {
+                var trimmed = t.trim();
+                if (trimmed && !(trimmed.toLowerCase() in tokens)) {
+                  tokens[trimmed.toLowerCase()] = trimmed;
+                  tokenOrder.push(trimmed.toLowerCase());
+                }
+              });
+            }
+          });
+          unique = dedupeCaseInsensitive(tokenOrder.map(function (k) { return tokens[k]; }));
+        } else if (dd.key === 'year') {
+          var seen = {};
+          unique = [];
+          data.forEach(function (r) {
+            var v = r[dd.col];
+            if (v !== null && v !== undefined && !(v in seen)) { seen[v] = true; unique.push(v); }
+          });
+        } else {
+          var vals = [];
+          var seenVals = {};
+          data.forEach(function (r) {
+            var v = r[dd.col];
+            if (v !== null && v !== undefined && v !== '' && !(v in seenVals)) { seenVals[v] = true; vals.push(v); }
+          });
+          unique = dedupeCaseInsensitive(vals);
+        }
+
+        unique.sort(function (a, b) {
+          if (dd.key === 'year') return b - a;
+          return a.toString().localeCompare(b.toString(), undefined, { numeric: true, sensitivity: 'base' });
+        });
+
+        masterLists[dd.key] = unique;
+      }).catch(function (err) {
+        console.error('Error fetching data for ' + dd.key + ':', err);
+      });
+    }
+
+    function resetFrom(index) {
+      for (var i = index; i < dropdowns.length; i++) {
+        var dd = dropdowns[i];
+        dd.trigger.value = '';
+        selected[dd.key] = '';
+        masterLists[dd.key] = [];
+      }
+    }
+
+    function renderList(ddIndex, items) {
+      var dd = dropdowns[ddIndex];
+      dd.list.innerHTML = '';
+
+      if (ddIndex > 0) {
+        var prevDd = dropdowns[ddIndex - 1];
+        if (!selected[prevDd.key] && !prevDd.trigger.value.trim()) {
+          dd.list.innerHTML = '<div class="vsh-option is-disabled">Select ' + prevDd.key + ' first</div>';
+          dd.list.classList.add('is-active');
+          return;
+        }
+      }
+
+      if (!items || items.length === 0) {
+        dd.list.innerHTML = '<div class="vsh-option is-disabled">No matches found</div>';
+      } else {
+        items.forEach(function (item) {
+          var div = document.createElement('div');
+          div.className = 'vsh-option';
+          div.textContent = item;
+          div.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            dd.trigger.value = item;
+            selected[dd.key] = item;
+            dd.list.classList.remove('is-active');
+            resetFrom(ddIndex + 1);
+            fetchDataFor(ddIndex + 1);
+          });
+          dd.list.appendChild(div);
+        });
+      }
+      dd.list.classList.add('is-active');
+    }
+
+    function renderFilteredList(i, dd) {
+      var term = dd.trigger.value.toLowerCase();
+      var filtered = masterLists[dd.key].filter(function (it) {
+        return it.toString().toLowerCase().indexOf(term) !== -1;
+      });
+      renderList(i, filtered);
+    }
+
+    dropdowns.forEach(function (dd, i) {
+      dd.trigger.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          selected[dd.key] = dd.trigger.value.trim();
+          executeSearch();
+        }
+      });
+
+      dd.trigger.addEventListener('input', function () {
+        selected[dd.key] = dd.trigger.value.trim();
+        var run = function () { renderFilteredList(i, dd); };
+        if (pendingFetch[dd.key]) {
+          dd.list.innerHTML = '<div class="vsh-option is-disabled">Loading options...</div>';
+          dd.list.classList.add('is-active');
+          pendingFetch[dd.key].then(run);
+        } else {
+          run();
+        }
+      });
+
+      dd.trigger.addEventListener('focus', function () {
+        if (!pendingFetch[dd.key]) {
+          dd.list.innerHTML = '<div class="vsh-option is-disabled">Loading options...</div>';
+          dd.list.classList.add('is-active');
+          pendingFetch[dd.key] = fetchDataFor(i).finally(function () { delete pendingFetch[dd.key]; });
+        }
+        pendingFetch[dd.key].then(function () { renderFilteredList(i, dd); });
+      });
+
+      dd.trigger.addEventListener('blur', function () {
+        setTimeout(function () { dd.list.classList.remove('is-active'); }, 250);
+      });
+    });
+
+    function executeSearch() {
+      dropdowns.forEach(function (dd) {
+        selected[dd.key] = selected[dd.key] || dd.trigger.value.trim();
+      });
+
+      var activeVehicleFilters = dropdowns
+        .filter(function (dd) { return selected[dd.key]; })
+        .map(function (dd) { return { dd: dd, val: resolveFilterValue(dd.key, selected[dd.key]) }; });
+
+      if (activeVehicleFilters.length === 0) {
+        alert('Please enter or select at least one filter option.');
+        return;
+      }
+
+      setBtnLabel('Searching...');
+      searchBtn.disabled = true;
+
+      var query = _supabase.from(TABLE_NAME).select(HANDLE_COL);
+      activeVehicleFilters.forEach(function (f) { query = applyColumnFilter(query, f.dd, f.val); });
+
+      query.limit(1000).then(function (res) {
+        if (res.error) throw res.error;
+        var seen = {};
+        var handles = [];
+        (res.data || []).forEach(function (r) {
+          var h = r[HANDLE_COL];
+          if (h && !(h in seen)) { seen[h] = true; handles.push(h); }
+        });
+        return handles;
+      }).catch(function (err) {
+        console.error('Error searching fitment data:', err);
+        return [];
+      }).then(function (handles) {
+        setBtnLabel(originalBtnLabel);
+        searchBtn.disabled = false;
+
+        if (handles.length === 0) {
+          alert('Sorry, no parts were found for this vehicle. Please try a different selection.');
+          return;
+        }
+
+        if (handles.length === 1) {
+          window.location.href = '/products/' + handles[0];
+          return;
+        }
+
+        var params = new URLSearchParams();
+        params.append('type', 'product');
+        var orTerms = handles.slice(0, MAX_OR_TERMS);
+        params.append('q', '(' + orTerms.join(' OR ') + ')');
+        window.location.href = RESULTS_URL + '?' + params.toString();
+      });
+    }
+
+    searchBtn.addEventListener('click', executeSearch);
+
+    // Preload the first dropdown's options so it opens instantly.
+    pendingFetch[dropdowns[0].key] = fetchDataFor(0).finally(function () { delete pendingFetch[dropdowns[0].key]; });
+
+    // Close dropdowns when clicking outside the field.
+    document.addEventListener('click', function (e) {
+      dropdowns.forEach(function (dd) {
+        if (!dd.el.contains(e.target)) dd.list.classList.remove('is-active');
+      });
+    });
+  }
+})();
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Vehicle Search Hero",
+  "tag": "section",
+  "class": "vehicle-search-hero-section",
+  "settings": [
+    { "type": "header", "content": "Background" },
+    { "type": "image_picker", "id": "hero_image", "label": "Hero background image" },
+    { "type": "range", "id": "hero_height", "min": 320, "max": 800, "step": 20, "unit": "px", "label": "Section height", "default": 460 },
+    { "type": "color", "id": "overlay_color", "label": "Overlay / background color", "default": "#0d1220" },
+    { "type": "range", "id": "overlay_opacity", "min": 0, "max": 90, "step": 5, "unit": "%", "label": "Overlay opacity", "default": 55 },
+
+    { "type": "header", "content": "Heading" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Find the Right Auto Parts for Your Vehicle" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#ffffff" },
+    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Quality Parts  |  Fast Shipping Australia Wide" },
+    { "type": "color", "id": "subheading_color", "label": "Subheading color", "default": "#ffffff" },
+
+    { "type": "header", "content": "Search Bar" },
+    { "type": "color", "id": "button_color", "label": "Button / accent color", "default": "#e30000" },
+    { "type": "text", "id": "search_button_label", "label": "Button label", "default": "Search Parts" },
+    { "type": "text", "id": "make_placeholder", "label": "Make field placeholder", "default": "Type Make..." },
+    { "type": "text", "id": "model_placeholder", "label": "Model field placeholder", "default": "Type Model..." },
+    { "type": "text", "id": "year_placeholder", "label": "Year field placeholder", "default": "Type Year..." },
+    { "type": "text", "id": "engine_placeholder", "label": "Engine field placeholder", "default": "Type Engine..." },
+
+    { "type": "header", "content": "Vehicle Fitment Lookup (Supabase)" },
+    {
+      "type": "text",
+      "id": "supabase_url",
+      "label": "Supabase project URL",
+      "default": "https://agqbeulmaqbookokxkgs.supabase.co"
+    },
+    {
+      "type": "text",
+      "id": "supabase_key",
+      "label": "Supabase anon (public) key",
+      "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncWJldWxtYXFib29rb2t4a2dzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MTU2NzEsImV4cCI6MjA5MzQ5MTY3MX0.nPv-VzJW0IzpKr4PTK_2Ny5yvzo3hPaGeXgE-Iu2wgM",
+      "info": "This is the public 'anon' key — it is safe to expose in the browser, Supabase Row Level Security controls what it can read."
+    },
+    {
+      "type": "text",
+      "id": "supabase_table",
+      "label": "Fitment table name",
+      "default": "fitman_alternators",
+      "info": "Supabase doesn't expose schema info to this key, so make sure this matches your table name exactly."
+    },
+    { "type": "text", "id": "make_column", "label": "Make column", "default": "make" },
+    { "type": "text", "id": "model_column", "label": "Model column", "default": "model" },
+    { "type": "text", "id": "year_column", "label": "Year column", "default": "year" },
+    { "type": "text", "id": "engine_column", "label": "Engine column", "default": "engine_variant", "info": "Can store comma-separated combos, e.g. \"1.8L, 1.6L, 1.6 Sport\"" },
+    { "type": "text", "id": "product_handle_column", "label": "Product handle column", "default": "product_handle" },
+
+    { "type": "header", "content": "Search Results" },
+    { "type": "url", "id": "results_url", "label": "Search results page", "info": "Leave blank to use /search" },
+    { "type": "number", "id": "max_or_terms", "label": "Max product handles per search", "default": 50 }
+  ],
+  "presets": [
+    { "name": "Vehicle Search Hero" }
+  ]
+}
+{% endschema %}

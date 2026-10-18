@@ -1,0 +1,14 @@
+{%- comment -%}
+  Not for the theme editor. Like sections/ma-fit-scan, but lists every product in the collection (handle and
+  fitment keys), so make pages can find model names in product handles. Fetched by ma-listing.js:
+    /collections/<make>?page=N&section_id=ma-model-scan
+{%- endcomment -%}
+{%- if collection -%}
+  {%- paginate collection.products by 250 -%}
+    {%- render 'ma-fit-scan-json', items: collection.products, paginate: paginate, all: true -%}
+  {%- endpaginate -%}
+{%- endif -%}
+
+{% schema %}
+{ "name": "Metro model scan", "settings": [] }
+{% endschema %}

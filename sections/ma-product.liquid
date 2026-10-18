@@ -1,0 +1,556 @@
+{%- comment -%}
+  Metro Auto product page. Design reference: _design/metro-auto-design/pages/Product.dc.html
+  Desktop: gallery + info (stock, title, price, category, "Check it fits", buy bar, perks, tags), tabs below, "Pair it with".
+  Phone (under 641px): photo, name, price and stock, buy bar, then the folded "Check it fits" bar and tags;
+  tabs become stacked open/close sections.
+
+  Fitment: product.metafields.custom.fitment (metaobject list: make, model, engine, body, years),
+  falling back to make-model-year tags (toyota-corolla-2019). Specs: product.metafields.custom.specifications.
+  Behaviour: assets/ma-product.js (uses window.MA from ma-theme.js).
+{%- endcomment -%}
+{{ 'ma-product.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign universal_tag = section.settings.universal_tag | handleize | default: 'universal'
+
+  # Most specific collection for the breadcrumb and "Pair it with": the one with the fewest products.
+  assign p_col = nil
+  assign best = 999999
+  for c in product.collections
+    if c.handle == 'all' or c.handle == 'frontpage'
+      continue
+    endif
+    if c.products_count < best
+      assign best = c.products_count
+      assign p_col = c
+    endif
+  endfor
+
+  # ---- stock (selected variant) ----
+  assign tracked = false
+  if variant.inventory_management == 'shopify'
+    assign tracked = true
+  endif
+  assign on_hand = variant.inventory_quantity | default: 0
+  assign max = 99
+  if tracked and variant.inventory_policy == 'deny' and on_hand > 0
+    assign max = on_hand | at_most: 99
+  endif
+  if variant.available == false
+    assign stock_text = 'Out of stock'
+    assign stock_mod = 'out'
+  elsif tracked and on_hand > 0 and on_hand <= 5
+    assign stock_text = 'Only ' | append: on_hand | append: ' left in Melbourne'
+    assign stock_mod = 'low'
+  elsif tracked and on_hand > 0
+    assign stock_text = 'In stock in Melbourne, ' | append: on_hand | append: ' available'
+    assign stock_mod = 'in'
+  else
+    assign stock_text = 'In stock'
+    assign stock_mod = 'in'
+  endif
+
+  assign on_sale = false
+  if variant.compare_at_price > variant.price
+    assign on_sale = true
+    assign save = variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round
+  endif
+
+  # ---- fitment: metaobjects first ----
+  assign fit_field = product.metafields.custom.fitment
+  assign fit_items = nil
+  if fit_field.type contains 'list'
+    assign fit_items = fit_field.value
+  endif
+
+  # ---- fitment tags, universal flag, descriptive tags ----
+  assign fit_tags = ''
+  assign plain_tags = ''
+  assign universal = false
+  assign workshop = false
+  assign workshop_tag = section.settings.workshop_tag | handleize | default: 'workshop'
+  for tag in product.tags
+    assign t = tag | handleize
+    if t == universal_tag
+      assign universal = true
+      continue
+    endif
+    if t == workshop_tag
+      assign workshop = true
+    endif
+    assign t_parts = t | split: '-'
+    assign y = t_parts | last
+    assign yn = y | plus: 0
+    if t_parts.size >= 3 and y.size == 4 and yn >= 1900 and yn <= 2100
+      assign fit_tags = fit_tags | append: t | append: ','
+    else
+      assign plain_tags = plain_tags | append: tag | append: '|||'
+    endif
+  endfor
+  assign fit_tag_list = fit_tags | split: ','
+  assign plain_tag_list = plain_tags | split: '|||'
+
+  assign has_fit_rows = false
+  if fit_items != nil and fit_items.size > 0
+    assign has_fit_rows = true
+  endif
+  # ---- "Compatible Vehicles" list inside the description (e.g. HiQ: <h3>Compatible Vehicles</h3><ul><li>…</li></ul>) ----
+  # Moved out of the Description tab into Compatible vehicles, and used for the fit check.
+  assign desc = product.description
+  assign desc_fit_lines = '' | split: ''
+  if section.settings.parse_desc_fit
+    assign markers = '<h3>Compatible Vehicles</h3>|<h2>Compatible Vehicles</h2>|<h4>Compatible Vehicles</h4>|<h3>Compatible Vehicles:</h3>|<h3>Compatible vehicles</h3>|<p><strong>Compatible Vehicles</strong></p>|<p><strong>Compatible Vehicles:</strong></p>' | split: '|'
+    for m in markers
+      unless desc contains m
+        continue
+      endunless
+      assign desc_before = desc | split: m | first
+      assign after = desc | remove_first: desc_before | remove_first: m
+      if after contains '</ul>'
+        assign list_html = after | split: '</ul>' | first
+        assign desc_rest = after | remove_first: list_html | remove_first: '</ul>'
+        assign raw_items = list_html | split: '<li'
+        assign lines = ''
+        for it in raw_items offset: 1
+          assign line = '<li' | append: it | strip_html | strip_newlines | strip
+          if line != blank
+            assign lines = lines | append: line | append: '|||'
+          endif
+        endfor
+        assign desc_fit_lines = lines | split: '|||'
+        if desc_fit_lines.size > 0
+          assign desc = desc_before | append: desc_rest
+        endif
+      endif
+      break
+    endfor
+  endif
+
+  assign vehicle_specific = false
+  if has_fit_rows or fit_tag_list.size > 0 or desc_fit_lines.size > 0
+    assign vehicle_specific = true
+  endif
+
+  # ---- tag-based compatible vehicle rows: group make-model keys, collect years ----
+  assign tag_keys = ''
+  for t in fit_tag_list
+    assign klen = t.size | minus: 5
+    assign k = t | slice: 0, klen
+    assign needle = '|' | append: k | append: '|'
+    assign hay = '|' | append: tag_keys
+    unless hay contains needle
+      assign tag_keys = tag_keys | append: k | append: '|'
+    endunless
+  endfor
+  assign tag_key_list = tag_keys | split: '|'
+
+  assign spec_mo = product.metafields.custom.specifications.value
+-%}
+
+<div class="ma-pdp ma-wrap" data-ma-pdp data-section-id="{{ section.id }}" data-product-id="{{ product.id }}">
+  <nav class="ma-pdp__crumb" aria-label="Breadcrumb">
+    <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span>
+    {%- if p_col -%}<a href="{{ p_col.url }}">{{ p_col.title | escape }}</a><span aria-hidden="true">/</span>{%- endif -%}
+    <span aria-current="page">{{ variant.sku | default: product.title | escape }}</span>
+  </nav>
+
+  <div class="ma-pdp__grid">
+    {%- comment -%} ---------- Gallery ---------- {%- endcomment -%}
+    <div class="ma-pdp__media">
+      {%- assign images = product.media | where: 'media_type', 'image' -%}
+      <div class="ma-pdp__gallery{% if images.size > 0 %} ma-pdp__gallery--photo{% endif %}" data-pdp-gallery>
+        {%- if images.size > 0 -%}
+          {%- assign first_img = variant.featured_media | default: images.first -%}
+          {%- assign main_alt = first_img.alt | default: product.title -%}
+          {{- first_img | image_url: width: 1200 | image_tag:
+            class: 'ma-pdp__img',
+            widths: '400,600,800,1000,1200',
+            sizes: '(min-width: 961px) 50vw, 100vw',
+            loading: 'eager',
+            fetchpriority: 'high',
+            alt: main_alt
+          -}}
+        {%- else -%}
+          <span class="ma-pdp__art">{%- render 'ma-placeholder-art', kind: 'pad' -%}</span>
+        {%- endif -%}
+        <span class="ma-pdp__sale" data-pdp-sale{% unless on_sale %} hidden{% endunless %}>{{ save | default: 0 }}% off</span>
+      </div>
+      {%- if images.size > 1 -%}
+        <div class="ma-pdp__thumbs" role="group" aria-label="Product images">
+          {%- for img in images limit: 8 -%}
+            {%- assign t_alt = 'Show image ' | append: forloop.index -%}
+            <button type="button" class="ma-pdp__thumb" aria-label="{{ t_alt }}" aria-pressed="{% if img.id == first_img.id %}true{% else %}false{% endif %}"
+              data-pdp-thumb
+              data-media-id="{{ img.id }}"
+              data-src="{{ img | image_url: width: 1200 }}"
+              data-srcset="{{ img | image_url: width: 400 }} 400w, {{ img | image_url: width: 800 }} 800w, {{ img | image_url: width: 1200 }} 1200w"
+              data-alt="{{ img.alt | default: product.title | escape }}">
+              {{- img | image_url: width: 200 | image_tag: loading: 'lazy', alt: '' -}}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ---------- Info ---------- {%- endcomment -%}
+    <div class="ma-pdp__info">
+      <div class="ma-pdp__head">
+        <div class="ma-pdp__meta">
+          <span class="ma-pdp__stock ma-pdp__stock--{{ stock_mod }}" data-pdp-stock>{{ stock_text }}</span>
+          <span class="ma-pdp__part">{{ product.vendor | escape }}<span data-pdp-sku-wrap{% if variant.sku == blank %} hidden{% endif %}>, part number <span data-pdp-sku>{{ variant.sku | escape }}</span></span></span>
+        </div>
+        <h1 class="ma-pdp__title">{{ product.title | escape }}</h1>
+        <div class="ma-pdp__prices">
+          <span class="ma-pdp__price" data-pdp-price>{{ variant.price | money }}</span>
+          <span class="ma-pdp__compare" data-pdp-compare{% unless on_sale %} hidden{% endunless %}>{{ variant.compare_at_price | money }}</span>
+          <span class="ma-pdp__gst">including GST</span>
+        </div>
+        {%- if p_col or product.type != blank -%}
+          <div class="ma-pdp__catrow">
+            <span>Category:</span>
+            {%- liquid
+              # skip the product type when it's the same as the collection name ("Brake Pads / Brake Pads")
+              assign show_type = false
+              if product.type != blank
+                assign show_type = true
+                if p_col
+                  assign t1 = product.type | handleize
+                  assign t2 = p_col.title | handleize
+                  if t1 == t2
+                    assign show_type = false
+                  endif
+                endif
+              endif
+            -%}
+            {%- if p_col -%}<a href="{{ p_col.url }}">{{ p_col.title | escape }}</a>{%- endif -%}
+            {%- if p_col and show_type -%}<span aria-hidden="true" class="ma-pdp__sep">/</span>{%- endif -%}
+            {%- if show_type -%}<a href="{{ product.type | url_for_type }}">{{ product.type | escape }}</a>{%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} ---------- Check it fits ---------- {%- endcomment -%}
+      <section class="ma-pdp__fit" aria-labelledby="ma-fit-h-{{ section.id }}" data-pdp-fit>
+        <h2 id="ma-fit-h-{{ section.id }}" class="ma-pdp__fit-h">
+          <button type="button" class="ma-pdp__fit-head" aria-expanded="false" data-pdp-fit-toggle>
+            <span>Check it fits</span>
+            <span class="ma-pdp__fit-sum" data-pdp-fit-sum>
+              {%- if vehicle_specific -%}Tap to check{%- elsif universal -%}Suits any vehicle{%- elsif workshop -%}Workshop product{%- else -%}Ask us{%- endif -%}
+            </span>
+            <span class="ma-pdp__fit-chev" aria-hidden="true">{%- render 'ma-icon', name: 'chevron', size: 16, width: 2.4 -%}</span>
+          </button>
+        </h2>
+        <div class="ma-pdp__fit-body">
+          {%- comment -%} Always rendered so a vehicle list found in the description (ma-product.js) can switch it on. {%- endcomment -%}
+          <div class="ma-pdp__fit-has" data-pdp-fit-has{% unless vehicle_specific %} hidden{% endunless %}>
+            <div class="ma-pdp__fitsel" data-pdp-fitsel>
+              <label class="ma-gfield">Make<select class="ma-gselect" data-ma-v="make"><option value="">Select</option></select></label>
+              <label class="ma-gfield">Model<select class="ma-gselect" data-ma-v="model" disabled><option value="">Select</option></select></label>
+              <label class="ma-gfield">Year<select class="ma-gselect" data-ma-v="year" disabled><option value="">Select</option></select></label>
+            </div>
+            <p class="ma-pdp__fit-hint" data-pdp-fit-state="incomplete">Choose your make, model and year to check.</p>
+            <div class="ma-pdp__fit-res ma-pdp__fit-res--yes" data-pdp-fit-state="yes" hidden>
+              <span class="ma-pdp__fit-msg">{%- render 'ma-icon', name: 'check', size: 18, width: 2.6 -%}Fits a <span data-pdp-fit-label></span></span>
+              <button type="button" class="ma-pdp__fit-save" data-pdp-fit-save hidden>Save to my garage</button>
+            </div>
+            <div class="ma-pdp__fit-res ma-pdp__fit-res--no" data-pdp-fit-state="no" hidden>
+              <span class="ma-pdp__fit-msg">Doesn't fit a <span data-pdp-fit-label></span></span>
+              <a href="{{ routes.all_products_collection_url }}" data-pdp-fit-see>See parts that fit it</a>
+            </div>
+            {%- if section.settings.req_always -%}
+              <button type="button" class="ma-pdp__fit-more" data-ma-open="fitreq" aria-haspopup="dialog">Car not listed? {{ section.settings.no_fit_link | escape }}</button>
+            {%- endif -%}
+            <script type="application/json" data-pdp-fitdata>
+              {
+                "tags": {{ fit_tag_list | json }},
+                "lines": {{ desc_fit_lines | json }},
+                "rows": [
+                  {%- if has_fit_rows -%}
+                    {%- for mo in fit_items -%}
+                      { "make": {{ mo.make.value | json }}, "model": {{ mo.model.value | json }}, "years": {{ mo.years.value | json }} }{% unless forloop.last %},{% endunless %}
+                    {%- endfor -%}
+                  {%- endif -%}
+                ]
+              }
+            </script>
+          </div>
+          {%- unless vehicle_specific -%}
+          <div class="ma-pdp__fit-none" data-pdp-fit-none>
+          {%- if universal -%}
+            <p class="ma-pdp__fit-ok">{%- render 'ma-icon', name: 'check', size: 18, width: 2.6 -%}Suits any vehicle. No fitment check needed.</p>
+          {%- elsif workshop -%}
+            <p class="ma-pdp__fit-note">This is a workshop product and isn't matched to a particular vehicle.</p>
+          {%- else -%}
+            {%- comment -%} No fitment data loaded for this product yet: don't guess. {%- endcomment -%}
+            <p class="ma-pdp__fit-note">{{ section.settings.no_fit_text | escape }}</p>
+            <button type="button" class="ma-pdp__fit-ask" data-ma-open="fitreq" aria-haspopup="dialog">
+              {%- render 'ma-icon', name: 'car', size: 18 -%}{{ section.settings.no_fit_link | escape }}
+            </button>
+          {%- endif -%}
+          </div>
+          {%- endunless -%}
+        </div>
+      </section>
+
+      {%- comment -%} ---------- Buy ---------- {%- endcomment -%}
+      <div class="ma-pdp__buy">
+        {%- form 'product', product, class: 'ma-pdp__form' -%}
+          <input type="hidden" name="id" value="{{ variant.id }}" data-pdp-variant-id>
+          {%- unless product.has_only_default_variant -%}
+            <label class="ma-gfield ma-pdp__variant">
+              {{ product.options | join: ' / ' | escape }}
+              <select class="ma-gselect" data-pdp-variant>
+                {%- for v in product.variants -%}
+                  <option value="{{ v.id }}"{% if v.id == variant.id %} selected{% endif %}{% unless v.available %} disabled{% endunless %}>{{ v.title | escape }}{% unless v.available %} (out of stock){% endunless %}</option>
+                {%- endfor -%}
+              </select>
+            </label>
+          {%- endunless -%}
+          <div class="ma-pdp__buybar">
+            <div class="ma-pdp__qty">
+              <button type="button" aria-label="Decrease quantity" data-pdp-qty="-1">&minus;</button>
+              <input type="number" name="quantity" aria-label="Quantity" inputmode="numeric" min="1" max="{{ max }}" value="1" data-pdp-qty-input>
+              <button type="button" aria-label="Increase quantity" data-pdp-qty="1">+</button>
+            </div>
+            <button type="submit" class="ma-pdp__atc" data-pdp-atc{% unless variant.available %} disabled{% endunless %}>
+              {%- if variant.available -%}Add to cart, {{ variant.price | money }}{%- else -%}Out of stock{%- endif -%}
+            </button>
+            <button type="button" class="ma-pdp__wish" aria-label="Save to wishlist" aria-pressed="false" data-ma-wish="{{ product.handle }}">
+              {%- render 'ma-icon', name: 'heart', size: 22 -%}
+            </button>
+          </div>
+          <p class="ma-pdp__added" data-pdp-added hidden>Added to your cart. <a href="{{ routes.cart_url }}">View cart</a></p>
+          <p class="ma-pdp__error" data-pdp-error role="alert" hidden></p>
+        {%- endform -%}
+      </div>
+
+      {%- if section.blocks.size > 0 -%}
+        <div class="ma-pdp__apps">
+          {%- for block in section.blocks -%}
+            {%- if block.type == '@app' -%}{% render block %}{%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.perk_1 != blank or section.settings.perk_2 != blank or section.settings.perk_3 != blank -%}
+        <div class="ma-pdp__perks">
+          {%- if section.settings.perk_1 != blank -%}<div class="ma-pdp__perk">{%- render 'ma-icon', name: 'clock', size: 20, stroke: '#FF5A50' -%}<span>{{ section.settings.perk_1 | escape }}</span></div>{%- endif -%}
+          {%- if section.settings.perk_2 != blank -%}<div class="ma-pdp__perk">{%- render 'ma-icon', name: 'truck', size: 20, stroke: '#FF5A50' -%}<span>{{ section.settings.perk_2 | escape }}</span></div>{%- endif -%}
+          {%- if section.settings.perk_3 != blank -%}<div class="ma-pdp__perk">{%- render 'ma-icon', name: 'shield', size: 20, stroke: '#FF5A50' -%}<span>{{ section.settings.perk_3 | escape }}</span></div>{%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.show_tags and plain_tag_list.size > 0 -%}
+        <div class="ma-pdp__tags">
+          <span class="ma-pdp__tags-h">Tags</span>
+          <div class="ma-pdp__tags-list">
+            {%- for tag in plain_tag_list limit: 12 -%}
+              <a href="{{ routes.all_products_collection_url }}/{{ tag | handleize }}">{{ tag | escape }}</a>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- comment -%} ---------- Details: tabs on desktop, open/close sections on phones ---------- {%- endcomment -%}
+  <div class="ma-pdp__details" data-pdp-tabs>
+    <div class="ma-pdp__tablist" role="tablist" aria-label="Product details">
+      <button type="button" role="tab" id="ma-tab-desc-{{ section.id }}" aria-controls="ma-panel-desc-{{ section.id }}" aria-selected="true" data-pdp-tab="desc">Description</button>
+      <button type="button" role="tab" id="ma-tab-spec-{{ section.id }}" aria-controls="ma-panel-spec-{{ section.id }}" aria-selected="false" tabindex="-1" data-pdp-tab="spec">Specifications</button>
+      <button type="button" role="tab" id="ma-tab-fit-{{ section.id }}" aria-controls="ma-panel-fit-{{ section.id }}" aria-selected="false" tabindex="-1" data-pdp-tab="fit">Compatible vehicles</button>
+      <button type="button" role="tab" id="ma-tab-ship-{{ section.id }}" aria-controls="ma-panel-ship-{{ section.id }}" aria-selected="false" tabindex="-1" data-pdp-tab="ship">Shipping and returns</button>
+    </div>
+
+    {%- comment -%} Description {%- endcomment -%}
+    <section class="ma-pdp__panel is-active is-open" id="ma-panel-desc-{{ section.id }}" role="tabpanel" aria-labelledby="ma-tab-desc-{{ section.id }}" data-pdp-panel="desc">
+      <h2 class="ma-pdp__panel-h"><button type="button" aria-expanded="true" data-pdp-acc>Description<span aria-hidden="true"></span></button></h2>
+      <div class="ma-pdp__panel-body ma-pdp__rte ma-pdp__rte--pending" data-pdp-desc data-fallback="{{ product.title | escape }} from {{ product.vendor | escape }}, stocked in our Melbourne warehouse.">
+        {%- if desc != blank -%}
+          {{ desc }}
+        {%- else -%}
+          <p>{{ product.title | escape }} from {{ product.vendor | escape }}, stocked in our Melbourne warehouse.</p>
+        {%- endif -%}
+      </div>
+    </section>
+
+    {%- comment -%} Specifications {%- endcomment -%}
+    <section class="ma-pdp__panel is-open" id="ma-panel-spec-{{ section.id }}" role="tabpanel" aria-labelledby="ma-tab-spec-{{ section.id }}" data-pdp-panel="spec">
+      <h2 class="ma-pdp__panel-h"><button type="button" aria-expanded="true" data-pdp-acc>Specifications<span aria-hidden="true"></span></button></h2>
+      <div class="ma-pdp__panel-body">
+        <dl class="ma-pdp__specs" data-pdp-specs>
+          <div><dt>Brand</dt><dd>{{ product.vendor | escape }}</dd></div>
+          {%- if variant.sku != blank -%}<div><dt>Part number</dt><dd data-pdp-sku>{{ variant.sku | escape }}</dd></div>{%- endif -%}
+          {%- if p_col -%}<div><dt>Category</dt><dd>{{ p_col.title | escape }}</dd></div>{%- endif -%}
+          {%- if product.type != blank -%}<div><dt>Product type</dt><dd>{{ product.type | escape }}</dd></div>{%- endif -%}
+          {%- if spec_mo -%}
+            {%- assign spec_keys = section.settings.spec_fields | split: ',' -%}
+            {%- for sk in spec_keys -%}
+              {%- assign k = sk | strip -%}
+              {%- if k == 'brand' or k == 'part_number' -%}{%- continue -%}{%- endif -%}
+              {%- assign v = spec_mo[k] -%}
+              {%- if v != blank -%}<div><dt>{{ k | replace: '_', ' ' | capitalize }}</dt><dd>{{ v }}</dd></div>{%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+          {%- if variant.barcode != blank -%}<div><dt>Barcode</dt><dd>{{ variant.barcode | escape }}</dd></div>{%- endif -%}
+        </dl>
+      </div>
+    </section>
+
+    {%- comment -%} Compatible vehicles {%- endcomment -%}
+    <section class="ma-pdp__panel is-open" id="ma-panel-fit-{{ section.id }}" role="tabpanel" aria-labelledby="ma-tab-fit-{{ section.id }}" data-pdp-panel="fit">
+      <h2 class="ma-pdp__panel-h"><button type="button" aria-expanded="true" data-pdp-acc>Compatible vehicles<span aria-hidden="true"></span></button></h2>
+      <div class="ma-pdp__panel-body">
+        <div data-pdp-fit-grouped hidden></div>
+        {%- if has_fit_rows == false and desc_fit_lines.size > 0 -%}
+          {%- comment -%}
+            From the description. The plain list works without JavaScript; ma-product.js groups it into
+            a Make / Model / Variant / Years table (desktop) and cards (phone).
+          {%- endcomment -%}
+          <ul class="ma-pdp__fit-raw" data-pdp-fit-raw>
+            {%- for line in desc_fit_lines -%}<li>{{ line }}</li>{%- endfor -%}
+          </ul>
+        {%- elsif has_fit_rows -%}
+          {%- liquid
+            assign show_engine = false
+            assign show_body = false
+            for mo in fit_items
+              if mo.engine != blank
+                assign show_engine = true
+              endif
+              if mo.body != blank
+                assign show_body = true
+              endif
+            endfor
+          -%}
+          <div class="ma-pdp__fit-table-wrap">
+            <table class="ma-pdp__fit-table">
+              <thead><tr><th scope="col">Make</th><th scope="col">Model</th>{% if show_engine %}<th scope="col">Engine</th>{% endif %}{% if show_body %}<th scope="col">Body</th>{% endif %}<th scope="col">Years</th></tr></thead>
+              <tbody>
+                {%- for mo in fit_items -%}
+                  <tr><td>{{ mo.make }}</td><td>{{ mo.model }}</td>{% if show_engine %}<td>{{ mo.engine }}</td>{% endif %}{% if show_body %}<td>{{ mo.body }}</td>{% endif %}<td>{{ mo.years }}</td></tr>
+                {%- endfor -%}
+              </tbody>
+            </table>
+          </div>
+          <ul class="ma-pdp__fit-cards">
+            {%- for mo in fit_items -%}
+              <li>
+                <span><strong>{{ mo.make }} {{ mo.model }}</strong><span>{% if mo.engine != blank %}{{ mo.engine }}, {% endif %}Years {{ mo.years }}</span></span>
+                {%- render 'ma-icon', name: 'check', size: 18, stroke: '#15803D', width: 2.6 -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- elsif tag_key_list.size > 0 -%}
+          {%- render 'ma-fit-tag-table', fit_tag_list: fit_tag_list, tag_key_list: tag_key_list -%}
+        {%- elsif universal -%}
+          <p data-pdp-fitpanel-none>This product suits any vehicle.</p>
+        {%- elsif workshop -%}
+          <p data-pdp-fitpanel-none>This is a workshop product and isn't matched to a particular vehicle.</p>
+        {%- else -%}
+          <div data-pdp-fitpanel-none>
+          <p>{{ section.settings.no_fit_text | escape }}</p>
+          <button type="button" class="ma-pdp__fit-ask" data-ma-open="fitreq" aria-haspopup="dialog">
+            {%- render 'ma-icon', name: 'car', size: 18 -%}{{ section.settings.no_fit_link | escape }}
+          </button>
+          </div>
+        {%- endif -%}
+      </div>
+    </section>
+
+    {%- comment -%} Shipping and returns {%- endcomment -%}
+    <section class="ma-pdp__panel" id="ma-panel-ship-{{ section.id }}" role="tabpanel" aria-labelledby="ma-tab-ship-{{ section.id }}" data-pdp-panel="ship">
+      <h2 class="ma-pdp__panel-h"><button type="button" aria-expanded="false" data-pdp-acc>Shipping and returns<span aria-hidden="true"></span></button></h2>
+      <div class="ma-pdp__panel-body ma-pdp__rte">{{ section.settings.shipping_text }}</div>
+    </section>
+  </div>
+
+  {%- comment -%} ---------- Pair it with ---------- {%- endcomment -%}
+  {%- assign pair_source = section.settings.pair_collection | default: p_col -%}
+  {%- if section.settings.show_pairs -%}
+    {%- if pair_source and pair_source.products_count > 1 -%}
+      <section class="ma-pdp__pairs">
+        <h2 class="ma-h2 ma-pdp__pairs-h">{{ section.settings.pair_heading | escape }}</h2>
+        <div class="ma-pgrid">
+          {%- assign shown = 0 -%}
+          {%- for item in pair_source.products limit: 12 -%}
+            {%- if item.id == product.id -%}{%- continue -%}{%- endif -%}
+            {%- if shown >= 4 -%}{%- break -%}{%- endif -%}
+            {%- render 'ma-product-card', product: item -%}
+            {%- assign shown = shown | plus: 1 -%}
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- else -%}
+      {%- comment -%} No collection to draw from: ma-product.js loads Shopify's product recommendations. {%- endcomment -%}
+      {%- assign vendor_url = product.vendor | url_for_vendor -%}
+      <section class="ma-pdp__pairs" data-pdp-recs="{{ routes.product_recommendations_url }}?product_id={{ product.id }}&limit=5&section_id=ma-card-results" data-pdp-recs-vendor="{{ vendor_url }}&section_id=ma-card-results" hidden>
+        <h2 class="ma-h2 ma-pdp__pairs-h">{{ section.settings.pair_heading | escape }}</h2>
+        <div class="ma-pgrid" data-pdp-recs-grid></div>
+      </section>
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- render 'ma-fitment-request', product: product, sku: variant.sku, section_id: section.id, title: section.settings.req_title, intro: section.settings.req_intro, states: section.settings.req_states -%}
+
+  <script type="application/json" data-pdp-variants>
+    {
+      "currency": {{ cart.currency.iso_code | json }},
+      "variants": [
+        {%- for v in product.variants -%}
+          {
+            "id": {{ v.id }},
+            "price": {{ v.price }},
+            "compare": {{ v.compare_at_price | default: 0 }},
+            "available": {{ v.available | json }},
+            "tracked": {% if v.inventory_management == 'shopify' %}true{% else %}false{% endif %},
+            "deny": {% if v.inventory_policy == 'deny' %}true{% else %}false{% endif %},
+            "qty": {{ v.inventory_quantity | default: 0 }},
+            "sku": {{ v.sku | json }},
+            "media": {{ v.featured_media.id | default: 'null' }}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+</div>
+
+<script src="{{ 'ma-product.js' | asset_url }}" defer></script>
+<script>
+  /* recently viewed (cart and wishlist pages show them) */
+  document.addEventListener('DOMContentLoaded', function () { if (window.MA && MA.recent) MA.recent.add({{ product.handle | json }}); });
+</script>
+
+{% schema %}
+{
+  "name": "Metro product",
+  "tag": "section",
+  "class": "ma-body",
+  "blocks": [{ "type": "@app" }],
+  "settings": [
+    { "type": "header", "content": "Perks" },
+    { "type": "text", "id": "perk_1", "label": "Perk 1 (clock)", "default": "Same-day dispatch before 2PM" },
+    { "type": "text", "id": "perk_2", "label": "Perk 2 (truck)", "default": "Free delivery over $200" },
+    { "type": "text", "id": "perk_3", "label": "Perk 3 (shield)", "default": "Manufacturer warranty" },
+    { "type": "checkbox", "id": "show_tags", "label": "Show tags", "default": true, "info": "Fitment tags (make-model-year) and the universal tag are always hidden." },
+    { "type": "text", "id": "universal_tag", "label": "Universal product tag", "default": "universal" },
+    { "type": "text", "id": "workshop_tag", "label": "Workshop product tag", "default": "workshop" },
+    { "type": "checkbox", "id": "parse_desc_fit", "label": "Read \"Compatible Vehicles\" lists from the description", "default": true, "info": "Moves the list out of the Description tab into Compatible vehicles and uses it for the fit check. Lines look like: Hyundai Tucson 2015 TL,TLE 2.0 FWD Petrol 2.0L 4cyl." },
+    { "type": "header", "content": "When a product has no fitment data" },
+    { "type": "text", "id": "no_fit_text", "label": "Message", "default": "We haven't loaded the vehicle list for this part yet. Send us your rego and we'll confirm it fits before you buy." },
+    { "type": "text", "id": "no_fit_link", "label": "Button label", "default": "Request a fitment check" },
+    { "type": "text", "id": "req_title", "label": "Pop-up heading", "default": "Check this part fits your car" },
+    { "type": "textarea", "id": "req_intro", "label": "Pop-up text", "default": "Send us your rego and we'll confirm this part fits your exact build before you buy. Our Melbourne parts team replies by email, usually within one business day." },
+    { "type": "text", "id": "req_states", "label": "States", "default": "VIC, NSW, QLD, SA, WA, TAS, NT, ACT" },
+    { "type": "checkbox", "id": "req_always", "label": "Also show the request button on products that have fitment data", "default": true, "info": "Shown under the fit result, for shoppers whose car isn't listed." },
+    { "type": "header", "content": "Tabs" },
+    { "type": "text", "id": "spec_fields", "label": "Specification fields", "default": "brand, part_number, position, material", "info": "Fields of the custom.specifications metaobject to list." },
+    { "type": "richtext", "id": "shipping_text", "label": "Shipping and returns", "default": "<p><strong>Free delivery</strong> on orders over $200, Australia-wide.</p><p><strong>Same-day dispatch</strong> when you order before 2PM on a working day.</p><p><strong>Returns</strong> within 30 days on unused parts. See our refund policy for details.</p>" },
+    { "type": "header", "content": "Pair it with" },
+    { "type": "checkbox", "id": "show_pairs", "label": "Show", "default": true },
+    { "type": "text", "id": "pair_heading", "label": "Heading", "default": "Pair it with" },
+    { "type": "collection", "id": "pair_collection", "label": "Collection", "info": "Empty uses the product's most specific collection." }
+  ]
+}
+{% endschema %}

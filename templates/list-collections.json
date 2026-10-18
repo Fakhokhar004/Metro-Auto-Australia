@@ -1,0 +1,23 @@
+{
+  "layout": "metro",
+  "sections": {
+    "main": {
+      "type": "ma-collections-list",
+      "blocks": {
+        "brakes": { "type": "group", "settings": { "title": "Brakes and suspension", "short": "brakes and suspension", "icon": "disc", "collection": "brakes-suspension",
+          "collections": ["brake-pads", "brake-rotors-discs", "shock-absorbers-struts", "steering-components", "wheel-bearing-kits-hubs-auto"] } },
+        "service": { "type": "group", "settings": { "title": "Service and electrical", "short": "service parts", "icon": "bolt", "collection": "electrical-ignition",
+          "collections": ["oil-fluids-chemicals", "filters-kits", "spark-plugs-ignition", "alternators", "car-care-products"] } },
+        "engine": { "type": "group", "settings": { "title": "Performance and engine", "short": "engine parts", "icon": "engine", "collection": "engine-drivetrain",
+          "collections": ["engine-cooling", "cooling-climate", "water-pumps", "belts-tensioners-pulleys-kits", "timing-belts-kits", "fuel-system", "gaskets-seals", "driveline-axles", "transmission-drivetrain"] } },
+        "body": { "type": "group", "settings": { "title": "Body and accessories", "short": "body and accessories", "icon": "car", "collection": "struts-bonnet-body",
+          "collections": ["body-exterior", "interior-accessories", "struts-bonnet-body"] } },
+        "workshop": { "type": "group", "settings": { "title": "Workshop essentials", "short": "workshop essentials", "icon": "wrench", "collection": "workshop-essentials",
+          "collections": ["kits-service-packs", "j-b-weld", "workshop-essentials"] } }
+      },
+      "block_order": ["brakes", "service", "engine", "body", "workshop"],
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

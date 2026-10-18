@@ -1,0 +1,108 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "Header",
+  "sections": {
+    "header": {
+      "type": "header",
+      "custom_css": [],
+      "settings": {
+        "logo": "shopify://shop_images/MetroAuto_Logo_HighRes_6000x1908_10e843fe-45fc-4ce1-bf16-f9f3ab4e9316.png",
+        "logo_width": 170,
+        "menu": "main-menu",
+        "search_placeholder": "Search for products, brands, and categories...",
+        "ps_enable": true,
+        "ps_show_collections": true,
+        "ps_collections_first": true,
+        "ps_product_limit": 5,
+        "ps_collection_limit": 1,
+        "ps_show_image": true,
+        "ps_show_price": false,
+        "ps_show_vendor": true,
+        "ps_min_chars": 1,
+        "ps_delay": 100,
+        "ps_max_height": 460,
+        "ps_max_height_mobile": 340,
+        "ps_radius": 12,
+        "ps_image_size": 52,
+        "ps_image_size_mobile": 44,
+        "ps_image_fit": "contain",
+        "ps_title_size": 12,
+        "ps_meta_size": 9,
+        "ps_price_size": 13,
+        "ps_bg_color": "#ffffff",
+        "ps_text_color": "#111827",
+        "ps_muted_color": "#8a8f98",
+        "ps_price_color": "#d10000",
+        "ps_hover_bg_color": "#f5f5f5",
+        "ps_image_bg_color": "#f7f7f7",
+        "ps_products_label": "Products",
+        "ps_collections_label": "Categories",
+        "ps_viewall_label": "View all results",
+        "ps_noresults_label": "No matches found. Try a different keyword.",
+        "ps_searching_label": "Searching...",
+        "ps_soldout_label": "Sold out",
+        "show_wishlist": true,
+        "wishlist_url": "shopify://pages/wishlist-page",
+        "cart_drop_enable": true,
+        "cart_drop_open_on_add": true,
+        "cart_show_qty": true,
+        "cart_show_checkout": false,
+        "cart_heading": "Your cart",
+        "cart_items_label": "items",
+        "cart_subtotal_label": "Subtotal",
+        "cart_continue_label": "Continue shopping",
+        "cart_view_label": "View cart",
+        "cart_checkout_label": "Checkout",
+        "cart_empty_label": "Your cart is empty.",
+        "wish_drop_enable": true,
+        "wish_show_badge": true,
+        "wish_show_price": true,
+        "wish_confirm_clear": true,
+        "wish_heading": "Your wishlist",
+        "wish_clear_label": "Clear all",
+        "wish_view_label": "View wishlist",
+        "wish_empty_label": "You have not saved anything yet.",
+        "wish_loading_label": "Loading your saved items...",
+        "wish_confirm_text": "Remove everything from your wishlist?",
+        "drop_width": 360,
+        "drop_max_height": 340,
+        "drop_max_height_mobile": 260,
+        "drop_radius": 12,
+        "drop_image_size": 58,
+        "drop_image_size_mobile": 48,
+        "drop_btn_radius": 8,
+        "drop_bg_color": "#ffffff",
+        "drop_text_color": "#111827",
+        "drop_muted_color": "#8a8f98",
+        "drop_price_color": "#d10000",
+        "drop_hover_bg_color": "#f5f5f5",
+        "drop_btn_bg_color": "#d10000",
+        "drop_btn_text_color": "#ffffff",
+        "sticky_enable": false,
+        "bg_color": "#ffffff",
+        "sticky_bg_color": "#ffffff",
+        "text_color": "#111827",
+        "icon_color": "#111827",
+        "hover_color": "#d10000",
+        "border_color": "#ececec",
+        "search_bg_color": "#f5f5f5",
+        "badge_bg_color": "#d10000",
+        "badge_text_color": "#ffffff",
+        "drawer_bg_color": "#ffffff",
+        "drawer_text_color": "#111827"
+      }
+    }
+  },
+  "order": [
+    "header"
+  ]
+}

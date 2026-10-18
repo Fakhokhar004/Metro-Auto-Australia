@@ -1,0 +1,264 @@
+{%- comment -%}
+  ============================================================================
+  snippets/ma-fitment-bar.liquid
+  Metro Auto Australia — "Set your vehicle" strip for collection + search pages
+
+  REQUIRES snippets/ma-fitment-core.liquid to be rendered in theme.liquid.
+
+  INSTALL — add this line just above the product grid in BOTH:
+      sections/main-collection.liquid   (or main-collection-product-grid.liquid)
+      sections/main-search.liquid
+
+      {% render 'ma-fitment-bar' %}
+
+  TWO STATES, switched automatically:
+    No vehicle  -> Make / Model / Year dropdowns + Find parts button
+    Vehicle set -> vehicle shown in a box + Remove Vehicle / Change Vehicle
+  ============================================================================
+{%- endcomment -%}
+
+<div class="ma-vbar" data-ma-vbar hidden>
+  <div class="ma-vbar__title">
+    <strong>SET YOUR VEHICLE</strong>
+    <span>For guaranteed fitment</span>
+  </div>
+
+  {%- comment -%} State A: no vehicle chosen {%- endcomment -%}
+  <div class="ma-vbar__pick" data-ma-vbar-pick hidden>
+    <select data-ma-vbar-level="make" aria-label="Make"><option value="">Make</option></select>
+    <select data-ma-vbar-level="model" aria-label="Model" disabled><option value="">Model</option></select>
+    <select data-ma-vbar-level="year" aria-label="Year" disabled><option value="">Year</option></select>
+    <button type="button" class="ma-vbar__go" data-ma-vbar-go disabled>Find parts</button>
+  </div>
+
+  {%- comment -%} State B: vehicle chosen {%- endcomment -%}
+  <div class="ma-vbar__set" data-ma-vbar-set hidden>
+    <div class="ma-vbar__box" data-ma-vbar-label></div>
+    <div class="ma-vbar__links">
+      <button type="button" data-ma-fit-clear>Remove vehicle</button>
+      <span aria-hidden="true">|</span>
+      <button type="button" data-ma-fit-open>Change vehicle</button>
+    </div>
+  </div>
+
+  <p class="ma-vbar__msg" data-ma-vbar-msg role="status" aria-live="polite" hidden></p>
+</div>
+
+<style>
+  .ma-vbar {
+    display:grid;
+    grid-template-columns:auto 1fr;
+    align-items:center;
+    gap:20px;
+    border:1px solid #e3e6e8;
+    background:#fafbfc;
+    border-radius:6px;
+    padding:16px 20px;
+    margin:0 0 24px;
+  }
+  .ma-vbar[hidden] { display:none; }
+
+  .ma-vbar__title strong {
+    display:block;
+    font-size:17px;
+    letter-spacing:.4px;
+    color:#111;
+    line-height:1.2;
+  }
+  .ma-vbar__title span {
+    display:block;
+    font-size:13px;
+    color:#5c6670;
+    margin-top:2px;
+  }
+
+  .ma-vbar__pick {
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0,1fr)) auto;
+    gap:10px;
+  }
+  .ma-vbar__pick[hidden] { display:none; }
+  .ma-vbar__pick select {
+    height:44px;
+    padding:0 12px;
+    border:1px solid #d4d9dd;
+    border-radius:4px;
+    background:#fff;
+    color:#222;
+    font-size:15px;
+    width:100%;
+  }
+  .ma-vbar__pick select:disabled { background:#f0f2f4; color:#9aa3ab; }
+  .ma-vbar__go {
+    height:44px;
+    padding:0 24px;
+    border:0;
+    border-radius:4px;
+    background:#b21f24;
+    color:#fff;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .ma-vbar__go:disabled { opacity:.45; cursor:not-allowed; }
+
+  .ma-vbar__set {
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+  .ma-vbar__set[hidden] { display:none; }
+  .ma-vbar__box {
+    flex:1;
+    min-width:240px;
+    border:1px solid #c9ced3;
+    border-left:4px solid #0a58ca;
+    background:#fff;
+    padding:12px 14px;
+    font-size:15px;
+    line-height:1.35;
+    color:#111;
+  }
+  .ma-vbar__links {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:14px;
+    color:#c9ced3;
+  }
+  .ma-vbar__links button {
+    border:0;
+    background:transparent;
+    color:#0a58ca;
+    font-size:14px;
+    cursor:pointer;
+    padding:0;
+    text-decoration:none;
+  }
+  .ma-vbar__links button:hover { text-decoration:underline; }
+
+  .ma-vbar__msg {
+    grid-column:1 / -1;
+    margin:0;
+    font-size:13px;
+    color:#b91c1c;
+  }
+  .ma-vbar__msg[hidden] { display:none; }
+
+  @media screen and (max-width:989px) {
+    .ma-vbar { grid-template-columns:1fr; gap:14px; }
+    .ma-vbar__pick { grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .ma-vbar__go { grid-column:1 / -1; }
+  }
+  @media screen and (max-width:749px) {
+    .ma-vbar { padding:14px; }
+    .ma-vbar__pick { grid-template-columns:1fr; }
+    .ma-vbar__pick select { font-size:16px; }
+    .ma-vbar__links { width:100%; }
+  }
+</style>
+
+<script>
+(function () {
+  var root = document.querySelector('[data-ma-vbar]');
+  if (!root || root.dataset.maVbarInit === '1') return;
+
+  /* The core snippet must be loaded first — it owns the data + storage. */
+  function boot() {
+    if (!window.MAFit) { setTimeout(boot, 60); return; }
+    root.dataset.maVbarInit = '1';
+    init();
+  }
+
+  function init() {
+    var pick  = root.querySelector('[data-ma-vbar-pick]');
+    var setEl = root.querySelector('[data-ma-vbar-set]');
+    var label = root.querySelector('[data-ma-vbar-label]');
+    var msg   = root.querySelector('[data-ma-vbar-msg]');
+    var go    = root.querySelector('[data-ma-vbar-go]');
+
+    var selMake  = root.querySelector('[data-ma-vbar-level="make"]');
+    var selModel = root.querySelector('[data-ma-vbar-level="model"]');
+    var selYear  = root.querySelector('[data-ma-vbar-level="year"]');
+
+    function say(t) { msg.hidden = !t; msg.textContent = t || ''; }
+
+    function fill(sel, values, placeholder) {
+      sel.innerHTML = '';
+      var o = document.createElement('option');
+      o.value = ''; o.textContent = placeholder;
+      sel.appendChild(o);
+      values.forEach(function (v) {
+        var el = document.createElement('option');
+        el.value = v.id; el.textContent = v.name;
+        sel.appendChild(el);
+      });
+      sel.disabled = values.length === 0;
+    }
+
+    function syncGo() {
+      go.disabled = !(selMake.value && selModel.value && selYear.value);
+    }
+
+    /* ---- decide which state to show ---- */
+    var current = window.MAFit.current();
+    root.hidden = false;
+
+    if (current) {
+      setEl.hidden = false;
+      pick.hidden = true;
+      label.textContent = current.label;
+      return; // no need to load dropdowns at all
+    }
+
+    setEl.hidden = true;
+    pick.hidden = false;
+
+    window.MAFit.options('make')
+      .then(function (v) { fill(selMake, v, 'Make'); })
+      .catch(function (e) {
+        fill(selMake, [], 'Unavailable');
+        say('Vehicle list unavailable.');
+        console.warn('[MAFit bar]', e);
+      });
+
+    selMake.addEventListener('change', function () {
+      fill(selModel, [], 'Model');
+      fill(selYear, [], 'Year');
+      selModel.disabled = selYear.disabled = true;
+      syncGo(); say('');
+      if (!selMake.value) return;
+      window.MAFit.options('model', { makeId: selMake.value })
+        .then(function (v) { fill(selModel, v, 'Model'); syncGo(); })
+        .catch(function (e) { say('Could not load models.'); console.warn('[MAFit bar]', e); });
+    });
+
+    selModel.addEventListener('change', function () {
+      fill(selYear, [], 'Year');
+      selYear.disabled = true;
+      syncGo(); say('');
+      if (!selModel.value) return;
+      window.MAFit.options('year', { modelId: selModel.value })
+        .then(function (v) { fill(selYear, v, 'Year'); syncGo(); })
+        .catch(function (e) { say('Could not load years.'); console.warn('[MAFit bar]', e); });
+    });
+
+    selYear.addEventListener('change', syncGo);
+
+    go.addEventListener('click', function () {
+      if (go.disabled) return;
+      window.MAFit.set({
+        make:    selMake.options[selMake.selectedIndex].textContent,
+        model:   selModel.options[selModel.selectedIndex].textContent,
+        year:    selYear.options[selYear.selectedIndex].textContent,
+        makeId:  selMake.value,
+        modelId: selModel.value
+      });
+    });
+  }
+
+  boot();
+})();
+</script>

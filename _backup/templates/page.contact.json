@@ -1,0 +1,143 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "custom_page_wUxXW9": {
+      "type": "custom-page",
+      "blocks": {
+        "section_padding_XqhPc7": {
+          "type": "section_padding",
+          "settings": {
+            "section_padding_top": 0,
+            "section_padding_bottom": 100,
+            "section_padding_top_md": 0,
+            "section_padding_bottom_md": 80,
+            "section_padding_top_xs": 0,
+            "section_padding_bottom_xs": 60
+          }
+        }
+      },
+      "block_order": [
+        "section_padding_XqhPc7"
+      ],
+      "disabled": true,
+      "name": "Custom Page",
+      "settings": {
+        "section_width": "default",
+        "section_title_custom_color": false,
+        "section_title": "",
+        "section_title_color": "#1f2226",
+        "section_title_font": "poppins_n6",
+        "section_title_font_size": "30",
+        "section_title_line_height": 40,
+        "section_title_font_size_md": "24",
+        "section_title_line_height_md": 35,
+        "section_title_font_size_sm": "20",
+        "section_title_line_height_sm": 30,
+        "section_title_margin_bottom": 10,
+        "section_sub_title": "",
+        "section_subtitle_color": "#5a5a5a",
+        "section_sub_title_font": "poppins_n6",
+        "section_des_font_size": "14",
+        "section_sub_title_line_height": 24,
+        "section_des_font_size_md": "14",
+        "section_sub_title_line_height_md": 24,
+        "section_des_font_size_sm": "14",
+        "section_sub_title_line_height_sm": 24,
+        "section_sub_title_margin_bottom": 10,
+        "title_align": "text-center",
+        "custom_page": "contact-us"
+      }
+    },
+    "main": {
+      "type": "contact-template",
+      "settings": {
+        "section_bg": "#ffffff",
+        "section_padding_top": 60,
+        "section_padding_bottom": 60,
+        "form_max_width": 640,
+        "form_align": "center",
+        "name_two_columns": true,
+        "column_gap": 14,
+        "label_color": "#0e0e0e",
+        "label_size": 17,
+        "label_weight": "700",
+        "label_margin_bottom": 8,
+        "field_bg": "#f2f2f2",
+        "field_text_color": "#111111",
+        "field_placeholder_color": "#8a8a8a",
+        "field_border_color": "#cfcfcf",
+        "field_border_width": 1,
+        "field_radius": 8,
+        "field_padding_y": 12,
+        "field_padding_x": 16,
+        "field_font_size": 16,
+        "field_spacing": 18,
+        "textarea_height": 140,
+        "field_focus_border_color": "#cc3030",
+        "field_focus_bg": "#ffffff",
+        "field_focus_ring_color": "#ff0000",
+        "field_focus_ring_size": 0,
+        "text_selection_bg": "#fd2222",
+        "text_selection_text": "#ffffff",
+        "field_arrow_color": "#111111",
+        "option_selected_bg": "#cc3030",
+        "option_selected_text": "#ffffff",
+        "show_required": true,
+        "required_text": "* Required",
+        "required_color": "#c0392b",
+        "required_size": 13,
+        "btn_text": "Send Message",
+        "btn_bg": "#cc3030",
+        "btn_bg_hover": "#878787",
+        "btn_text_color": "#ffffff",
+        "btn_text_hover": "#ffffff",
+        "btn_border_width": 0,
+        "btn_border_color": "#cc3030",
+        "btn_border_color_hover": "#ad2222",
+        "btn_radius": 6,
+        "btn_padding_y": 14,
+        "btn_padding_x": 32,
+        "btn_font_size": 16,
+        "btn_weight": "600",
+        "btn_full_width": false,
+        "btn_align": "center",
+        "btn_margin_top": 8,
+        "success_bg": "#9dff98",
+        "success_text": "#0e0e0e",
+        "mobile_section_padding_top": 40,
+        "mobile_section_padding_bottom": 40,
+        "mobile_field_padding_y": 12,
+        "mobile_field_font_size": 12,
+        "mobile_btn_full_width": true,
+        "first_name_label": "First Name",
+        "first_name_placeholder": "Name",
+        "surname_label": "Surname",
+        "surname_placeholder": "Last Name",
+        "email_label": "Email Address",
+        "email_placeholder": "Email",
+        "mobile_label": "Mobile Number",
+        "mobile_placeholder": "04XX XXX XXX",
+        "vin_label": "Vin Number",
+        "vin_placeholder": "",
+        "rego_label": "Registration Number",
+        "rego_placeholder": "",
+        "state_label": "State",
+        "state_placeholder": "Select State...",
+        "message_label": "Message",
+        "message_placeholder": "Your Message"
+      }
+    }
+  },
+  "order": [
+    "custom_page_wUxXW9",
+    "main"
+  ]
+}

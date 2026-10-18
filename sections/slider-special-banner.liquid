@@ -1,0 +1,625 @@
+{%- assign sset = section.settings -%}
+{%- assign header_font_top = sset.header_font_top -%}
+{%- assign header_font_slider = sset.header_font_slider -%}
+{%- assign paragraph_font_slider = sset.paragraph_font_slider -%}
+{%- assign button_font_slider = sset.button_font_slider -%}
+
+
+<div id="section-{{ section.id }}" class="slider-area slider-special-banner {% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}default {% endif %} slider_style_1" id="section-{{ section.id }}" data-section="heroOwlSlider">
+   
+  {% if section.settings.slider_arsoule_active %} 
+  
+  <div class="slider-active-special owl-carousel nav-style-{% if sset.nav_style == 'style_1' %}1{% elsif sset.nav_style == 'style_3' %}3{% else %}2 dot-style-1{% endif %}" data-owl-carousel='{
+
+            "loop": true,
+            "nav": true,
+            {% if settings.rtl_enable %}
+            "rtl": true,
+            {% endif %}
+            "autoplay": false,
+            {% if section.settings.nav_style == 'style_1' %}
+            "navText": ["<i class=&#x27;sli sli-arrow-left&#x27;></i>", "<i class=&#x27;sli sli-arrow-right&#x27;></i>"],
+            {% elsif section.settings.nav_style == 'style_2' %}
+            "navText": ["<i class=&#x27;sli sli-arrow-up&#x27;></i>", "<i class=&#x27;sli sli-arrow-down&#x27;></i>"],
+            {% elsif section.settings.nav_style == 'style_3' %}
+            "navText": ["<i class=&#x27;sli sli-arrow-up&#x27;></i><span>Prev</span>", "<i class=&#x27;sli sli-arrow-down&#x27;></i><span>Next</span>"],
+            {% endif %}
+            "autoplayTimeout": 5000,
+            "animateOut": "fadeOut",
+            "animateIn": "fadeIn",
+            "item": 1,
+            "responsive": {
+              "0": {
+                "items": 1
+              },
+              "768": {
+                "items": 1
+              },
+              "1000": {
+                "items": 1
+              }
+            }}'>     
+     
+     {% else %}
+     
+     	<div class="slider-special-class">    
+     
+     {% endif%}
+     
+     
+     
+     {%- for block in section.blocks -%}{%- assign bset = block.settings -%}
+    <div class="class-{{block.id}} single-slider d-flex align-items-center" style="background-color:{{ sset.sec_bg_color }};height:{{ sset.p_top }}px;
+        	{%- if block.settings.slider_bg_img -%}background-image: url('{{ block.settings.slider_bg_img | img_url: 'master' }}'){% endif %}">
+      <div class="container">
+        <div class="row {% if block.settings.content_position == 'center' %} content_center {% elsif block.settings.content_position == 'right' %}content_right {% else %} content_left {% endif %}">
+          
+          <div class="col-md-12 col-sm-12 col-12">
+            <div class="slider-content slider-animated-1 text-{% if bset.content_align == 'center' %}center{% elsif bset.content_align == 'right' %}right{% else %}left{% endif %}">
+              
+              
+              {%- if bset.title_top != '' -%}
+              <h3 class="animated">{{ bset.title_top }}</h3>
+              {%- endif -%}
+              
+              
+              {%- if bset.title1 != '' -%}
+              <h1 class="animated">{{ bset.title1 }}</h1>
+              {%- endif -%}
+
+              {%- if bset.description != '' -%}
+              <p class="animated">{{ bset.description }}</p>
+              {%- endif -%}
+
+              {%- if bset.btn != '' -%}
+              <div class="slider-btn btn-hover">
+                <a class="animated" href="{{ bset.btn_url }}">
+                  {{ bset.btn }} {% if bset.show_icon %} <i style="font-size:{{ sset.btn_font_size }}px;" class="sli sli-basket-loaded"></i>{% endif %}
+                </a>
+              </div>
+              {%- endif -%}
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      
+
+      <style>
+
+        #section-{{ section.id }}.slider-area .owl-item.active .class-{{block.id}}.single-slider .slider-animated-1 h3 {
+          -webkit-animation-name: {{block.settings.content_animation}};
+          animation-name: {{block.settings.content_animation}};
+        }
+        #section-{{ section.id }}.slider-area .owl-item.active .class-{{block.id}}.single-slider .slider-animated-1 h1 {
+          -webkit-animation-name: {{block.settings.content_animation}};
+          animation-name: {{block.settings.content_animation}};
+        }
+        #section-{{ section.id }}.slider-area .owl-item.active .class-{{block.id}}.single-slider .slider-animated-1 p {
+          -webkit-animation-name: {{block.settings.content_animation}};
+          animation-name: {{block.settings.content_animation}};
+        }
+        #section-{{ section.id }}.slider-area .owl-item.active .class-{{block.id}}.single-slider .slider-animated-1 a {
+          -webkit-animation-name: {{block.settings.content_animation}};
+          animation-name: {{block.settings.content_animation}};
+        }
+      </style>
+      
+      
+      
+    </div>
+    {%- endfor -%}
+  </div>
+</div>
+
+
+
+
+
+{%- if sset.slider_content_custom_style -%}
+<style>
+  {{ header_font_top | font_face }}
+  {{ header_font_slider | font_face }}
+  {{ paragraph_font_slider | font_face }}
+  {{ button_font_slider | font_face }}
+
+  #section-{{ section.id }}.slider-area .single-slider .slider-content h3 {
+    font-family: {{ header_font_top.family }}, {{ header_font_top.fallback_families }};
+    font-style: {{ header_font_top.style }};
+    font-weight: {{ header_font_top.weight }};
+    color:{{ sset.header_top_color }};
+    font-size:{{ sset.header_font_top_size }}px;
+    line-height: {{sset.header_font_top_line_height}}px;
+    margin-bottom: {{section.settings.header_font_top_margin_bottom}}px;
+  }
+
+  #section-{{ section.id }}.slider-area .single-slider .slider-content h1 {
+    font-family: {{ header_font_slider.family }}, {{ header_font_slider.fallback_families }};
+    font-style: {{ header_font_slider.style }};
+    font-weight: {{ header_font_slider.weight }};
+    color:{{ sset.title1_color }};
+    font-size:{{ sset.title1_font_size }}px;
+    line-height: {{sset.heading_line_height}}px;
+    margin-bottom: {{section.settings.title_margin_bottom}}px;
+  }
+  #section-{{ section.id }}.slider-area .single-slider .slider-content p {
+    font-family: {{ paragraph_font_slider.family }}, {{ paragraph_font_slider.fallback_families }};
+    font-style: {{ paragraph_font_slider.style }};
+    font-weight: {{ paragraph_font_slider.weight }};
+    color:{{ sset.description_color }};
+    font-size:{{ sset.description_font_size }};
+    line-height: {{sset.des_line_height}}px;
+    margin:0 0 {{section.settings.des_margin_bottom}}px;
+  }
+  #section-{{ section.id }}.slider-area .single-slider .slider-content .slider-btn a {
+    background-color: {{ sset.btn_bg_color }};
+    color: {{ sset.btn_color }};
+    border: 2px solid {{ sset.btn_border_color }};
+    border-radius: {{ sset.btn_border_radius }}px;
+    text-transform: unset;
+    font-size:{{ sset.btn_font_size }}px;
+    font-family: {{ button_font_slider.family }}, {{ button_font_slider.fallback_families }};
+    font-style: {{ button_font_slider.style }};
+    font-weight: {{ button_font_slider.weight }};
+  }
+    #section-{{ section.id }}.slider-area .single-slider .slider-content .slider-btn {
+    margin-top: {{section.settings.button_margin_top}}px;
+  }
+  
+  #section-{{ section.id }}.slider-area .single-slider .slider-content .slider-btn a i {
+    color: {{ sset.btn_color }};
+  }
+  #section-{{ section.id }}.slider-area .single-slider .slider-content .slider-btn a:hover {
+    background-color: {{ sset.btn_hover_bg_color }};
+    color: {{ sset.btn_hover_color }};
+    border: 2px solid {{ sset.btn_hover_border_color }};
+  }
+    #section-{{ section.id }}.slider-area .single-slider .slider-content .slider-btn a:hover i {
+    color: {{ sset.btn_hover_color }};
+  }
+  #section-{{ section.id }}.slider-area .nav-style-1.owl-carousel .owl-nav div, 
+  #section-{{ section.id }}.slider-area .nav-style-2 .owl-nav div, 
+  #section-{{ section.id }}.slider-area .nav-style-3 .owl-nav div {
+    color: {{ sset.controlnav_color }};
+    background-color: {{ sset.controlnav_bg_color }};
+    border: 1px solid {{ sset.controlnav_border_color }};
+  }
+  #section-{{ section.id }}.slider-area .nav-style-1.owl-carousel .owl-nav div:hover, 
+  #section-{{ section.id }}.slider-area .nav-style-2 .owl-nav div:hover, 
+  #section-{{ section.id }}.slider-area .nav-style-3 .owl-nav div:hover {
+    color: {{ sset.hover_controlnav_color }};
+    background-color: {{ sset.hover_controlnav_bg_color }};
+    border: 1px solid {{ sset.hover_controlnav_border_color }};
+  }
+
+  #section-{{ section.id }}.slider-special-banner .slider-content {
+    background: {{ section.settings.content_bg_color }};
+    max-width: {{ section.settings.special_bg_width }}%;
+    box-shadow: 0 0 0 21px {{ section.settings.content_shadow_color }};
+  }
+
+
+</style>
+
+{%endif%}
+
+
+
+{% schema %}
+  {
+    "name": "Slider Special Banner",
+    "settings": [
+              {
+                "type": "select",
+                "id": "section_width",
+                "label": "Section Width",
+                "options":[
+                      {
+                          "label": "Full Width",
+                          "value": "full_width"
+                      },
+                      {
+                          "label": "Box Width",
+                          "value": "box_width"
+                      },
+                      {
+                          "label": "Default Width",
+                          "value": "default"
+                      }
+                  ],
+                  "default": "default"
+              },
+        {
+          "type": "color",
+          "id": "sec_bg_color",
+          "label": "Slide BG Color",
+          "default": "#effafa"
+        },
+        {
+            "type": "checkbox",
+            "id": "slider_arsoule_active",
+            "label": "Active Slider",
+            "default": false
+        },
+        {
+          "type": "text",
+          "id": "p_top",
+          "label": "Slider Height",
+          "default": "840",
+          "info": "Don't add 'px' unit. Just put number."
+        },
+        {
+          "type": "header",
+          "content": "Slider Content"
+        },
+        {
+          "type": "checkbox",
+          "id": "slider_content_custom_style",
+          "label": "Content Custom Style Enable",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "content_bg_color",
+          "label": "Slide Content BG Color",
+          "default": "#fff"
+        },
+        {
+          "type": "color",
+          "id": "content_shadow_color",
+          "label": "Slide Content Shadow Color",
+          "default": "#f1f1f1"
+        },
+        {
+          "type":      "range",
+          "id":        "special_bg_width",
+          "min":       20,
+          "max":        100,
+          "step":       1,
+          "unit":       "%",
+          "label":     "Content BG Width",
+          "default":   60
+        },
+        {
+          "type": "font_picker",
+          "id": "header_font_top",
+          "label": "Font Family: Title",
+          "default": "poppins_n6"
+        },
+        {
+          "type": "text",
+          "id": "header_font_top_size",
+          "label": "Font Size: Title",
+          "default": "22",
+          "info": "Don't add 'px' unit. Just put number."
+        },
+        {
+          "type":      "range",
+          "id":        "header_font_top_line_height",
+          "min":       20,
+          "max":        100,
+          "step":       2,
+          "unit":       "px",
+          "label":     "Heading Line Height",
+          "default":   28
+        },
+        {
+          "type":      "range",
+          "id":        "header_font_top_margin_bottom",
+          "min":       0,
+          "max":        50,
+          "step":       1,
+          "unit":       "px",
+          "label":     "Top Heading margin Bottom",
+          "default":   10
+        },
+        {
+          "type": "font_picker",
+          "id": "header_font_slider",
+          "label": "Font Family: Title",
+          "default": "poppins_n6"
+        },
+        {
+          "type": "text",
+          "id": "title1_font_size",
+          "label": "Font Size: Title",
+          "default": "40",
+          "info": "Don't add 'px' unit. Just put number."
+        },
+        {
+          "type":      "range",
+          "id":        "heading_line_height",
+          "min":       20,
+          "max":        100,
+          "step":       2,
+          "unit":       "px",
+          "label":     "Heading Line Height",
+          "default":   38
+        },
+        {
+          "type":      "range",
+          "id":        "title_margin_bottom",
+          "min":       0,
+          "max":        50,
+          "step":       1,
+          "unit":       "px",
+          "label":     "Heading Middile margin Bottom",
+          "default":   10
+        },
+        {
+          "type": "font_picker",
+          "id": "paragraph_font_slider",
+          "label": "Font Family: Description",
+          "default": "poppins_n4"
+        },
+        {
+          "type": "text",
+          "id": "description_font_size",
+          "label": "Font Size: Description",
+          "default": "16",
+          "info": "Don't add 'px' unit. Just put number."
+        },
+        {
+          "type":      "range",
+          "id":        "des_line_height",
+          "min":       10,
+          "max":        50,
+          "step":       1,
+          "unit":       "px",
+          "label":     "Description Line Height",
+          "default":   27
+        },
+        {
+          "type":      "range",
+          "id":        "des_margin_bottom",
+          "min":       0,
+          "max":        80,
+          "step":       1,
+          "unit":       "px",
+          "label":     "Description margin Bottom",
+          "default":   20
+        },
+        {
+          "type": "font_picker",
+          "id": "button_font_slider",
+          "label": "Font Family: Button Font",
+          "default": "poppins_n4"
+        },
+        {
+          "type": "color",
+          "id": "header_top_color",
+          "label": "Top Title Color",
+          "default": "#1f2226"
+        },
+        {
+          "type": "color",
+          "id": "title1_color",
+          "label": "Title Color",
+          "default": "#1f2226"
+        },
+        {
+          "type": "color",
+          "id": "description_color",
+          "label": "Description Color",
+          "default": "#333"
+        },
+        {
+          "type": "header",
+          "content": "Button"
+        },
+        {
+          "type":      "range",
+          "id":        "button_margin_top",
+          "min":       0,
+          "max":        80,
+          "step":       1,
+          "unit":       "px",
+          "label":     "Button margin Top",
+          "default":   35
+        },
+        {
+          "type": "range",
+          "id": "btn_border_radius",
+          "label": "Border Radius",
+          "max": 30,
+          "min": 0,
+          "step": 5,
+          "default": 0,
+		  "unit": "px"
+        },
+        {
+          "type": "text",
+          "id": "btn_font_size",
+          "label": "Font Size",
+          "default": "13",
+          "info": "Don't add 'px' unit. Just put number."
+        }, 
+        {
+          "type": "color",
+          "id": "btn_color",
+          "label": "Text Color",
+          "default": "#1f2226"
+        },
+        {
+          "type": "color",
+          "id": "btn_bg_color",
+          "label": "BG Color",
+          "default": "transparent"
+        },
+        {
+          "type": "color",
+          "id": "btn_border_color",
+          "label": "Border Color",
+          "default": "#000"
+        },
+        {
+          "type": "color",
+          "id": "btn_hover_color",
+          "label": "Hover Text Color",
+          "default": "#fff"
+        },
+        {
+          "type": "color",
+          "id": "btn_hover_bg_color",
+          "label": "Hover BG Color",
+          "default": "#ff3535"
+        },
+        {
+          "type": "color",
+          "id": "btn_hover_border_color",
+          "label": "Hover Border Color",
+          "default": "#ff3535"
+        },
+        {
+          "type": "radio",
+          "id": "nav_style",
+          "label": "Nav Style",
+          "options": [
+              {"label": "Style 1", "value": "style_1"},
+              {"label": "Style 2", "value": "style_2"},
+              {"label": "Style 3", "value": "style_3"}
+          ],
+          "default": "style_1"
+        },
+        {
+          "type": "color",
+          "id": "controlnav_color",
+          "label": "Color",
+          "default": "#1f2226"
+        },
+        {
+          "type": "color",
+          "id": "controlnav_bg_color",
+          "label": "BG Color",
+          "default": "#fff"
+        },
+        {
+          "type": "color",
+          "id": "controlnav_border_color",
+          "label": "Border Color",
+          "default": "#e1e2e2"
+        },
+        {
+          "type": "color",
+          "id": "hover_controlnav_color",
+          "label": "Hover Color",
+          "default": "#fff"
+        },
+        {
+          "type": "color",
+          "id": "hover_controlnav_bg_color",
+          "label": "Hover BG Color",
+          "default": "#ff3535"
+        },
+        {
+          "type": "color",
+          "id": "hover_controlnav_border_color",
+          "label": "Hover Border Color",
+          "default": "#ff3535"
+        }
+
+
+	],
+    "blocks": [
+		{
+			"type": "slide",
+			"name": "Slide",
+			"settings": [
+                {
+                    "type": "select",
+                    "id": "content_position",
+                    "label": "Content Position",
+                "options": [
+                    {"label": "Content Left", "value": "left"},
+                    {"label": "Content Center", "value": "center"},
+                    {"label": "Content Right", "value": "right"}
+                ],
+                "default": "center"
+                },
+                {
+                  "type": "select",
+                  "id": "content_align",
+                  "label": "Content Alignment",
+                  "options": [
+                      {"label": "Left", "value": "left"},
+                      {"label": "Center", "value": "center"},
+                      {"label": "Right", "value": "right"}
+                  ],
+                  "default": "left"
+                },
+                  {
+                    "type": "select",
+                    "id": "content_animation",
+                    "label": "Slider Animation",
+                    "options": [
+                      {"label": "Animation Left", "value": "fadeInLeft"},
+                      {"label": "Animation Right", "value": "fadeInRight"},
+                      {"label": "Animation Up", "value": "fadeInUp"},
+                      {"label": "Animation Down", "value": "fadeInDown"},
+					  {"label": "Animation Fade", "value": "fade"}
+                    ],
+                    "default": "fadeInLeft"
+                  },
+				{
+					"type": "image_picker",
+					"id": "slider_bg_img",
+					"label": "Slider Bg Image",
+					"info": "Image Size: 1920x840"
+				},
+				{
+					"type": "text",
+					"id": "title_top",
+					"label": "Heading Top",
+					"default": "Upto 30% Off"
+				},
+				{
+					"type": "text",
+					"id": "title1",
+					"label": "Title",
+					"default": "Wooden Craft"
+				},
+				{
+					"type": "textarea",
+					"id": "description",
+					"label": "Description",
+					"default": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. It is a long established fact that a reader."
+				},
+				{
+					"type": "text",
+					"id": "btn",
+					"label": "Button",
+					"default": "SHOP NOW"
+				},
+                {
+                  "type": "checkbox",
+                  "id": "show_icon",
+                  "label": "Show icon on button",
+                  "default": true
+                },
+				{
+					"type": "url",
+					"id": "btn_url",
+					"label": "Button URL",
+					"default": "\/collections\/all"
+				}
+
+			]			
+		}
+	],
+	"presets":[
+		{
+			"name": "Slider Special Banner",
+			"category": "1. Slider",
+			"blocks":[
+				{"type": "slide"}
+			]
+		}
+	]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

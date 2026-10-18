@@ -1,0 +1,468 @@
+{{ 'Custom_servcies.css' | asset_url | stylesheet_tag }}
+{{ 'Custom_Policy_panel.css' | asset_url | stylesheet_tag }}
+
+{%- assign sset = section.settings -%}
+
+<div class="feature-area {% if settings.section__animation__enable %}scroll-zoom {% endif %}" id="section-{{ section.id }}">
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+    <div class="row">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'service' -%}
+
+
+          {%- liquid
+              assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+              assign fetch_priority = 'auto'
+              if section.index == 1
+                assign fetch_priority = 'high'
+              endif
+              assign image_class = 'lazyload-main-image animated responsive-image__image'
+              assign lazy_load = 'lazy'
+            -%}
+
+          
+            {%- assign bset = block.settings -%}
+            <div class="col-xl-{{ sset.service_col }} col-lg-3 col-md-4 col-sm-6 col-12">
+              {% if section.settings.service_style == 'style_one' %}
+                <div class="single-feature mb-40" style="background: {{ block.settings.service_bg_color }} {%- if block.settings.service_bg_img -%} url({{ block.settings.service_bg_img | img_url: 'master' }}) no-repeat scroll center center / cover;{%- endif -%} "
+                >
+                  {%- if bset.show_service_img -%}
+                    <div class="feature-icon">
+                        <div class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.service_img.aspect_ratio | times: 100}}%;">
+                      
+                      {%- if bset.service_icon != '' -%}
+                        <i style="color: {{ bset.ft_content_color }}" class="{{ bset.service_icon }}"></i>
+
+                      {%- elsif bset.service_img -%}
+
+                          {% assign image_height = block.settings.service_img.width | divided_by: block.settings.service_img.aspect_ratio %}
+                          {{ block.settings.service_img | image_url: width: 3840 | image_tag: width: block.settings.service_img.width, height: image_height, 
+                          widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt}}
+
+                      {%- else -%}
+                        <img loading="lazy"  src="https://via.placeholder.com/100x100" alt="{{ image.alt }}">
+                      {%- endif -%}
+                        </div>
+                      </div>
+                  {%- endif -%}
+
+                  <div class="feature-content">
+                    {%- if bset.title != '' -%}
+                      <h4 style="color: {{ bset.ft_title_color }}">{{ bset.title }}</h4>
+                    {%- endif -%}
+
+                    {%- if bset.content != '' -%}
+                      <p style="color: {{ bset.ft_content_color }}">{{ bset.content }}</p>
+                    {%- endif -%}
+                  </div>
+                </div>
+
+              {% elsif section.settings.service_style == 'style_two' %}
+                <div
+                  class="single-feature style_two mb-40"
+                  style="background: {{ block.settings.service_bg_color }} {%- if block.settings.service_bg_img -%} url({{ block.settings.service_bg_img | img_url: 'master' }}) no-repeat scroll center center / cover;{%- endif -%} "
+                >
+                  {%- if bset.show_service_img -%}
+                    <div class="feature-icon">
+                       <div class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.service_img.aspect_ratio | times: 100}}%;">
+                          {%- if bset.service_icon != '' -%}
+                            <i style="color: {{ bset.ft_content_color }}" class="{{ bset.service_icon }}"></i>
+    
+                          {%- elsif bset.service_img -%}
+                              {% assign image_height = block.settings.service_img.width | divided_by: block.settings.service_img.aspect_ratio %}
+                              {{ block.settings.service_img | image_url: width: 3840 | image_tag: width: block.settings.service_img.width, height: image_height, 
+                              widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt}}
+    
+                          {%- else -%}
+                            <img loading="lazy"  src="https://via.placeholder.com/100x100" alt="{{ image.alt }}">
+                          {%- endif -%}
+                        </div>
+                      </div>
+                  {%- endif -%}
+
+                  <div class="feature-content">
+                    {%- if bset.title != '' -%}
+                      <h4 style="color: {{ bset.ft_title_color }}">{{ bset.title }}</h4>
+                    {%- endif -%}
+
+                    {%- if bset.content != '' -%}
+                      <p style="color: {{ bset.ft_content_color }}">{{ bset.content }}</p>
+                    {%- endif -%}
+                  </div>
+                </div>
+
+              {% elsif section.settings.service_style == 'style_three' %}
+                <div
+                  class="single-feature mb-40 style_three"
+                  style="background: {{ block.settings.service_bg_color }} {%- if block.settings.service_bg_img -%} url({{ block.settings.service_bg_img | img_url: 'master' }}) no-repeat scroll center center / cover;{%- endif -%} "
+                >
+                  {%- if bset.show_service_img -%}
+                    <div class="feature-icon">
+                       <div class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.service_img.aspect_ratio | times: 100}}%;">
+                      {%- if bset.service_icon != '' -%}
+                        <i style="color: {{ bset.ft_content_color }}" class="{{ bset.service_icon }}"></i>
+
+                      {%- elsif bset.service_img -%}
+                          {% assign image_height = block.settings.service_img.width | divided_by: block.settings.service_img.aspect_ratio %}
+                          {{ block.settings.service_img | image_url: width: 3840 | image_tag: width: block.settings.service_img.width, height: image_height, 
+                          widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt}}
+
+                      {%- else -%}
+                        <img loading="lazy"  src="https://via.placeholder.com/100x100" alt="{{ image.alt }}">
+                      {%- endif -%}
+                    </div>
+                     </div>
+                  {%- endif -%}
+
+                  <div class="feature-content">
+                    {%- if bset.title != '' -%}
+                      <h4 style="color: {{ bset.ft_title_color }}">{{ bset.title }}</h4>
+                    {%- endif -%}
+
+                    {%- if bset.content != '' -%}
+                      <p style="color: {{ bset.ft_content_color }}">{{ bset.content }}</p>
+                    {%- endif -%}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{%- render 'section-style' -%}
+
+{% style %}
+  #section-{{ section.id }} .single-feature .feature-content h4::before {
+      background-color: {{ sset.ft_title_color }};
+  }
+{% endstyle %}
+
+{% schema %}
+ {
+   "name": "Service",
+   "settings": [
+             {
+               "type": "select",
+               "id": "section_width",
+               "label": "Section Width",
+               "options":[
+                     {
+                         "label": "Full Width",
+                         "value": "full_width"
+                     },
+                     {
+                         "label": "Box Width",
+                         "value": "box_width"
+                     },
+                     {
+                         "label": "Default Width",
+                         "value": "default"
+                     }
+                 ],
+                 "default": "default"
+             },
+	{
+		"type": "select",
+		"id": "service_style",
+		"label": "Select Service Style",
+		"options": [
+			{
+				"label": "Style One",
+				"value": "style_one"
+			},
+			{
+				"label": "Style Two",
+				"value": "style_two"
+			},
+			{
+				"label": "Style Three",
+				"value": "style_three"
+			}
+		],
+		"default": "style_one"
+	},
+	{
+		"type": "select",
+		"id": "service_col",
+		"label": "Service Column",
+		"options": [
+			{
+				"label": "1",
+				"value": "12"
+			},
+			{
+				"label": "2",
+				"value": "6"
+			},
+			{
+				"label": "3",
+				"value": "4"
+			},
+			{
+				"label": "4",
+				"value": "3"
+			}
+		],
+		"default": "4"
+	}
+
+],
+"blocks":[
+	{
+		"type": "service",
+		"name": "Service",
+		"settings": [
+               {
+                   "type": "checkbox",
+                   "id": "show_service_img",
+                   "label": "Show Icon",
+                   "default": true
+               },
+               {
+                   "type": "text",
+                   "id": "service_icon",
+                   "label": "Icon",
+				"default": "sli sli-magnifier"
+               },
+               {
+                   "type": "image_picker",
+                   "id": "service_img",
+                   "label": "Icon img"
+               },
+               {
+                   "type": "text",
+                   "id": "title",
+                   "label": "Title",
+                   "default": "Free Shipping"
+               },
+			{
+				"type": "textarea",
+				"id": "content",
+				"label": "Content",
+				"default": "Most product are free<br>shipping."
+			},
+               {
+                 "type": "image_picker",
+                 "id": "service_bg_img",
+                 "label": "Service BG Image"
+               },
+               {
+                 "type": "color",
+                 "id": "service_bg_color",
+                 "label": "Service BG Color",
+                 "default": "#ffffff"
+               },
+               {
+                   "type": "color",
+                   "id": "ft_title_color",
+                   "label": "Title Color",
+                   "default": "#242424"
+               },
+               {
+                   "type": "color",
+                   "id": "ft_content_color",
+                   "label": "Content Color",
+                   "default": "#757575"
+               }
+		]
+	},
+    {
+         "type": "section_margin",
+         "name": "Section Margin",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "header",
+		  "content": "Large/Desktop Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "header",
+		  "content": "Tablet Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "header",
+		  "content": "Mobile Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		}
+         ]
+      },
+   {
+         "type": "section_padding",
+         "name": "Section Padding",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "header",
+		  "content": "Large/Desktop Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top",
+		  "min": 0,
+		  "max": 300,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 100
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom",
+		  "min": 0,
+		  "max": 300,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 65
+		},
+		{
+		  "type": "header",
+		  "content": "Tablet Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top_md",
+		  "min": 0,
+		  "max": 300,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 80
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom_md",
+		  "min": 0,
+		  "max": 300,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 45
+		},
+		{
+		  "type": "header",
+		  "content": "Mobile Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top_xs",
+		  "min": 0,
+		  "max": 300,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 50
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom_xs",
+		  "min": 0,
+		  "max": 300,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 30
+		}
+         ]
+      },
+   {
+         "type": "section_background",
+         "name": "Section Background",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "image_picker",
+		  "id": "section_bg_image",
+		  "label": "BG Image"
+		},
+		{
+		  "type": "color",
+		  "id": "section_bg_color",
+		  "label": "BG Color",
+		  "default": "#ffffff"
+		}
+         ]
+      }
+],
+"presets":[
+	{
+		"name": "Service",
+		"category": "6. Service",
+		"blocks":[
+			{"type": "service"},
+			{"type": "service"},
+			{"type": "service"}
+		]
+	}
+]
+ }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

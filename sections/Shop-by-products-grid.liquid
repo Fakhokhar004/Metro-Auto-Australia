@@ -1,0 +1,620 @@
+{%- comment -%}
+  ============================================================================
+  SHOP BY PRODUCTS GRID  —  with search + sort toolbar
+  Metro Auto Australia
+
+  Data source is unchanged: shop.metafields.custom.shop_by_products_collections
+  (Settings > Custom data > Shop > "Shop by Products Collections").
+
+  Added: a toolbar above the grid — search on the left (wide), sort on the
+  right. Vanilla JS, scoped to this section only, degrades to a plain grid
+  if JS is off.
+  ============================================================================
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign uid = section.id
+
+  assign show_toolbar = false
+  if s.show_search or s.show_sort
+    assign show_toolbar = true
+  endif
+
+  # ---- data source (unchanged) --------------------------------------------
+  assign sbp_list = shop.metafields.custom.shop_by_products_collections.value
+  assign sbp_count = sbp_list.size
+
+  # ---- SEO: heading level, and a real sizes attribute so the browser -------
+  # downloads the right image width instead of a 400px file for every card
+  assign h_tag = s.heading_tag | default: 'h2'
+  assign card_tag = s.card_title_tag | default: 'h3'
+
+  assign col_d = s.columns_desktop | at_least: 1
+  assign col_t = s.columns_tablet | at_least: 1
+  assign col_m = s.columns_mobile | at_least: 1
+  assign w_desktop = s.max_width | divided_by: col_d
+  assign vw_tablet = 100 | divided_by: col_t
+  assign vw_mobile = 100 | divided_by: col_m
+  assign sbp_sizes = '(max-width: 640px) ' | append: vw_mobile | append: 'vw, (max-width: 1024px) ' | append: vw_tablet | append: 'vw, ' | append: w_desktop | append: 'px'
+-%}
+
+<div id="sbp-{{ uid }}" class="sbp-wrapper" style="padding: {{ s.section_padding }}px; margin: {{ s.section_margin }}px auto; max-width: {{ s.max_width }}px;">
+  {% if s.heading != blank %}
+    <{{ h_tag }} class="sbp-heading" style="color: {{ s.heading_color }};">{{ s.heading }}</{{ h_tag }}>
+  {% endif %}
+
+  {% if s.intro_text != blank %}
+    <div class="sbp-intro">{{ s.intro_text }}</div>
+  {% endif %}
+
+  {%- if show_toolbar -%}
+    <div class="sbp-toolbar"
+         style="
+           margin-bottom: {{ s.toolbar_margin_bottom }}px;
+           {% if s.toolbar_divider %}padding-bottom: 12px; border-bottom: 1px solid {{ s.border_color }};{% endif %}
+         ">
+
+      {%- if s.show_search -%}
+        <input
+          type="search"
+          class="sbp-search"
+          data-sbp-search
+          placeholder="{{ s.search_placeholder | escape }}"
+          aria-label="{{ s.search_placeholder | escape }}"
+          autocomplete="off"
+          style="
+            height: {{ s.search_height }}px;
+            border-color: {{ s.border_color }};
+            border-radius: {{ s.control_radius }}px;
+            font-size: {{ s.search_font_size }}px;
+            color: {{ s.title_color }};
+            {% if s.search_max_width > 0 %}max-width: {{ s.search_max_width }}px;{% endif %}
+          ">
+      {%- endif -%}
+
+      <div class="sbp-toolbar__right">
+
+        {%- if s.show_result_count -%}
+          <span class="sbp-count" data-sbp-count style="font-size: {{ s.count_font_size }}px;"></span>
+        {%- endif -%}
+
+        {%- if s.show_sort -%}
+          <select
+            class="sbp-sort"
+            data-sbp-sort
+            aria-label="{{ s.sort_label | escape }}"
+            style="
+              height: {{ s.sort_height }}px;
+              width: {{ s.sort_width }}px;
+              border-color: {{ s.border_color }};
+              border-radius: {{ s.control_radius }}px;
+              font-size: {{ s.control_font_size }}px;
+              color: {{ s.title_color }};
+            ">
+            {%- if s.sort_show_manual -%}
+              <option value="manual">{{ s.label_manual }}</option>
+            {%- endif -%}
+            <option value="alpha_asc">{{ s.label_alpha_asc }}</option>
+            <option value="alpha_desc">{{ s.label_alpha_desc }}</option>
+            {%- if s.sort_show_count -%}
+              <option value="count_desc">{{ s.label_count_desc }}</option>
+              <option value="count_asc">{{ s.label_count_asc }}</option>
+            {%- endif -%}
+          </select>
+        {%- endif -%}
+
+      </div>
+
+    </div>
+  {%- endif -%}
+
+  <div class="sbp-grid"
+       data-sbp-grid
+       style="
+         --sbp-cols-desktop: {{ s.columns_desktop }};
+         --sbp-cols-tablet: {{ s.columns_tablet }};
+         --sbp-cols-mobile: {{ s.columns_mobile }};
+         gap: {{ s.card_gap }}px;
+       ">
+    {% assign found_count = 0 %}
+    {% assign shop_by_products_list = sbp_list %}
+    {% for collection in shop_by_products_list %}
+      {% assign found_count = found_count | plus: 1 %}
+      <a href="{{ collection.url }}"
+         class="sbp-card"
+         data-sbp-item
+         data-title="{{ collection.title | escape }}"
+         data-count="{{ collection.products_count }}"
+         style="border-color: {{ s.border_color }}; border-radius: {{ s.border_radius }}px;">
+
+        <div class="sbp-card__image">
+          {% if collection.image %}
+            {%- liquid
+              assign img_alt = collection.image.alt | default: collection.title
+              if s.alt_suffix != blank
+                assign img_alt = img_alt | append: ' — ' | append: s.alt_suffix
+              endif
+            -%}
+            <img
+              src="{{ collection.image | image_url: width: 400 }}"
+              srcset="{{ collection.image | image_url: width: 200 }} 200w,
+                      {{ collection.image | image_url: width: 300 }} 300w,
+                      {{ collection.image | image_url: width: 400 }} 400w,
+                      {{ collection.image | image_url: width: 600 }} 600w,
+                      {{ collection.image | image_url: width: 800 }} 800w"
+              sizes="{{ sbp_sizes }}"
+              width="{{ collection.image.width }}"
+              height="{{ collection.image.height }}"
+              alt="{{ img_alt | escape }}"
+              decoding="async"
+              {% if forloop.index <= s.eager_count %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+          {% else %}
+            <div class="sbp-card__no-image">No Image</div>
+          {% endif %}
+
+          {% if s.show_badge %}
+            <div class="sbp-card__badge" style="background: {{ s.badge_bg_color }}; color: {{ s.badge_text_color }};">
+              <span class="sbp-card__badge-number">{{ collection.products_count }}</span><span class="sbp-card__badge-text">&nbsp;Products</span>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="sbp-card__footer">
+          <{{ card_tag }} class="sbp-card__title" style="color: {{ s.title_color }};">{{ collection.title | upcase }}</{{ card_tag }}>
+        </div>
+
+      </a>
+    {% endfor %}
+
+    {% if found_count == 0 %}
+      <p class="sbp-empty">No collections added yet. Go to Settings → Custom data → Shop and add collections to the "Shop by Products Collections" metafield.</p>
+    {% endif %}
+
+    {%- if show_toolbar -%}
+      <p class="sbp-noresults" data-sbp-noresults>{{ s.empty_text }}</p>
+    {%- endif -%}
+  </div>
+
+  {% if s.outro_text != blank %}
+    <div class="sbp-outro">{{ s.outro_text }}</div>
+  {% endif %}
+</div>
+
+{%- comment -%} ---- Structured data: ItemList of the linked collections ---- {%- endcomment -%}
+{%- if s.enable_schema and sbp_count > 0 -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": {{ s.heading | default: 'Shop by Products' | json }},
+  "numberOfItems": {{ sbp_count }},
+  "itemListOrder": "https://schema.org/ItemListOrderAscending",
+  "itemListElement": [
+    {%- for collection in sbp_list -%}
+    {
+      "@type": "ListItem",
+      "position": {{ forloop.index }},
+      "name": {{ collection.title | json }},
+      "url": {{ shop.url | append: collection.url | json }}
+      {%- if collection.image -%}
+      ,"image": {{ collection.image | image_url: width: 800 | prepend: 'https:' | json }}
+      {%- endif -%}
+    }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
+</script>
+{%- endif -%}
+
+<style>
+  #sbp-{{ uid }} .sbp-heading {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  /* ---- toolbar: wide search left, count stacked over sort right ------- */
+  /* width is forced with !important because most themes ship a global
+     `select, input { width: 100% }` rule, which is what made the sort
+     dropdown span the page and squash the search box to nothing. */
+  #sbp-{{ uid }} .sbp-toolbar {
+    display: flex;
+    align-items: flex-end;
+    gap: 72px;
+  }
+  #sbp-{{ uid }} .sbp-search {
+    flex: 1 1 Auto;
+    width: auto !important;
+    min-width: 50;
+    box-sizing: border-box;
+    padding: 0 10px;
+    border: 1px solid;
+    background: #fff;
+    line-height: 1.4;
+    outline: none;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+  }
+  #sbp-{{ uid }} .sbp-search:focus {
+    border-color: {{ s.accent_color }} !important;
+    box-shadow: 0 0 0 2px {{ s.accent_color | color_modify: 'alpha', 0.15 }};
+  }
+  #sbp-{{ uid }} .sbp-toolbar__right {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+  }
+  #sbp-{{ uid }} .sbp-count {
+    color: #888;
+    white-space: nowrap;
+    line-height: 1.2;
+  }
+  #sbp-{{ uid }} .sbp-sort {
+    flex: 0 0 auto;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0 30px 0 12px;
+    border: 1px solid;
+    background: #fff url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 11px center;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    line-height: 1.2;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  #sbp-{{ uid }} .sbp-sort:focus { border-color: {{ s.accent_color }} !important; }
+
+  #sbp-{{ uid }} .sbp-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--sbp-cols-desktop, 6), 1fr);
+  }
+
+  #sbp-{{ uid }} .sbp-card {
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid;
+    overflow: hidden;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+    position: relative;
+    aspect-ratio: 1 / 1;
+  }
+  #sbp-{{ uid }} .sbp-card.is-hidden { display: none; }
+
+  #sbp-{{ uid }} .sbp-card:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    {% if s.hover_border %}border-color: {{ s.accent_color }} !important;{% endif %}
+  }
+
+  #sbp-{{ uid }} .sbp-card__image {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: {{ s.image_padding }}%;
+    box-sizing: border-box;
+    background: transparent;
+  }
+
+  #sbp-{{ uid }} .sbp-card__image img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    background: transparent;
+  }
+
+  #sbp-{{ uid }} .sbp-card__no-image {
+    width: 100%;
+    height: 100%;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 0.85rem;
+  }
+
+  #sbp-{{ uid }} .sbp-card__badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  #sbp-{{ uid }} .sbp-card__badge-text {
+    display: inline-block;
+    max-width: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-width 0.25s ease, opacity 0.2s ease;
+    vertical-align: bottom;
+  }
+
+  #sbp-{{ uid }} .sbp-card:hover .sbp-card__badge-text {
+    max-width: 100px;
+    opacity: 1;
+  }
+
+  #sbp-{{ uid }} .sbp-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: {{ s.footer_padding }}px 10px;
+  }
+
+  #sbp-{{ uid }} .sbp-card__title {
+    margin: 0;
+    padding: 0;
+    font-size: {{ s.title_size }}px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+  }
+
+  #sbp-{{ uid }} .sbp-intro,
+  #sbp-{{ uid }} .sbp-outro {
+    max-width: 800px;
+    margin: 0 auto 24px;
+    color: {{ s.body_text_color }};
+    font-size: {{ s.body_text_size }}px;
+    line-height: 1.65;
+    text-align: {{ s.body_text_align }};
+  }
+  #sbp-{{ uid }} .sbp-outro { margin: 28px auto 0; }
+  #sbp-{{ uid }} .sbp-intro p:last-child,
+  #sbp-{{ uid }} .sbp-outro p:last-child { margin-bottom: 0; }
+  #sbp-{{ uid }} .sbp-intro a,
+  #sbp-{{ uid }} .sbp-outro a { color: {{ s.accent_color }}; }
+
+  #sbp-{{ uid }} .sbp-empty,
+  #sbp-{{ uid }} .sbp-noresults {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #999;
+    padding: 40px;
+  }
+  #sbp-{{ uid }} .sbp-noresults { display: none; }
+  #sbp-{{ uid }}.sbp-is-empty .sbp-noresults { display: block; }
+
+  @media (max-width: 1024px) {
+    #sbp-{{ uid }} .sbp-grid {
+      grid-template-columns: repeat(var(--sbp-cols-tablet, 3), 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    #sbp-{{ uid }} .sbp-grid {
+      grid-template-columns: repeat(var(--sbp-cols-mobile, 2), 1fr);
+    }
+    #sbp-{{ uid }} .sbp-toolbar {
+      flex-wrap: wrap;
+      align-items: stretch;
+      gap: 10px;
+    }
+    #sbp-{{ uid }} .sbp-search {
+      flex: 1 1 100%;
+      max-width: none !important;
+    }
+    #sbp-{{ uid }} .sbp-toolbar__right {
+      flex: 1 1 100%;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+    #sbp-{{ uid }} .sbp-sort {
+      flex: 0 0 auto;
+    }
+  }
+</style>
+
+{%- if show_toolbar -%}
+<script>
+(function(){
+  var root = document.getElementById('sbp-{{ uid }}');
+  if (!root) return;
+
+  var grid = root.querySelector('[data-sbp-grid]');
+  if (!grid) return;
+
+  var searchEl = root.querySelector('[data-sbp-search]');
+  var sortEl   = root.querySelector('[data-sbp-sort]');
+  var countEl  = root.querySelector('[data-sbp-count]');
+  var noResEl  = root.querySelector('[data-sbp-noresults]');
+
+  var items = Array.prototype.slice.call(grid.querySelectorAll('[data-sbp-item]'));
+  if (!items.length) return;
+
+  // remember the metafield order, for the "Featured" sort option
+  items.forEach(function(el, i){ el._sbpIndex = i; });
+
+  var state = { q: '', sort: '{{ s.default_sort }}' };
+
+  function titleOf(el){ return (el.getAttribute('data-title') || '').trim(); }
+  function countOf(el){ return parseInt(el.getAttribute('data-count') || '0', 10); }
+
+  function sortItems(){
+    var sorted = items.slice().sort(function(a, b){
+      switch (state.sort) {
+        case 'alpha_asc':  return titleOf(a).localeCompare(titleOf(b), undefined, {sensitivity:'base'});
+        case 'alpha_desc': return titleOf(b).localeCompare(titleOf(a), undefined, {sensitivity:'base'});
+        case 'count_desc': return countOf(b) - countOf(a) || titleOf(a).localeCompare(titleOf(b));
+        case 'count_asc':  return countOf(a) - countOf(b) || titleOf(a).localeCompare(titleOf(b));
+        default:           return a._sbpIndex - b._sbpIndex;
+      }
+    });
+    var frag = document.createDocumentFragment();
+    sorted.forEach(function(el){ frag.appendChild(el); });
+    // keep the no-results paragraph last
+    grid.insertBefore(frag, noResEl || null);
+  }
+
+  function apply(){
+    var q = state.q.toLowerCase();
+    var visible = 0;
+    items.forEach(function(el){
+      var show = !q || titleOf(el).toLowerCase().indexOf(q) !== -1;
+      el.classList.toggle('is-hidden', !show);
+      if (show) visible++;
+    });
+    root.classList.toggle('sbp-is-empty', visible === 0);
+    if (countEl) {
+      countEl.textContent = visible + (visible === 1 ? ' {{ s.count_singular | escape }}' : ' {{ s.count_plural | escape }}');
+    }
+  }
+
+  var t;
+  if (searchEl) {
+    searchEl.addEventListener('input', function(){
+      clearTimeout(t);
+      t = setTimeout(function(){ state.q = searchEl.value; apply(); }, 120);
+    });
+  }
+  if (sortEl) {
+    sortEl.value = state.sort;
+    sortEl.addEventListener('change', function(){ state.sort = sortEl.value; sortItems(); });
+  }
+
+  sortItems();
+  apply();
+})();
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Shop by Products Grid",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Section Heading", "default": "Shop by Products" },
+    { "type": "color", "id": "heading_color", "label": "Heading Color", "default": "#111111" },
+
+    { "type": "header", "content": "SEO" },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading level",
+      "options": [
+        { "value": "h1", "label": "H1 — only if this is the page's main title" },
+        { "value": "h2", "label": "H2 (recommended)" },
+        { "value": "h3", "label": "H3" },
+        { "value": "div", "label": "No heading tag (styling only)" }
+      ],
+      "default": "h2",
+      "info": "Never use H1 twice on one page. If the template already has an H1, leave this on H2."
+    },
+    {
+      "type": "select",
+      "id": "card_title_tag",
+      "label": "Card title tag",
+      "options": [
+        { "value": "h3", "label": "H3 (recommended)" },
+        { "value": "h4", "label": "H4" },
+        { "value": "span", "label": "Span (no outline entry)" }
+      ],
+      "default": "h3",
+      "info": "Real headings give crawlers a readable outline of what you sell. Set one level below the section heading."
+    },
+    { "type": "checkbox", "id": "enable_schema", "label": "Output ItemList structured data", "default": true, "info": "JSON-LD listing every collection in this grid with its name, URL and image." },
+    { "type": "range", "id": "eager_count", "min": 0, "max": 12, "step": 1, "label": "Images loaded immediately", "default": 6, "info": "Roughly the number visible before scrolling — usually one row. The rest lazy-load. Too high slows the page; too low hurts LCP." },
+    { "type": "text", "id": "alt_suffix", "label": "Alt text suffix", "info": "Optional. Appended after an em dash, e.g. \"Brake Pads — Metro Auto Australia\". Leave blank unless it reads naturally; stuffed alt text does more harm than good." },
+    { "type": "richtext", "id": "intro_text", "label": "Intro text (above grid)", "info": "Optional. A short paragraph of real copy gives this page something to rank on besides links." },
+    { "type": "richtext", "id": "outro_text", "label": "Closing text (below grid)" },
+    { "type": "color", "id": "body_text_color", "label": "Intro/closing text colour", "default": "#555555" },
+    { "type": "range", "id": "body_text_size", "min": 12, "max": 22, "step": 1, "unit": "px", "label": "Intro/closing text size", "default": 15 },
+    {
+      "type": "select",
+      "id": "body_text_align",
+      "label": "Intro/closing alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+
+    { "type": "header", "content": "Search & Sort" },
+    { "type": "checkbox", "id": "show_search", "label": "Show search box (left)", "default": true },
+    { "type": "checkbox", "id": "show_sort", "label": "Show sort dropdown (right)", "default": true },
+    { "type": "checkbox", "id": "show_result_count", "label": "Show result count", "default": true },
+    {
+      "type": "select",
+      "id": "default_sort",
+      "label": "Default sort",
+      "options": [
+        { "value": "manual", "label": "Featured (metafield order)" },
+        { "value": "alpha_asc", "label": "Name: A–Z" },
+        { "value": "alpha_desc", "label": "Name: Z–A" },
+        { "value": "count_desc", "label": "Most products" },
+        { "value": "count_asc", "label": "Fewest products" }
+      ],
+      "default": "manual"
+    },
+    { "type": "checkbox", "id": "sort_show_manual", "label": "Offer \"Featured\" in the dropdown", "default": true, "info": "The order you arranged them in the metafield." },
+    { "type": "checkbox", "id": "sort_show_count", "label": "Offer \"most/fewest products\"", "default": true },
+    { "type": "text", "id": "search_placeholder", "label": "Search placeholder", "default": "Search products…" },
+    { "type": "range", "id": "search_max_width", "min": 0, "max": 900, "step": 20, "unit": "px", "label": "Search box max width", "default": 0, "info": "0 = stretch to fill all space left of the sort dropdown." },
+    { "type": "text", "id": "sort_label", "label": "Sort accessible label", "default": "Sort collections" },
+    { "type": "text", "id": "label_manual", "label": "Sort option: featured", "default": "Featured" },
+    { "type": "text", "id": "label_alpha_asc", "label": "Sort option: A–Z", "default": "Name: A–Z" },
+    { "type": "text", "id": "label_alpha_desc", "label": "Sort option: Z–A", "default": "Name: Z–A" },
+    { "type": "text", "id": "label_count_desc", "label": "Sort option: most products", "default": "Most products" },
+    { "type": "text", "id": "label_count_asc", "label": "Sort option: fewest products", "default": "Fewest products" },
+    { "type": "text", "id": "count_singular", "label": "Result count word (one)", "default": "collection" },
+    { "type": "text", "id": "count_plural", "label": "Result count word (many)", "default": "collections" },
+    { "type": "text", "id": "empty_text", "label": "No results message", "default": "No collections match your search." },
+    { "type": "range", "id": "search_height", "min": 30, "max": 70, "step": 1, "unit": "px", "label": "Search box height", "default": 54 },
+    { "type": "range", "id": "search_font_size", "min": 11, "max": 20, "step": 1, "unit": "px", "label": "Search font size", "default": 15 },
+    { "type": "range", "id": "sort_height", "min": 28, "max": 60, "step": 1, "unit": "px", "label": "Sort dropdown height", "default": 42 },
+    { "type": "range", "id": "sort_width", "min": 100, "max": 340, "step": 5, "unit": "px", "label": "Sort dropdown width", "default": 180, "info": "Fixed width so it can't stretch across the page. Widen it if your longest sort label is cut off." },
+    { "type": "range", "id": "count_font_size", "min": 10, "max": 18, "step": 1, "unit": "px", "label": "Result count font size", "default": 13 },
+    { "type": "range", "id": "control_radius", "min": 0, "max": 28, "step": 1, "unit": "px", "label": "Control corner radius", "default": 6 },
+    { "type": "range", "id": "control_font_size", "min": 11, "max": 18, "step": 1, "unit": "px", "label": "Sort font size", "default": 14 },
+    { "type": "checkbox", "id": "toolbar_divider", "label": "Line under toolbar", "default": true },
+    { "type": "range", "id": "toolbar_margin_bottom", "min": 0, "max": 60, "step": 2, "unit": "px", "label": "Space under toolbar", "default": 24 },
+    { "type": "color", "id": "accent_color", "label": "Accent colour (focus + hover)", "default": "#0aa0c0" },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "max_width", "min": 800, "max": 1800, "step": 20, "unit": "px", "label": "Section Max Width", "default": 1400 },
+    { "type": "range", "id": "columns_desktop", "label": "Columns (Desktop)", "min": 1, "max": 8, "step": 1, "default": 6 },
+    { "type": "range", "id": "columns_tablet", "label": "Columns (Tablet, below 1024px)", "min": 1, "max": 6, "step": 1, "default": 3 },
+    { "type": "range", "id": "columns_mobile", "label": "Columns (Mobile, below 640px)", "min": 1, "max": 6, "step": 1, "default": 2 },
+    { "type": "range", "id": "section_padding", "label": "Section Padding (px)", "min": 0, "max": 80, "step": 4, "default": 40 },
+    { "type": "range", "id": "section_margin", "label": "Section Margin (px)", "min": 0, "max": 80, "step": 4, "default": 0 },
+    { "type": "range", "id": "card_gap", "label": "Gap Between Cards (px)", "min": 4, "max": 40, "step": 2, "default": 16 },
+
+    { "type": "header", "content": "Card Style" },
+    { "type": "color", "id": "border_color", "label": "Card Border Color", "default": "#e0e0e0" },
+    { "type": "range", "id": "border_radius", "label": "Card Border Radius (px)", "min": 0, "max": 24, "step": 2, "default": 8 },
+    { "type": "checkbox", "id": "hover_border", "label": "Border turns accent colour on hover", "default": true },
+    { "type": "color", "id": "title_color", "label": "Collection Title Color", "default": "#111111" },
+    { "type": "range", "id": "title_size", "min": 9, "max": 24, "step": 1, "unit": "px", "label": "Title size", "default": 14 },
+    { "type": "range", "id": "footer_padding", "min": 4, "max": 30, "step": 1, "unit": "px", "label": "Space around title", "default": 16 },
+    { "type": "range", "id": "image_padding", "min": 0, "max": 25, "step": 1, "unit": "%", "label": "Padding around image", "default": 10 },
+
+    { "type": "header", "content": "Product Count Badge" },
+    { "type": "checkbox", "id": "show_badge", "label": "Show product count badge", "default": false },
+    { "type": "color", "id": "badge_bg_color", "label": "Badge Background", "default": "#111111" },
+    { "type": "color", "id": "badge_text_color", "label": "Badge Text", "default": "#ffffff" }
+  ],
+  "presets": [
+    { "name": "Shop by Products Grid" }
+  ]
+}
+{% endschema %}

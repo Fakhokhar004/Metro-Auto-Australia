@@ -1,0 +1,68 @@
+<div class="blog-wrap mb-30 text-center">
+
+  {%- liquid
+  assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+  assign fetch_priority = 'auto'
+  if section.index == 1
+  assign fetch_priority = 'high'
+  endif
+  assign image_class = 'lazyload-main-image animated responsive-image__image'
+  assign lazy_load = 'lazy'
+  -%}
+  
+  {% if section.settings.blog_image_enable %}
+  <div class="blog-img mb-25">
+    {% if article.image %}
+
+    <a  class="lazyload-wraper-position" href="{{ article.url }}" style="padding-top:{{ 1 | divided_by: article.image.aspect_ratio | times: 100}}%;">
+      {% assign image_height = article.image.width | divided_by: article.image.aspect_ratio %}
+      {{ article.image | image_url: width: 3840 | image_tag: width: article.image.width, height: image_height, 
+      widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load }}
+    </a>
+      
+    {% endif %}
+  </div>
+  {% endif %}
+  
+  <div class="blog-content {% if section.settings.content_align == 'center' %}text-center{% elsif section.settings.content_align == 'right' %}text-right{% else %}text-left{% endif %}">
+     
+    {% if section.settings.blog_title_enable %}
+    <h3><a href="{{ article.url }}">{{ article.title }}</a></h3>
+    {% endif %}
+    
+    <div class="blog-meta blog-mrg-border">
+      <ul>
+        {% if section.settings.blog_date_enable %}
+        	<li><a href="#" class="remove_href">{{ article.published_at | date: '%d %B, %Y' }}</a></li>
+        {% endif %}
+        
+        {% if section.settings.blog_comments_enable %}
+          {%- if article.comments_enabled? -%}
+          	<li><a href="{{ article.url }}#comments">{{ article.comments.size }} {{ article.comments.size | pluralize: 'comment' , 'comments' }}</a></li>
+          {%- endif -%}
+        {% endif %}
+      </ul>
+    </div>
+    
+    {% if section.settings.blog_text_enable %}
+
+    {% if article.excerpt.size > 0 %}
+    {{ article.excerpt }}
+    {% else %}
+    <p>{{ article.content | strip_html | truncatewords: 15 }}</p>
+    {% endif %}
+
+    {% endif %}
+    
+    
+    {% if section.settings.blog_button_enable %}
+    {%- if section.settings.button_title != '' -%}
+    <div class="show-more-btn toggle-btn">
+      <a class="loadMore" href="{{ article.url }}">{{ section.settings.button_title }}</a>
+    </div>
+    {%- endif -%}
+    {% endif %}
+
+  </div>
+
+</div>

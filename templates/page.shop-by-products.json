@@ -1,0 +1,84 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "page-template",
+      "disabled": true,
+      "settings": {}
+    },
+    "shop_by_products_grid_jE6DBD": {
+      "type": "Shop-by-products-grid",
+      "name": "Shop by Products Grid",
+      "settings": {
+        "heading": "Shop by Products",
+        "heading_color": "#111111",
+        "heading_tag": "h2",
+        "card_title_tag": "h3",
+        "enable_schema": true,
+        "eager_count": 6,
+        "alt_suffix": "",
+        "intro_text": "",
+        "outro_text": "",
+        "body_text_color": "#555555",
+        "body_text_size": 15,
+        "body_text_align": "center",
+        "show_search": true,
+        "show_sort": true,
+        "show_result_count": false,
+        "default_sort": "manual",
+        "sort_show_manual": true,
+        "sort_show_count": true,
+        "search_placeholder": "Search products…",
+        "search_max_width": 900,
+        "sort_label": "Sort collections",
+        "label_manual": "Featured",
+        "label_alpha_asc": "Name: A–Z",
+        "label_alpha_desc": "Name: Z–A",
+        "label_count_desc": "Most products",
+        "label_count_asc": "Fewest products",
+        "count_singular": "collection",
+        "count_plural": "collections",
+        "empty_text": "No collections match your search.",
+        "search_height": 54,
+        "search_font_size": 15,
+        "sort_height": 42,
+        "sort_width": 180,
+        "count_font_size": 13,
+        "control_radius": 6,
+        "control_font_size": 14,
+        "toolbar_divider": false,
+        "toolbar_margin_bottom": 24,
+        "accent_color": "#D80C0C",
+        "max_width": 1400,
+        "columns_desktop": 5,
+        "columns_tablet": 3,
+        "columns_mobile": 2,
+        "section_padding": 40,
+        "section_margin": 0,
+        "card_gap": 8,
+        "border_color": "#e0e0e0",
+        "border_radius": 8,
+        "hover_border": true,
+        "title_color": "#111111",
+        "title_size": 14,
+        "footer_padding": 16,
+        "image_padding": 10,
+        "show_badge": false,
+        "badge_bg_color": "#111111",
+        "badge_text_color": "#ffffff"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "shop_by_products_grid_jE6DBD"
+  ]
+}

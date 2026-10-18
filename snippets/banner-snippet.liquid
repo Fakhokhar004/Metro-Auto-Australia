@@ -1,0 +1,148 @@
+{% unless block.settings.text1_p == 'style_spb' %}
+ 
+ <div class="single-banner mb-30 banner_top">
+   
+
+        <a href="{{ bset.btn1_url }}" class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.img1.aspect_ratio | times: 100}}%;">
+          
+          {%- if block.settings.img1 -%}
+
+          {%- liquid
+          assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+          assign fetch_priority = 'auto'
+          if section.index == 1
+          assign fetch_priority = 'high'
+          endif
+          assign image_class = 'lazyload-main-image animated responsive-image__image'
+          assign lazy_load = 'lazy'
+          -%}
+            
+          {% assign image_height = block.settings.img1.width | divided_by: block.settings.img1.aspect_ratio %}
+            {{ block.settings.img1 | image_url: width: 3840 | image_tag: width: block.settings.img1.width, height: image_height, 
+            widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt }}
+            
+          {%- else -%}
+          <img loading="lazy"  class="animated" src="https://via.placeholder.com/855x825" alt="{{ image.alt }}">
+          {%- endif -%}
+        </a>
+
+   
+  
+    <div class="banner-content {% if block.settings.text1_p == 'style_1' %}banner-position-1{% elsif block.settings.text1_p == 'style_2' %} banner-position-2{% elsif block.settings.text1_p == 'style_3' %} banner-position-3{% elsif block.settings.text1_p == 'style_4' %} banner-position-4{% elsif block.settings.text1_p == 'style_5' %}banner-position-5 {% endif %}">
+      {%- if block.settings.t1 != '' -%}
+      <h3>{{ block.settings.t1 }}</h3>
+      {%- endif -%}
+
+      {%- if block.settings.t2 != '' -%}
+      <h2>{{ block.settings.t2 }}</h2>
+      {%- endif -%}
+
+      {%- if block.settings.btn1 != '' -%}
+      <a class="ban_btn1"  href="{{ block.settings.btn1_url }}">{{ block.settings.btn1 }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+  
+{% endunless %}
+
+
+{% if block.settings.text1_p == 'style_spb' %}
+  
+ <div class="simple__pro__wrap {% if block.settings.banner__img__left %} flex-row-reverse{% endif %}">
+   
+    <div class="simple__pro__content">
+      {%- if block.settings.t1 != '' -%}
+      <h3>{{ block.settings.t1 }}</h3>
+      {%- endif -%}
+
+      {%- if block.settings.t2 != '' -%}
+      <h2>{{ block.settings.t2 }}</h2>
+      {%- endif -%}
+
+      {%- if block.settings.btn1 != '' -%}
+      <a class="ban_btn1"  href="{{ block.settings.btn1_url }}">{{ block.settings.btn1 }}</a>
+      {%- endif -%}
+    </div>
+  
+    <div class="simple__pro__img">
+
+      
+
+        <a href="{{ bset.btn1_url }}" class="lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: block.settings.img1.aspect_ratio | times: 100}}%;">
+          
+          {%- if block.settings.img1 -%}
+
+
+          {%- liquid
+          assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+          assign fetch_priority = 'auto'
+          if section.index == 1
+          assign fetch_priority = 'high'
+          endif
+          assign image_class = 'lazyload-main-image animated responsive-image__image'
+          assign lazy_load = 'lazy'
+          -%}
+            
+          {% assign image_height = block.settings.img1.width | divided_by: block.settings.img1.aspect_ratio %}
+            {{ block.settings.img1 | image_url: width: 3840 | image_tag: width: block.settings.img1.width, height: image_height, 
+            widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt  }}
+            
+          {%- else -%}
+          <img loading="lazy"  class="animated" src="https://via.placeholder.com/750x350" alt="{{ image.alt }}">
+          {%- endif -%}
+        </a>
+
+      
+     </div>
+  
+  </div>
+
+{% endif %}
+
+
+
+  {% style %}
+  
+  {% if block.settings.banner_custom_enable %}
+  .block_{{ block.id }} .banner_top .banner-content h3{
+  color: {{ block.settings.t1_color }};
+  }
+  .block_{{ block.id }} .banner_top .banner-content h2{
+  color: {{ block.settings.t2_color }};
+  }
+
+  .block_{{ block.id }} .banner_top .banner-content a.ban_btn1 {
+  color: {{ block.settings.btn1_color }};
+  border-bottom: 1px solid {{ bset.btn1_color }};
+  }
+  .block_{{ block.id }} .banner_top .banner-content a.ban_btn1:hover {
+  color: {{ block.settings.btn1_border_color }};
+  border-bottom: 1px solid {{ block.settings.btn1_border_color }};
+  }
+    
+  .block_{{ block.id }} .simple__pro__wrap,
+  .block_{{ block.id }} .single-banner{
+    background:{{block.settings.banner__bg__color}}
+  }
+    
+  .block_{{ block.id }} .simple__pro__content h3{
+      color: {{ block.settings.t1_color }};  
+  }
+  .block_{{ block.id }} .simple__pro__content h2{
+    color: {{ block.settings.t2_color }};
+  }
+  .block_{{ block.id }} .simple__pro__content h2 span {
+      -webkit-text-stroke-color: {{ block.settings.t2_color }};
+  }
+  .block_{{ block.id }} .simple__pro__content a.ban_btn1 {
+      color: {{ block.settings.btn1_color }};
+  }
+  .block_{{ block.id }} .simple__pro__content a.ban_btn1:hover {
+      color: {{ block.settings.btn1_border_color }};
+  }
+
+  {% endif %}
+
+  
+  {% endstyle %}
+

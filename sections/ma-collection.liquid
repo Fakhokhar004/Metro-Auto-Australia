@@ -1,0 +1,335 @@
+{%- comment -%}
+  Metro Auto category page. Design reference: _design/metro-auto-design/pages/Collection.dc.html
+  Dark banner (breadcrumb, title, intro, sibling chips) → filter panel (Shopify Search & Discovery:
+  collection.filters) + results (vehicle toggle, toolbar with count, chips and sort, product grid).
+  Below 900px the filters sit behind a "Filters" button. Behaviour: assets/ma-listing.js.
+
+  Sibling chips come from a menu: find this collection in it, then show its parent's links (or its own children).
+  "Only parts that fit my car" uses the vehicle's fitment tag: /collections/<handle>/<toyota-corolla-2019>.
+{%- endcomment -%}
+{{ 'ma-listing.css' | asset_url | stylesheet_tag }}
+<script>
+  /* "Only parts that fit my car" is on (?fit=1): hide the normal grid before it paints; ma-listing.js shows the matches. */
+  if (/[?&](fit=1|model=[^&])/.test(location.search)) document.documentElement.classList.add('ma-fitmode');
+</script>
+
+{%- liquid
+  assign per_page = section.settings.per_page
+  assign menu = linklists[section.settings.menu]
+  assign parent_link = nil
+  assign sibling_links = nil
+  assign is_top = false
+  for top in menu.links
+    if top.type == 'collection_link' and top.object.handle == collection.handle
+      assign is_top = true
+      assign parent_link = top
+      assign sibling_links = top.links
+      break
+    endif
+    for child in top.links
+      if child.type == 'collection_link' and child.object.handle == collection.handle
+        assign parent_link = top
+        assign sibling_links = top.links
+        break
+      endif
+    endfor
+    if parent_link
+      break
+    endif
+  endfor
+
+  assign intro = collection.description | strip_html | strip | truncatewords: 40
+  if intro == blank
+    assign vendors = collection.all_vendors | slice: 0, 4 | join: ', '
+    if vendors != blank
+      assign intro = 'Shop ' | append: collection.title | append: ' from ' | append: vendors | append: ', in stock in Melbourne.'
+    else
+      assign intro = 'Browse ' | append: collection.title | append: ' for your vehicle.'
+    endif
+  endif
+
+  assign sort_value = collection.sort_by | default: collection.default_sort_by
+  assign base_url = collection.url
+  assign active_tag = current_tags | first
+
+  # make mode: a car make collection (custom.is_car_brand), e.g. /collections/toyota
+  assign make_mode = false
+  if collection.metafields.custom.is_car_brand == true
+    assign make_mode = true
+    assign makes_url = '/pages/shop-by-vehicle'
+  endif
+
+  # brand mode: Shopify's vendor page /collections/vendors?q=<Brand>, or a brand collection using the "brand"
+  # template (e.g. /collections/goss for a brand over 5,000 products). collection.title is the brand either way.
+  assign brand_mode = false
+  assign vendor_page = false
+  assign keep_q = ''
+  if collection.handle == 'vendors'
+    assign vendor_page = true
+    assign keep_q = collection.title
+  endif
+  if vendor_page or collection.template_suffix == 'brand'
+    assign brand_mode = true
+    assign brand = collection.title
+    # collection.url already ends in ?q=<Brand> here
+    assign base_url = collection.url
+    assign brand_bg = '#121316'
+    assign brand_fg = '#FFFFFF'
+    assign brand_covers = ''
+    capture brand_rows
+      render 'ma-brand-rows'
+    endcapture
+    assign brand_rows = brand_rows | split: ';;'
+    assign brand_key = brand | downcase
+    for row in brand_rows
+      assign cols = row | split: '|'
+      assign k = cols[0] | strip | downcase
+      if k == brand_key
+        assign brand_bg = cols[1] | strip
+        assign brand_fg = cols[2] | strip
+        assign brand_covers = cols[3] | strip
+      endif
+    endfor
+    assign brands_url = '/pages/shop-by-brands'
+  endif
+-%}
+
+<div class="ma-listing" data-ma-listing data-base-url="{{ base_url }}" data-active-tag="{{ active_tag | escape }}" data-total="{{ collection.products_count }}">
+  {%- comment -%} ---------- Banner (off when another section, e.g. ma-deals, shows it) ---------- {%- endcomment -%}
+  {%- if section.settings.show_banner -%}
+  {%- if make_mode -%}
+  <section class="ma-banner">
+    <div class="ma-wrap ma-banner__in ma-bbanner">
+      <nav class="ma-banner__crumb" aria-label="Breadcrumb">
+        <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span>
+        <a href="{{ makes_url }}">Shop by vehicle</a><span aria-hidden="true">/</span><span aria-current="page">{{ collection.title | escape }}</span>
+      </nav>
+      <div class="ma-bbanner__row">
+        {%- if collection.image -%}
+          <span class="ma-bbanner__logo ma-bbanner__logo--img" aria-hidden="true">{{ collection.image | image_url: width: 240 | image_tag: alt: '', widths: '120,240', sizes: '112px' }}</span>
+        {%- endif -%}
+        <div class="ma-bbanner__copy">
+          <h1 class="ma-banner__title">{{ collection.title | escape }} parts</h1>
+          <p class="ma-banner__text" data-ma-make-blurb>Parts for {{ collection.title | escape }} models. Pick a model to narrow it down.</p>
+        </div>
+      </div>
+      <div class="ma-chips" role="group" aria-label="Filter by model" data-ma-models data-make="{{ collection.title | escape }}">
+        <a class="ma-chip is-on" href="{{ collection.url }}" aria-current="page" data-ma-model-all>All models</a>
+      </div>
+    </div>
+  </section>
+  {%- elsif brand_mode -%}
+  <section class="ma-banner">
+    <div class="ma-wrap ma-banner__in ma-bbanner">
+      <nav class="ma-banner__crumb" aria-label="Breadcrumb">
+        <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span>
+        <a href="{{ brands_url }}">Our trusted brands</a><span aria-hidden="true">/</span><span aria-current="page">{{ brand | escape }}</span>
+      </nav>
+      <div class="ma-bbanner__row">
+        <span class="ma-bbanner__logo" aria-hidden="true" style="background: {{ brand_bg }}; color: {{ brand_fg }};">{{ brand | escape }}</span>
+        <div class="ma-bbanner__copy">
+          <h1 class="ma-banner__title">{{ brand | escape }} products</h1>
+          <p class="ma-banner__text">
+            {%- if brand_covers != blank -%}{{ brand_covers | escape }}. {% endif -%}
+            {%- if collection.all_products_count > 0 -%}
+              Sent from our Melbourne warehouse, with the manufacturer's warranty.
+            {%- else -%}
+              This range will show here once it's loaded from the store.
+            {%- endif -%}
+          </p>
+        </div>
+      </div>
+      <div class="ma-chips" role="group" aria-label="Switch brand">
+        {%- for row in brand_rows -%}
+          {%- assign cols = row | split: '|' -%}
+          {%- assign b_name = cols[0] | strip -%}
+          {%- unless shop.vendors contains b_name -%}{%- continue -%}{%- endunless -%}
+          {%- if b_name == brand -%}
+            <a class="ma-chip ma-chip--brand is-on" href="{% render 'ma-brand-url', name: b_name %}" aria-current="page">{{ b_name | escape }}</a>
+          {%- else -%}
+            <a class="ma-chip ma-chip--brand" href="{% render 'ma-brand-url', name: b_name %}">{{ b_name | escape }}</a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      {%- if vendor_page == false -%}
+        {%- assign all_brand_q = 'vendor:"' | append: brand | append: '"' | url_encode -%}
+        <p class="ma-bbanner__all">{{ collection.description | strip_html | strip | default: 'Part of the range.' | escape }}
+          <a href="{{ routes.search_url }}?type=product&amp;options%5Bprefix%5D=last&amp;q={{ all_brand_q }}">See all {{ brand | escape }} parts</a></p>
+      {%- endif -%}
+    </div>
+  </section>
+  {%- else -%}
+  <section class="ma-banner">
+    <div class="ma-wrap ma-banner__in">
+      <nav class="ma-banner__crumb" aria-label="Breadcrumb">
+        <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span>
+        <a href="{{ routes.collections_url }}">All categories</a>
+        {%- if parent_link and is_top == false -%}<span aria-hidden="true">/</span><a href="{{ parent_link.url }}">{{ parent_link.title | escape }}</a>{%- endif -%}
+        <span aria-hidden="true">/</span><span aria-current="page">{{ collection.title | escape }}</span>
+      </nav>
+      <h1 class="ma-banner__title">{{ collection.title | escape }}</h1>
+      <p class="ma-banner__text">{{ intro | escape }}</p>
+      {%- if sibling_links.size > 0 -%}
+        <div class="ma-chips" role="group" aria-label="Related categories">
+          <a class="ma-chip{% if is_top %} is-on{% endif %}" href="{{ parent_link.url }}"{% if is_top %} aria-current="page"{% endif %}>All {{ parent_link.title | downcase | escape }}</a>
+          {%- for l in sibling_links -%}
+            {%- assign on = false -%}
+            {%- if l.type == 'collection_link' and l.object.handle == collection.handle -%}{%- assign on = true -%}{%- endif -%}
+            <a class="ma-chip{% if on %} is-on{% endif %}" href="{{ l.url }}"{% if on %} aria-current="page"{% endif %}>{{ l.title | escape }}</a>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </section>
+  {%- endif -%}
+  {%- endif -%}
+
+  {%- paginate collection.products by per_page -%}
+  <div class="ma-wrap ma-listing__body">
+    <div class="ma-listing__layout">
+      {%- comment -%} ---------- Filters (Search & Discovery) ---------- {%- endcomment -%}
+      {%- assign f_action = base_url -%}
+      {%- if active_tag != blank -%}{%- assign tag_h = active_tag | handle -%}{%- assign f_action = base_url | append: '/' | append: tag_h -%}{%- endif -%}
+      {%- assign f_clear = f_action | append: '?sort_by=' | append: sort_value -%}
+      {%- if vendor_page -%}
+        {%- assign f_action = '/collections/vendors' -%}
+        {%- assign f_clear = base_url | append: '&sort_by=' | append: sort_value -%}
+      {%- endif -%}
+      {%- render 'ma-filters', filters: collection.filters, action: f_action, clear_url: f_clear, section_id: section.id, open_count: section.settings.open_count, count: paginate.items, keep_q: keep_q -%}
+
+      {%- comment -%} ---------- Results ---------- {%- endcomment -%}
+      <div class="ma-results">
+        {%- if make_mode -%}
+          <div class="ma-makenote" data-ma-makenote>
+            <span>Showing every {{ collection.title | escape }} part. Add your exact model and year in My garage and we'll mark the ones that fit.</span>
+            <button type="button" class="ma-makenote__btn" data-ma-open="garage">Add model and year</button>
+          </div>
+        {%- endif -%}
+        <div class="ma-fitbar" data-ma-fitbar hidden>
+          <span class="ma-fitbar__text" data-ma-fitbar-text></span>
+          <button type="button" class="ma-switch" role="switch" aria-checked="false" data-ma-fit-switch>
+            <span class="ma-switch__track" aria-hidden="true"><span class="ma-switch__knob"></span></span>
+            Only parts that fit my <span data-ma-fitbar-model></span>
+          </button>
+        </div>
+
+        <div class="ma-toolbar">
+          <div class="ma-toolbar__left">
+            {%- if make_mode -%}
+              <a class="ma-toolbar__back" href="{{ makes_url }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>All makes</a>
+            {%- endif -%}
+            {%- if brand_mode -%}
+              <a class="ma-toolbar__back" href="{{ brands_url }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>All brands</a>
+            {%- endif -%}
+            <button type="button" class="ma-toolbar__filters" aria-controls="ma-filters-{{ section.id }}" aria-expanded="false" data-ma-filters-toggle>
+              {%- render 'ma-icon', name: 'filter', size: 16, width: 2 -%}<span data-ma-filters-label>Filters</span>
+            </button>
+            <span class="ma-toolbar__count" data-ma-count>{{ paginate.items }} product{% if paginate.items != 1 %}s{% endif %}</span>
+            {%- for filter in collection.filters -%}
+              {%- if filter.type == 'price_range' -%}
+                {%- if filter.min_value.value or filter.max_value.value -%}
+                  <a class="ma-fchip" href="{{ filter.url_to_remove }}" aria-label="Remove price filter">
+                    Price {{ filter.min_value.value | default: 0 | money_without_trailing_zeros }} to {% if filter.max_value.value %}{{ filter.max_value.value | money_without_trailing_zeros }}{% else %}any{% endif %}
+                    <span aria-hidden="true">&times;</span>
+                  </a>
+                {%- endif -%}
+              {%- else -%}
+                {%- for value in filter.active_values -%}
+                  <a class="ma-fchip" href="{{ value.url_to_remove }}" aria-label="Remove {{ value.label | escape }}">{{ value.label | escape }} <span aria-hidden="true">&times;</span></a>
+                {%- endfor -%}
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+          <label class="ma-toolbar__sort">Sort by
+            <select name="sort_by" form="ma-filter-form-{{ section.id }}" class="ma-gselect" data-ma-sort>
+              {%- for option in collection.sort_options -%}
+                <option value="{{ option.value }}"{% if option.value == sort_value %} selected{% endif %}>{{ option.name | escape }}</option>
+              {%- endfor -%}
+            </select>
+          </label>
+        </div>
+
+        {%- comment -%} Fit view: filled by ma-listing.js from sections/ma-fit-scan {%- endcomment -%}
+        <div class="ma-fitres" data-ma-fit-results hidden>
+          <p class="ma-fitres__status" data-ma-fit-status role="status"></p>
+          <div class="ma-pgrid ma-pgrid--listing" data-ma-fit-grid></div>
+          <button type="button" class="ma-fitres__more" data-ma-fit-more hidden>Show more</button>
+          <div class="ma-empty-box" data-ma-fit-empty hidden>
+            <h2>No parts here are listed for <span data-ma-fit-who>your</span> <span data-ma-fit-vehicle></span></h2>
+            <p>Turn off vehicle matching to see everything in this category, or send us your rego and we'll find the right part.</p>
+            <div class="ma-empty-box__btns">
+              <button type="button" class="ma-button ma-button--dark" data-ma-fit-off>Show all parts</button>
+              <a class="ma-button ma-button--red" href="{{ section.settings.ask_url | default: '/pages/contact-us' }}">Ask us for a part</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="ma-pageres" data-ma-page-results>
+        {%- if collection.products.size > 0 -%}
+          <div class="ma-pgrid ma-pgrid--listing">
+            {%- for product in collection.products -%}
+              {%- liquid
+                assign first_row = false
+                if forloop.index <= 3
+                  assign first_row = true
+                endif
+              -%}
+              {%- render 'ma-product-card', product: product, priority: first_row -%}
+            {%- endfor -%}
+          </div>
+          {%- if paginate.pages > 1 -%}
+            <nav class="ma-pager" aria-label="Pages">
+              {%- if paginate.previous -%}<a class="ma-pager__btn" href="{{ paginate.previous.url }}" rel="prev">Previous</a>{%- endif -%}
+              {%- for part in paginate.parts -%}
+                {%- if part.is_link -%}
+                  <a class="ma-pager__n" href="{{ part.url }}">{{ part.title }}</a>
+                {%- elsif part.title == paginate.current_page -%}
+                  <span class="ma-pager__n is-on" aria-current="page">{{ part.title }}</span>
+                {%- else -%}
+                  <span class="ma-pager__gap">{{ part.title }}</span>
+                {%- endif -%}
+              {%- endfor -%}
+              {%- if paginate.next -%}<a class="ma-pager__btn" href="{{ paginate.next.url }}" rel="next">Next</a>{%- endif -%}
+            </nav>
+          {%- endif -%}
+        {%- else -%}
+          <div class="ma-empty-box">
+            {%- if active_tag != blank -%}
+              <h2>No parts here are tagged for your vehicle yet</h2>
+              <p>Turn off vehicle matching to see everything in this category, or ask us and we'll check the right part for your car.</p>
+            {%- elsif collection.all_products_count > 0 -%}
+              <h2>Nothing matches these filters</h2>
+              <p>Clear a filter to see everything in this category.</p>
+            {%- else -%}
+              <h2>{% if brand_mode %}{{ brand | escape }} products are on their way{% else %}Products for {{ collection.title | downcase | escape }} are on their way{% endif %}</h2>
+              <p>We're adding this range to the website. Ask us and we'll check stock in the warehouse for you.</p>
+            {%- endif -%}
+            <div class="ma-empty-box__btns">
+              <a class="ma-button ma-button--dark" href="{{ routes.collections_url }}">Browse other categories</a>
+              <a class="ma-button ma-button--red" href="{{ section.settings.ask_url | default: '/pages/contact-us' }}">Ask us for a part</a>
+            </div>
+          </div>
+        {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+  {%- endpaginate -%}
+</div>
+
+<script src="{{ 'ma-listing.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Metro collection",
+  "tag": "section",
+  "class": "ma-body",
+  "settings": [
+    { "type": "checkbox", "id": "show_banner", "label": "Show banner", "info": "Turn off when a banner section sits above, like the deals timer.", "default": true },
+    { "type": "link_list", "id": "menu", "label": "Category menu", "info": "Used for the related-category chips and breadcrumb: the menu where this collection sits, two levels deep (group → categories)." },
+    { "type": "range", "id": "per_page", "label": "Products per page", "min": 12, "max": 48, "step": 6, "default": 24 },
+    { "type": "range", "id": "open_count", "label": "Filter groups open by default", "min": 1, "max": 8, "step": 1, "default": 4 },
+    { "type": "url", "id": "ask_url", "label": "\"Ask us for a part\" link", "info": "Defaults to /pages/contact-us" }
+  ]
+}
+{% endschema %}

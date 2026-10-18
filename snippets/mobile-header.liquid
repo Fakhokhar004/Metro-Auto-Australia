@@ -1,0 +1,24 @@
+<div class="header-small-mobile">
+  <div class="{% if section.settings.section_width == 'full_width' %}container-fluid {% elsif section.settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif section.settings.section_width == 'default' %}container default {% endif %}">
+    <div class="row align-items-center">
+      <div class="col-6">
+        <div class="mobile-logo">
+          {%- render 'header-logo' -%}
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="header-right-wrap">
+          <div class="cart-wrap">
+            {%- render 'mini-cart' -%}
+            {%- if settings.google_translate_enable -%}            
+              {%- render 'language__translate' -%}
+            {%- endif -%}
+          </div>
+          <div class="mobile-off-canvas">
+            <a class="mobile-aside-button" href="#"><i class="sli sli-menu"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

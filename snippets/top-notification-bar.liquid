@@ -1,0 +1,75 @@
+<div class="top-notification-bar">
+  <div class="{% if settings.section_width == 'full_width' %}container-fluid {% elsif settings.section_width == 'box_width' %}container-fluid section-padding-1{% elsif settings.section_width == 'default' %}container default {% endif %}">
+   
+    <div class="row">
+      <div class="notification-entry col-12 {{ settings.content_alignment }}">
+
+        <div class="notification_text">
+          {{ settings.notification_text }}
+          {% if settings.notification_button_name != '' %}
+          <p><a class="notification-button" href="{{ settings.notification_button_url }}">{{ settings.notification_button_name }}</a></p>
+          {% endif %}
+          <button class="notification-close-btn">X</button>
+        </div>
+
+          {% if settings.topbar__contdown != '' %} 
+            <div class="count_down_wrapper">
+              <div data-countdown="{{ settings.topbar__contdown }}"></div>
+            </div>
+          {% endif %}
+        
+        {% if settings.top_bar_social %} 
+        <div class="top_bar_social">
+          {%- if settings.show_fb -%}
+          <a href="{{ settings.fb_url }}">
+             {{- 'icon-facebook.svg' | inline_asset_content | replace: '<svg', '<svg class="icon icon-facebook"' -}}
+          </a>
+          {%- endif -%}
+  
+          {%- if settings.show_twitter -%}
+          <a href="{{ settings.twitter_url }}">
+            {{- 'icon-x.svg' | inline_asset_content | replace: '<svg', '<svg class="icon icon-x"' -}}
+          </a>
+          {%- endif -%}
+  
+          {%- if settings.show_instagram -%}
+          <a href="{{ settings.instagram_url }}">
+            {{- 'icon-instagram.svg' | inline_asset_content | replace: '<svg', '<svg class="icon icon-instagram"' -}}
+          </a>
+          {%- endif -%}
+          
+          {%- if settings.show_youtube -%}
+          <a href="{{ settings.youtube_url }}">
+            {{- 'icon-youtube.svg' | inline_asset_content | replace: '<svg', '<svg class="icon icon-youtube"' -}}
+          </a>
+          {%- endif -%}        
+        </div>
+        {% endif %}       
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  var nToggle = $('.notification-close-btn');
+  nToggle.on('click', function(){
+    $('.top-notification-bar').slideToggle();
+  })
+</script>
+
+
+{%- if settings.topbar_notification_mobile -%}
+
+<style>
+  
+  @media (max-width:767px){
+    .top-notification-bar{
+      display:none
+    }
+  }
+  
+</style>
+
+{%- endif -%}

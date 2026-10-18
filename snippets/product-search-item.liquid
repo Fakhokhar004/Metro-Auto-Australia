@@ -1,0 +1,80 @@
+{%- assign on_sale = false -%}
+{%- if item.compare_at_price > item.price -%}
+{%- assign on_sale = true -%}
+{%- endif -%}
+
+{%- assign sold_out = true -%}
+{%- if item.available -%}
+{%- assign sold_out = false -%}
+{%- endif -%}
+
+{%- assign variant = item.selected_or_first_available_variant -%}
+
+{%- if item.available -%}
+{%- assign func = "Shopify.addItem(" | append: variant.id | append: ", 1)" -%}
+{%- endif -%}  
+
+{% if item.featured_image %}
+<div class="search-item shop-list-wrap theme-product-countdown-fill">
+  <div class="search-item-image product-list-img">
+    <a href="{{ item.url | within: collection }}"><img loading="lazy"  src="{{ item.featured_image.src | img_url: 'large' }}" alt=""></a>
+    
+    <div class="product-badge">
+        {%- if sold_out -%}
+            <span class="soldout-title p_badge theme-product-label theme-product-label-right">{{ settings.soldout_title }}</span>
+        {%- else -%} 
+      {%- if item.description contains '[new_products]' -%}      
+      {%- assign new_products_first = item.description | split:'[/new_products]' | first -%}
+      {%- assign new_products_final = new_products_first | split:'[new_products]' | last -%} 
+      {%- comment -%}Date calculate{%- endcomment -%}
+      {%- assign date_pub_y = item.published_at | date:'%Y' -%}
+      {%- assign date_pub_d = item.published_at | date:'%j' -%}
+      {%- assign date_now_y = 'now' | date:'%Y' -%}
+      {%- assign date_now_d = 'now' | date:'%j' -%}
+      {%- assign dates_diff_y = date_now_y | minus: date_pub_y | times: 365 -%}
+      {%- assign dates_diff_d = date_now_d | minus: date_pub_d -%}
+      {%- assign dates_diff = dates_diff_y | plus: dates_diff_d -%}
+      {%- assign new_products_period = new_products_final | plus: 0 -%} 
+      {%- if dates_diff <= new_products_period -%}
+        <span class="new-title theme-product-label theme-product-label-left">{{ settings.new_title }}</span>
+      {%- endif -%}
+      {%- endif -%}
+
+      {%- if on_sale -%}
+      <div class="product-label discount">
+        {%- if settings.sale_title != '' -%}
+        <span class="sale-title theme-product-label theme-product-label-right">{{ settings.sale_title }}</span>
+        {%- endif -%}
+        {% if settings.sale_percent_enable %}
+        <span class="percent-count theme-product-label theme-product-label-right{% if settings.sale_title != '' %} p_badge_p2{% endif %}">-{{ item.selected_or_first_available_variant.compare_at_price | minus: item.selected_or_first_available_variant.price | times: 100.0 | divided_by: item.selected_or_first_available_variant.compare_at_price | money_without_currency | replace: ',', '.' | times: 100 | remove: '.0'}}%</span>
+        {% endif %}
+      </div>
+      {%- endif -%}
+      {%- endif -%}
+    </div>
+
+
+  </div>
+  <div class="search-item-content">
+    <h4><a href="{{ item.url | within: collection }}">{{ item.title | highlight: search.terms }}</a></h4>
+    <div class="search-price">
+      {% if item.compare_at_price_max > item.price %}
+      <span class="compare-price"><del>{{ item.compare_at_price | money }}</del></span>
+      {% endif %}
+      <span class="search-price">{{ item.price | money }}</span>
+    </div>
+    {%- if item.description contains '[short_description]' -%} 
+    {%- assign short_description_first = item.description | split:'[/short_description]' | first -%}
+    {%- assign short_description_final = short_description_first | split:'[short_description]' | last -%}
+    {{ short_description_final }}
+    {%- else -%}
+    <p>{{ item.description | strip_html | truncatewords: 50 | highlight: search.terms | split: '[short_description]' | first | split: '[product_description]' | first | split: '[new_products]' | first | split: '[product_video]' | first | split: '[affiliate_link]' | first | split: '[countdown]' | first | split: '[unique_description_1]' | first | split: '[unique_description_2]' | first | split: '[unique_description_3]' | first }}</p>
+    {%- endif -%}
+  </div>
+</div>
+{% else %}
+<div class="search-blog-item">
+  <h4 class="search-blog-title"><a href="{{ item.url }}">{{ item.title }}</a></h4>
+  <p>{{ item.content | strip_html | truncatewords: 50 | highlight: search.terms }}</p>
+</div>
+{% endif %}

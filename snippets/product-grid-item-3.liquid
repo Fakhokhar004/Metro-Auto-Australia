@@ -1,0 +1,96 @@
+{%- assign on_sale = false -%}{%- if product.variants.first.compare_at_price > product.variants.first.price -%}{%- assign on_sale = true -%}{%- endif -%}
+{%- assign sold_out = true -%}{%- if product.available -%}{%- assign sold_out = false -%}{%- endif -%}
+{%- assign variant = product.selected_or_first_available_variant -%}
+{%- if product.available -%}{%- assign func = "Shopify.addItem(" | append: variant.id | append: ", 1)" -%}{%- endif -%}
+
+<div class="{{ variant.id }} theme-product theme-product-action-on-hover mb-30 
+            {% if settings.product_action_pos == 'right' %} theme-product-action-right
+            {% elsif settings.product_action_pos == 'bottom' %} theme-product-action-bottom
+            {% elsif settings.product_action_pos == 'center' %} theme-product-action-middle
+            {% elsif settings.product_action_pos == 'b_content' %} theme-product-action-bottom-content
+            {% endif %}
+            {% if settings.p_count_style == 'style_2' %} theme-product-countdown-fill{% endif %}
+            {% if settings.p_count_pos == 'left' %} theme-product-countdown-left
+            {% elsif settings.p_count_pos == 'right' %} theme-product-countdown-right
+            {% elsif settings.p_count_pos == 'bottom' %} theme-product-countdown-bottom
+            {% elsif settings.p_count_pos == 'center' %} theme-product-countdown-middle
+            {% elsif settings.p_count_pos == 'b_content' %} theme-product-countdown-content-bottom{% endif %} product-wrapper-class">
+  <div class="theme-product-inner icon_bg">
+    
+    <div class="theme-product-image-wrap product-color">
+      {%- if settings.show_product_badge -%}
+      {%- render 'product-badge', product: product, on_sale: on_sale, sold_out: sold_out -%}
+      {%- endif -%}
+      
+      <div class="theme-product-image">
+        <div class="theme-product-cus-tab icon_bg_img">
+
+      {%- liquid
+        assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+        assign fetch_priority = 'auto'
+      if section.index == 1
+        assign fetch_priority = 'high'
+      endif
+        assign image_class = 'lazyload-main-image popup_cart_image'
+        assign lazy_load = 'lazy'
+      -%}
+      
+      <a href="{{ product.url | within: collection }}" class="theme-product-image lazyload-wraper-position" style="padding-top:{{ 1 | divided_by: product.featured_image.aspect_ratio | times: 100}}%;">
+        {% assign image_height = product.featured_image.width | divided_by: product.featured_image.aspect_ratio %}
+        {{ product.featured_image | image_url: width: 3840 | image_tag: width: product.featured_image.width, height: image_height,
+        widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load }}
+      </a>
+
+          
+      {%- unless settings.p_count_pos == 'b_content' -%}
+      {%- render 'product-countdown', product: product -%}
+      {%- endunless -%}   
+      {%- render 'product-action-grid', product: product, func: func -%}
+
+      {%- render 'grid-color-img-swatch', product: product, variant:variant -%}   
+    </div>
+        </div>
+    </div>
+    
+    <div class="theme-product-content">
+      <div class="theme-product-content-inner {{ p_content_align }}">
+        
+        {%- render 'product-progress-quantity', product: product -%}
+        
+
+        {%- if settings.show_product_type -%}
+        <div class="theme-product-categories {{ p_content_align }}">
+          <a href="#" class="remove_href">{{ product.type }}</a>
+        </div>
+        {%- endif -%}
+        <h4 class="theme-product-title popup_cart_title"><a href="{{ product.url | within: collection }}">{{ product.title }}</a></h4>
+        <div class="theme-product-price {{ p_content_align }}">
+          {%- if product.variants.first.compare_at_price > product.variants.first.price -%}
+          <span class="old">{{ product.variants.first.compare_at_price | money }}</span>
+          {%- endif -%}
+          <span class="new">{{ product.variants.first.price | money }}</span>
+        </div>
+        {%- if settings.show_product_review -%}
+        <div class="theme-product-ratting-wrap {{ p_content_align }}">
+
+          <!-- Start of Judge.me code -->
+            <div class='jdgm-widget jdgm-preview-badge'>
+              {{ product.metafields.judgeme.badge }}
+            </div>
+          <!-- End of Judge.me code -->
+          
+        </div>
+        {%- endif -%} 
+      </div>
+      {%- render 'product-action-grid', product: product, func: func -%}     
+      {%- if settings.p_count_pos == 'b_content' -%}
+      {%- render 'product-countdown', product: product -%}
+      {%- endif -%}
+
+      {% if section.settings.grid__inventory %}
+        {% render 'grid_inventory' , product: product %}
+      {% endif %}
+      
+    </div>
+  </div>
+</div>

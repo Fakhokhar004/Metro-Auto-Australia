@@ -1,0 +1,50 @@
+{%- comment -%}
+  Outputs the brand list as rows "Name|card colour|text colour|covers" joined by ";;".
+  Usage: {% capture rows %}{% render 'ma-brand-rows' %}{% endcapture %}{% assign rows = rows | split: ';;' %}
+  Colours: Theme settings → Metro brands card colour (or each brand's own colour when that is on).
+  Source: Theme settings → Metro brands, then (optionally) any other product vendors with default colours.
+{%- endcomment -%}
+{%- liquid
+  assign hide = settings.ma_brands_hide | downcase | split: ','
+  assign lines = settings.ma_brands | newline_to_br | split: '<br />'
+  assign listed = ''
+  assign out = ''
+  for line in lines
+    assign line = line | strip
+    if line == blank
+      continue
+    endif
+    assign cols = line | split: '|'
+    assign key = cols[0] | strip | downcase
+    assign listed = listed | append: '|' | append: key | append: '|'
+    assign c_bg = settings.ma_brand_bg
+    assign c_fg = settings.ma_brand_fg
+    if settings.ma_brand_own
+      assign c_bg = cols[1] | strip | default: settings.ma_brand_bg
+      assign c_fg = cols[2] | strip | default: settings.ma_brand_fg
+    endif
+    assign row = cols[0] | strip | append: '|' | append: c_bg | append: '|' | append: c_fg | append: '|' | append: cols[3]
+    assign out = out | append: row | append: ';;'
+  endfor
+  if settings.ma_brands_auto
+    for vendor in shop.vendors
+      assign key = vendor | downcase
+      assign probe = '|' | append: key | append: '|'
+      if listed contains probe
+        continue
+      endif
+      assign hidden = false
+      for h in hide
+        assign hh = h | strip
+        if hh == key
+          assign hidden = true
+        endif
+      endfor
+      if hidden
+        continue
+      endif
+      assign out = out | append: vendor | append: '|' | append: settings.ma_brand_bg | append: '|' | append: settings.ma_brand_fg | append: '|;;'
+    endfor
+  endif
+  echo out
+-%}

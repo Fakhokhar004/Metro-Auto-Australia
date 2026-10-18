@@ -1,0 +1,124 @@
+{
+  "layout": "metro",
+  "sections": {
+    "main": {
+      "type": "ma-about",
+      "blocks": {
+        "v1": {
+          "type": "value",
+          "settings": {
+            "icon": "star",
+            "title": "Quality-checked parts",
+            "text": "OEM-quality parts, checked before they leave the warehouse."
+          }
+        },
+        "v2": {
+          "type": "value",
+          "settings": {
+            "icon": "truck",
+            "title": "Direct from the maker",
+            "text": "We buy straight from manufacturers, with no middlemen."
+          }
+        },
+        "v3": {
+          "type": "value",
+          "settings": {
+            "icon": "shield",
+            "title": "Fitment guarantee",
+            "text": "Parts are matched to your make, model and year before you buy."
+          }
+        },
+        "v4": {
+          "type": "value",
+          "settings": {
+            "icon": "returns",
+            "title": "Manufacturer warranty",
+            "text": "Every part carries its maker's warranty, plus 30-day returns."
+          }
+        },
+        "s1": {
+          "type": "step",
+          "settings": {
+            "title": "You order online",
+            "text": "Find your part by vehicle, category or part number and check out securely."
+          }
+        },
+        "s2": {
+          "type": "step",
+          "settings": {
+            "title": "We pack it in Melbourne",
+            "text": "Orders placed before 2PM on a working day are dispatched the same day."
+          }
+        },
+        "s3": {
+          "type": "step",
+          "settings": {
+            "title": "It arrives at your door",
+            "text": "We deliver Australia-wide, free on orders over $200."
+          }
+        },
+        "q1": {
+          "type": "faq",
+          "settings": {
+            "q": "How much is delivery?",
+            "a": "<p>Delivery is free on orders over $200 anywhere in Australia. For smaller orders, the cost is shown at checkout.</p>"
+          }
+        },
+        "q2": {
+          "type": "faq",
+          "settings": {
+            "q": "When will my order ship?",
+            "a": "<p>Orders placed before 2PM on a working day are dispatched the same day from our Melbourne warehouse.</p>"
+          }
+        },
+        "q3": {
+          "type": "faq",
+          "settings": {
+            "q": "How do I know a part fits my car?",
+            "a": "<p>Add your vehicle to My garage at the top of any page. Parts that fit are marked, and every product page has a fit check. If you're unsure, send us your rego or VIN.</p>"
+          }
+        },
+        "q4": {
+          "type": "faq",
+          "settings": {
+            "q": "Is there a discount for my first order?",
+            "a": "<p>Yes. Use code METRO15 at checkout for 15% off your first order.</p>"
+          }
+        },
+        "q5": {
+          "type": "faq",
+          "settings": {
+            "q": "Can I return a part?",
+            "a": "<p>Yes. Unused parts can be returned within 30 days. See our refund policy for the details.</p>"
+          }
+        },
+        "q6": {
+          "type": "faq",
+          "settings": {
+            "q": "Do you offer trade pricing?",
+            "a": "<p>Trade accounts for workshops and fleets are coming soon. Contact us if you'd like to hear when they open.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "v1",
+        "v2",
+        "v3",
+        "v4",
+        "s1",
+        "s2",
+        "s3",
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

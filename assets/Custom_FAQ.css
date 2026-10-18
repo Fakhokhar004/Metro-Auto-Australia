@@ -1,0 +1,72 @@
+/* 1. FAQ SECTION BACKGROUND */
+#shopify-section-template--19616879214779__faq_template_p8LDYD {
+    background-color: #ffffff !important;
+    padding: 80px 0 !important;
+}
+
+/* 2. FAQ CARD DESIGN (Plain & Rounded) */
+#section-template--19616879214779__faq_template_p8LDYD .card {
+    border: none !important;
+    background-color: #ffffff !important;
+    margin-bottom: 20px !important;
+    border-radius: 30px !important; /* Rounded borders to match service cards */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important; /* Soft glow/shadow */
+    overflow: hidden;
+}
+
+/* 3. CARD HEADER (The Question Part) */
+#section-template--19616879214779__faq_template_p8LDYD .card-header {
+    background-color: #ffffff !important;
+    border-bottom: none !important;
+    padding: 20px 30px !important;
+}
+
+/* 4. QUESTION LINK (The Text) */
+#section-template--19616879214779__faq_template_p8LDYD .card-header .btn-link {
+    text-decoration: none !important;
+    color: #000000 !important; /* Black titles as requested previously */
+    font-weight: 600 !important;
+    font-size: 18px !important;
+    display: block;
+    width: 100%;
+    text-align: left;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+/* 5. CARD BODY (The Answer Part) */
+#section-template--19616879214779__faq_template_p8LDYD .card-body {
+    background-color: #ffffff !important;
+    color: #333333 !important; /* Dark grey/black for readability */
+    padding: 0 30px 30px 30px !important;
+    font-size: 16px !important;
+    line-height: 1.6;
+}
+
+/* 6. ICON ADJUSTMENT (If your theme uses arrows/plus signs) */
+#section-template--19616879214779__faq_template_p8LDYD .card-header .btn-link::after,
+#section-template--19616879214779__faq_template_p8LDYD .card-header .btn-link::before {
+    color: #000000 !important;
+}
+
+/* 7. TITLE SPACING */
+#section-template--19616879214779__faq_template_p8LDYD .section-title {
+    color: #000000 !important;
+    margin-bottom: 50px !important;
+}
+
+/* 8. WEBVIEW ADJUSTMENTS */
+@media (min-width: 992px) {
+    #section-template--19616879214779__faq_template_p8LDYD .container {
+        max-width: 900px !important; /* Keeps the FAQ narrow and readable on desktop */
+    }
+}
+
+/* 9. MOBILE ADJUSTMENTS */
+@media (max-width: 767px) {
+    #section-template--19616879214779__faq_template_p8LDYD .card {
+        border-radius: 20px !important;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+}

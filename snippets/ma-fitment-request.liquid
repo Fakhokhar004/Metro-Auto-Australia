@@ -1,0 +1,77 @@
+{%- comment -%}
+  Fitment request pop-up for the product page (sections/ma-product.liquid).
+  Posts through Shopify's native contact form, so the email goes to Settings > Notifications > Contact form.
+  Product, part number and link are sent along. Opens from any [data-ma-open="fitreq"] button, or #fitment-request in the URL.
+  Params: product, sku, section_id, title, intro, states
+{%- endcomment -%}
+{%- form 'contact', id: 'ma-fitreq-form', class: 'ma-fitreq__form' -%}
+  {%- liquid
+    assign req_open = false
+    if form.posted_successfully? or form.errors
+      assign req_open = true
+    endif
+  -%}
+  <div class="ma-modal" data-ma-modal="fitreq"{% if req_open %} data-pdp-autopen{% endif %} hidden>
+    <button type="button" class="ma-modal__scrim" aria-label="Close" data-ma-close tabindex="-1"></button>
+    <div class="ma-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="ma-fitreq-h-{{ section_id }}">
+      <div class="ma-modal__head">
+        <h2 id="ma-fitreq-h-{{ section_id }}" class="ma-modal__title">{{ title | escape }}</h2>
+        <button type="button" class="ma-modal__close" aria-label="Close" data-ma-close>{%- render 'ma-icon', name: 'close', size: 18, width: 2.2 -%}</button>
+      </div>
+      <div class="ma-modal__body">
+        {%- if form.posted_successfully? -%}
+          <div class="ma-fitreq__done" role="status">
+            <strong>Request sent</strong>
+            <span>Thanks. Our parts team will check this part against your car and reply by email.</span>
+            <button type="button" class="ma-fitreq__submit" data-ma-close>Back to the product</button>
+          </div>
+        {%- else -%}
+          <p class="ma-modal__intro">{{ intro | escape }}</p>
+          <div class="ma-fitreq__part">
+            <span>Part</span>
+            <strong>{{ product.title | escape }}</strong>
+            {%- if sku != blank -%}<span>Part number {{ sku | escape }}</span>{%- endif -%}
+          </div>
+          {%- if form.errors -%}
+            <p class="ma-fitreq__error" role="alert">{{ form.errors | default_errors }}</p>
+          {%- endif -%}
+          <input type="hidden" name="contact[Request]" value="Fitment check">
+          <input type="hidden" name="contact[Product]" value="{{ product.title | escape }}">
+          <input type="hidden" name="contact[Part number]" value="{{ sku | escape }}">
+          <input type="hidden" name="contact[Product link]" value="{{ shop.url }}{{ product.url }}">
+          <div class="ma-fitreq__grid">
+            <label class="ma-gfield">First name *
+              <input class="ma-gselect" type="text" name="contact[First name]" autocomplete="given-name" required>
+            </label>
+            <label class="ma-gfield">Surname
+              <input class="ma-gselect" type="text" name="contact[Surname]" autocomplete="family-name">
+            </label>
+            <label class="ma-gfield">Email *
+              <input class="ma-gselect" type="email" name="contact[email]" autocomplete="email" required>
+            </label>
+            <label class="ma-gfield">Mobile
+              <input class="ma-gselect" type="tel" name="contact[Mobile]" autocomplete="tel" placeholder="04XX XXX XXX">
+            </label>
+            <label class="ma-gfield">Registration *
+              <input class="ma-gselect ma-fitreq__upper" type="text" name="contact[Registration]" maxlength="8" required>
+            </label>
+            <label class="ma-gfield">State *
+              <select class="ma-gselect" name="contact[State]" required>
+                <option value="">Select state</option>
+                {%- assign req_states = states | split: ',' -%}
+                {%- for s in req_states -%}<option>{{ s | strip | escape }}</option>{%- endfor -%}
+              </select>
+            </label>
+            <label class="ma-gfield ma-fitreq__wide">Vehicle (make, model, year) or VIN
+              <input class="ma-gselect" type="text" name="contact[Vehicle]" data-pdp-req-vehicle placeholder="For example 2019 Toyota Corolla">
+            </label>
+            <label class="ma-gfield ma-fitreq__wide">Anything else we should know
+              <textarea class="ma-gselect ma-fitreq__msg" name="contact[body]" rows="3" maxlength="500"></textarea>
+            </label>
+          </div>
+          <button type="submit" class="ma-fitreq__submit">Send fitment request</button>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+{%- endform -%}

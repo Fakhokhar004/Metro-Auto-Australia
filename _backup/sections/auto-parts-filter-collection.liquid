@@ -1,0 +1,33 @@
+<select class="select__make_data select__select" >
+  {%- for product in collection.products -%}
+  {%- for metafield in product.metafields.make.key_make -%}
+  <option value="{{ metafield }}">{{ metafield }}</option>
+  {%- endfor -%}
+  {%- endfor -%}
+</select>
+<select class="select__model_data select__select" >
+  {%- for product in collection.products -%}
+  {%- for metafield in product.metafields.model.key_model -%}
+  <option value="{{ metafield }}">{{ metafield }}</option>
+  {%- endfor -%}
+  {%- endfor -%}
+</select>
+
+<select class="select__year_data select__select">
+  {%- for product in collection.products -%}
+  {%- for metafield in product.metafields.year.key_year -%}
+  <option value="{{ metafield }}">{{ metafield }}</option>
+  {%- endfor -%}
+  {%- endfor -%}
+</select>
+
+<select class="select__engine_data select__select" >
+  {%- for product in collection.products -%}
+  {%- for metafield in product.metafields.engine.key_engine -%}
+  <option value="{{ metafield }}">{{ metafield }}</option>
+  {%- endfor -%}
+  {%- endfor -%}
+</select>
+  
+  
+  

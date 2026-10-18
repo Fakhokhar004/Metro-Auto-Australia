@@ -1,0 +1,67 @@
+{%- comment -%}
+  Rendered via the Section Rendering API from the header search box:
+  /search/suggest?q=…&resources[type]=product&resources[limit]=4&section_id=ma-predictive-search
+  When the query is a part number (variant SKU) or product handle, that product shows first as "Found: part …".
+{%- endcomment -%}
+{%- if predictive_search.performed -%}
+  {%- liquid
+    assign hits = predictive_search.resources.products
+    assign q = predictive_search.terms | strip | replace: '&quot;', '"' | replace: '&#39;', "'" | replace: '&lt;', '<' | replace: '&gt;', '>' | replace: '&amp;', '&'
+    assign q_down = q | downcase
+    assign found = nil
+    if q.size > 2
+      for product in hits
+        assign h_last = product.handle | split: '-' | last
+        if product.handle == q_down or h_last == q_down
+          assign found = product
+          break
+        endif
+        for variant in product.variants
+          assign sku_down = variant.sku | downcase
+          if sku_down == q_down
+            assign found = product
+            break
+          endif
+        endfor
+        if found
+          break
+        endif
+      endfor
+    endif
+    assign s_base = routes.search_url | append: '?type=product&options%5Bprefix%5D=last&q='
+  -%}
+
+  {%- if found -%}
+    {%- assign v = found.selected_or_first_available_variant -%}
+    {%- assign f_sku = q | upcase -%}
+    <a class="ma-ps__hit ma-ps__hit--found" href="{{ found.url }}" role="option" id="ma-ps-{{ found.id }}">
+      <span class="ma-ps__text">
+        <span class="ma-ps__found">{%- render 'ma-icon', name: 'check', size: 12, width: 3 -%} Found: part {{ f_sku | escape }}</span>
+        <span class="ma-ps__title">{{ found.title | escape }}</span>
+        <span class="ma-ps__meta">{{ found.vendor | escape }}{% if found.type != blank %}, {{ found.type | escape }}{% endif %}</span>
+      </span>
+      <span class="ma-ps__price">{{ v.price | money }}</span>
+    </a>
+    {%- if found.type != blank -%}
+      {%- assign type_q = 'product_type:"' | append: found.type | append: '"' | url_encode -%}
+      <a class="ma-ps__more" href="{{ s_base }}{{ type_q }}">More {{ found.type | escape }} &rarr;</a>
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- for product in hits -%}
+    {%- if found and product.id == found.id -%}{%- continue -%}{%- endif -%}
+    {%- assign v = product.selected_or_first_available_variant -%}
+    <a class="ma-ps__hit" href="{{ product.url }}" role="option" id="ma-ps-{{ product.id }}">
+      <span class="ma-ps__text">
+        <span class="ma-ps__title">{{ product.title | escape }}</span>
+        <span class="ma-ps__meta">{{ product.vendor | escape }}{% if v.sku != blank %}, part {{ v.sku | escape }}{% endif %}</span>
+      </span>
+      <span class="ma-ps__price">{{ v.price | money }}</span>
+    </a>
+  {%- endfor -%}
+  {%- if hits.size == 0 -%}
+    <div class="ma-ps__empty">No matching parts. Try a part number or a brand name.</div>
+    <a class="ma-ps__more" href="{{ s_base }}*&was={{ q | url_encode }}">Show all products &rarr;</a>
+  {%- endif -%}
+  <a class="ma-ps__all" href="{{ s_base }}{{ q | url_encode }}">See all results for "{{ q | escape }}"</a>
+{%- endif -%}

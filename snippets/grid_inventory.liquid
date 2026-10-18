@@ -1,0 +1,27 @@
+{% assign firstVariant = product.first_available_variant %}
+
+<div class="grid__inventory">
+  {% if firstVariant.inventory_quantity <= 0 %}
+      <svg width="15" height="15" aria-hidden="true">
+                  <circle cx="7.5" cy="7.5" r="7.5" fill="rgb(238,148,65, 0.3)"/>
+                  <circle cx="7.5" cy="7.5" r="5" stroke="rgb(255, 255, 255)" stroke-width="1" fill="rgb(238,148,65)"/>
+      </svg>
+      <span>Sold Out</span>
+                    
+    {% elsif firstVariant.inventory_quantity <= 5 %}   
+                    
+      <svg width="15" height="15" aria-hidden="true">
+        <circle cx="7.5" cy="7.5" r="7.5" fill="rgb(200,200,200, 0.3)"/>
+        <circle cx="7.5" cy="7.5" r="5" stroke="rgb(255, 255, 255)" stroke-width="1" fill="rgb(200,200,200)"/>
+      </svg>
+      <span>{{firstVariant.inventory_quantity}} Stock Available</span>
+    {% else %}  
+
+      <svg width="15" height="15" aria-hidden="true">
+        <circle cx="7.5" cy="7.5" r="7.5" fill="rgb(62,214,96, 0.3)"/>
+        <circle cx="7.5" cy="7.5" r="5" stroke="rgb(255, 255, 255)" stroke-width="1" fill="rgb(62,214,96)"/>
+      </svg> 
+       <span>{{firstVariant.inventory_quantity}} Stock Available</span>
+          
+  {% endif %}  
+</div> 

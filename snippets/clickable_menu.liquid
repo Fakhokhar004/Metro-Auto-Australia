@@ -1,0 +1,57 @@
+<div class="clickable-mainmenu">
+  <div class="clickable-mainmenu-icon">
+    <button class="clickable-mainmenu-close">
+      <i class="sli sli-close"></i>
+    </button>
+  </div>
+  
+  {% if section.settings.enable_clickable_logo %}  
+  <div class="side-logo">
+    {%- render 'header-logo' -%}
+  </div>
+  {% endif %}
+  
+  <div id="menu" class="text-left clickable-menu-style">
+   
+    {%- render 'main-menu-2' -%}
+    
+  </div>
+  
+  
+  {% if section.settings.enable_click_social %}  
+  <div class="side-social">
+    <ul>
+      
+      {% if settings.social_icon_1_name !='' %}
+      <li><a class="facebook" href="{{ settings.social_icon_1_link }}"><i class="sli sli-social-{{settings.social_icon_1_name}}"></i></a></li>
+      {% endif %}
+      
+      {% if settings.social_icon_2_name !='' %}
+      <li><a class="twitter" href="{{ settings.social_icon_2_link }}"><i class="sli sli-social-{{settings.social_icon_2_name}}"></i></a></li>
+      {% endif %}
+      
+      {% if settings.social_icon_3_name !='' %}
+      <li><a class="dribbble" href="{{ settings.social_icon_3_link }}"><i class="sli sli-social-{{settings.social_icon_3_name}}"></i></a></li>
+      {% endif %}
+      
+      {% if settings.social_icon_4_name !='' %}
+      <li><a class="pinterest" href="{{ settings.social_icon_4_link }}"><i class="sli sli-social-{{settings.social_icon_4_name}}"></i></a></li>
+      {% endif %}
+      
+      {% if settings.social_icon_5_name !='' %}
+      <li><a class="linkedin" href="{{ settings.social_icon_5_link }}"><i class="sli sli-social-{{settings.social_icon_5_name}}"></i></a></li>
+      {% endif %}
+      
+      {% if settings.social_icon_6_name !='' %}
+      <li><a class="" href="{{ settings.social_icon_6_link }}"><i class="sli sli-social-{{settings.social_icon_6_name}}"></i></a></li>
+      {% endif %}
+      
+      {% if settings.social_icon_7_name !='' %}
+      <li><a class="" href="{{ settings.social_icon_7_link }}"><i class="sli sli-social-{{settings.social_icon_7_name}}"></i></a></li>
+      {% endif %}
+      
+    </ul>
+  </div>
+  {% endif %}
+
+</div>

@@ -1,0 +1,426 @@
+<div class="home-content home-content--shoppable {% if settings.section__animation__enable %}scroll-zoom {% endif %}" data-section="lookbooBanner" id="section-{{ section.id }}">
+  {%- assign on_sale = false -%}
+  {%- if product_handle.variants.first.compare_at_price > product.variants.first.price -%}
+    {%- assign on_sale = true -%}
+  {%- endif -%}
+  {%- assign sold_out = true -%}
+  {%- if product_handle.available -%}{%- assign sold_out = false -%}{%- endif -%}
+  {%- assign variant = product.selected_or_first_available_variant -%}
+  {%- if product_handle.available -%}
+    {%- assign func = 'Shopify.addItem(' | append: variant.id | append: ', 1)' -%}
+  {%- endif -%}
+
+  <div class="row no-gutters">
+    <div class="col-md-12">
+      <!-- =======  single shoppable  ======= -->
+
+
+      {%- liquid
+        assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+        assign fetch_priority = 'auto'
+        if section.index == 1
+          assign fetch_priority = 'high'
+        endif
+        assign image_class = 'lazyload-main-image animated responsive-image__image'
+        assign lazy_load = 'lazy'
+      -%}
+      
+
+      <div class="single-shoppable single-shoppable--width-half lazyload-wraper-position" 
+        style="{% if section.settings.banner_img != blank %} padding-top:{{ 1 | divided_by: section.settings.banner_img.aspect_ratio | times: 100}}%; {% endif %}">
+
+      {% if section.settings.banner_img != blank %}
+          {% assign image_height = section.settings.banner_img.width | divided_by: section.settings.banner_img.aspect_ratio %}
+          {{ section.settings.banner_img | image_url: width: 3840 | image_tag: width: section.settings.banner_img.width, height: image_height, 
+          widths: widths, fetchpriority: fetch_priority, class: image_class, loading: lazy_load, alt: image.alt}}
+      {% else %}   
+          <img loading="lazy"  src="https://via.placeholder.com/1920x550" class="img-fluid" alt="{{ section.settings.banner_img.alt }}" >
+      {% endif %}
+        
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'lookbook_product_add' %}
+              {% assign product_handle = all_products[block.settings.product_handgle_id] %}
+              <div
+                class="cloth-tag"
+                style="top: {{ block.settings.vertical_postion }}%; left:{{ block.settings.horizontal_postion }}%;"
+              >
+                <span class="cloth-tag__icon">
+                  <i class="icofont-plus"></i>
+                </span>
+
+                <div class="cloth-tag__content">
+                  
+                  <div class="cloth-tag__content__image">
+                    <img loading="lazy"  src="{{ product_handle.featured_image | product_img_url: 'small', crop: 'bottom' }}" alt="">
+                  </div>
+
+                  <div class="cloth-tag__content__content">
+                    {% assign title_trim = block.settings.prouct_title_limit %}
+                    <h4>{{ product_handle.title | truncatewords: title_trim }}</h4>
+
+                    <div class="price_product">
+                      <span class="new">{{ product_handle.variants.first.price | money }}</span>
+                      {%- if product_handle.variants.first.compare_at_price > product_handle.variants.first.price -%}
+                        <span class="old">{{ product_handle.variants.first.compare_at_price | money }}</span>
+                      {%- endif -%}
+                    </div>
+
+                    <a href="{{ product_handle.url }}" class="lookbook_btn">
+                      {{ section.settings.lookbook_productbtn | default: 'Shop Now' -}}
+                    </a>
+                  </div>
+
+                  <span class="lookbook_close__icon">
+                    <i class="icofont-close"></i>
+                  </span>
+                </div>
+              </div>
+          {% endcase %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {% if section.settings.lookbook_banner_btn_enable %}
+    <div class="show-more-btn text-center toggle-btn" style="margin-top:{{ section.settings.btn_margin_top }}px">
+      <a class="loadMore" href="{{ section.settings.lookbook_btn_link }}">
+        <i class="icofont-plus"></i> {{ section.settings.lookbook_btn_text -}}
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+{%- render 'section-style' -%}
+
+<style>
+  .home-content.home-content--shoppable{
+    overflow:hidden
+  }
+  .single-shoppable .cloth-tag__icon:after {
+      content: "";
+      box-sizing: content-box;
+      top: -16px;
+      left: -16px;
+      width: 100%;
+      height: 100%;
+      padding: 16px;
+      background: radial-gradient(rgba(0,0,0, 0) 0%,rgba(255,255,255,.6) 100%);
+      border-radius: inherit;
+      animation: 2s ease-in-out infinite alternate ping;
+      position: absolute;
+  }
+  @keyframes ping {
+    from {
+      transform: scale(1);
+    }
+
+    to {
+      transform: scale(.7);
+    }
+  }
+</style>
+
+{% schema %}
+ {
+   "name": "Lookook Single Banner",
+   "settings": [
+     {
+       "type": "image_picker",
+       "id": "banner_img",
+       "label": "Lookbook Banner Image",
+       "info": "Recommended Size: 1920 x 550 px"
+     },
+     {
+       "type": "text",
+       "id": "lookbook_productbtn",
+       "label": "Product Button Text",
+       "default": "Take"
+     },
+     {
+       "type": "checkbox",
+       "id": "lookbook_banner_btn_enable",
+       "label": "LookBook Banner Button Enable",
+       "default": true
+     },
+     {
+       "type": "text",
+       "id": "lookbook_btn_text",
+       "label": "Button Text",
+       "default": "Online Store"
+     },
+     {
+       "type": "url",
+       "id": "lookbook_btn_link",
+       "label": "Button url"
+     },
+     {
+       "type": "range",
+       "id": "btn_margin_top",
+       "min": 0,
+       "max": 100,
+       "step": 1,
+       "label": "Limit",
+       "default": 30
+     }
+
+],
+"blocks": [
+      {
+       "type": "lookbook_product_add",
+       "name": "Single LookBook Product",
+       "settings": [
+           {
+              "type": "product",
+              "id": "product_handgle_id",
+              "label": "Add Product"
+           },
+           {
+             "type": "header",
+             "content": "Vertical Position"
+           },
+		{
+               "type": "range",
+               "id": "vertical_postion",
+               "min": 1,
+               "max": 100,
+               "step": 1,
+               "label": "Top To Bottom",
+			"unit":  "%",
+               "default": 30
+           },
+		{
+             "type": "header",
+             "content": "Horizontal Position"
+           },
+		{
+               "type": "range",
+               "id": "horizontal_postion",
+               "min": 1,
+               "max": 100,
+               "step": 1,
+               "label": "Left To Right",
+			"unit":  "%",
+               "default": 30
+           },
+		{
+             "type": "header",
+             "content": "Title Limit Word"
+           },
+		{
+               "type": "range",
+               "id": "prouct_title_limit",
+               "min": 2,
+               "max": 50,
+               "step": 1,
+               "label": "Limit",
+			"default": 4
+           }
+         ]
+       },
+	{
+         "type": "section_margin",
+         "name": "Section Margin",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "header",
+		  "content": "Large/Desktop Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "header",
+		  "content": "Tablet Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "header",
+		  "content": "Mobile Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_top_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_margin_bottom_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Margin Bottom",
+		  "unit": "px",
+		  "default": 0
+		}
+         ]
+      },
+   {
+         "type": "section_padding",
+         "name": "Section Padding",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "header",
+		  "content": "Large/Desktop Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 100
+		},
+		{
+		  "type": "header",
+		  "content": "Tablet Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom_md",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 80
+		},
+		{
+		  "type": "header",
+		  "content": "Mobile Device"
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_top_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Top",
+		  "unit": "px",
+		  "default": 0
+		},
+		{
+		  "type": "range",
+		  "id": "section_padding_bottom_xs",
+		  "min": 0,
+		  "max": 150,
+		  "step": 5,
+		  "label": "Padding Bottom",
+		  "unit": "px",
+		  "default": 60
+		}
+         ]
+      },
+   {
+         "type": "section_background",
+         "name": "Section Background",
+	  "limit": 1,
+         "settings": [
+           {
+		  "type": "image_picker",
+		  "id": "section_bg_image",
+		  "label": "BG Image"
+		},
+		{
+		  "type": "color",
+		  "id": "section_bg_color",
+		  "label": "BG Color",
+		  "default": "#ffffff"
+		}
+         ]
+      }
+],
+"presets": [
+	{
+	  "name": "LookBook Single Banner",
+	  "category": "7. Lookbook",
+	   "blocks": [
+             {
+               "type": "lookbook_product_add"
+             },
+             {
+               "type": "lookbook_product_add"
+             },
+		  {
+               "type": "lookbook_product_add"
+             }
+	  ]
+	}
+]
+ }
+{% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% case ['block'].type %}"
+  to: "{% case block.type %}"
+  position: 2070..2091
+{% endcomment %}

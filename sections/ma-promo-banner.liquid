@@ -1,0 +1,27 @@
+{%- comment -%} Dashed METRO15 banner at the end of Home. Design reference: Main.dc.html (DISCOUNT BANNER). {%- endcomment -%}
+<section class="ma-promo-sec">
+  <div class="ma-wrap">
+    <div class="ma-promo">
+      <div class="ma-promo__left">
+        <img class="ma-promo__logo" src="{{ 'ma-logo.png' | asset_url }}" width="960" height="184" alt="{{ shop.name | escape }}" loading="lazy">
+        <span class="ma-promo__copy">
+          <strong>{{ section.settings.title | escape }}</strong>
+          <span>Use code <strong>{{ section.settings.code | escape }}</strong> at checkout.</span>
+        </span>
+      </div>
+      <button type="button" class="ma-button ma-button--red" data-ma-copy="{{ section.settings.code | escape }}" data-copied-label="Code copied">Copy code {{ section.settings.code | escape }}</button>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Metro discount banner",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title", "default": "15% off your first order" },
+    { "type": "text", "id": "code", "label": "Discount code", "default": "METRO15" }
+  ],
+  "presets": [{ "name": "Metro discount banner" }]
+}
+{% endschema %}

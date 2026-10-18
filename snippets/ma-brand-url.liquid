@@ -1,0 +1,14 @@
+{%- comment -%}
+  Outputs the URL of a brand's page. Param: name (the vendor).
+  A collection with the brand's handle and the "brand" template (e.g. /collections/goss, used when a brand has
+  over 5,000 products so filters still work) wins; otherwise Shopify's vendor page /collections/vendors?q=<name>.
+{%- endcomment -%}
+{%- liquid
+  assign bc_handle = name | handleize
+  assign bc = collections[bc_handle]
+  if bc != blank and bc.template_suffix == 'brand'
+    echo bc.url
+  else
+    echo name | url_for_vendor
+  endif
+-%}

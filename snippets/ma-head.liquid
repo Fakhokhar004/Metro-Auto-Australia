@@ -1,0 +1,51 @@
+{%- comment -%}
+  Metro Auto head assets: fonts, stylesheet, routes and theme script.
+  Rendered by layout/metro.liquid and layout/theme.liquid.
+{%- endcomment -%}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+{%- comment -%} Fonts load without blocking the first paint (text shows straight away in the fallback font, then swaps). {%- endcomment -%}
+{%- assign ma_fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap' -%}
+<link rel="preload" as="style" href="{{ ma_fonts }}">
+<link rel="stylesheet" href="{{ ma_fonts }}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{{ ma_fonts }}"></noscript>
+
+{%- comment -%}
+  Product and category pages start loading when a shopper hovers or touches a link (Chrome / Edge),
+  so the next page opens almost instantly. Cart, checkout and account links are left alone.
+{%- endcomment -%}
+<script type="speculationrules">
+  {
+    "prefetch": [{
+      "where": { "and": [
+        { "or": [{ "href_matches": "/products/*" }, { "href_matches": "/collections/*" }, { "href_matches": "/search*" }] },
+        { "not": { "href_matches": "/*\\?*section_id=*" } }
+      ] },
+      "eagerness": "moderate"
+    }]
+  }
+</script>
+
+{{ 'ma-base.css' | asset_url | stylesheet_tag }}
+
+<script>
+  {%- comment -%} Set garage state before first paint so the vehicle bar doesn't flash. {%- endcomment -%}
+  (function () {
+    document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+    try {
+      var g = JSON.parse(localStorage.getItem('ma-garage') || 'null');
+      var old = g ? null : JSON.parse(localStorage.getItem('ma_garage_v1') || 'null');
+      if ((g && g.vehicle) || (old && old.current)) document.documentElement.classList.add('ma-has-vehicle');
+    } catch (e) {}
+  })();
+  window.MA = window.MA || {};
+  window.MA.routes = {
+    root: {{ routes.root_url | json }},
+    cartAdd: {{ routes.cart_add_url | append: '.js' | json }},
+    cart: {{ routes.cart_url | append: '.js' | json }},
+    search: {{ routes.search_url | json }},
+    predictive: {{ routes.predictive_search_url | json }},
+    allCollection: {{ routes.all_products_collection_url | json }}
+  };
+</script>
+<script src="{{ 'ma-theme.js' | asset_url }}" defer></script>
