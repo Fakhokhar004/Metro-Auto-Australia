@@ -54,14 +54,14 @@
           "type": "step",
           "settings": {
             "title": "It arrives at your door",
-            "text": "We deliver Australia-wide, free on orders over $200."
+            "text": "We deliver Australia-wide. Delivery costs are shown at checkout."
           }
         },
         "q1": {
           "type": "faq",
           "settings": {
             "q": "How much is delivery?",
-            "a": "<p>Delivery is free on orders over $200 anywhere in Australia. For smaller orders, the cost is shown at checkout.</p>"
+            "a": "<p>We deliver anywhere in Australia. The delivery cost for your order is shown at checkout before you pay.</p>"
           }
         },
         "q2": {

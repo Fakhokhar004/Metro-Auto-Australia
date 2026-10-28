@@ -1,0 +1,5 @@
+{%- comment -%}
+  Shown wherever a product has no photo (assets/ma-no-image.png, "Metro Auto Australia, image unavailable").
+  Params: class (img class), alt, size (px, default 600), eager (true for above-the-fold).
+{%- endcomment -%}
+<img class="ma-noimg {{ class }}" src="{{ 'ma-no-image.png' | asset_url }}" width="{{ size | default: 600 }}" height="{{ size | default: 600 }}" alt="{{ alt | escape }}" loading="{% if eager %}eager{% else %}lazy{% endif %}" decoding="async">

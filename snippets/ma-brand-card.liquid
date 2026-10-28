@@ -1,0 +1,29 @@
+{%- comment -%}
+  One brand card for the Brands page (sections/ma-brands).
+  Params: name (vendor), covers, bg, fg (colours), image (image object or blank), image_style ('logo' | 'photo').
+  logo: the image sits whole on the card colour and replaces the big name.
+  photo: the image fills the card under a dark fade and the name stays on top.
+{%- endcomment -%}
+{%- liquid
+  assign live = false
+  if shop.vendors contains name
+    assign live = true
+  endif
+  assign style = image_style | default: 'logo'
+  assign card_bg = bg | default: settings.ma_brand_bg
+  assign card_fg = fg | default: settings.ma_brand_fg
+-%}
+<a class="ma-bcard{% if image %} has-img is-{{ style }}{% endif %}" href="{% render 'ma-brand-url', name: name %}" style="background: {{ card_bg }}; color: {{ card_fg }};" aria-label="View {{ name | escape }} products"
+  data-ma-bcard data-name="{{ name | downcase | escape }}"{% if live %} data-vendor="{{ name | escape }}"{% endif %}>
+  {%- if image -%}
+    {{ image | image_url: width: 600 | image_tag: class: 'ma-bcard__img', widths: '240,360,480,600', sizes: '(min-width: 641px) 260px, 25vw', loading: 'lazy', alt: '' }}
+  {%- endif -%}
+  <span class="ma-bcard__name{% if image and style == 'logo' %} ma-sr{% endif %}">{{ name | escape }}</span>
+  <span class="ma-bcard__sub">
+    {%- if covers != blank -%}<span class="ma-bcard__covers">{{ covers | escape }}</span>{%- endif -%}
+    <span class="ma-bcard__foot">
+      <span data-ma-bcard-count>{% unless live %}Range coming soon{% endunless %}</span>
+      <span class="ma-bcard__cta">View products</span>
+    </span>
+  </span>
+</a>

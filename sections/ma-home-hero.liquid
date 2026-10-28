@@ -48,9 +48,9 @@
               {%- endif -%}
             </div>
           </div>
-          <div class="ma-hero__art">
+          <div class="ma-hero__art ma-hero__art--{{ section.settings.image_fit | default: 'contain' }}">
             {%- if section.settings.image != blank -%}
-              {{- section.settings.image | image_url: width: 1200 | image_tag: class: 'ma-hero__img', widths: '600,900,1200', sizes: '(min-width: 1100px) 480px, 45vw', loading: 'eager', fetchpriority: 'high', alt: '' -}}
+              {{- section.settings.image | image_url: width: 1200 | image_tag: class: 'ma-hero__img', widths: '600,900,1200,1600', sizes: '(min-width: 1320px) 660px, (min-width: 861px) 50vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: '' -}}
             {%- else -%}
               <svg width="380" height="380" viewBox="0 0 200 200" fill="none" aria-hidden="true">
                 <circle cx="100" cy="100" r="88" fill="#2A2C31"/>
@@ -157,6 +157,10 @@
     { "type": "text", "id": "btn2_label", "label": "Button 2 label", "default": "Browse categories" },
     { "type": "url", "id": "btn2_url", "label": "Button 2 link", "default": "/collections" },
     { "type": "image_picker", "id": "image", "label": "Hero image", "info": "Optional. Replaces the brake rotor illustration on the right." },
+    { "type": "select", "id": "image_fit", "label": "Image fit", "default": "contain", "options": [
+      { "value": "contain", "label": "Show the whole image" },
+      { "value": "cover", "label": "Fill the space (may crop)" }
+    ] },
     { "type": "header", "content": "Vehicle selector" },
     { "type": "checkbox", "id": "show_finder", "label": "Show vehicle selector", "default": true },
     { "type": "text", "id": "finder_eyebrow", "label": "Eyebrow", "default": "Vehicle selector" },

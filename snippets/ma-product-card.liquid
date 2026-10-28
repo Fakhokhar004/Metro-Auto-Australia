@@ -70,20 +70,6 @@
     assign type_label = product.collections.first.title
   endif
 
-  assign t_lower = product.title | downcase | append: ' ' | append: product.type | downcase
-  assign kind = 'pad'
-  assign tint = '#2F6FD6'
-  if t_lower contains 'tray' or t_lower contains 'mud guard'
-    assign kind = 'tray'
-  elsif t_lower contains 'clip' or t_lower contains 'assortment' or t_lower contains 'lock'
-    assign kind = 'clip'
-  elsif t_lower contains 'aerosol' or t_lower contains 'spray' or t_lower contains 'crc'
-    assign kind = 'can'
-  elsif t_lower contains 'oil' or t_lower contains 'fluid' or t_lower contains 'coolant' or t_lower contains 'cleaner' or t_lower contains 'ml'
-    assign kind = 'bottle'
-    assign tint = '#0E7C86'
-  endif
-
   assign img_sizes = sizes | default: '(min-width: 1320px) 300px, (min-width: 1100px) 23vw, (min-width: 640px) 31vw, 48vw'
 -%}
 <article
@@ -127,7 +113,7 @@
         class: 'ma-pc__img'
       -}}
     {%- else -%}
-      <span class="ma-pc__art">{%- render 'ma-placeholder-art', kind: kind, tint: tint -%}</span>
+      {%- render 'ma-no-image', class: 'ma-pc__img', alt: product.title, eager: priority -%}
     {%- endif -%}
     {%- if on_sale -%}
       <span class="ma-pc__sale">{{ save }}% off</span>
@@ -141,12 +127,23 @@
   <div class="ma-pc__body">
     <div class="ma-pc__row">
       <span class="ma-pc__stock ma-pc__stock--{{ stock_mod }}">{{ stock_label }}</span>
-      <span class="ma-pc__sku">{{ product.vendor | escape }} {{ variant.sku | escape }}</span>
+      {%- if variant.sku != blank -%}<span class="ma-pc__sku">{{ variant.sku | escape }}</span>{%- endif -%}
     </div>
     {%- if type_label != blank -%}
       <span class="ma-pc__type">{{ type_label | escape }}</span>
     {%- endif -%}
-    <a href="{{ product.url }}" class="ma-pc__title">{{ product.title | escape }}</a>
+    {%- liquid
+      # title only: drop a trailing " - Vendor" (e.g. "Oil Dipstick - Toyota 917-392 - Goss")
+      assign card_title = product.title | strip
+      assign vendor_tail = ' - ' | append: product.vendor
+      assign tail_size = vendor_tail.size
+      assign tail_from = 0 | minus: tail_size
+      assign title_tail = card_title | slice: tail_from, tail_size
+      if product.vendor != blank and title_tail == vendor_tail
+        assign card_title = card_title | remove_last: vendor_tail | strip
+      endif
+    -%}
+    <a href="{{ product.url }}" class="ma-pc__title">{{ card_title | escape }}</a>
     <span class="ma-pc__fit" data-ma-fit-badge hidden>
       {%- render 'ma-icon', name: 'check', size: 12, width: 3 -%}<span data-ma-fit-text></span>
     </span>

@@ -27,33 +27,51 @@
 
   <div class="ma-wrap ma-bpage">
     <div class="ma-bcards">
-      {%- for row in rows -%}
+      {%- comment -%} Brand cards added in the theme editor come first (image or colour), then the list from Theme settings. {%- endcomment -%}
+      {%- assign done = ',' -%}
+      {%- for block in section.blocks -%}
+        {%- assign b_name = block.settings.name | strip -%}
+        {%- if b_name == blank -%}{%- continue -%}{%- endif -%}
         {%- liquid
-          assign cols = row | split: '|'
-          assign b_name = cols[0] | strip
-          if b_name == blank
-            continue
+          assign b_covers = block.settings.covers
+          if b_covers == blank
+            assign key = b_name | downcase
+            for row in rows
+              assign cols = row | split: '|'
+              assign k = cols[0] | strip | downcase
+              if k == key
+                assign b_covers = cols[3] | strip
+              endif
+            endfor
           endif
-          assign b_bg = cols[1] | strip | default: '#121316'
-          assign b_fg = cols[2] | strip | default: '#FFFFFF'
-          assign b_covers = cols[3] | strip
-          assign b_live = false
-          if shop.vendors contains b_name
-            assign b_live = true
+          assign b_bg = block.settings.bg
+          assign b_fg = block.settings.fg
+          if block.settings.use_theme_colour
+            assign b_bg = settings.ma_brand_bg
+            assign b_fg = settings.ma_brand_fg
           endif
+          assign done = done | append: b_name | downcase | append: ','
         -%}
-        <a class="ma-bcard" href="{% render 'ma-brand-url', name: b_name %}" style="background: {{ b_bg }}; color: {{ b_fg }};" aria-label="View {{ b_name | escape }} products"
-          data-ma-bcard data-name="{{ b_name | downcase | escape }}"{% if b_live %} data-vendor="{{ b_name | escape }}"{% endif %}>
-          <span class="ma-bcard__name">{{ b_name | escape }}</span>
-          <span class="ma-bcard__sub">
-            {%- if b_covers != blank -%}<span class="ma-bcard__covers">{{ b_covers | escape }}</span>{%- endif -%}
-            <span class="ma-bcard__foot">
-              <span data-ma-bcard-count>{% unless b_live %}Range coming soon{% endunless %}</span>
-              <span class="ma-bcard__cta">View products</span>
-            </span>
-          </span>
-        </a>
+        <div class="ma-bcard-wrap" {{ block.shopify_attributes }}>
+          {%- render 'ma-brand-card', name: b_name, covers: b_covers, bg: b_bg, fg: b_fg, image: block.settings.image, image_style: block.settings.image_style -%}
+        </div>
       {%- endfor -%}
+      {%- if section.blocks.size == 0 or section.settings.show_rest -%}
+        {%- for row in rows -%}
+          {%- liquid
+            assign cols = row | split: '|'
+            assign b_name = cols[0] | strip
+            if b_name == blank
+              continue
+            endif
+            assign key = ',' | append: b_name | downcase | append: ','
+            if done contains key
+              continue
+            endif
+          -%}
+          {%- render 'ma-brand-card', name: b_name, covers: cols[3], bg: cols[1], fg: cols[2] -%}
+        {%- endfor -%}
+      {%- endif -%}
     </div>
 
     <div class="ma-empty-box" data-ma-brands-none hidden>
@@ -100,10 +118,29 @@
   "tag": "section",
   "class": "ma-body",
   "settings": [
-    { "type": "paragraph", "content": "Edit the brands, colours and descriptions in Theme settings → Metro brands." },
+    { "type": "paragraph", "content": "Add a Brand card block to give a brand its own image or colour. Other brands come from Theme settings → Metro brands." },
     { "type": "text", "id": "title", "label": "Heading", "default": "Our trusted brands" },
     { "type": "textarea", "id": "text", "label": "Banner text", "default": "We buy direct from the makers, so every part carries the manufacturer's warranty. Pick a brand to see its products, prices and stock." },
-    { "type": "url", "id": "ask_url", "label": "Contact link", "info": "Defaults to /pages/contact-us" }
+    { "type": "url", "id": "ask_url", "label": "Contact link", "info": "Defaults to /pages/contact-us" },
+    { "type": "checkbox", "id": "show_rest", "label": "Also show brands without a card block", "info": "From Theme settings → Metro brands and the store's vendors.", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "Brand card",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Brand (vendor name)", "info": "Must match the product vendor, e.g. Goss" },
+        { "type": "text", "id": "covers", "label": "What it covers", "info": "Empty uses the text from Theme settings → Metro brands." },
+        { "type": "image_picker", "id": "image", "label": "Image or logo" },
+        { "type": "select", "id": "image_style", "label": "Image style", "default": "logo", "options": [
+          { "value": "logo", "label": "Logo on the card colour" },
+          { "value": "photo", "label": "Photo filling the card" }
+        ] },
+        { "type": "checkbox", "id": "use_theme_colour", "label": "Use the brand colour from Theme settings", "default": false },
+        { "type": "color", "id": "bg", "label": "Card colour", "default": "#121316" },
+        { "type": "color", "id": "fg", "label": "Text colour", "default": "#FFFFFF" }
+      ]
+    }
   ],
   "presets": [{ "name": "Metro brands" }]
 }

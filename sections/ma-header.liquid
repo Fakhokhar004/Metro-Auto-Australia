@@ -64,7 +64,7 @@
   <div class="ma-header__top">
     <div class="ma-header__row">
       <button type="button" class="ma-burger" data-ma-open="menu" aria-label="Open menu" aria-expanded="false" aria-controls="ma-menu-{{ section.id }}">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        {%- render 'ma-icon', name: 'menu', size: 22, width: 2.2 -%}
       </button>
 
       <a href="{{ routes.root_url }}" class="ma-logo" aria-label="{{ shop.name | escape }} home">

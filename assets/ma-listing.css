@@ -112,8 +112,10 @@
   font-weight: 600; font-size: 14px; text-decoration: none; color: var(--ma-black);
 }
 .ma-body .ma-pager__n, .ma-body .ma-pager__btn { border: 1px solid var(--ma-line); }
-.ma-body .ma-pager__n:hover, .ma-body .ma-pager__btn:hover { border-color: var(--ma-red); color: var(--ma-red); }
-.ma-pager__n.is-on { background: var(--ma-red); border-color: var(--ma-red); color: #FFFFFF; }
+/* hover fills red with white text, and the current page stays white on red */
+.ma-body .ma-pager__n, .ma-body .ma-pager__btn { transition: background .15s ease, border-color .15s ease, color .15s ease; }
+.ma-body a.ma-pager__n:hover, .ma-body .ma-pager__btn:hover { background: var(--ma-red); border-color: var(--ma-red); color: #FFFFFF; }
+.ma-body .ma-pager__n.is-on, .ma-body .ma-pager__n.is-on:hover { background: var(--ma-red); border-color: var(--ma-red); color: #FFFFFF; }
 .ma-empty-box {
   border: 1px solid var(--ma-line); border-radius: 10px; padding: 32px; display: flex; flex-direction: column; gap: 12px;
   align-items: flex-start; background: var(--ma-grey-bg);
@@ -368,3 +370,13 @@ html.ma-fitmode [data-ma-page-results] { display: none; }
 .ma-bbanner__all { margin: 0; font-size: 14px; color: var(--ma-on-dark); }
 .ma-body .ma-bbanner__all a { margin-left: 6px; color: #FFFFFF; font-weight: 600; }
 .ma-body .ma-bbanner__all a:hover { color: var(--ma-red-soft); }
+
+/* filter panel beside the products: follows the page down and scrolls on its own (scrollbar hidden) */
+@media (min-width: 901px) {
+  .ma-filters {
+    position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow-y: auto; overscroll-behavior: contain;
+    scrollbar-width: none; -ms-overflow-style: none;
+  }
+  .ma-filters::-webkit-scrollbar { display: none; }
+  .ma-filters__head { position: sticky; top: 0; z-index: 1; }
+}

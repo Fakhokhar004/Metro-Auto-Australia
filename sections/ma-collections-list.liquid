@@ -27,15 +27,15 @@
       {%- liquid
         case block.settings.icon
           when 'bolt'
-            assign icon_d = 'M13 2L5 14h6l-1 8 8-12h-6z'
+            assign g_icon = 'bolt'
           when 'engine'
-            assign icon_d = 'M4 10h3l2-3h6l2 3h3v7H4zM7 7V5M17 7V5M9 13h6'
+            assign g_icon = 'engine'
           when 'car'
-            assign icon_d = 'M3 15l2-5a2 2 0 0 1 2-1.4h10a2 2 0 0 1 2 1.4l2 5v3H3zM7 18v2M17 18v2'
+            assign g_icon = 'body'
           when 'wrench'
-            assign icon_d = 'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z'
+            assign g_icon = 'wrench'
           else
-            assign icon_d = 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z'
+            assign g_icon = 'rotor'
         endcase
         assign g_title = block.settings.title | default: block.settings.collection.title
         assign g_short = block.settings.short | default: g_title | downcase
@@ -43,7 +43,7 @@
       <section class="ma-cats__group" aria-labelledby="ma-grp-{{ block.id }}" data-ma-cats-group data-name="{{ g_title | downcase | escape }}" {{ block.shopify_attributes }}>
         <div class="ma-cats__head">
           <h2 class="ma-cats__title" id="ma-grp-{{ block.id }}">
-            <span class="ma-cats__gicon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ icon_d }}"></path></svg></span>{{ g_title | escape }}
+            <span class="ma-cats__gicon">{%- render 'ma-icon', name: g_icon, size: 22, stroke: '#FFFFFF' -%}</span>{{ g_title | escape }}
           </h2>
           {%- if block.settings.collection != blank and block.settings.collection.all_products_count > 0 -%}
             <a class="ma-cats__all" href="{{ block.settings.collection.url }}">Shop all {{ g_short | escape }}</a>
@@ -53,9 +53,9 @@
           {%- for c in block.settings.collections -%}
             {%- if section.settings.hide_empty and c.all_products_count == 0 -%}{%- continue -%}{%- endif -%}
             <a class="ma-cats__tile" href="{{ c.url }}" data-ma-cats-tile data-name="{{ c.title | downcase | escape }}">
-              <span class="ma-cats__ticon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E1251B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ icon_d }}"></path></svg></span>
+              <span class="ma-cats__ticon">{%- render 'ma-icon', name: g_icon, size: 18, stroke: '#E1251B' -%}</span>
               <span class="ma-cats__label">{{ c.title | escape }}</span>
-              <svg class="ma-cats__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9A9EA6" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+              <span class="ma-cats__chev">{%- render 'ma-icon', name: 'chevron', size: 14, stroke: '#9A9EA6' -%}</span>
             </a>
           {%- endfor -%}
         </div>

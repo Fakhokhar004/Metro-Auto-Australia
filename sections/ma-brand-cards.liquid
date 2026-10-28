@@ -24,8 +24,19 @@
           {%- if block.settings.url == blank and has_vendor == false -%}{%- continue -%}{%- endif -%}
           {%- assign url = block.settings.url | default: '' -%}
           {%- if url == blank -%}{%- capture url -%}{%- render 'ma-brand-url', name: block.settings.name -%}{%- endcapture -%}{%- endif -%}
-          <a class="ma-brand" href="{{ url }}" aria-label="{{ block.settings.name | escape }} products" style="{% if settings.ma_brand_own %}background: {{ block.settings.bg }}; color: {{ block.settings.fg }};{% else %}background: {{ settings.ma_brand_bg }}; color: {{ settings.ma_brand_fg }};{% endif %}" {{ block.shopify_attributes }}>
-            <span class="ma-brand__name">{{ block.settings.name | escape }}</span>
+          {%- liquid
+            assign own = false
+            if settings.ma_brand_own or block.settings.own_colour
+              assign own = true
+            endif
+            assign b_img = block.settings.image
+            assign b_style = block.settings.image_style | default: 'logo'
+          -%}
+          <a class="ma-brand{% if b_img %} has-img is-{{ b_style }}{% endif %}" href="{{ url }}" aria-label="{{ block.settings.name | escape }} products" style="{% if own %}background: {{ block.settings.bg }}; color: {{ block.settings.fg }};{% else %}background: {{ settings.ma_brand_bg }}; color: {{ settings.ma_brand_fg }};{% endif %}" {{ block.shopify_attributes }}>
+            {%- if b_img -%}
+              {{ b_img | image_url: width: 600 | image_tag: class: 'ma-brand__img', widths: '240,360,480,600', sizes: '(min-width: 641px) 240px, 40vw', loading: 'lazy', alt: '' }}
+            {%- endif -%}
+            <span class="ma-brand__name{% if b_img and b_style == 'logo' %} ma-sr{% endif %}">{{ block.settings.name | escape }}</span>
             <span class="ma-brand__foot">
               <span class="ma-brand__covers">{{ block.settings.covers | escape }}</span>
               <span class="ma-brand__cta">View range</span>
@@ -91,6 +102,12 @@
       "settings": [
         { "type": "text", "id": "name", "label": "Brand (vendor name)", "default": "CRC" },
         { "type": "text", "id": "covers", "label": "What it covers", "default": "Lubricants, cleaners and brake care" },
+        { "type": "image_picker", "id": "image", "label": "Image or logo" },
+        { "type": "select", "id": "image_style", "label": "Image style", "default": "logo", "options": [
+          { "value": "logo", "label": "Logo on the card colour" },
+          { "value": "photo", "label": "Photo filling the card" }
+        ] },
+        { "type": "checkbox", "id": "own_colour", "label": "Use this card's own colours", "info": "Off uses the brand colour from Theme settings → Metro brands.", "default": false },
         { "type": "color", "id": "bg", "label": "Card colour", "default": "#1F4FA3" },
         { "type": "color", "id": "fg", "label": "Text colour", "default": "#FFFFFF" },
         { "type": "url", "id": "url", "label": "Link", "info": "Defaults to the vendor page, /collections/vendors?q=<brand>." }

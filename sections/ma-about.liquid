@@ -46,17 +46,17 @@
       {%- liquid
         case block.settings.icon
           when 'truck'
-            assign d = 'M3 7h11v9H3zM14 10h4l3 3v3h-7'
+            assign v_icon = 'truck'
           when 'shield'
-            assign d = 'M9 12l2 2 4-4M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z'
+            assign v_icon = 'shield-check'
           when 'returns'
-            assign d = 'M4 9h11a5 5 0 0 1 0 10H8M4 9l4-4M4 9l4 4'
+            assign v_icon = 'returns'
           else
-            assign d = 'M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z'
+            assign v_icon = 'star'
         endcase
       -%}
       <div class="ma-about__value" {{ block.shopify_attributes }}>
-        <span class="ma-about__vicon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ d }}"></path></svg></span>
+        <span class="ma-about__vicon">{%- render 'ma-icon', name: v_icon, size: 22, stroke: '#FFFFFF' -%}</span>
         <h3>{{ block.settings.title | escape }}</h3>
         <p>{{ block.settings.text | escape }}</p>
       </div>
@@ -124,7 +124,7 @@
         </dl>
         <div class="ma-about__msg">
           <p>Have a question about a part, an order or a return? Our contact page has the full message form.</p>
-          <a class="ma-button ma-button--red" href="/pages/contact-us">Send us a message <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+          <a class="ma-button ma-button--red" href="/pages/contact-us">Send us a message {%- render 'ma-icon', name: 'arrow-right', size: 16 -%}</a>
         </div>
       </div>
     </div>
@@ -154,14 +154,14 @@
     { "type": "textarea", "id": "text", "label": "Text", "default": "Metro Auto sells car parts and workshop supplies online. We buy direct from manufacturers, keep stock in our own Melbourne warehouse, and match parts to your vehicle so you get the right one first time." },
     { "type": "text", "id": "btn_label", "label": "Button label", "default": "Shop by vehicle" },
     { "type": "url", "id": "btn_url", "label": "Button link", "info": "Defaults to /pages/shop-by-vehicle" },
-    { "type": "text", "id": "stat1_label", "label": "Stat 1 label", "default": "Parts in stock" },
-    { "type": "text", "id": "stat1_value", "label": "Stat 1 value", "default": "7,600+" },
-    { "type": "text", "id": "stat2_label", "label": "Stat 2 label", "default": "Car makes covered" },
-    { "type": "text", "id": "stat2_value", "label": "Stat 2 value", "default": "30" },
+    { "type": "text", "id": "stat1_label", "label": "Stat 1 label", "default": "Based in" },
+    { "type": "text", "id": "stat1_value", "label": "Stat 1 value", "default": "Melbourne" },
+    { "type": "text", "id": "stat2_label", "label": "Stat 2 label", "default": "Parts matched to" },
+    { "type": "text", "id": "stat2_value", "label": "Stat 2 value", "default": "Your vehicle" },
     { "type": "text", "id": "stat3_label", "label": "Stat 3 label", "default": "Same-day dispatch" },
     { "type": "text", "id": "stat3_value", "label": "Stat 3 value", "default": "Order before 2PM" },
-    { "type": "text", "id": "stat4_label", "label": "Stat 4 label", "default": "Free delivery" },
-    { "type": "text", "id": "stat4_value", "label": "Stat 4 value", "default": "Orders over $200" },
+    { "type": "text", "id": "stat4_label", "label": "Stat 4 label", "default": "Easy returns" },
+    { "type": "text", "id": "stat4_value", "label": "Stat 4 value", "default": "30 days" },
     { "type": "header", "content": "Headings" },
     { "type": "text", "id": "values_title", "label": "Values heading", "default": "What you can count on" },
     { "type": "text", "id": "steps_title", "label": "Steps heading", "default": "How your order gets to you" },
@@ -192,7 +192,7 @@
     ] },
     { "type": "faq", "name": "Question", "settings": [
       { "type": "text", "id": "q", "label": "Question", "default": "How much is delivery?" },
-      { "type": "richtext", "id": "a", "label": "Answer", "default": "<p>Delivery is free on orders over $200 anywhere in Australia.</p>" }
+      { "type": "richtext", "id": "a", "label": "Answer", "default": "<p>Delivery costs are shown at checkout before you pay.</p>" }
     ] }
   ],
   "presets": [{ "name": "Metro about" }]

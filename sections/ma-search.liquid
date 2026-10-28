@@ -222,6 +222,8 @@
                 <a class="ma-found__media" href="{{ found.url }}" tabindex="-1" aria-hidden="true">
                   {%- if found.featured_image -%}
                     {{ found.featured_image | image_url: width: 480 | image_tag: alt: f_alt, widths: '240,360,480', sizes: '(min-width: 641px) 200px, 40vw', loading: 'eager', class: 'ma-found__img' }}
+                  {%- else -%}
+                    {%- render 'ma-no-image', class: 'ma-found__img', alt: found.title, size: 480, eager: true -%}
                   {%- endif -%}
                 </a>
                 <div class="ma-found__body">

@@ -172,7 +172,7 @@
             alt: main_alt
           -}}
         {%- else -%}
-          <span class="ma-pdp__art">{%- render 'ma-placeholder-art', kind: 'pad' -%}</span>
+          {%- render 'ma-no-image', class: 'ma-pdp__img', alt: product.title, size: 1200, eager: true -%}
         {%- endif -%}
         <span class="ma-pdp__sale" data-pdp-sale{% unless on_sale %} hidden{% endunless %}>{{ save | default: 0 }}% off</span>
       </div>
@@ -531,7 +531,7 @@
   "settings": [
     { "type": "header", "content": "Perks" },
     { "type": "text", "id": "perk_1", "label": "Perk 1 (clock)", "default": "Same-day dispatch before 2PM" },
-    { "type": "text", "id": "perk_2", "label": "Perk 2 (truck)", "default": "Free delivery over $200" },
+    { "type": "text", "id": "perk_2", "label": "Perk 2 (truck)", "default": "Fast Australia-wide delivery" },
     { "type": "text", "id": "perk_3", "label": "Perk 3 (shield)", "default": "Manufacturer warranty" },
     { "type": "checkbox", "id": "show_tags", "label": "Show tags", "default": true, "info": "Fitment tags (make-model-year) and the universal tag are always hidden." },
     { "type": "text", "id": "universal_tag", "label": "Universal product tag", "default": "universal" },
@@ -546,7 +546,7 @@
     { "type": "checkbox", "id": "req_always", "label": "Also show the request button on products that have fitment data", "default": true, "info": "Shown under the fit result, for shoppers whose car isn't listed." },
     { "type": "header", "content": "Tabs" },
     { "type": "text", "id": "spec_fields", "label": "Specification fields", "default": "brand, part_number, position, material", "info": "Fields of the custom.specifications metaobject to list." },
-    { "type": "richtext", "id": "shipping_text", "label": "Shipping and returns", "default": "<p><strong>Free delivery</strong> on orders over $200, Australia-wide.</p><p><strong>Same-day dispatch</strong> when you order before 2PM on a working day.</p><p><strong>Returns</strong> within 30 days on unused parts. See our refund policy for details.</p>" },
+    { "type": "richtext", "id": "shipping_text", "label": "Shipping and returns", "default": "<p><strong>Australia-wide delivery</strong>. The cost for your order is shown at checkout.</p><p><strong>Same-day dispatch</strong> when you order before 2PM on a working day.</p><p><strong>Returns</strong> within 30 days on unused parts. See our refund policy for details.</p>" },
     { "type": "header", "content": "Pair it with" },
     { "type": "checkbox", "id": "show_pairs", "label": "Show", "default": true },
     { "type": "text", "id": "pair_heading", "label": "Heading", "default": "Pair it with" },

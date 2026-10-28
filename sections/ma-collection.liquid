@@ -139,18 +139,6 @@
           </p>
         </div>
       </div>
-      <div class="ma-chips" role="group" aria-label="Switch brand">
-        {%- for row in brand_rows -%}
-          {%- assign cols = row | split: '|' -%}
-          {%- assign b_name = cols[0] | strip -%}
-          {%- unless shop.vendors contains b_name -%}{%- continue -%}{%- endunless -%}
-          {%- if b_name == brand -%}
-            <a class="ma-chip ma-chip--brand is-on" href="{% render 'ma-brand-url', name: b_name %}" aria-current="page">{{ b_name | escape }}</a>
-          {%- else -%}
-            <a class="ma-chip ma-chip--brand" href="{% render 'ma-brand-url', name: b_name %}">{{ b_name | escape }}</a>
-          {%- endif -%}
-        {%- endfor -%}
-      </div>
       {%- if vendor_page == false -%}
         {%- assign all_brand_q = 'vendor:"' | append: brand | append: '"' | url_encode -%}
         <p class="ma-bbanner__all">{{ collection.description | strip_html | strip | default: 'Part of the range.' | escape }}
@@ -216,10 +204,10 @@
         <div class="ma-toolbar">
           <div class="ma-toolbar__left">
             {%- if make_mode -%}
-              <a class="ma-toolbar__back" href="{{ makes_url }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>All makes</a>
+              <a class="ma-toolbar__back" href="{{ makes_url }}">{%- render 'ma-icon', name: 'chevron-left', size: 14, width: 2.4 -%}All makes</a>
             {%- endif -%}
             {%- if brand_mode -%}
-              <a class="ma-toolbar__back" href="{{ brands_url }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>All brands</a>
+              <a class="ma-toolbar__back" href="{{ brands_url }}">{%- render 'ma-icon', name: 'chevron-left', size: 14, width: 2.4 -%}All brands</a>
             {%- endif -%}
             <button type="button" class="ma-toolbar__filters" aria-controls="ma-filters-{{ section.id }}" aria-expanded="false" data-ma-filters-toggle>
               {%- render 'ma-icon', name: 'filter', size: 16, width: 2 -%}<span data-ma-filters-label>Filters</span>

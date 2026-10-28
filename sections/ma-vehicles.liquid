@@ -1,13 +1,28 @@
 {%- comment -%}
   Metro Auto "Shop by vehicle" page. Design reference: _design/metro-auto-design/pages/Vehicles.dc.html (makes view).
-  Same source as the old page: every collection with the metafield custom.is_car_brand = true, A to Z,
-  shown with the collection image (the make's logo). A new make collection appears here automatically.
+  Same source as the old page: every collection with the metafield custom.is_car_brand = true, shown with the
+  collection image (the make's logo). A new make collection appears here automatically.
+  Layout: an A–Z bar (letters jump to their group; letters with no makes are greyed out), then the make tiles
+  grouped by first letter under a letter heading and separator line.
   Each tile opens the make's collection, which sections/ma-collection shows as a make page.
 {%- endcomment -%}
 {{ 'ma-pages.css' | asset_url | stylesheet_tag }}
 {%- liquid
   assign sorted = collections | sort: 'title'
-  assign shown = 0
+  assign letters = 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z' | split: ','
+
+  # first letters of every make collection (custom.is_car_brand), so each letter knows whether it has makes
+  assign initials = ''
+  for c in sorted
+    unless c.metafields.custom.is_car_brand == true
+      continue
+    endunless
+    if section.settings.hide_empty and c.all_products_count == 0
+      continue
+    endif
+    assign first_letter = c.title | slice: 0 | upcase
+    assign initials = initials | append: first_letter
+  endfor
 -%}
 
 <div data-ma-makes>
@@ -36,22 +51,41 @@
       </div>
     {%- endif -%}
 
-    <div class="ma-makes">
-      {%- for c in sorted -%}
-        {%- unless c.metafields.custom.is_car_brand == true -%}{%- continue -%}{%- endunless -%}
-        {%- if section.settings.hide_empty and c.all_products_count == 0 -%}{%- continue -%}{%- endif -%}
-        {%- assign shown = shown | plus: 1 -%}
-        <a class="ma-make{% if c.image %} has-logo{% endif %}" href="{{ c.url }}" data-ma-make data-name="{{ c.title | downcase | escape }}" aria-label="View {{ c.title | escape }} parts">
-          {%- if c.image and section.settings.show_logos -%}
-            <span class="ma-make__logo">{{ c.image | image_url: width: 240 | image_tag: alt: '', widths: '120,240', sizes: '120px', loading: 'lazy' }}</span>
+    {%- if initials != blank -%}
+      <nav class="ma-az__letters" aria-label="Jump to makes by first letter">
+        {%- for L in letters -%}
+          {%- if initials contains L -%}
+            <a class="ma-az__letter" href="#ma-make-{{ L }}" data-ma-jump="{{ L }}">{{ L }}</a>
+          {%- else -%}
+            <span class="ma-az__letter is-off" aria-hidden="true">{{ L }}</span>
           {%- endif -%}
-          <span class="ma-make__name">{{ c.title | escape }}</span>
-          {%- if section.settings.show_counts -%}<span class="ma-make__count">{{ c.all_products_count }} parts</span>{%- endif -%}
-        </a>
-      {%- endfor -%}
-    </div>
+        {%- endfor -%}
+      </nav>
+    {%- endif -%}
 
-    {%- if shown == 0 and request.design_mode -%}
+    {%- for L in letters -%}
+      {%- unless initials contains L -%}{%- continue -%}{%- endunless -%}
+      <section class="ma-mgroup" id="ma-make-{{ L }}" aria-labelledby="ma-make-h-{{ L }}" data-ma-group="{{ L }}">
+        <h2 class="ma-mgroup__letter" id="ma-make-h-{{ L }}">{{ L }}</h2>
+        <div class="ma-makes">
+          {%- for c in sorted -%}
+            {%- unless c.metafields.custom.is_car_brand == true -%}{%- continue -%}{%- endunless -%}
+            {%- if section.settings.hide_empty and c.all_products_count == 0 -%}{%- continue -%}{%- endif -%}
+            {%- assign c_letter = c.title | slice: 0 | upcase -%}
+            {%- unless c_letter == L -%}{%- continue -%}{%- endunless -%}
+            <a class="ma-make{% if c.image %} has-logo{% endif %}" href="{{ c.url }}" data-ma-make data-name="{{ c.title | downcase | escape }}" aria-label="View {{ c.title | escape }} parts">
+              {%- if c.image and section.settings.show_logos -%}
+                <span class="ma-make__logo">{{ c.image | image_url: width: 240 | image_tag: alt: '', widths: '120,240', sizes: '120px', loading: 'lazy' }}</span>
+              {%- endif -%}
+              <span class="ma-make__name">{{ c.title | escape }}</span>
+              {%- if section.settings.show_counts -%}<span class="ma-make__count">{{ c.all_products_count }} parts</span>{%- endif -%}
+            </a>
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- endfor -%}
+
+    {%- if initials == blank and request.design_mode -%}
       <p class="ma-note">No make collections yet. Set the collection metafield <strong>custom.is_car_brand</strong> to true on each make collection.</p>
     {%- endif -%}
 
@@ -68,14 +102,38 @@
     var root = document.querySelector('[data-ma-makes]');
     if (!root) return;
     var tiles = Array.prototype.slice.call(root.querySelectorAll('[data-ma-make]'));
+    var groups = Array.prototype.slice.call(root.querySelectorAll('[data-ma-group]'));
+    var jumps = Array.prototype.slice.call(root.querySelectorAll('[data-ma-jump]'));
     var input = root.querySelector('[data-ma-makes-input]');
     var none = root.querySelector('[data-ma-makes-none]');
+
+    /* search: filter the tiles, hide letter groups (and their letters) left empty */
     input.addEventListener('input', function () {
       var f = input.value.trim().toLowerCase(), n = 0;
       tiles.forEach(function (t) { var on = !f || t.getAttribute('data-name').indexOf(f) > -1; t.hidden = !on; if (on) n++; });
+      groups.forEach(function (g) {
+        var any = Array.prototype.some.call(g.querySelectorAll('[data-ma-make]'), function (t) { return !t.hidden; });
+        g.hidden = !any;
+        var j = root.querySelector('[data-ma-jump="' + g.getAttribute('data-ma-group') + '"]');
+        if (j) j.classList.toggle('is-off', !any);
+      });
       none.hidden = n > 0;
       root.querySelectorAll('[data-ma-makes-q]').forEach(function (s) { s.textContent = input.value.trim(); });
     });
+
+    /* letters: smooth jump to the group, and mark the letter */
+    jumps.forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        var g = document.getElementById('ma-make-' + a.getAttribute('data-ma-jump'));
+        if (!g || g.hidden) { e.preventDefault(); return; }
+        e.preventDefault();
+        var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        g.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
+        if (history.replaceState) history.replaceState(null, '', '#ma-make-' + a.getAttribute('data-ma-jump'));
+        jumps.forEach(function (x) { x.classList.toggle('is-on', x === a); });
+      });
+    });
+
     /* the garage vehicle: straight to the parts that fit */
     var box = root.querySelector('[data-ma-makes-garage]');
     function paint() {
@@ -97,7 +155,7 @@
   "tag": "section",
   "class": "ma-body",
   "settings": [
-    { "type": "paragraph", "content": "Makes are the collections with the metafield custom.is_car_brand set to true. The collection image is used as the logo." },
+    { "type": "paragraph", "content": "Makes are the collections with the metafield custom.is_car_brand set to true. The collection image is used as the logo. They are grouped by first letter." },
     { "type": "text", "id": "title", "label": "Heading", "default": "Shop by vehicle" },
     { "type": "textarea", "id": "text", "label": "Banner text", "default": "Pick your car make to see the parts we carry for it, with prices and stock." },
     { "type": "checkbox", "id": "show_logos", "label": "Show make logos", "default": true },
